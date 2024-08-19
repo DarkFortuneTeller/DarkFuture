@@ -1,7 +1,8 @@
 # Dark Future
  An Urban Survival Gameplay and Immersion mod for Cyberpunk 2077.
 
-## Requirements
+## Getting Started
+### Requirements
 Cyberpunk 2077 2.12a+. The mod is Phantom Liberty-aware but the expansion is not required.
 
 [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107) 1.32.0+
@@ -18,12 +19,17 @@ Cyberpunk 2077 2.12a+. The mod is Phantom Liberty-aware but the expansion is not
 
 [Mod Settings](https://www.nexusmods.com/cyberpunk2077/mods/4885) 0.2.8+
 
-## Documentation
-Please see the [Dark Future Wiki](https://wiki.darkfuture2077.com).
-
-## Installation
+### Installation
 Extract the release archive `DarkFuture-x.x-for-x.x.zip` into the Cyberpunk 2077 directory.
 
 Or, install the release archive using Vortex.
 
 Or, install the mod directly from the [Dark Future Nexus Mods page](https://www.nexusmods.com/cyberpunk2077/mods/16300).
+
+### Unistallation
+Toggle **Enable Dark Future** to **Off** in the Dark Future Mod Settings Menu. Save your game and exit.
+
+Then, remove all Dark Future files from the Cyberpunk 2077 directory. Or, uninstall the mod using Vortex.
+
+## Documentation
+Please see the [Dark Future Wiki](https://wiki.darkfuture2077.com).
