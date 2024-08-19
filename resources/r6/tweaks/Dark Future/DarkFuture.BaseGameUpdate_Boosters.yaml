@@ -1,0 +1,297 @@
+#
+#
+# Capacity Boosters
+#
+#
+# Ol' Donkey
+BaseStatusEffect.Blackmarket_CarryCapacityBooster_inline1:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.6
+  modifierType: Multiplier
+  statType: BaseStats.CarryCapacity
+
+BaseStatusEffect.Blackmarket_CarryCapacityBooster_inline3.intValues:
+  - 60
+  - 20
+
+BaseStatusEffect.Blackmarket_CarryCapacityBooster_inline3.description: l"DarkFutureConsumableBlackMarketCarryCapacityBoosterUpdatedDesc"
+
+Items.Blackmarket_CarryCapacityBooster_inline3.intValues:
+  - 60
+  - 20
+
+Items.Blackmarket_CarryCapacityBooster_inline3.localizedDescription: l"DarkFutureConsumableBlackMarketCarryCapacityBoosterUpdatedDesc"
+
+# Standard Capacity Booster (% increase)
+Items.CarryCapacityBooster_inline1.intValues:
+  - 30
+BaseStatusEffect.CarryCapacityBooster_inline1.value: 1.3
+BaseStatusEffect.CarryCapacityBooster_inline2.intValues:
+  - 30
+
+#
+#
+# Stamina Booster Description Fix
+#
+#
+# Bug Fix: Updates Stamina Booster inventory description to state that it grants
+# +10% Stamina Regen Rate. This is actually what they have always done, the inventory
+# description was wrong (stated +20%). This makes the Black Market Stamina Booster's
+# effect seem more balanced, as it is +20% with a -15% Max Health penalty.
+Items.StaminaBooster_inline1.floatValues:
+  - 10
+
+#
+#
+# Health Booster (Now First Aid Kit)
+#
+#
+
+# Standard Health Boosters have been repurposed to First Aid Kits. They now cure the Injury status.
+#
+DarkFutureStatusEffect.HealthBooster_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 180.0
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.HealthBoosterDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.HealthBooster_StatModifier
+
+DarkFutureItem.InjuryCureDrugOnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableInjuryRestoreItemDesc"
+  localizedName: ''
+  maxFactor: 0
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureItem.InjuryCureDrugOnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.InjuryCureDrugOnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.HealthBoosterDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.HealthBooster_StatModifier
+
+Items.HealthBooster.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
+Items.HealthBooster.quality: Quality.Uncommon
+Items.HealthBooster.OnEquip:
+  - !prepend-once DarkFutureItem.InjuryCureDrugOnEquip
+Items.HealthBooster.statModifierGroups:
+  - DarkFutureItem.HealthBoosterDuration
+BaseStatusEffect.HealthBooster.duration: DarkFutureStatusEffect.HealthBoosterDuration
+BaseStatusEffect.HealthBooster_inline2.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
+
+#
+#
+# Carry Capacity Booster Nutrition Cost
+#
+#
+DarkFutureItem.CarryCapacityBoosterOnEquip_NutritionCost_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionBoosterNutrition"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -15
+  nameValues: []
+  stats: []
+
+DarkFutureItem.BlackMarketCarryCapacityBoosterOnEquip_NutritionCost_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionBoosterNutrition"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -25
+  nameValues: []
+  stats: []
+
+DarkFutureItem.CarryCapacityBoosterOnEquip_NutritionCost:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.CarryCapacityBoosterOnEquip_NutritionCost_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.BlackMarketCarryCapacityBoosterOnEquip_NutritionCost:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.BlackMarketCarryCapacityBoosterOnEquip_NutritionCost_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+Items.Blackmarket_CarryCapacityBooster:
+  OnEquip:
+    - !append-once DarkFutureItem.BlackMarketCarryCapacityBoosterOnEquip_NutritionCost
+  tags:
+    - !append-once DarkFutureConsumableBoosterNutritionCost
+    - !append-once DarkFutureConsumableBoosterNutritionCostTier2
+
+Items.CarryCapacityBooster:
+  OnEquip:
+    - !append-once DarkFutureItem.CarryCapacityBoosterOnEquip_NutritionCost
+  tags:
+    - !append-once DarkFutureConsumableBoosterNutritionCost
+    - !append-once DarkFutureConsumableBoosterNutritionCostTier1
+
+#
+#
+# Stamina Booster Hydration Bonus
+#
+#
+DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableStaminaBoosterHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -20
+  nameValues: []
+  stats: []
+
+DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableStaminaBoosterHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -30
+  nameValues: []
+  stats: []
+
+DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+Items.StaminaBooster:
+  OnEquip:
+    - !append-once DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult
+
+Items.Blackmarket_StaminaBooster:
+  OnEquip:
+    - Items.Blackmarket_StaminaBooster_inline2
+    - DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult
+    - Items.Blackmarket_StaminaBooster_inline4
+
+BaseStatusEffect.StaminaBooster_inline2.description: l"DarkFutureConsumableStaminaBoosterHydrationStatusEffectDesc"
+BaseStatusEffect.StaminaBooster_inline2.intValues:
+  - 10
+  - -20
+
+BaseStatusEffect.Blackmarket_StaminaBooster_inline3.description: l"DarkFutureConsumableBlackMarketStaminaBoosterHydrationStatusEffectDesc"
+BaseStatusEffect.Blackmarket_StaminaBooster_inline3.intValues:
+  - 20
+  - -30
+  - -15
+
+#
+#
+# Memory Booster Trace Nerve Loss Bonus
+#
+#
+DarkFutureItem.MemoryBoosterOnEquip_NerveLossCostBonusMult_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableMemoryBoosterNerveLossDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -35
+  nameValues: []
+  stats: []
+
+DarkFutureItem.BlackMarketMemoryBoosterOnEquip_NerveLossCostBonusMult_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableMemoryBoosterNerveLossDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -50
+  nameValues: []
+  stats: []
+
+DarkFutureItem.MemoryBoosterOnEquip_NerveLossCostBonusMult:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.MemoryBoosterOnEquip_NerveLossCostBonusMult_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.BlackMarketMemoryBoosterOnEquip_NerveLossCostBonusMult:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.BlackMarketMemoryBoosterOnEquip_NerveLossCostBonusMult_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+Items.MemoryBooster:
+  OnEquip:
+    - !append-once DarkFutureItem.MemoryBoosterOnEquip_NerveLossCostBonusMult
+
+Items.Blackmarket_MemoryBooster:
+  OnEquip:
+    - Items.Blackmarket_MemoryBooster_inline2
+    - DarkFutureItem.BlackMarketMemoryBoosterOnEquip_NerveLossCostBonusMult
+    - Items.Blackmarket_MemoryBooster_inline4
+
+BaseStatusEffect.MemoryBooster_inline2.description: l"DarkFutureConsumableMemoryBoosterNerveLossStatusEffectDesc"
+BaseStatusEffect.MemoryBooster_inline2.intValues:
+  - 2
+  - -35
+
+# BUG FIX: This actually did not have a Status Effect description in the base game.
+BaseStatusEffect.Blackmarket_MemoryBooster_inline3.description: l"DarkFutureConsumableBlackMarketMemoryBoosterNerveLossStatusEffectDesc"
+BaseStatusEffect.Blackmarket_MemoryBooster_inline3.intValues:
+  - 4
+  - -50
+  - -20

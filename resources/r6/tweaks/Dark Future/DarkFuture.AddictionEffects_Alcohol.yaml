@@ -1,0 +1,415 @@
+#
+#
+# Base Game Alcohol Effect
+#
+#
+BaseStatusEffect.Drunk.gameplayTags:
+  - !append-once DarkFutureAddictionPrimaryEffect
+  - !append-once DarkFutureAddictionPrimaryEffectAlcohol
+
+#
+#
+# Common Records
+#
+#
+DarkFutureStatusEffectTypes.AlcoholWithdrawal:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: AlcoholWithdrawal
+
+UIIcon.DarkFutureAlcoholWithdrawalIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: drunk
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
+
+#
+#
+# Alcohol Withdrawal Cessation
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_Cessation_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawalCessationDesc"
+  displayName: l"DarkFutureAlcoholWithdrawalCessationName"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 80
+    - 2
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_Cessation:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_Cessation_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalCessation
+    - AddictionWithdrawalCessationAlcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Alcohol Withdrawal 01 No Progression
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureAlcoholWithdrawal01Name"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 70
+    - 2
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalStage1
+    - AddictionWithdrawalStage1Alcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Alcohol Withdrawal 01 With Progression
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawal01WithProgressionDesc"
+  displayName: l"DarkFutureAlcoholWithdrawal01Name"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 70
+    - 2
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalStage1
+    - AddictionWithdrawalStage1Alcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Alcohol Withdrawal 02 No Progression
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureAlcoholWithdrawal02Name"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 55
+    - 2
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalStage2
+    - AddictionWithdrawalStage2Alcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Alcohol Withdrawal 02 With Progression
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawal02WithProgressionDesc"
+  displayName: l"DarkFutureAlcoholWithdrawal02Name"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 55
+    - 2
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalStage2
+    - AddictionWithdrawalStage2Alcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Alcohol Withdrawal 03 No Progression
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureAlcoholWithdrawal03Name"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 40
+    - 2
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalStage3
+    - AddictionWithdrawalStage3Alcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Alcohol Withdrawal 03 With Progression
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawal03WithProgressionDesc"
+  displayName: l"DarkFutureAlcoholWithdrawal03Name"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 40
+    - 2
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalStage3
+    - AddictionWithdrawalStage3Alcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Alcohol Withdrawal 04 No Progression
+#
+#
+DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureAlcoholWithdrawal04Name"
+  fluffText: ''
+  iconPath: DarkFutureAlcoholWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 25
+    - 2
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlcoholWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalAlcohol
+    - AddictionWithdrawalStage4
+    - AddictionWithdrawalStage4Alcohol
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True

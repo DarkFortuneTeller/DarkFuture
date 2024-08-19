@@ -1,0 +1,7 @@
+# Solo Skill Rank 5 Carrying Capacity bonus
+Proficiencies.StrengthSkill_inline1.intValues:
+  - 25
+
+# Solo Skill Rank 25 Carrying Capacity bonus
+Proficiencies.StrengthSkill_inline7.intValues:
+  - 25

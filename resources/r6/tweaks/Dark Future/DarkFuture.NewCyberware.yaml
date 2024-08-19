@@ -1,0 +1,2008 @@
+#
+#
+# Syn-Liver
+#
+#
+UIIcon.darkfuture_cw_synliver:
+  $type: gamedataUIIcon_Record
+  atlasPartName: darkfuture_cw_synliver
+  atlasResourcePath: darkfuture\textures\darkfuture_synliver.inkatlas
+
+DarkFutureItem.SynLiverBodyAttunement:
+  $type: gamedataCombinedStatModifier_Record
+  opSymbol: '*'
+  refObject: Player
+  refStat: BaseStats.Strength
+  value: 0.5
+  modifierType: Additive
+  statType: BaseStats.AttunementHelper
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_Rare_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 25
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 25
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_Epic_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 50
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 50
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 75
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 75
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 75
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_Rare_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -40
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -50
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_Epic_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -60
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -70
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -80
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -90
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -100
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_Rare:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_Rare_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_Epic:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_Epic_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_Rare:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_Rare_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_Epic:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_Epic_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLiverLegendaryPlusPlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLiver
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: darkfuture_cw_synliver
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.LegendaryPlusPlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCyberwareSynLiverName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus
+    - DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus
+    - Attunements.BodyHealth
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedEndoskeletonEpic_inline9
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLiverBodyAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: SynLiver
+
+DarkFutureItem.SynLiverLegendaryPlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLiver
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: darkfuture_cw_synliver
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLiverLegendaryPlusPlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.LegendaryPlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCyberwareSynLiverName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus
+    - DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus
+    - Attunements.BodyHealth
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedEndoskeletonEpic_inline9
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLiverBodyAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: SynLiver
+
+DarkFutureItem.SynLiverLegendary:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLiver
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: darkfuture_cw_synliver
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLiverLegendaryPlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.Legendary
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCyberwareSynLiverName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary
+    - DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary
+    - Attunements.BodyHealth
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedEndoskeletonEpic_inline9
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLiverBodyAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: SynLiver
+
+DarkFutureItem.SynLiverEpicPlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLiver
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: darkfuture_cw_synliver
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLiverLegendary
+  powerLevelDeterminedByParent: False
+  quality: Quality.EpicPlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCyberwareSynLiverName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus
+    - DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus
+    - Attunements.BodyHealth
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedEndoskeletonEpic_inline9
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLiverBodyAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: SynLiver
+
+DarkFutureItem.SynLiverEpic:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLiver
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: darkfuture_cw_synliver
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLiverEpicPlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.Epic
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCyberwareSynLiverName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLiverOnEquip_Alcohol_Epic
+    - DarkFutureItem.SynLiverOnEquip_Narcotics_Epic
+    - Attunements.BodyHealth
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedEndoskeletonEpic_inline9
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLiverBodyAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: SynLiver
+
+DarkFutureItem.SynLiverRarePlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLiver
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: darkfuture_cw_synliver
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLiverEpic
+  powerLevelDeterminedByParent: False
+  quality: Quality.RarePlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCyberwareSynLiverName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus
+    - DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus
+    - Attunements.BodyHealth
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedEndoskeletonEpic_inline9
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLiverBodyAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: SynLiver
+
+DarkFutureItem.SynLiverRare:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLiver
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: darkfuture_cw_synliver
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLiverRarePlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.Rare
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCyberwareSynLiverName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLiverOnEquip_Alcohol_Rare
+    - DarkFutureItem.SynLiverOnEquip_Narcotics_Rare
+    - Attunements.BodyHealth
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedEndoskeletonEpic_inline9
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLiverBodyAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: SynLiver
+
+#
+#
+# Syn-Lungs
+#
+#
+DarkFutureItem.SynLungsReflexesAttunement:
+  $type: gamedataCombinedStatModifier_Record
+  opSymbol: '*'
+  refObject: Player
+  refStat: BaseStats.Reflexes
+  value: 0.1
+  modifierType: Additive
+  statType: BaseStats.AttunementHelper
+
+DarkFutureItem.SynLungsOnEquip_Smoking_Rare_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsSmokingDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 30
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_RarePlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsSmokingDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 40
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_Epic_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsSmokingDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 50
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_EpicPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsSmokingDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 60
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_Legendary_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsSmokingDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 70
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsSmokingDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 80
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlusPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsSmokingDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 90
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_Rare_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -30
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -35
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_Epic_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -40
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -45
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_Legendary_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -50
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -55
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -60
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_Rare:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Smoking_Rare_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_RarePlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Smoking_RarePlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_Epic:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Smoking_Epic_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_EpicPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Smoking_EpicPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_Legendary:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Smoking_Legendary_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlusPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlusPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_Rare:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_Rare_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_Epic:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_Epic_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_Legendary:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_Legendary_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.SynLungsLegendaryPlusPlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLungs
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: cw_circulatory_ironlungs
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.LegendaryPlusPlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: LocKey#3676
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlusPlus
+    - DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus
+    - Attunements.ReflexesCritChance
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedSuddenAidCommon_inline17
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLungsReflexesAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: IronLungs
+
+DarkFutureItem.SynLungsLegendaryPlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLungs
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: cw_circulatory_ironlungs
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLungsLegendaryPlusPlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.LegendaryPlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: LocKey#3676
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlus
+    - DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus
+    - Attunements.ReflexesCritChance
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedSuddenAidCommon_inline17
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLungsReflexesAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: IronLungs
+
+DarkFutureItem.SynLungsLegendary:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLungs
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: cw_circulatory_ironlungs
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLungsLegendaryPlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.Legendary
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: LocKey#3676
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_Smoking_Legendary
+    - DarkFutureItem.SynLungsOnEquip_Hydration_Legendary
+    - Attunements.ReflexesCritChance
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedSuddenAidCommon_inline17
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLungsReflexesAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: IronLungs
+
+DarkFutureItem.SynLungsEpicPlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLungs
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: cw_circulatory_ironlungs
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLungsLegendary
+  powerLevelDeterminedByParent: False
+  quality: Quality.EpicPlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: LocKey#3676
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_Smoking_EpicPlus
+    - DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus
+    - Attunements.ReflexesCritChance
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedSuddenAidCommon_inline17
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLungsReflexesAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: IronLungs
+
+DarkFutureItem.SynLungsEpic:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLungs
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: cw_circulatory_ironlungs
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLungsEpicPlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.Epic
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: LocKey#3676
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_Smoking_Epic
+    - DarkFutureItem.SynLungsOnEquip_Hydration_Epic
+    - Attunements.ReflexesCritChance
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedSuddenAidCommon_inline17
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLungsReflexesAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: IronLungs
+
+DarkFutureItem.SynLungsRarePlus:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLungs
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: cw_circulatory_ironlungs
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLungsEpic
+  powerLevelDeterminedByParent: False
+  quality: Quality.RarePlus
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: LocKey#3676
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_Smoking_RarePlus
+    - DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus
+    - Attunements.ReflexesCritChance
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedSuddenAidCommon_inline17
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLungsReflexesAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: IronLungs
+
+DarkFutureItem.SynLungsRare:
+  $type: gamedataItem_Record
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  blueprint: Items.GenericShardableCyberwareBlueprint
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  enableNpcRPGData: False
+  equipArea: EquipmentArea.CardiovascularSystemCW
+  friendlyName: SynLungs
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: cw_circulatory_ironlungs
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: False
+  itemCategory: ItemCategory.Cyberware
+  itemType: ItemType.Cyberware
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  nextUpgradeItem: DarkFutureItem.SynLungsRarePlus
+  powerLevelDeterminedByParent: False
+  quality: Quality.Rare
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1.5
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: True
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Items.AdvancedBiomonitorCommon_inline6
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: LocKey#3676
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#3683
+  OnAttach: []
+  OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_Smoking_Rare
+    - DarkFutureItem.SynLungsOnEquip_Hydration_Rare
+    - Attunements.ReflexesCritChance
+  OnLooted: []
+  parts: []
+  placementSlots: []
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.BaseCyberwarePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.CyberwareMultiplier
+    - Price.CyberwareSellMultiplier
+    - Items.AdvancedBiomonitorCommon_inline5
+  slotPartList: []
+  slotPartListPreset:
+    - Items.GenericItemRootPreset
+    - Items.AdvancedSuddenAidCommon_inline17
+  tags:
+    - Cyberware
+    - HideInBackpackUI
+  variants:
+    - Variants.Humanity12Cost
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers:
+    - Items.ItemArmorToArmor
+    - Items.AdvancedCardiovascularSystemModule_inline0
+    - DarkFutureItem.SynLungsReflexesAttunement
+  statPools: []
+  weakspots: []
+  cyberwareType: IronLungs
+
+#
+#
+# Vendors
+#
+#
+DarkFutureVendors.SynLiverRare:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.SynLiverRare
+  generationPrereqs:
+    - LootPrereqs.RareCWLevelAvailabilityAtVendor
+  quantity:
+    - Vendors.Always_Present
+
+DarkFutureVendors.SynLiverEpic:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.SynLiverEpic
+  generationPrereqs:
+    - LootPrereqs.EpicCWLevelAvailabilityAtVendor
+  quantity:
+    - Vendors.Always_Present
+
+DarkFutureVendors.SynLiverLegendary:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.SynLiverLegendary
+  generationPrereqs:
+    - LootPrereqs.LegendaryCWLevelAvailabilityAtVendor
+  quantity:
+    - Vendors.Always_Present
+
+DarkFutureVendors.SynLungsRare:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.SynLungsRare
+  generationPrereqs:
+    - LootPrereqs.RareCWLevelAvailabilityAtVendor
+  quantity:
+    - Vendors.Always_Present
+
+DarkFutureVendors.SynLungsEpic:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.SynLungsEpic
+  generationPrereqs:
+    - LootPrereqs.EpicCWLevelAvailabilityAtVendor
+  quantity:
+    - Vendors.Always_Present
+
+DarkFutureVendors.SynLungsLegendary:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.SynLungsLegendary
+  generationPrereqs:
+    - LootPrereqs.LegendaryCWLevelAvailabilityAtVendor
+  quantity:
+    - Vendors.Always_Present
+
+Vendors.AdvancedCollectiveRipperDoc.itemStock: &AddToRipperDocs
+  - !append-once DarkFutureVendors.SynLungsRare
+  - !append-once DarkFutureVendors.SynLungsEpic
+  - !append-once DarkFutureVendors.SynLungsLegendary
+  - !append-once DarkFutureVendors.SynLiverRare
+  - !append-once DarkFutureVendors.SynLiverEpic
+  - !append-once DarkFutureVendors.SynLiverLegendary
+
+Vendors.AdvancedCollectiveRipperDoc.itemStock: *AddToRipperDocs
+Vendors.AdvancedCollectiveRipperDocDogtown.itemStock: *AddToRipperDocs
+Vendors.AdvancedCollectiveRipperDocGeneral.itemStock: *AddToRipperDocs
+Vendors.AdvancedCollectiveRipperDocVictor.itemStock: *AddToRipperDocs
+Vendors.AdvancedOSAndSkeletalRipperDoc.itemStock: *AddToRipperDocs
+Vendors.AdvancedSkeletalRipperDoc.itemStock: *AddToRipperDocs
+Vendors.bls_ina_se1_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.bls_ina_se1_ripperdoc_02.itemStock: *AddToRipperDocs
+Vendors.cz_monument_ripperdoc_anderson.itemStock: *AddToRipperDocs
+Vendors.cz_monument_ripperdoc_farida.itemStock: *AddToRipperDocs
+Vendors.cz_stadium_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.EarlyGameRipperdoc.itemStock: *AddToRipperDocs
+Vendors.EndGameRipperdoc.itemStock: *AddToRipperDocs
+Vendors.hey_spr_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.MidGameRipperdoc.itemStock: *AddToRipperDocs
+Vendors.pac_wwd_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.Ripperdoc_HUB.itemStock: *AddToRipperDocs
+Vendors.std_arr_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.std_rcr_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.wat_kab_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.wat_kab_ripperdoc_02.itemStock: *AddToRipperDocs
+Vendors.wat_kab_ripperdoc_03.itemStock: *AddToRipperDocs
+Vendors.wat_lch_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.wat_nid_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.wbr_jpn_ripperdoc_01.itemStock: *AddToRipperDocs
+Vendors.wbr_jpn_ripperdoc_02.itemStock: *AddToRipperDocs

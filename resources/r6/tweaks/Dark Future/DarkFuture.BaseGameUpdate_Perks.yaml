@@ -1,0 +1,36 @@
+# Edgerunner
+#   Mention immunity benefits and +2 Nerve on kill.
+NewPerks.Tech_Master_Perk_3.loc_desc_key: l"DarkFutureTechMasterPerk3UpdatedDesc"
+
+# Calm Mind
+#   Mention -50% Nerve bonus in combat.
+NewPerks.Body_Central_Perk_3_1.loc_desc_key: l"DarkFutureBodyCentralPerk31UpdatedDesc"
+
+# Unstoppable Force
+#   Mention that this perk does not apply to Dark Future effects.
+NewPerks.Body_Central_Perk_3_4.loc_desc_key: l"DarkFutureBodyCentralPerk34UpdatedDesc"
+
+# Nerves of Tungsten-Steel
+#   Mention steady aim benefit.
+NewPerks.Cool_Master_Perk_1.loc_desc_key: l"DarkFutureCoolMasterPerk1UpdatedDesc"
+
+# Tailwind
+#   This modifies the Tailwind perk to no longer grant +25 Stamina each time the player
+#   Double Jumps or Air Dashes, which, combined with the very short Stamina Regen Start
+#   Delay, made effectively infinite Air Dashing possible. This also replaces the
+#   free Air Dash benefit with a -40% Air Dash Stamina cost reduction (-90% total with
+#   previous perks in the tree and Shinobi Skill). Consuming at least some Stamina when
+#   Air Dashing helps prevent the player from resetting their Stamina Regen Start Delay
+#   ad infinitum while still giving you the feeling of flying through the city for
+#   a period of time.
+NewPerks.Reflexes_Master_Perk_3_inline2.effectors:
+  - NewPerks.Reflexes_Master_Perk_3_inline7
+
+NewPerks.Reflexes_Master_Perk_3_inline0.loc_desc_key: l"DarkFutureReflexesMasterPerk3UpdatedDesc"
+
+NewPerks.Reflexes_Master_Perk_3_inline10:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.40
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+

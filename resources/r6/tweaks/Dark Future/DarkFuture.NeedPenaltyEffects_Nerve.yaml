@@ -1,0 +1,980 @@
+# Common Records
+DarkFutureStatusEffectTypes.Nerve:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Stress
+
+UIIcon.NervePenalty:
+  $type: gamedataUIIcon_Record
+  atlasPartName: illegal
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+
+DarkFuturePrereqs.PrereqTargetStaminaBelow25PercStatMod:
+  $type: gamedataConstantStatModifier_Record
+  value: 25
+  modifierType: Additive
+  statType: BaseStats.Stamina
+
+DarkFuturePrereqs.PrereqTargetStaminaBelow25Perc:
+  $type: gamedataStatPoolPrereq_Record
+  comparePercentage: True
+  comparisonType: LessOrEqual
+  listenConstantly: False
+  skipOnApply: False
+  statPoolType: Stamina
+  prereqClassName: StatPoolPrereq
+  valueToCheck:
+    - DarkFuturePrereqs.PrereqTargetStaminaBelow25PercStatMod
+
+DarkFuturePrereqs.PrereqTargetStaminaBelow50PercStatMod:
+  $type: gamedataConstantStatModifier_Record
+  value: 50
+  modifierType: Additive
+  statType: BaseStats.Stamina
+
+DarkFuturePrereqs.PrereqTargetStaminaBelow50Perc:
+  $type: gamedataStatPoolPrereq_Record
+  comparePercentage: True
+  comparisonType: LessOrEqual
+  listenConstantly: False
+  skipOnApply: False
+  statPoolType: Stamina
+  prereqClassName: StatPoolPrereq
+  valueToCheck:
+    - DarkFuturePrereqs.PrereqTargetStaminaBelow50PercStatMod
+
+#
+#
+# Nerve Penalty 01
+#
+#
+DarkFutureStatusEffect.NervePenalty_01_StatsPackageModifier_StaminaRegenStartDelay:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.20
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_01_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NervePenalty_01_StatsPackageModifier_StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_01_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNervePenalty01Desc"
+  displayName: l"DarkFutureNervePenalty01Name"
+  fluffText: ''
+  iconPath: NervePenalty
+  priority: -10
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_01:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nerve
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NervePenalty_01_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNerve
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NervePenalty_01_StatsPackage
+  SFX: []
+  VFX: []
+
+#
+#
+# Nerve Penalty 02
+#
+#
+DarkFutureStatusEffect.NervePenalty_02_StatsPackageModifier_StaminaRegenStartDelay:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.40
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_02_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NervePenalty_02_StatsPackageModifier_StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_AimInTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.AimInTime
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_AimOutTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.AimOutTime
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilAngle:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.RecoilAngle
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMin:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.3
+  modifierType: Multiplier
+  statType: BaseStats.RecoilDriftRandomRangeMin
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMax:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.RecoilDriftRandomRangeMax
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilKickMin:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.6
+  modifierType: Multiplier
+  statType: BaseStats.RecoilKickMin
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilKickMax:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.3
+  modifierType: Multiplier
+  statType: BaseStats.RecoilKickMax
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilRecoveryTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.15
+  modifierType: Multiplier
+  statType: BaseStats.RecoilRecoveryTime
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadAdsMaxX:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsMaxX
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadAdsMaxY:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsMaxY
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadMaxX:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadMaxX
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadMaxY:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadMaxY
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadChangePerShot:
+  $type: gamedataConstantStatModifier_Record
+  value: 2.0
+  modifierType: Multiplier
+  statType: BaseStats.SpreadChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadAdsChangePerShot:
+  $type: gamedataConstantStatModifier_Record
+  value: 2.0
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_AimInTime
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_AimOutTime
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilAngle
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMin
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMax
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilKickMin
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilKickMax
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_RecoilRecoveryTime
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadAdsMaxX
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadAdsMaxY
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadMaxX
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadMaxY
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadChangePerShot
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageModifier_SpreadAdsChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: DarkFuturePrereqs.PrereqTargetStaminaBelow25Perc
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  reapplyOnWeaponChange: False
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwayTraversalTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.0060000
+  modifierType: Multiplier
+  statType: BaseStats.SwayTraversalTime
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwayStartDelay:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Multiplier
+  statType: BaseStats.SwayStartDelay
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwayStartBlendTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Multiplier
+  statType: BaseStats.SwayStartBlendTime
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_RecoilAllowSway:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.RecoilAllowSway
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwaySideMaximumAngleDistance:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.025
+  modifierType: Multiplier
+  statType: BaseStats.SwaySideMaximumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwaySideMinimumAngleDistance:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.025
+  modifierType: Multiplier
+  statType: BaseStats.SwaySideMinimumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwayTraversalTime
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwayStartDelay
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwayStartBlendTime
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_RecoilAllowSway
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwaySideMaximumAngleDistance
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackageModifier_SwaySideMinimumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NervePenalty_02_SwayPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AnyWeaponHeldPrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  reapplyOnWeaponChange: False
+
+DarkFutureStatusEffect.NervePenalty_02_SwayPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_02_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNervePenalty02Desc"
+  displayName: l"DarkFutureNervePenalty02Name"
+  fluffText: ''
+  iconPath: NervePenalty
+  priority: -10
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_02:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nerve
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NervePenalty_02_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNerve
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NervePenalty_02_StatsPackage
+    - DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.NervePenalty_02_WeaponEffects:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nerve
+  stopActiveSfxOnDeactivate: True
+  uiData:
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureWeaponSwayEffect
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NervePenalty_02_SwayPackage
+  SFX: []
+  VFX: []
+
+#
+#
+# Nerve Penalty 03
+#
+#
+DarkFutureStatusEffect.NervePenalty_03_StatsPackageModifier_StaminaRegenStartDelay:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.60
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_03_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NervePenalty_03_StatsPackageModifier_StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_AimInTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.AimInTime
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_AimOutTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.AimOutTime
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilAngle:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.RecoilAngle
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMin:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.4
+  modifierType: Multiplier
+  statType: BaseStats.RecoilDriftRandomRangeMin
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMax:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.9
+  modifierType: Multiplier
+  statType: BaseStats.RecoilDriftRandomRangeMax
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilKickMin:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.7
+  modifierType: Multiplier
+  statType: BaseStats.RecoilKickMin
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilKickMax:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.4
+  modifierType: Multiplier
+  statType: BaseStats.RecoilKickMax
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilRecoveryTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.15
+  modifierType: Multiplier
+  statType: BaseStats.RecoilRecoveryTime
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadAdsMaxX:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsMaxX
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadAdsMaxY:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsMaxY
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadMaxX:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadMaxX
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadMaxY:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadMaxY
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadChangePerShot:
+  $type: gamedataConstantStatModifier_Record
+  value: 2.0
+  modifierType: Multiplier
+  statType: BaseStats.SpreadChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadAdsChangePerShot:
+  $type: gamedataConstantStatModifier_Record
+  value: 2.0
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_AimInTime
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_AimOutTime
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilAngle
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMin
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMax
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilKickMin
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilKickMax
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_RecoilRecoveryTime
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadAdsMaxX
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadAdsMaxY
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadMaxX
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadMaxY
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadChangePerShot
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageModifier_SpreadAdsChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: DarkFuturePrereqs.PrereqTargetStaminaBelow50Perc
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  reapplyOnWeaponChange: False
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwayTraversalTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.0060000
+  modifierType: Multiplier
+  statType: BaseStats.SwayTraversalTime
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwayStartDelay:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Multiplier
+  statType: BaseStats.SwayStartDelay
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwayStartBlendTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Multiplier
+  statType: BaseStats.SwayStartBlendTime
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_RecoilAllowSway:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.RecoilAllowSway
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwaySideMaximumAngleDistance:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.04
+  modifierType: Multiplier
+  statType: BaseStats.SwaySideMaximumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwaySideMinimumAngleDistance:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.04
+  modifierType: Multiplier
+  statType: BaseStats.SwaySideMinimumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwayTraversalTime
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwayStartDelay
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwayStartBlendTime
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_RecoilAllowSway
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwaySideMaximumAngleDistance
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackageModifier_SwaySideMinimumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NervePenalty_03_SwayPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AnyWeaponHeldPrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  reapplyOnWeaponChange: False
+
+DarkFutureStatusEffect.NervePenalty_03_SwayPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_03_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNervePenalty03Desc"
+  displayName: l"DarkFutureNervePenalty03Name"
+  fluffText: ''
+  iconPath: NervePenalty
+  priority: -10
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_03:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nerve
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NervePenalty_03_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNerve
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NervePenalty_03_StatsPackage
+    - DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.NervePenalty_03_WeaponEffects:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nerve
+  stopActiveSfxOnDeactivate: True
+  uiData:
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureWeaponSwayEffect
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NervePenalty_03_SwayPackage
+  SFX: []
+  VFX: []
+
+#
+#
+# Nerve Penalty 04
+#
+#
+DarkFutureStatusEffect.NervePenalty_04_StatsPackageModifier_StaminaRegenStartDelay:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.0
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_04_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NervePenalty_04_StatsPackageModifier_StaminaRegenStartDelay
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_AimInTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.AimInTime
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_AimOutTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.AimOutTime
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilAngle:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.2
+  modifierType: Multiplier
+  statType: BaseStats.RecoilAngle
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMin:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.5
+  modifierType: Multiplier
+  statType: BaseStats.RecoilDriftRandomRangeMin
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMax:
+  $type: gamedataConstantStatModifier_Record
+  value: 2.0
+  modifierType: Multiplier
+  statType: BaseStats.RecoilDriftRandomRangeMax
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilKickMin:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.RecoilKickMin
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilKickMax:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.5
+  modifierType: Multiplier
+  statType: BaseStats.RecoilKickMax
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilRecoveryTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.15
+  modifierType: Multiplier
+  statType: BaseStats.RecoilRecoveryTime
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadAdsMaxX:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsMaxX
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadAdsMaxY:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsMaxY
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadMaxX:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadMaxX
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadMaxY:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.8
+  modifierType: Multiplier
+  statType: BaseStats.SpreadMaxY
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadChangePerShot:
+  $type: gamedataConstantStatModifier_Record
+  value: 2.0
+  modifierType: Multiplier
+  statType: BaseStats.SpreadChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadAdsChangePerShot:
+  $type: gamedataConstantStatModifier_Record
+  value: 2.0
+  modifierType: Multiplier
+  statType: BaseStats.SpreadAdsChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_AimInTime
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_AimOutTime
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilAngle
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMin
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilDriftRandomRangeMax
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilKickMin
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilKickMax
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_RecoilRecoveryTime
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadAdsMaxX
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadAdsMaxY
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadMaxX
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadMaxY
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadChangePerShot
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageModifier_SpreadAdsChangePerShot
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AnyWeaponHeldPrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  reapplyOnWeaponChange: False
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwayTraversalTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.0060000
+  modifierType: Multiplier
+  statType: BaseStats.SwayTraversalTime
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwayStartDelay:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Multiplier
+  statType: BaseStats.SwayStartDelay
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwayStartBlendTime:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Multiplier
+  statType: BaseStats.SwayStartBlendTime
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_RecoilAllowSway:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.RecoilAllowSway
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwaySideMaximumAngleDistance:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.06
+  modifierType: Multiplier
+  statType: BaseStats.SwaySideMaximumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwaySideMinimumAngleDistance:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.06
+  modifierType: Multiplier
+  statType: BaseStats.SwaySideMinimumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwayTraversalTime
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwayStartDelay
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwayStartBlendTime
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_RecoilAllowSway
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwaySideMaximumAngleDistance
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackageModifier_SwaySideMinimumAngleDistance
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NervePenalty_04_SwayPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AnyWeaponHeldPrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  reapplyOnWeaponChange: False
+
+DarkFutureStatusEffect.NervePenalty_04_SwayPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_04_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNervePenalty04Desc"
+  displayName: l"DarkFutureNervePenalty04Name"
+  fluffText: ''
+  iconPath: NervePenalty
+  priority: -10
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NervePenalty_04:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nerve
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NervePenalty_04_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNerve
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NervePenalty_04_StatsPackage
+    - DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.NervePenalty_04_WeaponEffects:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nerve
+  stopActiveSfxOnDeactivate: True
+  uiData:
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureWeaponSwayEffect
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NervePenalty_04_SwayPackage
+  SFX: []
+  VFX: []
+
+#
+#
+# Heart Attack Status Icon
+#
+#
+UIIcon.DarkFutureHeartAttack:
+  $type: gamedataUIIcon_Record
+  atlasPartName: heart_attack
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
+
+BaseStatusEffect.HeartAttack_inline2.iconPath: DarkFutureHeartAttack

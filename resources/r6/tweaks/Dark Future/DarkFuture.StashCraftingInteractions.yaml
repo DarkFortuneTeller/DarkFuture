@@ -1,0 +1,11 @@
+Interactions.OpenCraft:
+  $type: gamedataInteractionBase_Record
+  action: Choice2
+  captionIcon: ChoiceCaptionParts.TechIcon
+  name: OpenCraft
+  prereqID: ''
+  caption: UI-ResourceExports-Crafting
+
+Interactions.PlayerTrunk:
+  captionIcon: ChoiceCaptionParts.PlayerStashIcon
+  caption: LocKey#15799

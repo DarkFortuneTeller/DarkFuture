@@ -1,0 +1,505 @@
+DarkFutureStatusEffectTypes.Smoking:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Smoking
+
+DarkFutureItem.CigaretteWeight:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.1
+  modifierType: Additive
+  statType: BaseStats.Weight
+
+UIIcon.base_junk_item_cigarette_pack_c:
+  $type: gamedataUIIcon_Record
+  atlasPartName: base_junk_item_cigarette_pack_c
+  atlasResourcePath: base\gameplay\gui\common\icons\items\darkfuture_customicons_items.inkatlas
+
+ConsumableBaseName.Cigarette:
+  $type: gamedataConsumableBaseName_Record
+  enumName: Cigarette
+
+UIIcon.DarkFutureCigaretteDebuffIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: loot_face
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+
+DarkFutureItem.CigaretteDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 300
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureItem.CigaretteDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.CigaretteDuration_StatModifier
+
+BaseStatusEffect.CigarettePackageStatHealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.80
+  modifierType: Multiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+BaseStatusEffect.CigarettePackageStatHealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.80
+  modifierType: Multiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+BaseStatusEffect.CigarettePackageStatStamina:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.80
+  modifierType: Multiplier
+  statType: BaseStats.Stamina
+
+BaseStatusEffect.CigarettePackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - BaseStatusEffect.CigarettePackageStatHealthOutOfCombatRegenRate
+    - BaseStatusEffect.CigarettePackageStatHealthInCombatRegenRate
+    - BaseStatusEffect.CigarettePackageStatStamina
+
+BaseStatusEffect.CigaretteStatusEffectUIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureCigaretteStatusEffectDesc"
+  displayName: l"DarkFutureCigaretteStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: DarkFutureCigaretteDebuffIcon
+  priority: 0
+  floatValues: []
+  intValues:
+    - -20
+    - -20
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Smoking:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureItem.CigaretteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Smoking
+  stopActiveSfxOnDeactivate: True
+  uiData: BaseStatusEffect.CigaretteStatusEffectUIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureSmoking
+    - DarkFutureSmokingFX
+    - DarkFutureAddictionPrimaryEffect
+    - DarkFutureAddictionPrimaryEffectNicotine
+  immunityStats: []
+  packages:
+    - BaseStatusEffect.CigarettePackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.SmokingFromChoice:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureItem.CigaretteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Smoking
+  stopActiveSfxOnDeactivate: True
+  uiData: BaseStatusEffect.CigaretteStatusEffectUIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureSmoking
+    - DarkFutureSmokingFromChoice
+    - DarkFutureAddictionPrimaryEffect
+    - DarkFutureAddictionPrimaryEffectNicotine
+  immunityStats: []
+  packages:
+    - BaseStatusEffect.CigarettePackage
+  SFX: []
+  VFX: []
+
+Items.CigaretteItemActionEffectCommon:
+  $type: gamedataObjectActionEffect_Record
+  statusEffect: DarkFutureStatusEffect.Smoking
+
+Items.CigaretteItemActionCommon:
+  $type: gamedataItemAction_Record
+  isDefaultLootChoice: False
+  removeAfterUse: True
+  actionName: Consume
+  hackCategory: HackCategory.NotAHack
+  objectActionType: ObjectActionType.Item
+  priority: 0
+  activationTime: []
+  completionEffects:
+    - Items.CigaretteItemActionEffectCommon
+  costs: []
+  durationTime: []
+  instigatorActivePrereqs: []
+  instigatorPrereqs: []
+  rewards: []
+  startEffects: []
+  targetActivePrereqs: []
+  targetPrereqs: []
+
+Items.CigaretteStatPackageUIDataCommon:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCigaretteStatPackageDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 15
+    - -20
+    - -20
+  nameValues: []
+  stats: []
+
+Items.CigaretteStatPackageCommon:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: Items.CigaretteStatPackageUIDataCommon
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+Items.GenericJunkItem23:
+  $type: gamedataConsumableItem_Record
+  castPoint: 0.5
+  consumableBaseName: ConsumableBaseName.Cigarette
+  cycleDuration: 0.899999976
+  initBlendDuration: 0.100000001
+  removePoint: 0.899999976
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  appearanceName: base_junk_item_cigarette_pack_a
+  crosshair: Crosshairs.None
+  deprecated: False
+  dropObject: defaultItemDrop
+  enableNpcRPGData: False
+  entityName: base_junk_item
+  equipArea: EquipmentArea.Consumable
+  friendlyName: ''
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: base_junk_item_cigarette_pack_a
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: True
+  itemCategory: ItemCategory.Consumable
+  itemSecondaryAction: ItemAction.Consume
+  itemType: ItemType.Con_Edible
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.Uncommon
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: False
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.Food
+    - Price.BuyPrice_StreetCred_Discount
+    - Price.GoodQualityFood
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCigarette01DisplayName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#45742
+  OnAttach: []
+  OnEquip:
+    - Items.CigaretteStatPackageCommon
+  OnLooted: []
+  parts: []
+  placementSlots:
+    - AttachmentSlots.WeaponLeft
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.Food
+    - Price.SellMultiplier
+    - Price.CraftingTraitMultiplier
+    - Price.SellPriceIntrinsicModMult
+    - Price.GoodQualityFood
+  slotPartList: []
+  slotPartListPreset: []
+  tags:
+    - Preload
+    - Consumable
+    - Drug
+    - HasModel
+    - DarkFutureConsumableNerve
+    - DarkFutureConsumableCigarettesNerve
+    - DarkFutureConsumableAddictive
+    - DarkFutureConsumableAddictiveNicotine
+    - DarkFutureCigarette
+  variants: []
+  visualTags: []
+  effectors: []
+  objectActions:
+    - Items.CigaretteItemActionCommon
+    - ItemAction.Drop
+  statModifierGroups:
+    - DarkFutureItem.CigaretteDuration
+  statModifiers:
+    - Items.LongLasting_inline0
+    - DarkFutureItem.CigaretteWeight
+  statPools: []
+  weakspots: []
+
+Items.GenericJunkItem24:
+  $type: gamedataConsumableItem_Record
+  castPoint: 0.5
+  consumableBaseName: ConsumableBaseName.Cigarette
+  cycleDuration: 0.899999976
+  initBlendDuration: 0.100000001
+  removePoint: 0.899999976
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  appearanceName: base_junk_item_cigarette_pack_b
+  crosshair: Crosshairs.None
+  deprecated: False
+  dropObject: defaultItemDrop
+  enableNpcRPGData: False
+  entityName: base_junk_item
+  equipArea: EquipmentArea.Consumable
+  friendlyName: ''
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: base_junk_item_cigarette_pack_b
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: True
+  itemCategory: ItemCategory.Consumable
+  itemSecondaryAction: ItemAction.Consume
+  itemType: ItemType.Con_Edible
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.Uncommon
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: False
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.Food
+    - Price.BuyPrice_StreetCred_Discount
+    - Price.GoodQualityFood
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCigarette02DisplayName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: LocKey#45743
+  OnAttach: []
+  OnEquip:
+    - Items.CigaretteStatPackageCommon
+  OnLooted: []
+  parts: []
+  placementSlots:
+    - AttachmentSlots.WeaponLeft
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.Food
+    - Price.SellMultiplier
+    - Price.CraftingTraitMultiplier
+    - Price.SellPriceIntrinsicModMult
+    - Price.GoodQualityFood
+  slotPartList: []
+  slotPartListPreset: []
+  tags:
+    - Preload
+    - Consumable
+    - Drug
+    - HasModel
+    - DarkFutureConsumableNerve
+    - DarkFutureConsumableCigarettesNerve
+    - DarkFutureConsumableAddictive
+    - DarkFutureConsumableAddictiveNicotine
+    - DarkFutureCigarette
+  variants: []
+  visualTags: []
+  effectors: []
+  objectActions:
+    - Items.CigaretteItemActionCommon
+    - ItemAction.Drop
+  statModifierGroups:
+    - DarkFutureItem.CigaretteDuration
+  statModifiers:
+    - Items.LongLasting_inline0
+    - DarkFutureItem.CigaretteWeight
+  statPools: []
+  weakspots: []
+
+Items.DarkFutureCigarettePackC:
+  $type: gamedataConsumableItem_Record
+  castPoint: 0.5
+  consumableBaseName: ConsumableBaseName.Cigarette
+  cycleDuration: 0.899999976
+  initBlendDuration: 0.100000001
+  removePoint: 0.899999976
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  appearanceName: base_junk_item_cigarette_pack_c
+  crosshair: Crosshairs.None
+  deprecated: False
+  dropObject: defaultItemDrop
+  enableNpcRPGData: False
+  entityName: darkfuture_base_junk_item
+  equipArea: EquipmentArea.Consumable
+  friendlyName: ''
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: base_junk_item_cigarette_pack_c
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: True
+  itemCategory: ItemCategory.Consumable
+  itemSecondaryAction: ItemAction.Consume
+  itemType: ItemType.Con_Edible
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.Uncommon
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: False
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.Food
+    - Price.BuyPrice_StreetCred_Discount
+    - Price.GoodQualityFood
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureCigarette03DisplayName"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: l"DarkFutureCigarette03Desc"
+  OnAttach: []
+  OnEquip:
+    - Items.CigaretteStatPackageCommon
+  OnLooted: []
+  parts: []
+  placementSlots:
+    - AttachmentSlots.WeaponLeft
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.Food
+    - Price.SellMultiplier
+    - Price.CraftingTraitMultiplier
+    - Price.SellPriceIntrinsicModMult
+    - Price.GoodQualityFood
+  slotPartList: []
+  slotPartListPreset: []
+  tags:
+    - Preload
+    - Consumable
+    - Drug
+    - HasModel
+    - DarkFutureConsumableNerve
+    - DarkFutureConsumableCigarettesNerve
+    - DarkFutureConsumableAddictive
+    - DarkFutureConsumableAddictiveNicotine
+    - DarkFutureCigarette
+  variants: []
+  visualTags: []
+  effectors: []
+  objectActions:
+    - Items.CigaretteItemActionCommon
+    - ItemAction.Drop
+  statModifierGroups:
+    - DarkFutureItem.CigaretteDuration
+  statModifiers:
+    - Items.LongLasting_inline0
+    - DarkFutureItem.CigaretteWeight
+  statPools: []
+  weakspots: []
+
+#
+# Vendors
+#
+DarkFutureVendors.CigarettePackC:
+  $type: gamedataVendorItem_Record
+  item: Items.DarkFutureCigarettePackC
+  generationPrereqs: []
+  quantity:
+    - Vendors.MediumQuantity
+
+Vendors.Kiosk.itemStock:
+  - !append-once DarkFutureVendors.CigarettePackC
+
+Vendors.Kiosk_EP1.itemStock:
+  - !append-once DarkFutureVendors.CigarettePackC

@@ -1,0 +1,6 @@
+factories:
+  - darkfuture\darkfuture_factory.csv
+
+localization:
+  onscreens:
+    en-us: base\localization\en-us\onscreens\darkfuture.json

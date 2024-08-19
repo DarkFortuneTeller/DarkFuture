@@ -1,0 +1,17 @@
+#
+#
+# Black Market Boosters
+#
+#
+# Was: 10 always. Now: 1 - 3 (Random)
+Vendors.BlackMarketMedicStore_inline1: &BlackMarketBoosterQuantity
+  $type: gamedataRandomStatModifier_Record
+  max: 3.5
+  min: 1.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+Vendors.BlackMarketMedicStore_inline3: *BlackMarketBoosterQuantity
+Vendors.BlackMarketMedicStore_inline5: *BlackMarketBoosterQuantity
+Vendors.BlackMarketMedicStore_inline7: *BlackMarketBoosterQuantity

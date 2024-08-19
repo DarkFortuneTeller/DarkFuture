@@ -1,0 +1,408 @@
+# Common Records
+
+DarkFutureStatusEffectTypes.Energy:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Fatigue
+
+UIIcon.DarkFutureFatigueIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: wait
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+
+#
+#
+# Energy Penalty 01
+#
+#
+DarkFutureStatusEffect.EnergyPenalty_01_StatsPackageModifier_Stamina:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.85
+  modifierType: Multiplier
+  statType: BaseStats.Stamina
+
+DarkFutureStatusEffect.EnergyPenalty_01_StatsPackageModifier_MemoryRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.90
+  modifierType: Multiplier
+  statType: BaseStats.MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_01_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.EnergyPenalty_01_StatsPackageModifier_Stamina
+    - DarkFutureStatusEffect.EnergyPenalty_01_StatsPackageModifier_MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_01_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureEnergyPenalty01Desc"
+  displayName: l"DarkFutureEnergyPenalty01Name"
+  fluffText: ''
+  iconPath: DarkFutureFatigueIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -15
+    - -10
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.EnergyPenalty_01:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Energy
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.EnergyPenalty_01_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedEnergy
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.EnergyPenalty_01_StatsPackage
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Energy Penalty 02
+#
+#
+DarkFutureStatusEffect.EnergyPenalty_02_StatsPackageModifier_Stamina:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.80
+  modifierType: Multiplier
+  statType: BaseStats.Stamina
+
+DarkFutureStatusEffect.EnergyPenalty_02_StatsPackageModifier_MemoryRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.75
+  modifierType: Multiplier
+  statType: BaseStats.MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_02_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.EnergyPenalty_02_StatsPackageModifier_Stamina
+    - DarkFutureStatusEffect.EnergyPenalty_02_StatsPackageModifier_MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackageModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.20
+  modifierType: Additive
+  statType: BaseStats.ReloadTimeBonus
+
+DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackageModifier
+
+DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AlwaysTruePrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.EnergyPenalty_02_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureEnergyPenalty02Desc"
+  displayName: l"DarkFutureEnergyPenalty02Name"
+  fluffText: ''
+  iconPath: DarkFutureFatigueIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -30
+    - -25
+    - -20
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.EnergyPenalty_02:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Energy
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.EnergyPenalty_02_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedEnergy
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.EnergyPenalty_02_StatsPackage
+    - DarkFutureStatusEffect.EnergyPenalty_02_ReloadSpeedPackage
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Energy Penalty 03
+#
+#
+DarkFutureStatusEffect.EnergyPenalty_03_StatsPackageModifier_Stamina:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.70
+  modifierType: Multiplier
+  statType: BaseStats.Stamina
+
+DarkFutureStatusEffect.EnergyPenalty_03_StatsPackageModifier_MemoryRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.50
+  modifierType: Multiplier
+  statType: BaseStats.MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_03_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.EnergyPenalty_03_StatsPackageModifier_Stamina
+    - DarkFutureStatusEffect.EnergyPenalty_03_StatsPackageModifier_MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackageModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.30
+  modifierType: Additive
+  statType: BaseStats.ReloadTimeBonus
+
+DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackageModifier
+
+DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AlwaysTruePrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.EnergyPenalty_03_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureEnergyPenalty03Desc"
+  displayName: l"DarkFutureEnergyPenalty03Name"
+  fluffText: ''
+  iconPath: DarkFutureFatigueIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -45
+    - -50
+    - -30
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.EnergyPenalty_03:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Energy
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.EnergyPenalty_03_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedEnergy
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.EnergyPenalty_03_StatsPackage
+    - DarkFutureStatusEffect.EnergyPenalty_03_ReloadSpeedPackage
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Energy Penalty 04
+#
+#
+DarkFutureStatusEffect.EnergyPenalty_04_StatsPackageModifier_Stamina:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.60
+  modifierType: Multiplier
+  statType: BaseStats.Stamina
+
+DarkFutureStatusEffect.EnergyPenalty_04_StatsPackageModifier_MemoryRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.25
+  modifierType: Multiplier
+  statType: BaseStats.MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_04_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.EnergyPenalty_04_StatsPackageModifier_Stamina
+    - DarkFutureStatusEffect.EnergyPenalty_04_StatsPackageModifier_MemoryRegenRate
+
+DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackageModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.40
+  modifierType: Additive
+  statType: BaseStats.ReloadTimeBonus
+
+DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackageModifier
+
+DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AlwaysTruePrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.EnergyPenalty_04_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureEnergyPenalty04Desc"
+  displayName: l"DarkFutureEnergyPenalty04Name"
+  fluffText: ''
+  iconPath: DarkFutureFatigueIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -60
+    - -75
+    - -40
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.EnergyPenalty_04:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Energy
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.EnergyPenalty_04_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedEnergy
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.EnergyPenalty_04_StatsPackage
+    - DarkFutureStatusEffect.EnergyPenalty_04_ReloadSpeedPackage
+  SFX: []
+  VFX: []
+  canReapply: True

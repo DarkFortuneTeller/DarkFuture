@@ -1,0 +1,390 @@
+# Common Records
+
+DarkFutureStatusEffectTypes.NarcoticWithdrawal:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: NarcoticWithdrawal
+
+#
+#
+# Narcotic Withdrawal Cessation
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_Cessation_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawalCessationDesc"
+  displayName: l"DarkFutureNarcoticWithdrawalCessationName"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 80
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_Cessation:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_Cessation_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalCessation
+    - AddictionWithdrawalCessationNarcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Narcotic Withdrawal 01 No Progression
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNarcoticWithdrawal01Name"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 80
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalStage1
+    - AddictionWithdrawalStage1Narcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Narcotic Withdrawal 01 With Progression
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawal01WithProgressionDesc"
+  displayName: l"DarkFutureNarcoticWithdrawal01Name"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 80
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalStage1
+    - AddictionWithdrawalStage1Narcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Narcotic Withdrawal 02 No Progression
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNarcoticWithdrawal02Name"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 60
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalStage2
+    - AddictionWithdrawalStage2Narcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Narcotic Withdrawal 02 With Progression
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawal02WithProgressionDesc"
+  displayName: l"DarkFutureNarcoticWithdrawal02Name"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 60
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalStage2
+    - AddictionWithdrawalStage2Narcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Narcotic Withdrawal 03 No Progression
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNarcoticWithdrawal03Name"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 40
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalStage3
+    - AddictionWithdrawalStage3Narcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Narcotic Withdrawal 03 With Progression
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawal03WithProgressionDesc"
+  displayName: l"DarkFutureNarcoticWithdrawal03Name"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 40
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalStage3
+    - AddictionWithdrawalStage3Narcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Narcotic Withdrawal 04 No Progression
+#
+#
+DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNarcoticWithdrawal04Name"
+  fluffText: ''
+  iconPath: drugged_icon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 20
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NarcoticWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNarcotic
+    - AddictionWithdrawalStage4
+    - AddictionWithdrawalStage4Narcotic
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True

@@ -1,0 +1,9 @@
+#   Notes
+#
+#   Updated the blend timing values of this effect so that it can be
+#   started and stopped more quickly. This effect appears to not be
+#   used in the base game, so changing these values should be
+#   (theoretically) harmless.
+
+BaseStatusEffect.BreathingHeavy_inline1.blendInDuration: 1
+BaseStatusEffect.BreathingHeavy_inline1.blendOutDuration: 2

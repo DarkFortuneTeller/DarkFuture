@@ -1,0 +1,191 @@
+#
+#
+# Adrenaline Converter
+#
+#
+Items.AdvancedDetectorRushCommon_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -15
+
+Items.AdvancedDetectorRushCommonPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -17
+
+Items.AdvancedDetectorRushUncommon_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -19
+
+Items.AdvancedDetectorRushUncommonPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -21
+
+Items.AdvancedDetectorRushRare_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -23
+
+Items.AdvancedDetectorRushRarePlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -25
+
+Items.AdvancedDetectorRushEpic_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -27
+
+Items.AdvancedDetectorRushEpicPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -29
+
+Items.AdvancedDetectorRushLegendary_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -31
+
+Items.AdvancedDetectorRushLegendaryPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -33
+
+Items.AdvancedDetectorRushLegendaryPlusPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -35
+
+Items.IconicAdvancedDetectorRushRare_inline5:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -23
+
+Items.IconicAdvancedDetectorRushRarePlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -25
+
+Items.IconicAdvancedDetectorRushEpic_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -27
+
+Items.IconicAdvancedDetectorRushEpicPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -29
+
+Items.IconicAdvancedDetectorRushLegendary_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -31
+
+Items.IconicAdvancedDetectorRushLegendaryPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -33
+
+Items.IconicAdvancedDetectorRushLegendaryPlusPlus_inline1:
+  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
+  intValues:
+    - -35
+
+#
+#
+# Second Heart
+#
+#
+DarkFutureItem.SecondHeartOnEquip_NerveRestore_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSecondHeartNerveRestoreDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 30
+  nameValues: []
+  stats: []
+
+Items.AdvancedSecondHeartEpic_inline5.localizedDescription: l"DarkFutureCyberwareSecondHeartCooldownDesc"
+Items.AdvancedSecondHeartEpicPlus_inline5.localizedDescription: l"DarkFutureCyberwareSecondHeartCooldownDesc"
+Items.AdvancedSecondHeartLegendary_inline5.localizedDescription: l"DarkFutureCyberwareSecondHeartCooldownDesc"
+Items.AdvancedSecondHeartLegendaryPlus_inline5.localizedDescription: l"DarkFutureCyberwareSecondHeartCooldownDesc"
+Items.AdvancedSecondHeartLegendaryPlusPlus_inline5.localizedDescription: l"DarkFutureCyberwareSecondHeartCooldownDesc"
+
+DarkFutureItem.SecondHeartOnEquip_NerveRestore:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.SecondHeartOnEquip_NerveRestore_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+Items.AdvancedSecondHeartEpic.OnEquip:
+  - Items.AdvancedSecondHeartEpic_inline0
+  - DarkFutureItem.SecondHeartOnEquip_NerveRestore
+  - Items.AdvancedSecondHeartEpic_inline4
+  - Attunements.BodyHealth
+
+Items.AdvancedSecondHeartEpicPlus.OnEquip:
+  - Items.AdvancedSecondHeartEpicPlus_inline0
+  - DarkFutureItem.SecondHeartOnEquip_NerveRestore
+  - Items.AdvancedSecondHeartEpicPlus_inline4
+  - Attunements.BodyHealth
+
+Items.AdvancedSecondHeartLegendary.OnEquip:
+  - Items.AdvancedSecondHeartLegendary_inline0
+  - DarkFutureItem.SecondHeartOnEquip_NerveRestore
+  - Items.AdvancedSecondHeartLegendary_inline4
+  - Attunements.BodyHealth
+
+Items.AdvancedSecondHeartLegendaryPlus.OnEquip:
+  - Items.AdvancedSecondHeartLegendaryPlus_inline0
+  - DarkFutureItem.SecondHeartOnEquip_NerveRestore
+  - Items.AdvancedSecondHeartLegendaryPlus_inline4
+  - Attunements.BodyHealth
+
+Items.AdvancedSecondHeartLegendaryPlusPlus.OnEquip:
+  - Items.AdvancedSecondHeartLegendaryPlusPlus_inline0
+  - DarkFutureItem.SecondHeartOnEquip_NerveRestore
+  - Items.AdvancedSecondHeartLegendaryPlusPlus_inline4
+  - Attunements.BodyHealth
+
+DarkFutureStatusEffect.SecondHeartNerveRestore_Package:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - BaseStatusEffect.SecondHeart_inline8
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.SecondHeartNerveRestore:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStatusEffect.SecondHeart_inline1
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: RTDB.StatusEffect_inline0
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: BaseStatusEffectTypes.Misc
+  stopActiveSfxOnDeactivate: True
+  uiData: BaseStatusEffect.SecondHeart_inline9
+  debugTags: []
+  gameplayTags:
+    - Buff
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.SecondHeartNerveRestore_Package
+  SFX:
+    - BaseStatusEffect.SecondHeart_inline3
+  VFX:
+    - BaseStatusEffect.SecondHeart_inline0

@@ -1,0 +1,395 @@
+# Common Records
+
+DarkFutureStatusEffectTypes.NicotineWithdrawal:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: NicotineWithdrawal
+
+UIIcon.DarkFutureNicotineWithdrawalIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: loot_face
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+
+#
+#
+# Nicotine Withdrawal Cessation
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawalCessationDesc"
+  displayName: l"DarkFutureNicotineWithdrawalCessationName"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 80
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_Cessation:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalCessation
+    - AddictionWithdrawalCessationNicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nicotine Withdrawal 01 No Progression
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNicotineWithdrawal01Name"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 80
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalStage1
+    - AddictionWithdrawalStage1Nicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nicotine Withdrawal 01 With Progression
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawal01WithProgressionDesc"
+  displayName: l"DarkFutureNicotineWithdrawal01Name"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 80
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalStage1
+    - AddictionWithdrawalStage1Nicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nicotine Withdrawal 02 No Progression
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNicotineWithdrawal02Name"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 70
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalStage2
+    - AddictionWithdrawalStage2Nicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nicotine Withdrawal 02 With Progression
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawal02WithProgressionDesc"
+  displayName: l"DarkFutureNicotineWithdrawal02Name"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 70
+    - 24
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalStage2
+    - AddictionWithdrawalStage2Nicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nicotine Withdrawal 03 No Progression
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNicotineWithdrawal03Name"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 60
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalStage3
+    - AddictionWithdrawalStage3Nicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nicotine Withdrawal 03 With Progression
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawal03WithProgressionDesc"
+  displayName: l"DarkFutureNicotineWithdrawal03Name"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 60
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalStage3
+    - AddictionWithdrawalStage3Nicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nicotine Withdrawal 04 No Progression
+#
+#
+DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineWithdrawalNoProgressionDesc"
+  displayName: l"DarkFutureNicotineWithdrawal04Name"
+  fluffText: ''
+  iconPath: DarkFutureNicotineWithdrawalIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - 50
+    - 48
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.NicotineWithdrawal
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - AddictionWithdrawal
+    - AddictionWithdrawalNicotine
+    - AddictionWithdrawalStage4
+    - AddictionWithdrawalStage4Nicotine
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+  canReapply: True

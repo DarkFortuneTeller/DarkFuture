@@ -1,0 +1,17 @@
+#
+#
+# Illegal Items
+#
+#
+
+# Adds the "Illegal Item Tooltip Background" added with Phantom Liberty to several items
+# from the base game that are fictionally illegal, as well as several "black market" items
+# from Phantom Liberty. Does not change item behavior. Black Lace is also handled in
+# a separate .yaml file.
+Items.q105_item_blackmarket_braindance.tags: &IllegalItem
+  - !append-once IllegalItem
+Items.q105_item_fluff_braindance_04.tags: *IllegalItem
+Items.Blackmarket_CarryCapacityBooster.tags: *IllegalItem
+Items.Blackmarket_HealthBooster.tags: *IllegalItem
+Items.Blackmarket_MemoryBooster.tags: *IllegalItem
+Items.Blackmarket_StaminaBooster.tags: *IllegalItem

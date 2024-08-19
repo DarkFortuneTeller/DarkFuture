@@ -1,0 +1,108 @@
+#   Notes
+#
+#   Stamina Regen Start Delay
+#     This is a change to the delay between using Stamina, and when it begins to regen.
+#     Increasing this delay causes V to actually be able to run out of Stamina, significantly
+#     altering gameplay and requiring more tactical play. This is different from Stamina Regen Rate, 
+#     which affects the speed Stamina regenerates once this delay has expired.
+#
+#     It also causes V to slow their traversal speed while on foot, as they can no 
+#     longer dash infinitely.
+#
+#     Further Dark Future effects (i.e. Nerve) dial this up to majorly impact V's survivability in
+#     combat.
+#
+#   Carry Capacity
+#     Nerf V's default Carry Capacity. (New: 120, default: 200) In the base game, the player never 
+#     really becomes overencumbered or actually needs use their Stash. Solo Skill bonuses to Carry 
+#     Weight, and the Booster consumable are also adjusted. The Titanium Bones Cyberware benefit
+#     and permanent Carry Capacity Shards were not modified.
+
+
+DarkFutureStatusEffectTypes.AlwaysOnStaminaRegen:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: DarkFutureAlwaysOnStaminaRegen
+
+DarkFutureStatusEffect.AlwaysOn_StaminaRegenStartDelayStatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.20
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenStartDelay
+
+DarkFutureStatusEffect.AlwaysOnStaminaRegen_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.AlwaysOn_StaminaRegenStartDelayStatModifier
+
+DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlwaysOnStaminaRegen
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - DarkFutureAlwaysOn
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.AlwaysOnStaminaRegen_StatsPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffectTypes.AlwaysOnCarryCapacity:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: DarkFutureAlwaysOnCarryCapacity
+
+DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: -80
+  modifierType: Additive
+  statType: BaseStats.CarryCapacity
+
+DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifier
+
+DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlwaysOnCarryCapacity
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - DarkFutureAlwaysOn
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackage
+  SFX: []
+  VFX: []

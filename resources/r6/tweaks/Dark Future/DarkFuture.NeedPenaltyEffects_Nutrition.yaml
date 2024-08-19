@@ -1,0 +1,417 @@
+# Common Records
+
+DarkFutureStatusEffectTypes.Nutrition:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Hunger
+
+UIIcon.DarkFutureHungerIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: food_vendor
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+
+DarkFutureStatusEffect.PrereqsAnyMeleeOrArmsCyberware:
+  $type: gamedataMultiPrereq_Record
+  aggregationType: OR
+  prereqClassName: gameMultiPrereq
+  nestedPrereqs:
+    - Prereqs.FistsHeldPrereq
+    - Prereqs.MeleeWeaponHeldPrereq
+    - Prereqs.MantisBladesHeldPrereq
+    - Prereqs.NanoWiresHeldPrereq
+    - Prereqs.StrongArmsHeldPrereq
+
+#
+#
+# Nutrition Penalty 01
+#
+#
+DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_MaxHealth:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.9
+  modifierType: Multiplier
+  statType: BaseStats.Health
+
+DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.75
+  modifierType: Multiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.75
+  modifierType: Multiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_01_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_MaxHealth
+    - DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_01_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNutritionPenalty01Desc"
+  displayName: l"DarkFutureNutritionPenalty01Name"
+  fluffText: ''
+  iconPath: DarkFutureHungerIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -10
+    - -10
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NutritionPenalty_01:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nutrition
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NutritionPenalty_01_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNutrition
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NutritionPenalty_01_StatsPackage
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nutrition Penalty 02
+#
+#
+DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_MaxHealth:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.8
+  modifierType: Multiplier
+  statType: BaseStats.Health
+
+DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.75
+  modifierType: Multiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.75
+  modifierType: Multiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_AttackSpeed:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.80
+  modifierType: Multiplier
+  statType: BaseStats.AttackSpeed
+
+DarkFutureStatusEffect.NutritionPenalty_02_PackageStatGroupAttackSpeed:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_AttackSpeed
+
+DarkFutureStatusEffect.NutritionPenalty_02_PackageEffectorAttackSpeed:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NutritionPenalty_02_PackageStatGroupAttackSpeed
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: DarkFutureStatusEffect.PrereqsAnyMeleeOrArmsCyberware
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureStatusEffect.NutritionPenalty_02_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NutritionPenalty_02_PackageEffectorAttackSpeed
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_MaxHealth
+    - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_02_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNutritionPenalty02Desc"
+  displayName: l"DarkFutureNutritionPenalty02Name"
+  fluffText: ''
+  iconPath: DarkFutureHungerIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -20
+    - -25
+    - -20
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NutritionPenalty_02:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nutrition
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NutritionPenalty_02_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNutrition
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackage
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nutrition Penalty 03
+#
+#
+DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_MaxHealth:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.7
+  modifierType: Multiplier
+  statType: BaseStats.Health
+
+DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.50
+  modifierType: Multiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.50
+  modifierType: Multiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_AttackSpeed:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.70
+  modifierType: Multiplier
+  statType: BaseStats.AttackSpeed
+
+DarkFutureStatusEffect.NutritionPenalty_03_PackageStatGroupAttackSpeed:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_AttackSpeed
+
+DarkFutureStatusEffect.NutritionPenalty_03_PackageEffectorAttackSpeed:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NutritionPenalty_03_PackageStatGroupAttackSpeed
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: DarkFutureStatusEffect.PrereqsAnyMeleeOrArmsCyberware
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureStatusEffect.NutritionPenalty_03_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NutritionPenalty_03_PackageEffectorAttackSpeed
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_MaxHealth
+    - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_03_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNutritionPenalty03Desc"
+  displayName: l"DarkFutureNutritionPenalty03Name"
+  fluffText: ''
+  iconPath: DarkFutureHungerIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -30
+    - -50
+    - -30
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NutritionPenalty_03:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nutrition
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NutritionPenalty_03_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNutrition
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackage
+  SFX: []
+  VFX: []
+  canReapply: True
+
+#
+#
+# Nutrition Penalty 04
+#
+#
+DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_MaxHealth:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.6
+  modifierType: Multiplier
+  statType: BaseStats.Health
+
+DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.25
+  modifierType: Multiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.25
+  modifierType: Multiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_AttackSpeed:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.60
+  modifierType: Multiplier
+  statType: BaseStats.AttackSpeed
+
+DarkFutureStatusEffect.NutritionPenalty_04_PackageStatGroupAttackSpeed:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_AttackSpeed
+
+DarkFutureStatusEffect.NutritionPenalty_04_PackageEffectorAttackSpeed:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.NutritionPenalty_04_PackageStatGroupAttackSpeed
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: DarkFutureStatusEffect.PrereqsAnyMeleeOrArmsCyberware
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureStatusEffect.NutritionPenalty_04_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.NutritionPenalty_04_PackageEffectorAttackSpeed
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_MaxHealth
+    - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthInCombatRegenRate
+
+DarkFutureStatusEffect.NutritionPenalty_04_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNutritionPenalty04Desc"
+  displayName: l"DarkFutureNutritionPenalty04Name"
+  fluffText: ''
+  iconPath: DarkFutureHungerIcon
+  priority: -10
+  floatValues: []
+  intValues:
+    - -40
+    - -75
+    - -40
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NutritionPenalty_04:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: <TDBID:95F8F814:19>
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Nutrition
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NutritionPenalty_04_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureNeedNutrition
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackage
+  SFX: []
+  VFX: []
+  canReapply: True
