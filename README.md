@@ -1,5 +1,5 @@
 # Dark Future
- An Urban Survival Gameplay, Addiction, and Immersion mod for Cyberpunk 2077.
+ An Urban Survival Gameplay and Immersion mod for Cyberpunk 2077.
 
 ## Requirements
 Cyberpunk 2077 2.12a+
