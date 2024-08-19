@@ -8,19 +8,6 @@
 
 module DarkFuture.Main
 
-/*
-    Requirements:
-    Cyberpunk 2077 2.12+
-
-    Cyber Engine Tweaks 1.32.0
-    Redscript 0.5.25
-    Red4Ext 1.24.3
-    ArchiveXL 1.12.2
-    TweakXL 1.8.4
-    Codeware 1.11.0
-    Mod Settings 0.2.8
-*/
-
 import DarkFuture.Logging.*
 import DarkFuture.Settings.*
 import DarkFuture.Services.{
