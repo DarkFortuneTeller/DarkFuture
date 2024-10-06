@@ -14,7 +14,8 @@ import DarkFuture.Utils.{
 	RunGuard
 }
 import DarkFuture.Main.{
-	DFNeedsDatum, 
+	DFNeedsDatum,
+	DFNeedChangeDatum,
 	DFTimeSkipData
 }
 import DarkFuture.Services.{
@@ -72,7 +73,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 	
 	private final func GetSystemToggleSettingValue() -> Bool {

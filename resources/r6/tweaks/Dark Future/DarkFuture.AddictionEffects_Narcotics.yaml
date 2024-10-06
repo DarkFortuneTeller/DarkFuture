@@ -1,4 +1,19 @@
 # Common Records
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 DarkFutureStatusEffectTypes.NarcoticWithdrawal:
   $type: gamedataStatusEffectType_Record
@@ -20,7 +35,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_Cessation_UIData:
   floatValues: []
   intValues:
     - 80
-    - 48
+    - 24
   nameValues: []
   stats: []
 
@@ -30,7 +45,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_Cessation:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -47,6 +62,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_Cessation:
     - AddictionWithdrawalCessation
     - AddictionWithdrawalCessationNarcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -68,7 +84,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression_UIData:
   floatValues: []
   intValues:
     - 80
-    - 24
+    - 12
   nameValues: []
   stats: []
 
@@ -78,7 +94,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -95,6 +111,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Narcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -116,7 +133,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression_UIData:
   floatValues: []
   intValues:
     - 80
-    - 24
+    - 1
   nameValues: []
   stats: []
 
@@ -126,7 +143,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -143,6 +160,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Narcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -164,7 +182,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression_UIData:
   floatValues: []
   intValues:
     - 60
-    - 24
+    - 12
   nameValues: []
   stats: []
 
@@ -174,7 +192,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -191,6 +209,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Narcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -212,7 +231,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression_UIData:
   floatValues: []
   intValues:
     - 60
-    - 24
+    - 1
   nameValues: []
   stats: []
 
@@ -222,7 +241,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -239,6 +258,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Narcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -260,7 +280,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression_UIData:
   floatValues: []
   intValues:
     - 40
-    - 48
+    - 24
   nameValues: []
   stats: []
 
@@ -270,7 +290,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -287,6 +307,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Narcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -308,7 +329,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression_UIData:
   floatValues: []
   intValues:
     - 40
-    - 48
+    - 1
   nameValues: []
   stats: []
 
@@ -318,7 +339,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -335,6 +356,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Narcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -356,7 +378,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression_UIData:
   floatValues: []
   intValues:
     - 20
-    - 48
+    - 24
   nameValues: []
   stats: []
 
@@ -366,7 +388,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -383,6 +405,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression:
     - AddictionWithdrawalStage4
     - AddictionWithdrawalStage4Narcotic
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []

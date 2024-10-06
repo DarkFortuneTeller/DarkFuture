@@ -4,7 +4,7 @@
 #
 #
 # Was: 10 always. Now: 1 - 3 (Random)
-Vendors.BlackMarketMedicStore_inline1: &BlackMarketBoosterQuantity
+DarkFutureVendors.BlackMarketBoosterQuantity:
   $type: gamedataRandomStatModifier_Record
   max: 3.5
   min: 1.0
@@ -12,6 +12,70 @@ Vendors.BlackMarketMedicStore_inline1: &BlackMarketBoosterQuantity
   modifierType: Additive
   statType: BaseStats.Quantity
 
-Vendors.BlackMarketMedicStore_inline3: *BlackMarketBoosterQuantity
-Vendors.BlackMarketMedicStore_inline5: *BlackMarketBoosterQuantity
-Vendors.BlackMarketMedicStore_inline7: *BlackMarketBoosterQuantity
+Vendors.BlackMarketMedicStore_inline0.quantity: &BlackMarketBoosterQuantity
+  - DarkFutureVendors.BlackMarketBoosterQuantity
+Vendors.BlackMarketMedicStore_inline2.quantity: *BlackMarketBoosterQuantity
+Vendors.BlackMarketMedicStore_inline4.quantity: *BlackMarketBoosterQuantity
+Vendors.BlackMarketMedicStore_inline6.quantity: *BlackMarketBoosterQuantity
+
+#
+#
+# Mr. Whitey
+#
+#
+# Sell Mr. Whitey at Kiosk Vendors.
+DarkFutureVendors.MrWhiteyQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 6.5
+  min: 3.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.MrWhiteyRareQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 4.5
+  min: 0.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.MrWhitey:
+  $type: gamedataVendorItem_Record
+  item: Items.LowQualityFood6
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.MrWhiteyQuantityChance
+
+DarkFutureVendors.MrWhiteyRareA:
+  $type: gamedataVendorItem_Record
+  item: Items.MediumQualityFood11
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.MrWhiteyRareQuantityChance
+
+DarkFutureVendors.MrWhiteyRareB:
+  $type: gamedataVendorItem_Record
+  item: Items.MediumQualityFood14
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.MrWhiteyRareQuantityChance
+
+DarkFutureVendors.MrWhiteyRareC:
+  $type: gamedataVendorItem_Record
+  item: Items.MediumQualityFood15
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.MrWhiteyRareQuantityChance
+
+Vendors.Kiosk.itemStock:
+  - !append-once DarkFutureVendors.MrWhitey
+  - !append-once DarkFutureVendors.MrWhiteyRareA
+  - !append-once DarkFutureVendors.MrWhiteyRareB
+  - !append-once DarkFutureVendors.MrWhiteyRareC
+
+Vendors.Kiosk_EP1.itemStock:
+  - !append-once DarkFutureVendors.MrWhitey
+  - !append-once DarkFutureVendors.MrWhiteyRareA
+  - !append-once DarkFutureVendors.MrWhiteyRareB
+  - !append-once DarkFutureVendors.MrWhiteyRareC

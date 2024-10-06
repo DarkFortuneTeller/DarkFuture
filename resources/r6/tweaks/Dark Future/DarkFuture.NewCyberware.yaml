@@ -1,95 +1,75 @@
 #
 #
-# Syn-Liver
+# Endorphin Regulator
 #
 #
-UIIcon.darkfuture_cw_synliver:
-  $type: gamedataUIIcon_Record
-  atlasPartName: darkfuture_cw_synliver
-  atlasResourcePath: darkfuture\textures\darkfuture_synliver.inkatlas
-
-DarkFutureItem.SynLiverBodyAttunement:
+DarkFutureItem.EndorphinRegulatorCoolAttunement:
   $type: gamedataCombinedStatModifier_Record
   opSymbol: '*'
   refObject: Player
-  refStat: BaseStats.Strength
-  value: 0.5
+  refStat: BaseStats.Cool
+  value: 0.1
   modifierType: Additive
   statType: BaseStats.AttunementHelper
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_Rare_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 25
+    - -35
+    - 3
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 25
+    - -35
+    - 3
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_Epic_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 50
+    - -35
+    - 2
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 50
+    - -35
+    - 2
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 75
+    - -35
+    - 2
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Rare_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - 75
-  nameValues: []
-  stats: []
-
-DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverAlcoholDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - 75
-  nameValues: []
-  stats: []
-
-DarkFutureItem.SynLiverOnEquip_Narcotics_Rare_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
   localizedName: ''
   floatValues: []
   intValues:
@@ -97,9 +77,9 @@ DarkFutureItem.SynLiverOnEquip_Narcotics_Rare_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_RarePlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
   localizedName: ''
   floatValues: []
   intValues:
@@ -107,9 +87,9 @@ DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_Epic_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Epic_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
   localizedName: ''
   floatValues: []
   intValues:
@@ -117,9 +97,9 @@ DarkFutureItem.SynLiverOnEquip_Narcotics_Epic_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_EpicPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
   localizedName: ''
   floatValues: []
   intValues:
@@ -127,9 +107,9 @@ DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Legendary_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
   localizedName: ''
   floatValues: []
   intValues:
@@ -137,9 +117,9 @@ DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
   localizedName: ''
   floatValues: []
   intValues:
@@ -147,9 +127,9 @@ DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlusPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLiverNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
   localizedName: ''
   floatValues: []
   intValues:
@@ -157,147 +137,127 @@ DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_Rare:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_Rare_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_Epic:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_Epic_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary:
+DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Rare:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Rare_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_RarePlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_RarePlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_Rare:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Epic:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_Rare_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Epic_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_EpicPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_EpicPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_Epic:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Legendary:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_Epic_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Legendary_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary:
+DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlusPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlusPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus:
-  $type: gamedataGameplayLogicPackage_Record
-  stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus_UIData
-  animationWrapperOverrides: []
-  effectors: []
-  items: []
-  statPools: []
-  stats: []
-
-DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus:
-  $type: gamedataGameplayLogicPackage_Record
-  stackable: False
-  UIData: DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus_UIData
-  animationWrapperOverrides: []
-  effectors: []
-  items: []
-  statPools: []
-  stats: []
-
-DarkFutureItem.SynLiverLegendaryPlusPlus:
+DarkFutureItem.EndorphinRegulatorLegendaryPlusPlus:
   $type: gamedataItem_Record
   animFeatureName: ItemData
   animName: ui_garment_pose
@@ -307,11 +267,11 @@ DarkFutureItem.SynLiverLegendaryPlusPlus:
   crosshair: Crosshairs.None
   deprecated: False
   enableNpcRPGData: False
-  equipArea: EquipmentArea.CardiovascularSystemCW
-  friendlyName: SynLiver
+  equipArea: EquipmentArea.FrontalCortexCW
+  friendlyName: EndorphinRegulator
   garmentOffset: 0
   icon: UIIcon.ItemIcon
-  iconPath: darkfuture_cw_synliver
+  iconPath: cw_immunesystem_resistancesbooster
   isCached: False
   isCoreCW: False
   isCustomizable: False
@@ -346,7 +306,7 @@ DarkFutureItem.SynLiverLegendaryPlusPlus:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: l"DarkFutureCyberwareSynLiverName"
+  displayName: l"DarkFutureCyberwareEndorphinRegulatorName"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
@@ -355,9 +315,9 @@ DarkFutureItem.SynLiverLegendaryPlusPlus:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlusPlus
-    - DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlusPlus
-    - Attunements.BodyHealth
+    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlusPlus
+    - Attunements.CoolHeadshotDamage
   OnLooted: []
   parts: []
   placementSlots: []
@@ -373,25 +333,25 @@ DarkFutureItem.SynLiverLegendaryPlusPlus:
   slotPartList: []
   slotPartListPreset:
     - Items.GenericItemRootPreset
-    - Items.AdvancedEndoskeletonEpic_inline9
+    - Items.AdvancedSuddenAidCommon_inline17
   tags:
     - Cyberware
     - HideInBackpackUI
   variants:
-    - Variants.Humanity12Cost
+    - Variants.Humanity10Cost
   visualTags: []
   effectors: []
   objectActions: []
   statModifierGroups: []
   statModifiers:
     - Items.ItemArmorToArmor
-    - Items.AdvancedCardiovascularSystemModule_inline0
-    - DarkFutureItem.SynLiverBodyAttunement
+    - Items.AdvancedFrontalCortexModule_inline0
+    - DarkFutureItem.EndorphinRegulatorCoolAttunement
   statPools: []
   weakspots: []
-  cyberwareType: SynLiver
+  cyberwareType: EndorphinRegulator
 
-DarkFutureItem.SynLiverLegendaryPlus:
+DarkFutureItem.EndorphinRegulatorLegendaryPlus:
   $type: gamedataItem_Record
   animFeatureName: ItemData
   animName: ui_garment_pose
@@ -401,11 +361,11 @@ DarkFutureItem.SynLiverLegendaryPlus:
   crosshair: Crosshairs.None
   deprecated: False
   enableNpcRPGData: False
-  equipArea: EquipmentArea.CardiovascularSystemCW
-  friendlyName: SynLiver
+  equipArea: EquipmentArea.FrontalCortexCW
+  friendlyName: EndorphinRegulator
   garmentOffset: 0
   icon: UIIcon.ItemIcon
-  iconPath: darkfuture_cw_synliver
+  iconPath: cw_immunesystem_resistancesbooster
   isCached: False
   isCoreCW: False
   isCustomizable: False
@@ -417,7 +377,7 @@ DarkFutureItem.SynLiverLegendaryPlus:
   localizedName: ''
   mass: 1
   minigameInstance: minigame_v2.DefaultItemMinigame
-  nextUpgradeItem: DarkFutureItem.SynLiverLegendaryPlusPlus
+  nextUpgradeItem: DarkFutureItem.EndorphinRegulatorLegendaryPlusPlus
   powerLevelDeterminedByParent: False
   quality: Quality.LegendaryPlus
   qualityRestrictedByParent: False
@@ -441,7 +401,7 @@ DarkFutureItem.SynLiverLegendaryPlus:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: l"DarkFutureCyberwareSynLiverName"
+  displayName: l"DarkFutureCyberwareEndorphinRegulatorName"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
@@ -450,9 +410,9 @@ DarkFutureItem.SynLiverLegendaryPlus:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.SynLiverOnEquip_Alcohol_LegendaryPlus
-    - DarkFutureItem.SynLiverOnEquip_Narcotics_LegendaryPlus
-    - Attunements.BodyHealth
+    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlus
+    - Attunements.CoolHeadshotDamage
   OnLooted: []
   parts: []
   placementSlots: []
@@ -468,25 +428,25 @@ DarkFutureItem.SynLiverLegendaryPlus:
   slotPartList: []
   slotPartListPreset:
     - Items.GenericItemRootPreset
-    - Items.AdvancedEndoskeletonEpic_inline9
+    - Items.AdvancedSuddenAidCommon_inline17
   tags:
     - Cyberware
     - HideInBackpackUI
   variants:
-    - Variants.Humanity12Cost
+    - Variants.Humanity10Cost
   visualTags: []
   effectors: []
   objectActions: []
   statModifierGroups: []
   statModifiers:
     - Items.ItemArmorToArmor
-    - Items.AdvancedCardiovascularSystemModule_inline0
-    - DarkFutureItem.SynLiverBodyAttunement
+    - Items.AdvancedFrontalCortexModule_inline0
+    - DarkFutureItem.EndorphinRegulatorCoolAttunement
   statPools: []
   weakspots: []
-  cyberwareType: SynLiver
+  cyberwareType: EndorphinRegulator
 
-DarkFutureItem.SynLiverLegendary:
+DarkFutureItem.EndorphinRegulatorLegendary:
   $type: gamedataItem_Record
   animFeatureName: ItemData
   animName: ui_garment_pose
@@ -496,11 +456,11 @@ DarkFutureItem.SynLiverLegendary:
   crosshair: Crosshairs.None
   deprecated: False
   enableNpcRPGData: False
-  equipArea: EquipmentArea.CardiovascularSystemCW
-  friendlyName: SynLiver
+  equipArea: EquipmentArea.FrontalCortexCW
+  friendlyName: EndorphinRegulator
   garmentOffset: 0
   icon: UIIcon.ItemIcon
-  iconPath: darkfuture_cw_synliver
+  iconPath: cw_immunesystem_resistancesbooster
   isCached: False
   isCoreCW: False
   isCustomizable: False
@@ -512,7 +472,7 @@ DarkFutureItem.SynLiverLegendary:
   localizedName: ''
   mass: 1
   minigameInstance: minigame_v2.DefaultItemMinigame
-  nextUpgradeItem: DarkFutureItem.SynLiverLegendaryPlus
+  nextUpgradeItem: DarkFutureItem.EndorphinRegulatorLegendaryPlus
   powerLevelDeterminedByParent: False
   quality: Quality.Legendary
   qualityRestrictedByParent: False
@@ -536,7 +496,7 @@ DarkFutureItem.SynLiverLegendary:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: l"DarkFutureCyberwareSynLiverName"
+  displayName: l"DarkFutureCyberwareEndorphinRegulatorName"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
@@ -545,9 +505,9 @@ DarkFutureItem.SynLiverLegendary:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.SynLiverOnEquip_Alcohol_Legendary
-    - DarkFutureItem.SynLiverOnEquip_Narcotics_Legendary
-    - Attunements.BodyHealth
+    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Legendary
+    - Attunements.CoolHeadshotDamage
   OnLooted: []
   parts: []
   placementSlots: []
@@ -563,25 +523,25 @@ DarkFutureItem.SynLiverLegendary:
   slotPartList: []
   slotPartListPreset:
     - Items.GenericItemRootPreset
-    - Items.AdvancedEndoskeletonEpic_inline9
+    - Items.AdvancedSuddenAidCommon_inline17
   tags:
     - Cyberware
     - HideInBackpackUI
   variants:
-    - Variants.Humanity12Cost
+    - Variants.Humanity10Cost
   visualTags: []
   effectors: []
   objectActions: []
   statModifierGroups: []
   statModifiers:
     - Items.ItemArmorToArmor
-    - Items.AdvancedCardiovascularSystemModule_inline0
-    - DarkFutureItem.SynLiverBodyAttunement
+    - Items.AdvancedFrontalCortexModule_inline0
+    - DarkFutureItem.EndorphinRegulatorCoolAttunement
   statPools: []
   weakspots: []
-  cyberwareType: SynLiver
+  cyberwareType: EndorphinRegulator
 
-DarkFutureItem.SynLiverEpicPlus:
+DarkFutureItem.EndorphinRegulatorEpicPlus:
   $type: gamedataItem_Record
   animFeatureName: ItemData
   animName: ui_garment_pose
@@ -591,11 +551,11 @@ DarkFutureItem.SynLiverEpicPlus:
   crosshair: Crosshairs.None
   deprecated: False
   enableNpcRPGData: False
-  equipArea: EquipmentArea.CardiovascularSystemCW
-  friendlyName: SynLiver
+  equipArea: EquipmentArea.FrontalCortexCW
+  friendlyName: EndorphinRegulator
   garmentOffset: 0
   icon: UIIcon.ItemIcon
-  iconPath: darkfuture_cw_synliver
+  iconPath: cw_immunesystem_resistancesbooster
   isCached: False
   isCoreCW: False
   isCustomizable: False
@@ -607,7 +567,7 @@ DarkFutureItem.SynLiverEpicPlus:
   localizedName: ''
   mass: 1
   minigameInstance: minigame_v2.DefaultItemMinigame
-  nextUpgradeItem: DarkFutureItem.SynLiverLegendary
+  nextUpgradeItem: DarkFutureItem.EndorphinRegulatorLegendary
   powerLevelDeterminedByParent: False
   quality: Quality.EpicPlus
   qualityRestrictedByParent: False
@@ -631,7 +591,7 @@ DarkFutureItem.SynLiverEpicPlus:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: l"DarkFutureCyberwareSynLiverName"
+  displayName: l"DarkFutureCyberwareEndorphinRegulatorName"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
@@ -640,9 +600,9 @@ DarkFutureItem.SynLiverEpicPlus:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.SynLiverOnEquip_Alcohol_EpicPlus
-    - DarkFutureItem.SynLiverOnEquip_Narcotics_EpicPlus
-    - Attunements.BodyHealth
+    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_EpicPlus
+    - Attunements.CoolHeadshotDamage
   OnLooted: []
   parts: []
   placementSlots: []
@@ -658,25 +618,25 @@ DarkFutureItem.SynLiverEpicPlus:
   slotPartList: []
   slotPartListPreset:
     - Items.GenericItemRootPreset
-    - Items.AdvancedEndoskeletonEpic_inline9
+    - Items.AdvancedSuddenAidCommon_inline17
   tags:
     - Cyberware
     - HideInBackpackUI
   variants:
-    - Variants.Humanity12Cost
+    - Variants.Humanity10Cost
   visualTags: []
   effectors: []
   objectActions: []
   statModifierGroups: []
   statModifiers:
     - Items.ItemArmorToArmor
-    - Items.AdvancedCardiovascularSystemModule_inline0
-    - DarkFutureItem.SynLiverBodyAttunement
+    - Items.AdvancedFrontalCortexModule_inline0
+    - DarkFutureItem.EndorphinRegulatorCoolAttunement
   statPools: []
   weakspots: []
-  cyberwareType: SynLiver
+  cyberwareType: EndorphinRegulator
 
-DarkFutureItem.SynLiverEpic:
+DarkFutureItem.EndorphinRegulatorEpic:
   $type: gamedataItem_Record
   animFeatureName: ItemData
   animName: ui_garment_pose
@@ -686,11 +646,11 @@ DarkFutureItem.SynLiverEpic:
   crosshair: Crosshairs.None
   deprecated: False
   enableNpcRPGData: False
-  equipArea: EquipmentArea.CardiovascularSystemCW
-  friendlyName: SynLiver
+  equipArea: EquipmentArea.FrontalCortexCW
+  friendlyName: EndorphinRegulator
   garmentOffset: 0
   icon: UIIcon.ItemIcon
-  iconPath: darkfuture_cw_synliver
+  iconPath: cw_immunesystem_resistancesbooster
   isCached: False
   isCoreCW: False
   isCustomizable: False
@@ -702,7 +662,7 @@ DarkFutureItem.SynLiverEpic:
   localizedName: ''
   mass: 1
   minigameInstance: minigame_v2.DefaultItemMinigame
-  nextUpgradeItem: DarkFutureItem.SynLiverEpicPlus
+  nextUpgradeItem: DarkFutureItem.EndorphinRegulatorEpicPlus
   powerLevelDeterminedByParent: False
   quality: Quality.Epic
   qualityRestrictedByParent: False
@@ -726,7 +686,7 @@ DarkFutureItem.SynLiverEpic:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: l"DarkFutureCyberwareSynLiverName"
+  displayName: l"DarkFutureCyberwareEndorphinRegulatorName"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
@@ -735,9 +695,9 @@ DarkFutureItem.SynLiverEpic:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.SynLiverOnEquip_Alcohol_Epic
-    - DarkFutureItem.SynLiverOnEquip_Narcotics_Epic
-    - Attunements.BodyHealth
+    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Epic
+    - Attunements.CoolHeadshotDamage
   OnLooted: []
   parts: []
   placementSlots: []
@@ -753,213 +713,23 @@ DarkFutureItem.SynLiverEpic:
   slotPartList: []
   slotPartListPreset:
     - Items.GenericItemRootPreset
-    - Items.AdvancedEndoskeletonEpic_inline9
+    - Items.AdvancedSuddenAidCommon_inline17
   tags:
     - Cyberware
     - HideInBackpackUI
   variants:
-    - Variants.Humanity12Cost
+    - Variants.Humanity10Cost
   visualTags: []
   effectors: []
   objectActions: []
   statModifierGroups: []
   statModifiers:
     - Items.ItemArmorToArmor
-    - Items.AdvancedCardiovascularSystemModule_inline0
-    - DarkFutureItem.SynLiverBodyAttunement
+    - Items.AdvancedFrontalCortexModule_inline0
+    - DarkFutureItem.EndorphinRegulatorCoolAttunement
   statPools: []
   weakspots: []
-  cyberwareType: SynLiver
-
-DarkFutureItem.SynLiverRarePlus:
-  $type: gamedataItem_Record
-  animFeatureName: ItemData
-  animName: ui_garment_pose
-  animSetResource: ''
-  blueprint: Items.GenericShardableCyberwareBlueprint
-  canDrop: True
-  crosshair: Crosshairs.None
-  deprecated: False
-  enableNpcRPGData: False
-  equipArea: EquipmentArea.CardiovascularSystemCW
-  friendlyName: SynLiver
-  garmentOffset: 0
-  icon: UIIcon.ItemIcon
-  iconPath: darkfuture_cw_synliver
-  isCached: False
-  isCoreCW: False
-  isCustomizable: False
-  isGarment: False
-  isPart: False
-  isSingleInstance: False
-  itemCategory: ItemCategory.Cyberware
-  itemType: ItemType.Cyberware
-  localizedName: ''
-  mass: 1
-  minigameInstance: minigame_v2.DefaultItemMinigame
-  nextUpgradeItem: DarkFutureItem.SynLiverEpic
-  powerLevelDeterminedByParent: False
-  quality: Quality.RarePlus
-  qualityRestrictedByParent: False
-  replicateWhenNotActive: False
-  upgradeCostMult: 1.5
-  useHeadgearGarmentAggregator: False
-  useNewSpawnMethod: False
-  usesVariants: True
-  savable: False
-  animationParameters: []
-  appearanceSuffixes: []
-  appearanceSuffixesOwnerOverride: []
-  attachmentSlots: []
-  buyPrice:
-    - Price.BaseCyberwarePrice
-    - Price.ItemQualityMultiplier
-    - Price.PlusTierMultiplier
-    - Price.CyberwareMultiplier
-    - Price.BuyPrice_StreetCred_Discount
-    - Items.AdvancedBiomonitorCommon_inline6
-  cameraForward: {x: 0, y: 0, z: 0}
-  cameraUp: {x: 0, y: 0, z: 0}
-  connections: []
-  displayName: l"DarkFutureCyberwareSynLiverName"
-  equipAreas: []
-  equipPrereqs: []
-  gameplayRestrictions:
-    - GameplayRestriction.VehicleCombatNoInterruptions
-  hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
-  OnAttach: []
-  OnEquip:
-    - DarkFutureItem.SynLiverOnEquip_Alcohol_RarePlus
-    - DarkFutureItem.SynLiverOnEquip_Narcotics_RarePlus
-    - Attunements.BodyHealth
-  OnLooted: []
-  parts: []
-  placementSlots: []
-  previewBBoxOverride: []
-  requiredSlots: []
-  sellPrice:
-    - Price.BaseCyberwarePrice
-    - Price.ItemQualityMultiplier
-    - Price.PlusTierMultiplier
-    - Price.CyberwareMultiplier
-    - Price.CyberwareSellMultiplier
-    - Items.AdvancedBiomonitorCommon_inline5
-  slotPartList: []
-  slotPartListPreset:
-    - Items.GenericItemRootPreset
-    - Items.AdvancedEndoskeletonEpic_inline9
-  tags:
-    - Cyberware
-    - HideInBackpackUI
-  variants:
-    - Variants.Humanity12Cost
-  visualTags: []
-  effectors: []
-  objectActions: []
-  statModifierGroups: []
-  statModifiers:
-    - Items.ItemArmorToArmor
-    - Items.AdvancedCardiovascularSystemModule_inline0
-    - DarkFutureItem.SynLiverBodyAttunement
-  statPools: []
-  weakspots: []
-  cyberwareType: SynLiver
-
-DarkFutureItem.SynLiverRare:
-  $type: gamedataItem_Record
-  animFeatureName: ItemData
-  animName: ui_garment_pose
-  animSetResource: ''
-  blueprint: Items.GenericShardableCyberwareBlueprint
-  canDrop: True
-  crosshair: Crosshairs.None
-  deprecated: False
-  enableNpcRPGData: False
-  equipArea: EquipmentArea.CardiovascularSystemCW
-  friendlyName: SynLiver
-  garmentOffset: 0
-  icon: UIIcon.ItemIcon
-  iconPath: darkfuture_cw_synliver
-  isCached: False
-  isCoreCW: False
-  isCustomizable: False
-  isGarment: False
-  isPart: False
-  isSingleInstance: False
-  itemCategory: ItemCategory.Cyberware
-  itemType: ItemType.Cyberware
-  localizedName: ''
-  mass: 1
-  minigameInstance: minigame_v2.DefaultItemMinigame
-  nextUpgradeItem: DarkFutureItem.SynLiverRarePlus
-  powerLevelDeterminedByParent: False
-  quality: Quality.Rare
-  qualityRestrictedByParent: False
-  replicateWhenNotActive: False
-  upgradeCostMult: 1.5
-  useHeadgearGarmentAggregator: False
-  useNewSpawnMethod: False
-  usesVariants: True
-  savable: False
-  animationParameters: []
-  appearanceSuffixes: []
-  appearanceSuffixesOwnerOverride: []
-  attachmentSlots: []
-  buyPrice:
-    - Price.BaseCyberwarePrice
-    - Price.ItemQualityMultiplier
-    - Price.PlusTierMultiplier
-    - Price.CyberwareMultiplier
-    - Price.BuyPrice_StreetCred_Discount
-    - Items.AdvancedBiomonitorCommon_inline6
-  cameraForward: {x: 0, y: 0, z: 0}
-  cameraUp: {x: 0, y: 0, z: 0}
-  connections: []
-  displayName: l"DarkFutureCyberwareSynLiverName"
-  equipAreas: []
-  equipPrereqs: []
-  gameplayRestrictions:
-    - GameplayRestriction.VehicleCombatNoInterruptions
-  hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
-  OnAttach: []
-  OnEquip:
-    - DarkFutureItem.SynLiverOnEquip_Alcohol_Rare
-    - DarkFutureItem.SynLiverOnEquip_Narcotics_Rare
-    - Attunements.BodyHealth
-  OnLooted: []
-  parts: []
-  placementSlots: []
-  previewBBoxOverride: []
-  requiredSlots: []
-  sellPrice:
-    - Price.BaseCyberwarePrice
-    - Price.ItemQualityMultiplier
-    - Price.PlusTierMultiplier
-    - Price.CyberwareMultiplier
-    - Price.CyberwareSellMultiplier
-    - Items.AdvancedBiomonitorCommon_inline5
-  slotPartList: []
-  slotPartListPreset:
-    - Items.GenericItemRootPreset
-    - Items.AdvancedEndoskeletonEpic_inline9
-  tags:
-    - Cyberware
-    - HideInBackpackUI
-  variants:
-    - Variants.Humanity12Cost
-  visualTags: []
-  effectors: []
-  objectActions: []
-  statModifierGroups: []
-  statModifiers:
-    - Items.ItemArmorToArmor
-    - Items.AdvancedCardiovascularSystemModule_inline0
-    - DarkFutureItem.SynLiverBodyAttunement
-  statPools: []
-  weakspots: []
-  cyberwareType: SynLiver
+  cyberwareType: EndorphinRegulator
 
 #
 #
@@ -1045,73 +815,73 @@ DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlusPlus_UIData:
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_Rare_UIData:
+DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedDescription: l"DarkFutureCyberwareSynLungsDashBonusDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - -30
+    - -16
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus_UIData:
+DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedDescription: l"DarkFutureCyberwareSynLungsDashBonusDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
+    - -20
   nameValues: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_Epic_UIData:
+DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
+  localizedDescription: l"DarkFutureCyberwareSynLungsDashBonusDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -24
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsDashBonusDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -28
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsDashBonusDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -32
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsDashBonusDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -36
+  nameValues: []
+  stats: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureCyberwareSynLungsDashBonusDesc"
   localizedName: ''
   floatValues: []
   intValues:
     - -40
-  nameValues: []
-  stats: []
-
-DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - -45
-  nameValues: []
-  stats: []
-
-DarkFutureItem.SynLungsOnEquip_Hydration_Legendary_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - -50
-  nameValues: []
-  stats: []
-
-DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - -55
-  nameValues: []
-  stats: []
-
-DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareSynLungsHydrationDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - -60
   nameValues: []
   stats: []
 
@@ -1185,72 +955,261 @@ DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlusPlus:
   statPools: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_Rare:
+DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.16
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.20
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.24
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.28
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.32
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.36
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.40
+  modifierType: Additive
+  statType: BaseStats.DodgeStaminaCostReduction
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_StatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_StatModifier
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_StatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_StatModifier
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_StatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_StatModifier
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_StatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_StatModifier
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_StatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_StatModifier
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_StatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_StatModifier
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_StatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_StatModifier
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_Effector:
+  $type: gamedataApplyStatGroupEffector_Record
+  removeWithEffector: True
+  statGroup: DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_StatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Perks.IsPlayerOnGround
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_Effector:
+  $type: gamedataApplyStatGroupEffector_Record
+  removeWithEffector: True
+  statGroup: DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_StatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Perks.IsPlayerOnGround
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_Effector:
+  $type: gamedataApplyStatGroupEffector_Record
+  removeWithEffector: True
+  statGroup: DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_StatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Perks.IsPlayerOnGround
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_Effector:
+  $type: gamedataApplyStatGroupEffector_Record
+  removeWithEffector: True
+  statGroup: DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_StatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Perks.IsPlayerOnGround
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_Effector:
+  $type: gamedataApplyStatGroupEffector_Record
+  removeWithEffector: True
+  statGroup: DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_StatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Perks.IsPlayerOnGround
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_Effector:
+  $type: gamedataApplyStatGroupEffector_Record
+  removeWithEffector: True
+  statGroup: DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_StatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Perks.IsPlayerOnGround
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_Effector:
+  $type: gamedataApplyStatGroupEffector_Record
+  removeWithEffector: True
+  statGroup: DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_StatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Perks.IsPlayerOnGround
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureItem.SynLungsOnEquip_DashBonus_Rare:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_Rare_UIData
+  UIData: DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_UIData
   animationWrapperOverrides: []
-  effectors: []
+  effectors:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Rare_Effector
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus:
+DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus_UIData
+  UIData: DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_UIData
   animationWrapperOverrides: []
-  effectors: []
+  effectors:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus_Effector
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_Epic:
+DarkFutureItem.SynLungsOnEquip_DashBonus_Epic:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_Epic_UIData
+  UIData: DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_UIData
   animationWrapperOverrides: []
-  effectors: []
+  effectors:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Epic_Effector
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus:
+DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus_UIData
+  UIData: DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_UIData
   animationWrapperOverrides: []
-  effectors: []
+  effectors:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus_Effector
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_Legendary:
+DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_Legendary_UIData
+  UIData: DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_UIData
   animationWrapperOverrides: []
-  effectors: []
+  effectors:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary_Effector
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus:
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus_UIData
+  UIData: DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_UIData
   animationWrapperOverrides: []
-  effectors: []
+  effectors:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus_Effector
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus:
+DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus_UIData
+  UIData: DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_UIData
   animationWrapperOverrides: []
-  effectors: []
+  effectors:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus_Effector
   items: []
   statPools: []
   stats: []
@@ -1313,8 +1272,8 @@ DarkFutureItem.SynLungsLegendaryPlusPlus:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus
     - DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlusPlus
-    - DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlusPlus
     - Attunements.ReflexesCritChance
   OnLooted: []
   parts: []
@@ -1408,8 +1367,8 @@ DarkFutureItem.SynLungsLegendaryPlus:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus
     - DarkFutureItem.SynLungsOnEquip_Smoking_LegendaryPlus
-    - DarkFutureItem.SynLungsOnEquip_Hydration_LegendaryPlus
     - Attunements.ReflexesCritChance
   OnLooted: []
   parts: []
@@ -1503,8 +1462,8 @@ DarkFutureItem.SynLungsLegendary:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary
     - DarkFutureItem.SynLungsOnEquip_Smoking_Legendary
-    - DarkFutureItem.SynLungsOnEquip_Hydration_Legendary
     - Attunements.ReflexesCritChance
   OnLooted: []
   parts: []
@@ -1598,8 +1557,8 @@ DarkFutureItem.SynLungsEpicPlus:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus
     - DarkFutureItem.SynLungsOnEquip_Smoking_EpicPlus
-    - DarkFutureItem.SynLungsOnEquip_Hydration_EpicPlus
     - Attunements.ReflexesCritChance
   OnLooted: []
   parts: []
@@ -1693,8 +1652,8 @@ DarkFutureItem.SynLungsEpic:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Epic
     - DarkFutureItem.SynLungsOnEquip_Smoking_Epic
-    - DarkFutureItem.SynLungsOnEquip_Hydration_Epic
     - Attunements.ReflexesCritChance
   OnLooted: []
   parts: []
@@ -1788,8 +1747,8 @@ DarkFutureItem.SynLungsRarePlus:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus
     - DarkFutureItem.SynLungsOnEquip_Smoking_RarePlus
-    - DarkFutureItem.SynLungsOnEquip_Hydration_RarePlus
     - Attunements.ReflexesCritChance
   OnLooted: []
   parts: []
@@ -1883,8 +1842,8 @@ DarkFutureItem.SynLungsRare:
   localizedDescription: LocKey#3683
   OnAttach: []
   OnEquip:
+    - DarkFutureItem.SynLungsOnEquip_DashBonus_Rare
     - DarkFutureItem.SynLungsOnEquip_Smoking_Rare
-    - DarkFutureItem.SynLungsOnEquip_Hydration_Rare
     - Attunements.ReflexesCritChance
   OnLooted: []
   parts: []
@@ -1924,25 +1883,17 @@ DarkFutureItem.SynLungsRare:
 # Vendors
 #
 #
-DarkFutureVendors.SynLiverRare:
+DarkFutureVendors.EndorphinRegulatorEpic:
   $type: gamedataVendorItem_Record
-  item: DarkFutureItem.SynLiverRare
-  generationPrereqs:
-    - LootPrereqs.RareCWLevelAvailabilityAtVendor
-  quantity:
-    - Vendors.Always_Present
-
-DarkFutureVendors.SynLiverEpic:
-  $type: gamedataVendorItem_Record
-  item: DarkFutureItem.SynLiverEpic
+  item: DarkFutureItem.EndorphinRegulatorEpic
   generationPrereqs:
     - LootPrereqs.EpicCWLevelAvailabilityAtVendor
   quantity:
     - Vendors.Always_Present
 
-DarkFutureVendors.SynLiverLegendary:
+DarkFutureVendors.EndorphinRegulatorLegendary:
   $type: gamedataVendorItem_Record
-  item: DarkFutureItem.SynLiverLegendary
+  item: DarkFutureItem.EndorphinRegulatorLegendary
   generationPrereqs:
     - LootPrereqs.LegendaryCWLevelAvailabilityAtVendor
   quantity:
@@ -1976,9 +1927,8 @@ Vendors.AdvancedCollectiveRipperDoc.itemStock: &AddToRipperDocs
   - !append-once DarkFutureVendors.SynLungsRare
   - !append-once DarkFutureVendors.SynLungsEpic
   - !append-once DarkFutureVendors.SynLungsLegendary
-  - !append-once DarkFutureVendors.SynLiverRare
-  - !append-once DarkFutureVendors.SynLiverEpic
-  - !append-once DarkFutureVendors.SynLiverLegendary
+  - !append-once DarkFutureVendors.EndorphinRegulatorEpic
+  - !append-once DarkFutureVendors.EndorphinRegulatorLegendary
 
 Vendors.AdvancedCollectiveRipperDoc.itemStock: *AddToRipperDocs
 Vendors.AdvancedCollectiveRipperDocDogtown.itemStock: *AddToRipperDocs

@@ -1,4 +1,19 @@
 # Common Records
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 DarkFutureStatusEffectTypes.NicotineWithdrawal:
   $type: gamedataStatusEffectType_Record
@@ -25,7 +40,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData:
   floatValues: []
   intValues:
     - 80
-    - 48
+    - 24
   nameValues: []
   stats: []
 
@@ -35,7 +50,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_Cessation:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -52,6 +67,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_Cessation:
     - AddictionWithdrawalCessation
     - AddictionWithdrawalCessationNicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -73,7 +89,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData:
   floatValues: []
   intValues:
     - 80
-    - 24
+    - 12
   nameValues: []
   stats: []
 
@@ -83,7 +99,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -100,6 +116,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Nicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -121,7 +138,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression_UIData:
   floatValues: []
   intValues:
     - 80
-    - 24
+    - 1
   nameValues: []
   stats: []
 
@@ -131,7 +148,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -148,6 +165,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Nicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -169,7 +187,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData:
   floatValues: []
   intValues:
     - 70
-    - 24
+    - 12
   nameValues: []
   stats: []
 
@@ -179,7 +197,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -196,6 +214,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Nicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -217,7 +236,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression_UIData:
   floatValues: []
   intValues:
     - 70
-    - 24
+    - 1
   nameValues: []
   stats: []
 
@@ -227,7 +246,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -244,6 +263,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Nicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -265,7 +285,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData:
   floatValues: []
   intValues:
     - 60
-    - 48
+    - 24
   nameValues: []
   stats: []
 
@@ -275,7 +295,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -292,6 +312,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Nicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -313,7 +334,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression_UIData:
   floatValues: []
   intValues:
     - 60
-    - 48
+    - 1
   nameValues: []
   stats: []
 
@@ -323,7 +344,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -340,6 +361,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Nicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -361,7 +383,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData:
   floatValues: []
   intValues:
     - 50
-    - 48
+    - 24
   nameValues: []
   stats: []
 
@@ -371,7 +393,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -388,6 +410,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression:
     - AddictionWithdrawalStage4
     - AddictionWithdrawalStage4Nicotine
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []

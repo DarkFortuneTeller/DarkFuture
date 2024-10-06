@@ -5,7 +5,6 @@
 // - Injury Affliction system.
 // - Injury occurs after taking enough cumulative damage.
 // - Cured by First Aid Kit (was Health Booster).
-// - Suppressed by Narcotics.
 //
 
 module DarkFuture.Afflictions
@@ -13,10 +12,6 @@ module DarkFuture.Afflictions
 import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Utils.RunGuard
-import DarkFuture.Main.{
-    DFAfflictionDatum,
-    DFAfflictionUpdateDatum
-}
 import DarkFuture.Services.{
     DFGameStateService,
     DFNotificationService,
@@ -38,20 +33,6 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 	return wrappedMethod(evt);
 }
 
-@wrapMethod(PlayerPuppet)
-protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
-    let injurySystem: ref<DFInjuryAfflictionSystem> = DFInjuryAfflictionSystem.Get();
-
-    if IsSystemEnabledAndRunning(injurySystem) {
-        let effectID: TweakDBID = evt.staticData.GetID();
-        let effectTags: array<CName> = evt.staticData.GameplayTags();
-
-        injurySystem.OnStatusEffectRemoved(effectID, effectTags);
-    }
-    
-	return wrappedMethod(evt);
-}
-
 class DFInjuryAfflictionSystemEventListener extends DFAfflictionSystemEventListener {
 	private func GetSystemInstance() -> wref<DFAfflictionSystemBase> {
 		return DFInjuryAfflictionSystem.Get();
@@ -64,7 +45,6 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
     private let injuryMaxStacks: Uint32 = 4u;
     private let injuryEffect: TweakDBID = t"DarkFutureStatusEffect.Injury";
     private let injuryCureEffect: TweakDBID = t"BaseStatusEffect.HealthBooster";
-    private let injurySuppressionEffectTag: CName = n"DarkFutureAddictionPrimaryEffectNarcotic";
     private let injuryHealthLossAccumulationRate: Float = 10.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFInjuryAfflictionSystem> {
@@ -90,34 +70,20 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
     }
 
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = false;
+        this.debugEnabled = true;
     }
 
 	private func SetupData() -> Void {
-		let cureEffect: DFAfflictionCureEffect;
-        cureEffect.effectID = this.injuryCureEffect;
-        cureEffect.cureTimerMode = DFAfflictionEffectTimerMode.Instantaneous;
-        this.cureEffect = cureEffect;
-
-        let suppressionEffect: DFAfflictionSuppressionEffect;
-        suppressionEffect.effectTag = this.injurySuppressionEffectTag;
-        suppressionEffect.suppressionTimerMode = DFAfflictionEffectTimerMode.UseEffectDuration;
-        this.suppressionEffect = suppressionEffect;
+        this.cureEffect = this.injuryCureEffect;
 	}
+
+    private final func DoPostSuspendActions() -> Void {
+        this.accumulatedHealthPctLoss = 0.0;
+    }
 
     //
     //  Required Overrides
     //
-    private func DoPostAfflictionSuppressionActions() -> Void {}
-    private func DoPostAfflictionApplyActions() -> Void {}
-    private func DoPostAfflictionCureActions() -> Void {}
-    
-    private func OnTimeSkipFinishedActual(afflictionData: DFAfflictionDatum) -> Void {
-        this.SetAfflictionStacks(afflictionData.injury.stackCount);
-        this.SetCurrentAfflictionCureDurationInGameTimeSeconds(afflictionData.injury.cureDuration);
-        this.SetCurrentAfflictionSuppressionDurationInGameTimeSeconds(afflictionData.injury.suppressionDuration);
-    }
-
 	public func OnDamageReceivedEvent(evt: ref<gameDamageReceivedEvent>) -> Void {
         if RunGuard(this) { return; }
 
@@ -152,8 +118,8 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
             this.hasShownTutorial = true;
 
             let tutorial: DFTutorial;
-            tutorial.title = GetLocalizedTextByKey(n"DarkFutureTutorialInjuryTitle");
-            tutorial.message = GetLocalizedTextByKey(n"DarkFutureTutorialInjury");
+            tutorial.title = GetLocalizedTextByKey(this.GetTutorialTitleKey());
+            tutorial.message = GetLocalizedTextByKey(this.GetTutorialMessageKey());
             this.NotificationService.QueueTutorial(tutorial);
         }
     }
@@ -169,7 +135,7 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
 
             if this.accumulatedHealthPctLoss >= 1.0 {
                 this.accumulatedHealthPctLoss = 0.0;
-                this.TryToApplyAfflictionStack();
+                this.ApplyAfflictionStack();
             }
         }
     }

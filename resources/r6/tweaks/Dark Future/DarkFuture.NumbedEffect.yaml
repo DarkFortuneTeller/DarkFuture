@@ -1,0 +1,78 @@
+#
+#
+# Numbed
+#
+#
+DarkFutureStatusEffectTypes.Numbed:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Numbed
+
+DarkFutureStatusEffect.Numbed_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNumbedDesc"
+  displayName: l"DarkFutureNumbed01Name"
+  fluffText: ''
+  iconPath: qh_brainmelt
+  priority: -10
+  floatValues: []
+  intValues:
+    - -35
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NumbedMaxStacks_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.NumbedMaxStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NumbedMaxStacks_StatModifier
+
+DarkFutureStatusEffect.NumbedDurationValue:
+  $type: gamedataConstantStatModifier_Record
+  value: 300
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.NumbedDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NumbedDurationValue
+
+DarkFutureStatusEffect.Numbed:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.NumbedDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.NumbedMaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Numbed
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Numbed_UIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFutureNumbed
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []

@@ -1,11 +1,26 @@
 # Common Records
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 DarkFutureStatusEffectTypes.Energy:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
-  enumName: Fatigue
+  enumName: Energy
 
-UIIcon.DarkFutureFatigueIcon:
+UIIcon.DarkFutureEnergyIcon:
   $type: gamedataUIIcon_Record
   atlasPartName: wait
   atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
@@ -43,7 +58,7 @@ DarkFutureStatusEffect.EnergyPenalty_01_UIData:
   description: l"DarkFutureEnergyPenalty01Desc"
   displayName: l"DarkFutureEnergyPenalty01Name"
   fluffText: ''
-  iconPath: DarkFutureFatigueIcon
+  iconPath: DarkFutureEnergyIcon
   priority: -10
   floatValues: []
   intValues:
@@ -58,7 +73,7 @@ DarkFutureStatusEffect.EnergyPenalty_01:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -150,7 +165,7 @@ DarkFutureStatusEffect.EnergyPenalty_02_UIData:
   description: l"DarkFutureEnergyPenalty02Desc"
   displayName: l"DarkFutureEnergyPenalty02Name"
   fluffText: ''
-  iconPath: DarkFutureFatigueIcon
+  iconPath: DarkFutureEnergyIcon
   priority: -10
   floatValues: []
   intValues:
@@ -166,7 +181,7 @@ DarkFutureStatusEffect.EnergyPenalty_02:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -259,7 +274,7 @@ DarkFutureStatusEffect.EnergyPenalty_03_UIData:
   description: l"DarkFutureEnergyPenalty03Desc"
   displayName: l"DarkFutureEnergyPenalty03Name"
   fluffText: ''
-  iconPath: DarkFutureFatigueIcon
+  iconPath: DarkFutureEnergyIcon
   priority: -10
   floatValues: []
   intValues:
@@ -275,7 +290,7 @@ DarkFutureStatusEffect.EnergyPenalty_03:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -368,7 +383,7 @@ DarkFutureStatusEffect.EnergyPenalty_04_UIData:
   description: l"DarkFutureEnergyPenalty04Desc"
   displayName: l"DarkFutureEnergyPenalty04Name"
   fluffText: ''
-  iconPath: DarkFutureFatigueIcon
+  iconPath: DarkFutureEnergyIcon
   priority: -10
   floatValues: []
   intValues:
@@ -384,7 +399,7 @@ DarkFutureStatusEffect.EnergyPenalty_04:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False

@@ -2,10 +2,6 @@
 #   Mention immunity benefits and +2 Nerve on kill.
 NewPerks.Tech_Master_Perk_3.loc_desc_key: l"DarkFutureTechMasterPerk3UpdatedDesc"
 
-# Calm Mind
-#   Mention -50% Nerve bonus in combat.
-NewPerks.Body_Central_Perk_3_1.loc_desc_key: l"DarkFutureBodyCentralPerk31UpdatedDesc"
-
 # Unstoppable Force
 #   Mention that this perk does not apply to Dark Future effects.
 NewPerks.Body_Central_Perk_3_4.loc_desc_key: l"DarkFutureBodyCentralPerk34UpdatedDesc"

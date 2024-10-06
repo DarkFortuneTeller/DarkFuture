@@ -18,6 +18,21 @@
 #     Weight, and the Booster consumable are also adjusted. The Titanium Bones Cyberware benefit
 #     and permanent Carry Capacity Shards were not modified.
 
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 DarkFutureStatusEffectTypes.AlwaysOnStaminaRegen:
   $type: gamedataStatusEffectType_Record
@@ -46,7 +61,7 @@ DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -90,7 +105,7 @@ DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False

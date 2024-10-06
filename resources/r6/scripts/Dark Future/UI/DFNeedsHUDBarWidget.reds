@@ -291,7 +291,13 @@ public class DFNeedsHUDBarGroup {
 
     private final func SetAllFadeOut() -> Void {
         if this.m_fadeOutDelayID != GetInvalidDelayID() {
-            return;
+            if this.HUDSystem.HUDUIBlockedDueToMenuOpen || this.HUDSystem.HUDUIBlockedDueToCameraControl {
+                // Allow the bars to fade out.
+                this.UnregisterForFadeOut();
+            } else {
+                // For any other reason, ignore this request.
+                return;
+            }
         }
 
         DFLog(this.debugEnabled, this, "SetAllFadeOut");
@@ -614,7 +620,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_previousValue = this.m_currentValue;
         this.m_currentValue = newValue;
 
-        this.m_barcap.SetVisible(newValue <= 0.98 && newValue >= 0.02);
+        this.m_barcap.SetVisible(newValue <= 0.99 && newValue >= 0.01);
 
         if instant {
             this.StopAnimProxyIfDefined(this.m_full_anim_proxy);

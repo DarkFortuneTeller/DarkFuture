@@ -1,8 +1,24 @@
 # Common Records
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
 DarkFutureStatusEffectTypes.Nerve:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
-  enumName: Stress
+  enumName: Nerve
 
 UIIcon.NervePenalty:
   $type: gamedataUIIcon_Record
@@ -82,7 +98,7 @@ DarkFutureStatusEffect.NervePenalty_01:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -344,7 +360,7 @@ DarkFutureStatusEffect.NervePenalty_02:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -372,7 +388,7 @@ DarkFutureStatusEffect.NervePenalty_02_WeaponEffects:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -380,7 +396,6 @@ DarkFutureStatusEffect.NervePenalty_02_WeaponEffects:
   savable: True
   statusEffectType: DarkFutureStatusEffectTypes.Nerve
   stopActiveSfxOnDeactivate: True
-  uiData:
   debugTags: []
   gameplayTags:
     - Debuff
@@ -632,7 +647,7 @@ DarkFutureStatusEffect.NervePenalty_03:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -660,7 +675,7 @@ DarkFutureStatusEffect.NervePenalty_03_WeaponEffects:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -668,7 +683,6 @@ DarkFutureStatusEffect.NervePenalty_03_WeaponEffects:
   savable: True
   statusEffectType: DarkFutureStatusEffectTypes.Nerve
   stopActiveSfxOnDeactivate: True
-  uiData:
   debugTags: []
   gameplayTags:
     - Debuff
@@ -920,7 +934,7 @@ DarkFutureStatusEffect.NervePenalty_04:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -935,6 +949,7 @@ DarkFutureStatusEffect.NervePenalty_04:
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
     - DarkFutureCanHideOnBuffBar
+    - DarkFutureEatingDrinkingRestricted
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.NervePenalty_04_StatsPackage
@@ -948,7 +963,7 @@ DarkFutureStatusEffect.NervePenalty_04_WeaponEffects:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -956,7 +971,6 @@ DarkFutureStatusEffect.NervePenalty_04_WeaponEffects:
   savable: True
   statusEffectType: DarkFutureStatusEffectTypes.Nerve
   stopActiveSfxOnDeactivate: True
-  uiData:
   debugTags: []
   gameplayTags:
     - Debuff

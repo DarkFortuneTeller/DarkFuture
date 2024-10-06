@@ -98,10 +98,11 @@ public abstract class DFSystem extends ScriptableSystem {
         this.RegisterAllRequiredDelayCallbacks();
 
         this.state = DFSystemState.Running;
-        DFLog(this.debugEnabled, this, "Running!");
+        DFLog(this.debugEnabled, this, "INIT - Current State: " + ToString(this.state));
     }
 
     public func Suspend() -> Void {
+        DFLog(this.debugEnabled, this, "SUSPEND - Current State: " + ToString(this.state));
         if Equals(this.state, DFSystemState.Running) {
             this.state = DFSystemState.Suspended;
             this.UnregisterAllDelayCallbacks();
@@ -110,6 +111,7 @@ public abstract class DFSystem extends ScriptableSystem {
     }
 
     public func Resume() -> Void {
+        DFLog(this.debugEnabled, this, "RESUME - Current State: " + ToString(this.state));
         if Equals(this.state, DFSystemState.Suspended) {
             this.state = DFSystemState.Running;
             this.RegisterAllRequiredDelayCallbacks();
@@ -136,25 +138,19 @@ public abstract class DFSystem extends ScriptableSystem {
     }
 
     public func OnSettingChanged(changedSettings: array<String>) -> Void {
-        this.OnSettingChangedSpecific(changedSettings);
-
         // Check for specific system toggle
-        if ArrayContains(changedSettings, this.GetSystemToggleSettingString()) {
-            if Equals(this.GetSystemToggleSettingValue(), true) {
-                this.Resume();
-            } else {
-                this.Suspend();
+        if this.Settings.mainSystemEnabled {
+            if ArrayContains(changedSettings, this.GetSystemToggleSettingString()) {
+                if Equals(this.GetSystemToggleSettingValue(), true) {
+                    this.Resume();
+                } else {
+                    this.Suspend();
+                }
             }
         }
+        
 
-        // Check for main system toggle
-        if ArrayContains(changedSettings, "mainSystemEnabled") {
-            if Equals(this.Settings.mainSystemEnabled, true) {
-                this.Resume();
-            } else {
-                this.Suspend();
-            }
-        }
+        this.OnSettingChangedSpecific(changedSettings);
     }
 
     //

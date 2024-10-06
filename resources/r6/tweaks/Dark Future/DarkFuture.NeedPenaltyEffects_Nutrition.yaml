@@ -1,11 +1,26 @@
 # Common Records
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 DarkFutureStatusEffectTypes.Nutrition:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
-  enumName: Hunger
+  enumName: Nutrition
 
-UIIcon.DarkFutureHungerIcon:
+UIIcon.DarkFutureNutritionIcon:
   $type: gamedataUIIcon_Record
   atlasPartName: food_vendor
   atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
@@ -61,7 +76,7 @@ DarkFutureStatusEffect.NutritionPenalty_01_UIData:
   description: l"DarkFutureNutritionPenalty01Desc"
   displayName: l"DarkFutureNutritionPenalty01Name"
   fluffText: ''
-  iconPath: DarkFutureHungerIcon
+  iconPath: DarkFutureNutritionIcon
   priority: -10
   floatValues: []
   intValues:
@@ -76,7 +91,7 @@ DarkFutureStatusEffect.NutritionPenalty_01:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -166,7 +181,7 @@ DarkFutureStatusEffect.NutritionPenalty_02_UIData:
   description: l"DarkFutureNutritionPenalty02Desc"
   displayName: l"DarkFutureNutritionPenalty02Name"
   fluffText: ''
-  iconPath: DarkFutureHungerIcon
+  iconPath: DarkFutureNutritionIcon
   priority: -10
   floatValues: []
   intValues:
@@ -182,7 +197,7 @@ DarkFutureStatusEffect.NutritionPenalty_02:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -272,7 +287,7 @@ DarkFutureStatusEffect.NutritionPenalty_03_UIData:
   description: l"DarkFutureNutritionPenalty03Desc"
   displayName: l"DarkFutureNutritionPenalty03Name"
   fluffText: ''
-  iconPath: DarkFutureHungerIcon
+  iconPath: DarkFutureNutritionIcon
   priority: -10
   floatValues: []
   intValues:
@@ -288,7 +303,7 @@ DarkFutureStatusEffect.NutritionPenalty_03:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -378,7 +393,7 @@ DarkFutureStatusEffect.NutritionPenalty_04_UIData:
   description: l"DarkFutureNutritionPenalty04Desc"
   displayName: l"DarkFutureNutritionPenalty04Name"
   fluffText: ''
-  iconPath: DarkFutureHungerIcon
+  iconPath: DarkFutureNutritionIcon
   priority: -10
   floatValues: []
   intValues:
@@ -394,7 +409,7 @@ DarkFutureStatusEffect.NutritionPenalty_04:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False

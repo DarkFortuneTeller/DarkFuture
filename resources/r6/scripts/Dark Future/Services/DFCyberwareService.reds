@@ -32,13 +32,9 @@ public final class DFCyberwareService extends DFSystem {
 	private let equippedCyberwareItemIDs: array<ItemID>;
 
     private let cyberwareHasSecondHeart: Bool = false;
-    private let cyberwareHasSynLungs: Bool = false;
-    private let cyberwareHasSynLiver: Bool = false;
-    private let cyberwareAlcoholEffectDurationOverride: Float = 0.0;
+    private let cyberwareAlcoholNumbedRequiredStacksOverride: Uint32 = 0u;
     private let cyberwareNicotineEffectDurationOverride: Float = 0.0;
-	private let cyberwareExertionHydrationChangeBonusMult: Float = 1.0;
 	private let cyberwareNerveCostWhenHitBonusMult: Float = 1.0;
-	private let cyberwareNerveCostStressBonusMult: Float = 0.0;
 	private let cyberwareNerveLossFromNarcoticsBonusMult: Float = 1.0;
 	private let cyberwareSecondHeartNerveRestoreAmount: Float = 30.0;
 
@@ -85,7 +81,7 @@ public final class DFCyberwareService extends DFSystem {
 	}
 	
 	private final func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 
 	private final func GetSystems() -> Void {
@@ -108,12 +104,8 @@ public final class DFCyberwareService extends DFSystem {
 	//	System-Specific Methods
 	private final func SetDefaultBonusState() -> Void {
 		this.cyberwareHasSecondHeart = false;
-		this.cyberwareHasSynLungs = false;
-		this.cyberwareHasSynLiver = false;
-		this.cyberwareAlcoholEffectDurationOverride = 0.0;
+		this.cyberwareAlcoholNumbedRequiredStacksOverride = 0u;
 		this.cyberwareNicotineEffectDurationOverride = 0.0;
-		this.cyberwareExertionHydrationChangeBonusMult = 1.0;
-		this.cyberwareNerveCostStressBonusMult = 0.0;
 		this.cyberwareNerveLossFromNarcoticsBonusMult = 1.0;
 		this.cyberwareSecondHeartNerveRestoreAmount = 30.0;
 	}
@@ -142,14 +134,10 @@ public final class DFCyberwareService extends DFSystem {
 
     private final func UpdateCyberwareBonuses() -> Void {
 		// Reset data.
-		this.cyberwareExertionHydrationChangeBonusMult = 1.0;
-		this.cyberwareNerveCostStressBonusMult = 0.0;
 		this.cyberwareNerveLossFromNarcoticsBonusMult = 1.0;
-        this.cyberwareAlcoholEffectDurationOverride = 0.0;
+        this.cyberwareAlcoholNumbedRequiredStacksOverride = 0u;
         this.cyberwareNicotineEffectDurationOverride = 0.0;
 		this.cyberwareHasSecondHeart = false;
-		this.cyberwareHasSynLungs = false;
-		this.cyberwareHasSynLiver = false;
 
 		let i: Int32 = 0;
 		while i < ArraySize(this.equippedCyberwareItemIDs) {
@@ -161,105 +149,52 @@ public final class DFCyberwareService extends DFSystem {
 				if Equals(cyberwareType, n"IronLungs") {
 					switch quality {
 						case gamedataQuality.Rare:
-							this.cyberwareExertionHydrationChangeBonusMult = 0.70; // 30% bonus
-							this.cyberwareNicotineEffectDurationOverride = 210.0;
+							this.cyberwareNicotineEffectDurationOverride = 210.0;  // 30% bonus
 							break;
 						case gamedataQuality.RarePlus:
-							this.cyberwareExertionHydrationChangeBonusMult = 0.65; // 35% bonus
-							this.cyberwareNicotineEffectDurationOverride = 180.0;
+							this.cyberwareNicotineEffectDurationOverride = 180.0;  // 40% bonus
 							break;
 						case gamedataQuality.Epic:
-							this.cyberwareExertionHydrationChangeBonusMult = 0.60; // 40% bonus
-							this.cyberwareNicotineEffectDurationOverride = 150.0;
+							this.cyberwareNicotineEffectDurationOverride = 150.0;  // 50% bonus
 							break;
 						case gamedataQuality.EpicPlus:
-							this.cyberwareExertionHydrationChangeBonusMult = 0.55; // 45% bonus
-							this.cyberwareNicotineEffectDurationOverride = 120.0;
+							this.cyberwareNicotineEffectDurationOverride = 120.0;  // 60% bonus
 							break;
 						case gamedataQuality.Legendary:
-							this.cyberwareExertionHydrationChangeBonusMult = 0.50; // 50% bonus
-							this.cyberwareNicotineEffectDurationOverride = 90.0;
+							this.cyberwareNicotineEffectDurationOverride = 90.0;   // 70% bonus
 							break;
 						case gamedataQuality.LegendaryPlus:
-							this.cyberwareExertionHydrationChangeBonusMult = 0.45; // 55% bonus
-							this.cyberwareNicotineEffectDurationOverride = 60.0;
+							this.cyberwareNicotineEffectDurationOverride = 60.0;   // 80% bonus
 							break;
 						case gamedataQuality.LegendaryPlusPlus:
-							this.cyberwareExertionHydrationChangeBonusMult = 0.40; // 60% bonus
-							this.cyberwareNicotineEffectDurationOverride = 30.0;
+							this.cyberwareNicotineEffectDurationOverride = 30.0;   // 90% bonus
 							break;
 					}
-					this.cyberwareHasSynLungs = true;
 
-				} else if Equals(cyberwareType, n"SynLiver") {
+				} else if Equals(cyberwareType, n"EndorphinRegulator") {
 					switch quality {
-						case gamedataQuality.Rare:
-							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.60; // 40% bonus
-							this.cyberwareAlcoholEffectDurationOverride = 22.5;
-							break;
-						case gamedataQuality.RarePlus:
-							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.50; // 50% bonus
-							this.cyberwareAlcoholEffectDurationOverride = 22.5;
-							break;
 						case gamedataQuality.Epic:
 							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.40; // 60% bonus
-							this.cyberwareAlcoholEffectDurationOverride = 15.0;
+							this.cyberwareAlcoholNumbedRequiredStacksOverride = 3u;
 							break;
 						case gamedataQuality.EpicPlus:
 							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.30; // 70% bonus
-							this.cyberwareAlcoholEffectDurationOverride = 15.0;
+							this.cyberwareAlcoholNumbedRequiredStacksOverride = 3u;
 							break;
 						case gamedataQuality.Legendary:
 							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.20; // 80% bonus
-							this.cyberwareAlcoholEffectDurationOverride = 7.5;
+							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
 							break;
 						case gamedataQuality.LegendaryPlus:
 							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.10; // 90% bonus
-							this.cyberwareAlcoholEffectDurationOverride = 7.5;
+							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
 							break;
 						case gamedataQuality.LegendaryPlusPlus:
 							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.0; // 100% bonus
-							this.cyberwareAlcoholEffectDurationOverride = 7.5;
+							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
 							break;
 					}
-					this.cyberwareHasSynLiver = true;
 
-				} else if Equals(cyberwareType, n"DetectorRush") { // Adrenaline Converter
-					switch quality {
-						case gamedataQuality.Common:
-							this.cyberwareNerveCostStressBonusMult = 0.15; // 15% bonus
-							break;
-						case gamedataQuality.CommonPlus:
-							this.cyberwareNerveCostStressBonusMult = 0.17; // 17% bonus
-							break;
-						case gamedataQuality.Uncommon:
-							this.cyberwareNerveCostStressBonusMult = 0.19; // 19% bonus
-							break;
-						case gamedataQuality.UncommonPlus:
-							this.cyberwareNerveCostStressBonusMult = 0.21; // 21% bonus
-							break;
-						case gamedataQuality.Rare:
-							this.cyberwareNerveCostStressBonusMult = 0.23; // 23% bonus
-							break;
-						case gamedataQuality.RarePlus:
-							this.cyberwareNerveCostStressBonusMult = 0.25; // 25% bonus
-							break;
-						case gamedataQuality.Epic:
-							this.cyberwareNerveCostStressBonusMult = 0.27; // 27% bonus
-							break;
-						case gamedataQuality.EpicPlus:
-							this.cyberwareNerveCostStressBonusMult = 0.29; // 29% bonus
-							break;
-						case gamedataQuality.Legendary:
-							this.cyberwareNerveCostStressBonusMult = 0.31; // 31% bonus
-							break;
-						case gamedataQuality.LegendaryPlus:
-							this.cyberwareNerveCostStressBonusMult = 0.33; // 33% bonus
-							break;
-						case gamedataQuality.LegendaryPlusPlus:
-							this.cyberwareNerveCostStressBonusMult = 0.35; // 35% bonus
-							break;
-					}
 				} else if Equals(cyberwareType, n"SecondHeart") {
 					this.cyberwareHasSecondHeart = true;
 				}
@@ -268,55 +203,23 @@ public final class DFCyberwareService extends DFSystem {
 			i += 1;
 		}
 
-		if !this.cyberwareHasSynLungs {
-			this.NicotineAddictionSystem.ResetEffectDuration();
-		}
-
-		if !this.cyberwareHasSynLiver {
-			this.AlcoholAddictionSystem.ResetEffectDuration();
-		}
-
 		this.NicotineAddictionSystem.SetNicotineAddictionBackoffDurations();
 
 		DFLog(this.debugEnabled, this, "UpdateCyberwareBonuses Result:");
-		DFLog(this.debugEnabled, this, "    cyberwareExertionHydrationChangeBonusMult = " + ToString(this.cyberwareExertionHydrationChangeBonusMult));
-		DFLog(this.debugEnabled, this, "    cyberwareNerveCostStressBonusMult = " + ToString(this.cyberwareNerveCostStressBonusMult));
 		DFLog(this.debugEnabled, this, "    cyberwareNerveLossFromNarcoticsBonusMult = " + ToString(this.cyberwareNerveLossFromNarcoticsBonusMult));
 		DFLog(this.debugEnabled, this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
-        DFLog(this.debugEnabled, this, "    cyberwareHasSynLungs = " + ToString(this.cyberwareHasSynLungs));
-        DFLog(this.debugEnabled, this, "    cyberwareHasSynLiver = " + ToString(this.cyberwareHasSynLiver));
 		DFLog(this.debugEnabled, this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
-		DFLog(this.debugEnabled, this, "    cyberwareAlcoholEffectDurationOverride = " + ToString(this.cyberwareAlcoholEffectDurationOverride));
+		DFLog(this.debugEnabled, this, "    cyberwareAlcoholNumbedRequiredStacksOverride = " + ToString(this.cyberwareAlcoholNumbedRequiredStacksOverride));
 	}
 
     public final func GetHasSecondHeart() -> Bool {
         return this.cyberwareHasSecondHeart;
     }
 
-    public final func GetHasSynLungs() -> Bool {
-        return this.cyberwareHasSynLungs;
-    }
-
-    public final func GetHasSynLiver() -> Bool {
-        return this.cyberwareHasSynLiver;
-    }
-
-    public final func GetAlcoholEffectDurationOverride() -> Float {
-        return this.cyberwareAlcoholEffectDurationOverride;
-    }
-
     public final func GetNicotineEffectDurationOverride() -> Float {
         return this.cyberwareNicotineEffectDurationOverride;
     }
-
-    public final func GetExertionHydrationChangeBonusMult() -> Float {
-        return this.cyberwareExertionHydrationChangeBonusMult;
-    }
-
-    public final func GetNerveCostFromStressBonusMult() -> Float {
-        return this.cyberwareNerveCostStressBonusMult;
-    }
-
+	
     public final func GetNerveLossFromNarcoticsBonusMult() -> Float {
         return this.cyberwareNerveLossFromNarcoticsBonusMult;
     }
@@ -324,6 +227,10 @@ public final class DFCyberwareService extends DFSystem {
     public final func GetSecondHeartNerveRestoreAmount() -> Float {
         return this.cyberwareSecondHeartNerveRestoreAmount;
     }
+
+	public final func GetAlcoholNumbedRequiredStacksOverride() -> Uint32 {
+		return this.cyberwareAlcoholNumbedRequiredStacksOverride;
+	}
 }
 
 //

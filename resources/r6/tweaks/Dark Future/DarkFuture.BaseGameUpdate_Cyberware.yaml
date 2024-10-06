@@ -1,97 +1,18 @@
-#
-#
-# Adrenaline Converter
-#
-#
-Items.AdvancedDetectorRushCommon_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -15
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
 
-Items.AdvancedDetectorRushCommonPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -17
-
-Items.AdvancedDetectorRushUncommon_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -19
-
-Items.AdvancedDetectorRushUncommonPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -21
-
-Items.AdvancedDetectorRushRare_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -23
-
-Items.AdvancedDetectorRushRarePlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -25
-
-Items.AdvancedDetectorRushEpic_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -27
-
-Items.AdvancedDetectorRushEpicPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -29
-
-Items.AdvancedDetectorRushLegendary_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -31
-
-Items.AdvancedDetectorRushLegendaryPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -33
-
-Items.AdvancedDetectorRushLegendaryPlusPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -35
-
-Items.IconicAdvancedDetectorRushRare_inline5:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -23
-
-Items.IconicAdvancedDetectorRushRarePlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -25
-
-Items.IconicAdvancedDetectorRushEpic_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -27
-
-Items.IconicAdvancedDetectorRushEpicPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -29
-
-Items.IconicAdvancedDetectorRushLegendary_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -31
-
-Items.IconicAdvancedDetectorRushLegendaryPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -33
-
-Items.IconicAdvancedDetectorRushLegendaryPlusPlus_inline1:
-  localizedDescription: l"DarkFutureCyberwareAdrenalineConverterDesc"
-  intValues:
-    - -35
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 #
 #
@@ -170,7 +91,7 @@ DarkFutureStatusEffect.SecondHeartNerveRestore:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: RTDB.StatusEffect_inline0
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False

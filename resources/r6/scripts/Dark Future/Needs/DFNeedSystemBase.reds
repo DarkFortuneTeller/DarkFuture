@@ -21,6 +21,7 @@ import DarkFuture.Utils.RunGuard
 import DarkFuture.Main.{
 	DFMainSystem,
 	DFTimeSkipData,
+	DFNeedChangeDatum,
 	MainSystemItemConsumedEvent
 }
 import DarkFuture.Gameplay.DFInteractionSystem
@@ -42,12 +43,6 @@ import DarkFuture.UI.{
 	DFNeedHUDUIUpdate,
 	DFHUDBarType,
 	HUDSystemUpdateUIRequestEvent
-}
-
-public struct DFNeedChangeDatum {
-	public let value: Float;
-	public let floor: Float;
-	public let ceiling: Float;
 }
 
 public struct DFNeedChangeUIFlags {
@@ -251,15 +246,12 @@ public abstract class DFNeedSystemBase extends DFSystem {
     private persistent let needValue: Float = 100.0;
 	private persistent let hasShownTutorial: Bool = false;
 	
-	private let BlackboardSystem: ref<BlackboardSystem>;
 	private let MainSystem: ref<DFMainSystem>;
 	private let InteractionSystem: ref<DFInteractionSystem>;
 	private let GameStateService: ref<DFGameStateService>;
 	private let NotificationService: ref<DFNotificationService>;
 	private let CyberwareService: ref<DFCyberwareService>;
 	private let PlayerStateService: ref<DFPlayerStateService>;
-
-	private let PSMBlackboard: ref<IBlackboard>;
 
     private let needStageThresholdDeficits: array<Float>;
     private let needStageStatusEffects: array<TweakDBID>;
@@ -292,9 +284,15 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 	private func DoPostSuspendActions() -> Void {
 		this.SuspendFX();
-		this.needValue = 100.0;
-		this.ResetContextuallyDelayedNeedValueChange();
+
+		// Failsafe
+		if this.needValue < 10.0 {
+			this.needValue = 10.0;
+		}
 		this.lastNeedStage = 0;
+
+		this.ResetContextuallyDelayedNeedValueChange();
+		StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetNeedStageStatusEffectTag());
 	}
 
 	private func DoPostResumeActions() -> Void {
@@ -304,13 +302,13 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.OnFuryStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury"));
 		this.OnCyberspaceChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"CyberspacePresence"));
 		this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
+		this.ReevaluateSystem();
 	}
 
 	private func DoStopActions() -> Void {}
 	
 	private func GetSystems() -> Void {
 		let gameInstance = GetGameInstance();
-		this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
 		this.MainSystem = DFMainSystem.GetInstance(gameInstance);
 		this.InteractionSystem = DFInteractionSystem.GetInstance(gameInstance);
 		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
@@ -319,9 +317,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
 	}
 
-	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {
-		this.PSMBlackboard = this.BlackboardSystem.GetLocalInstanced(attachedPlayer.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
-	}
+	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 
 	private func RegisterAllRequiredDelayCallbacks() -> Void {
 		this.RegisterUpdateCallback();
@@ -517,13 +513,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
         return this.needMax;
     }
 
-	public final func ForceNeedMaxValueUpdate() -> Void {
-		if RunGuard(this) { return; }
-
-		this.ChangeNeedValue(0.0);
-	}
-
-    public func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt forceTraumaAccumulation: Bool, opt suppressRecoveryNotification: Bool) -> Void {
+    public func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt suppressRecoveryNotification: Bool, opt maxOverride: Float) -> Void {
 		if RunGuard(this) { return; }
 		DFLog(this.debugEnabled, this, "ChangeNeedValue: amount = " + ToString(amount) + ", uiFlags = " + ToString(uiFlags) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
 		
@@ -566,8 +556,8 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	private final func GetClampedNeedChangeFromData(needChange: DFNeedChangeDatum) -> Float {
 		if needChange.value != 0.0 {
 			let currentValue: Float = this.GetNeedValue();
-			let needNewValue: Float = currentValue + needChange.value;
-			let isIncreasing: Bool = needChange.value > 0.0;
+			let needNewValue: Float = currentValue + needChange.value + needChange.valueOnStatusEffectApply;
+			let isIncreasing: Bool = (needChange.value + needChange.valueOnStatusEffectApply) > 0.0;
 
 			if isIncreasing {
 				if currentValue >= needChange.ceiling {
@@ -681,9 +671,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		DFLog(this.debugEnabled, this, "RefreshNeedStatusEffects -- Removing all Status Effects and re-applying");
 
 		// Remove the status effects associated with this Need.
-		for statusEffect in this.needStageStatusEffects {
-			StatusEffectHelper.RemoveStatusEffect(this.player, statusEffect);
-		}
+		StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetNeedStageStatusEffectTag());
 
         let currentValue: Float = this.needValue;
         let currentStage: Int32 = this.GetNeedStageAtValue(currentValue);

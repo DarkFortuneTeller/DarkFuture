@@ -21,8 +21,6 @@ import DarkFuture.Main.{
 	DFNeedsDatum,
 	DFAddictionDatum,
 	DFAddictionUpdateDatum,
-	DFAfflictionDatum,
-	DFAfflictionUpdateDatum,
 	DFFutureHoursData,
 	DFNeedChangeDatum,
 	DFTimeSkipData
@@ -48,7 +46,6 @@ import DarkFuture.Addictions.{
 	DFNicotineAddictionSystem,
 	DFNarcoticAddictionSystem
 }
-import DarkFuture.Afflictions.DFTraumaAfflictionSystem
 
 public struct DFAddictionTimeSkipIterationStateDatum {
 	public let addictionAmount: Float;
@@ -153,11 +150,10 @@ public class DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback exten
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
 	let interactionSystem: ref<DFInteractionSystem> = DFInteractionSystem.Get();
+	let effectID: TweakDBID = evt.staticData.GetID();
+	let effectTags: array<CName> = evt.staticData.GameplayTags();
 
-	if IsSystemEnabledAndRunning(interactionSystem) {
-		let effectID: TweakDBID = evt.staticData.GetID();
-		let effectTags: array<CName> = evt.staticData.GameplayTags();
-			
+	if IsSystemEnabledAndRunning(interactionSystem) {		
 		if Equals(effectID, t"HousingStatusEffect.Energized") {
 			if DFNerveSystem.Get().GetHasNausea() {
 				if StatusEffectSystem.ObjectHasStatusEffect(this, t"HousingStatusEffect.Energized") {
@@ -167,14 +163,11 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 			} else {
 				interactionSystem.DrankCoffeeFromChoice();
 			}
-
-		} else if Equals(effectID, t"DarkFutureStatusEffect.GlitterStaminaMovement") {
-			interactionSystem.ProcessGlitterConsumed();
-
-		} else if ArrayContains(effectTags, n"DarkFutureSmokingFX") {
-			interactionSystem.TryToPlaySmokingFromItemFX();
-
 		}
+	}
+
+	if ArrayContains(effectTags, n"DarkFutureSmokingFromItem") {
+		interactionSystem.HandleSmokingFromItem();
 	}
 
 	return wrappedMethod(evt);
@@ -198,7 +191,6 @@ public final class DFInteractionSystem extends DFSystem {
 	private let AlcoholAddictionSystem: ref<DFAlcoholAddictionSystem>;
 	private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
 	private let NarcoticAddictionSystem: ref<DFNarcoticAddictionSystem>;
-	private let TraumaSystem: ref<DFTraumaAfflictionSystem>;
 
     private let BlackboardSystem: ref<BlackboardSystem>;
     private let UIInteractionsBlackboard: ref<IBlackboard>;
@@ -218,7 +210,7 @@ public final class DFInteractionSystem extends DFSystem {
 	private let sq017_lastKerryCoffeePosition: Vector4;
 
 	// Sleeping and Waiting
-	private let skippingTimeFromRadialHubMenu: Bool = false;
+	private let skippingTimeFromSleeping: Bool = false;
 	private let lastEnergyBeforeSleeping: Float = 0.0;
 
 	private let sleepingReduceMetabolismMult: Float = 0.4;
@@ -251,13 +243,13 @@ public final class DFInteractionSystem extends DFSystem {
 		this.q003_lastMeredithStoutPosition = new Vector4(0.0, 0.0, 0.0, 0.0);
 		this.mq006_lastRollercoasterPosition = new Vector4(0.0, 0.0, 0.0, 0.0);
 		this.sq017_lastKerryCoffeePosition = new Vector4(0.0, 0.0, 0.0, 0.0);
-		this.skippingTimeFromRadialHubMenu = false;
+		this.skippingTimeFromSleeping = false;
 		this.lastEnergyBeforeSleeping = 0.0;
 		this.queuedSmokingFX = false;
 	}
 	private final func DoPostResumeActions() -> Void {}
 	private final func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 	private final func DoStopActions() -> Void {}
 	private final func SetupData() -> Void {}
@@ -292,7 +284,6 @@ public final class DFInteractionSystem extends DFSystem {
 		this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
 		this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
 		this.NarcoticAddictionSystem = DFNarcoticAddictionSystem.GetInstance(gameInstance);
-		this.TraumaSystem = DFTraumaAfflictionSystem.GetInstance(gameInstance);
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
 	}
 
@@ -337,7 +328,7 @@ public final class DFInteractionSystem extends DFSystem {
     //
     private final func IsSleepChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
 		DFLog(this.debugEnabled, this, "choiceIconName: " + NameToString(choiceIconName));
-		if StrContains(choiceCaption, "[Sleep]") && Equals(choiceIconName, n"Wait") {
+		if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSleep")) && Equals(choiceIconName, n"Wait") {
 			return true;
 		}
 
@@ -345,41 +336,41 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     private final func IsFXAllowedChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if Equals(choiceCaption, "[Take shower]") {
+		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeShower")) {
 			return true;
-		} else if Equals(choiceCaption, "[Look in mirror]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionLookInMirror")) {
 			return true;
-		} else if Equals(choiceCaption, "[Sit]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSit")) {
 			return true;
-		} else if Equals(choiceCaption, "[Stand]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStand")) {
 			return true;
-		} else if Equals(choiceCaption, "[Turn on TV]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTurnOnTV")) {
 			return true;
-		} else if Equals(choiceCaption, "[Look outside]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionLookOutside")) {
 			return true;
-		} else if Equals(choiceCaption, "[Stop looking]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStopLooking")) {
 			return true;
-		} else if Equals(choiceCaption, "[Step away]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStepAway")) {
 			return true;
-		} else if Equals(choiceCaption, "[Smoke]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSmoke")) {
 			return true;
-		} else if Equals(choiceCaption, "[Take a drag]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeDrag")) {
 			return true;
-		} else if Equals(choiceCaption, "[Flick ash]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionFlickAsh")) {
 			return true;
-		} else if Equals(choiceCaption, "[Put out]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionPutOut")) {
 			return true;
-		} else if Equals(choiceCaption, "[Stop playing]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStopPlaying")) {
 			return true;
-		} else if Equals(choiceCaption, "[Lean]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionLean")) {
 			return true;
-		} else if Equals(choiceCaption, "[Straighten up]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStraightenUp")) {
 			return true;
-		} else if StrContains(choiceCaption, "[Drink") {
+		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDrinkAlcoholPartialString")) {
 			return true;
-		} else if Equals(choiceCaption, "[Sit at bar] Could use a drink.") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionOrderDrink")) {
 			return true;
-		} else if Equals(choiceCaption, "[Step away from bar]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStepAwayFromBar")) {
 			return true;
 		}
 
@@ -388,10 +379,10 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func IsNerveRegenInteractionChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
 		// Multiple Apartment / Location Interactions
-		if Equals(choiceCaption, "[Take shower]") {
+		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeShower")) {
 			return true;
 
-		} else if Equals(choiceCaption, "[Dance]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDance")) {
 			return true;
 
 		}
@@ -405,33 +396,29 @@ public final class DFInteractionSystem extends DFSystem {
 			return true;
 		
 		// Romance - q003 Meredith Stout Scene
-		} else if Equals(choiceCaption, "So what now?") && Vector4.DistanceSquared(this.q003_lastMeredithStoutPosition, this.player.GetWorldPosition()) < 10.0 {
-			return true;
-		
-		// Japantown Apartment Interactions
-		} else if Equals(choiceIconName, n"PlayGuitar") && StrContains(choiceCaption, "[Play ") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMeredithStoutPrompt")) && Vector4.DistanceSquared(this.q003_lastMeredithStoutPosition, this.player.GetWorldPosition()) < 10.0 {
 			return true;
 
 		// Rollercoaster
-		} else if Equals(choiceCaption, "[Get out]") && Vector4.DistanceSquared(this.mq006_lastRollercoasterPosition, this.player.GetWorldPosition()) < 10.0 {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionExitRollercoaster")) && Vector4.DistanceSquared(this.mq006_lastRollercoasterPosition, this.player.GetWorldPosition()) < 10.0 {
 			return true;
 
 		// Zen Master meditation sessions
-		} else if Equals(choiceCaption, "[Stand] Nice trick.") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptA")) {
 			return true;
-		} else if Equals(choiceCaption, "[Stand] He's gone again.") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptB")) {
 			return true;
-		} else if Equals(choiceCaption, "[Stand] Of course.") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptC")) {
 			return true;
-		} else if Equals(choiceCaption, "[Stand] There he goes again.") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptD")) {
 			return true;
 
 		// Phantom Liberty: Kress Street Hideout Interactions
-		} else if Equals(choiceCaption, "[End meditation]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionEndMeditation")) {
 			return true;
 
 		// Phantom Liberty: Bootleg Shard (V's Apartment)
-		} else if Equals(choiceCaption, "[Play braindance]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionPlayBraindance")) {
 			return true;
 		}
 
@@ -439,15 +426,19 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     private final func IsSmallNerveRestorationChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if Equals(choiceCaption, "[Burn incense]") {
+		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionBurnIncense")) {
 			return true;
-		} else if Equals(choiceCaption, "[Hit ball]") {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionHitBall")) {
 			return true;
-		} else if StrContains(choiceCaption, "[Kiss]") {
+		} else if Equals(choiceIconName, n"PlayGuitar") && StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionPlayGuitarPartialString")) {
 			return true;
-		} else if StrContains(choiceCaption, "[Cuddle]") {
+		} else if Equals(choiceIconName, n"PlayGuitar") && StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionContinuePlayingGuitarPartialString")) {
 			return true;
-		} else if StrContains(choiceCaption, "[Hug]") {
+		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionKiss")) {
+			return true;
+		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionCuddle")) {
+			return true;
+		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionHug")) {
 			return true;
 		}
 
@@ -460,7 +451,7 @@ public final class DFInteractionSystem extends DFSystem {
 
     private final func IsDrinkTeaInCorpoPlazaChoice(choiceCaption: String) -> Bool {
 		// Corpo Plaza Apartment Interaction
-		if Equals(choiceCaption, "[Drink tea]") {
+		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDrinkTea")) {
 			return true;
 		}
 
@@ -469,7 +460,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func IsDrinkTeaWithMrHandsChoice(choiceCaption: String) -> Bool {
 		// Phantom Liberty: Mr. Hands scene in Heavy Hearts Club
-		if Equals(choiceCaption, "[Sit and drink]") {
+		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSitAndDrink")) {
 			return true;
 		}
 
@@ -477,7 +468,7 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     private final func IsDrinkCoffeeWithKerryChoice(choiceCaption: String) -> Bool {
-		if Equals(choiceCaption, "[Drink]") && Vector4.DistanceSquared(this.sq017_lastKerryCoffeePosition, this.player.GetWorldPosition()) < 10.0 {
+		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDrink")) && Vector4.DistanceSquared(this.sq017_lastKerryCoffeePosition, this.player.GetWorldPosition()) < 10.0 {
 			return true;
 		}
 
@@ -485,7 +476,7 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     private final func IsNutritionRestorationChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if StrContains(choiceCaption, "[Eat") {
+		if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionEatPartialString")) {
 			return true;
 		}
 
@@ -495,25 +486,24 @@ public final class DFInteractionSystem extends DFSystem {
 	//
 	//	Sleeping and Waiting
 	//
-	public final func SetSkippingTimeFromRadialHubMenu(value: Bool) -> Void {
-		this.skippingTimeFromRadialHubMenu = value;
+	public final func SetSkippingTimeFromSleeping(value: Bool) -> Void {
+		this.skippingTimeFromSleeping = value;
 	}
 
 	public final func IsPlayerSleeping() -> Bool {
-		if this.skippingTimeFromRadialHubMenu {
-			DFLog(this.debugEnabled, this, "Player is skipping time.");
-			return false;
-		} else {
+		if this.skippingTimeFromSleeping {
 			DFLog(this.debugEnabled, this, "Player is sleeping.");
 			return true;
+		} else {
+			DFLog(this.debugEnabled, this, "Player is skipping time.");
+			return false;
 		}
 	}
 
 	public final func CalculateAddictionWithdrawalStateFromTimeSkip(
 		logName: String, 
 		addictionBackoffDurations: array<Float>, 
-		mildWithdrawalDuration: Float, 
-		severeWithdrawalDuration: Float,
+		withdrawalDurations: array<Float>,
 		addictionAmountLossPerDay: Float,
 		addictionAmount: Float,
 		addictionStage: Int32, 
@@ -539,8 +529,12 @@ public final class DFInteractionSystem extends DFSystem {
 				backoffDuration -= 300.0;
 				if backoffDuration <= 0.0 {
 					backoffDuration = 0.0;
-					withdrawalDuration = mildWithdrawalDuration;
 					withdrawalLevel = 1;
+					if withdrawalLevel < addictionStage {
+						withdrawalDuration = HoursToGameTimeSeconds(1);
+					} else {
+						withdrawalDuration = withdrawalDurations[withdrawalLevel];
+					}
 				}
 			// If not, does the player have a withdrawal duration, taking into account pre-existing durations?
 			} else if withdrawalDuration > 0.0 {
@@ -563,10 +557,10 @@ public final class DFInteractionSystem extends DFSystem {
 					}
 
 					if withdrawalLevel > 0 {
-						if withdrawalLevel <= 2 {
-							withdrawalDuration = mildWithdrawalDuration;
+						if withdrawalLevel < addictionStage {
+							withdrawalDuration = HoursToGameTimeSeconds(1);
 						} else {
-							withdrawalDuration = severeWithdrawalDuration;
+							withdrawalDuration = withdrawalDurations[withdrawalLevel];
 						}
 					}
 				}
@@ -581,7 +575,7 @@ public final class DFInteractionSystem extends DFSystem {
 						// A stack of the primary effect expired. Decrease the stack count. If the stack count is now 0, start a fake back-off timer.
 						// Otherwise, reset the primary effect duration.
 						stackCount -= 1u;
-						if stackCount == 0u {
+						if Equals(stackCount, 0u) {
 							backoffDuration = theBackoffDuration;
 						} else {
 							primaryEffectDuration = basePrimaryEffectDuration;
@@ -602,6 +596,7 @@ public final class DFInteractionSystem extends DFSystem {
 		DFLog(this.debugEnabled, this, "Predictive " + logName + " BackoffDuration: " + ToString(backoffDuration));
 		DFLog(this.debugEnabled, this, "Predictive " + logName + " WithdrawalDuration: " + ToString(withdrawalDuration));
 		DFLog(this.debugEnabled, this, "Predictive " + logName + " WithdrawalLevel: " + ToString(withdrawalLevel));
+		DFLog(this.debugEnabled, this, "Predictive " + logName + " StackCount: " + ToString(stackCount));
 
 		DFLog(this.debugEnabled, this, "=====================================================================================");
 
@@ -617,54 +612,6 @@ public final class DFInteractionSystem extends DFSystem {
 		return addictionTimeSkipIterationStateData;
 	}
 
-	public final func CalculateAfflictionStateFromTimeSkip(
-		logName: String,
-		stackCount: Uint32,
-		cureDuration: Float,
-		suppressionDuration: Float,
-		hasQualifyingSuppressionActiveStatusEffect: Bool
-	) -> DFAfflictionUpdateDatum {
-		// Does the player have a cure duration?
-		if cureDuration > 0.0 {
-			cureDuration -= 300.0;
-			if cureDuration <= 0.0 {
-				cureDuration = 0.0;
-				if stackCount > 0u {
-					stackCount -= 1u;
-				}
-			}
-		}
-
-		// Does the player have a suppression duration?
-		if suppressionDuration > 0.0 {
-			suppressionDuration -= 300.0;
-			if suppressionDuration <= 0.0 {
-				suppressionDuration = 0.0;
-			}
-		}
-
-		// Does the player have a qualifying suppression active status effect?
-		if hasQualifyingSuppressionActiveStatusEffect {
-			// No active status effect will be active at the end of the iteration; mark it as expired.
-			hasQualifyingSuppressionActiveStatusEffect = false;
-		}
-
-		DFLog(this.debugEnabled, this, "=====================================================================================");
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " StackCount; " + ToString(stackCount));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " CureDuration; " + ToString(cureDuration));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " SuppressionDuration: " + ToString(suppressionDuration));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " HasQualifyingSuppressionActiveStatusEffect: " + ToString(hasQualifyingSuppressionActiveStatusEffect));
-		DFLog(this.debugEnabled, this, "=====================================================================================");
-
-		let afflictionTimeSkipIterationData: DFAfflictionUpdateDatum;
-		afflictionTimeSkipIterationData.stackCount = stackCount;
-		afflictionTimeSkipIterationData.cureDuration = cureDuration;
-		afflictionTimeSkipIterationData.suppressionDuration = suppressionDuration;
-		afflictionTimeSkipIterationData.hasQualifyingSuppressionActiveStatusEffect = hasQualifyingSuppressionActiveStatusEffect;
-
-		return afflictionTimeSkipIterationData;
-	}
-
 	public final func GetCalculatedValuesForFutureHours() -> DFFutureHoursData {
 		let isSleeping: Bool = this.IsPlayerSleeping();
 		
@@ -674,13 +621,10 @@ public final class DFInteractionSystem extends DFSystem {
 		let calculatedNutritionAtHour: Float = this.NutritionSystem.GetNeedValue();
 		let calculatedEnergyAtHour: Float = this.EnergySystem.GetNeedValue();
 		let calculatedNerveAtHour: Float = this.NerveSystem.GetNeedValue();
-		let calculatedHardNerveMaxAtHour: Float = this.NerveSystem.GetNeedMax();
+		let calculatedNerveMaxAtHour: Float = this.NerveSystem.GetNeedMax();
 
 		// Addiction Variables
 		let calculatedAddictionData: array<DFAddictionDatum>;
-
-		// Affliction Variables
-		let calculatedAfflictionData: array<DFAfflictionDatum>;
 
 		// Alcohol Variables
 		let alcoholDataAccumulator: DFAddictionTimeSkipIterationStateDatum;
@@ -732,13 +676,6 @@ public final class DFInteractionSystem extends DFSystem {
 		// Addiction Treatment Variables
 		let addictionTreatmentDuration = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds();
 
-		// Trauma Affliction Variables
-		let traumaDataAccumulator: DFAfflictionUpdateDatum;
-		traumaDataAccumulator.stackCount = this.TraumaSystem.GetAfflictionStacks();
-		traumaDataAccumulator.cureDuration = this.TraumaSystem.GetCurrentAfflictionCureDurationInGameTimeSeconds();
-		traumaDataAccumulator.suppressionDuration = this.TraumaSystem.GetCurrentAfflictionSuppressionDurationInGameTimeSeconds();
-		traumaDataAccumulator.hasQualifyingSuppressionActiveStatusEffect = this.TraumaSystem.HasQualifyingSuppressionActiveStatusEffect();
-
 		let i = 0;
 		while i < 24 { // Iterate over each hour
 			let needHydration = new DFNeedChangeDatum(0.0, 0.0, 100.0, 0.0);
@@ -777,15 +714,6 @@ public final class DFInteractionSystem extends DFSystem {
 			addictionData.alcohol = addictionAlcohol;
 			addictionData.nicotine = addictionNicotine;
 			addictionData.narcotic = addictionNarcotic;
-			
-			let traumaData: DFAfflictionUpdateDatum;
-			traumaData.stackCount = traumaDataAccumulator.stackCount;
-			traumaData.cureDuration = traumaDataAccumulator.cureDuration;
-			traumaData.suppressionDuration = traumaDataAccumulator.suppressionDuration;
-			traumaData.hasQualifyingSuppressionActiveStatusEffect = traumaDataAccumulator.hasQualifyingSuppressionActiveStatusEffect;
-
-			let afflictionData: DFAfflictionDatum;
-			afflictionData.trauma = traumaData;
 
 			// Accumulate all of the changes by iterating over each update cycle within the hour (60 / 12, or every 5 minutes)
 			let j = 1;
@@ -794,7 +722,7 @@ public final class DFInteractionSystem extends DFSystem {
 				// Nutrition and Hydration
 				//
 				let nutritionChangeTemp: Float = this.NutritionSystem.GetNutritionChange();
-				let hydrationChangeTemp: Float = this.HydrationSystem.GetHydrationChange(true);
+				let hydrationChangeTemp: Float = this.HydrationSystem.GetHydrationChange();
 
 				if isSleeping {
 					// Reduced metabolism - Reduce Nutrition and Hydration at reduced rate
@@ -810,15 +738,18 @@ public final class DFInteractionSystem extends DFSystem {
 				//
 				let energyChangeTemp: Float = this.EnergySystem.GetEnergyChangeWithRecoverLimit(calculatedEnergyAtHour, calculatedNerveAtHour, isSleeping);
 				calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + energyChangeTemp, 0.0, this.EnergySystem.GetNeedMax());
-
+				
 				//
 				// Nerve
 				//
 				
 				if isSleeping {
-					// When sleeping, if recovering Energy, Nerve also recovers.
-					if (energyChangeTemp > 0.0 || calculatedEnergyAtHour == 100.0) {
+					// When sleeping, if recovering Energy, Nerve also recovers if below the sleeping recovery max.
+					if (energyChangeTemp > 0.0 || calculatedEnergyAtHour == 100.0) && calculatedNerveAtHour < this.NerveSystem.nerveRecoverAmountSleepingMax {
 						calculatedNerveAtHour += this.NerveSystem.nerveRecoverAmountSleeping;
+						if calculatedNerveAtHour > this.NerveSystem.nerveRecoverAmountSleepingMax {
+							calculatedNerveAtHour = this.NerveSystem.nerveRecoverAmountSleepingMax;
+						}
 					}
 				} else {
 					let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, this.HydrationSystem.GetNeedStageAtValue(calculatedHydrationAtHour), this.NutritionSystem.GetNeedStageAtValue(calculatedNutritionAtHour), this.EnergySystem.GetNeedStageAtValue(calculatedEnergyAtHour));
@@ -827,8 +758,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 				let nicotineDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Nicotine", 
 					this.NicotineAddictionSystem.GetAddictionBackoffDurationsInRealTimeMinutesByStage(),
-					this.NicotineAddictionSystem.GetAddictionMildWithdrawalDurationInGameTimeSeconds(),
-					this.NicotineAddictionSystem.GetAddictionSevereWithdrawalDurationInGameTimeSeconds(),
+					this.NicotineAddictionSystem.GetAddictionWithdrawalDurationsInGameTimeSeconds(),
 					this.NicotineAddictionSystem.GetAddictionAmountLossPerDay(),
 					nicotineDataAccumulator.addictionAmount,
 					nicotineDataAccumulator.addictionStage, 
@@ -841,8 +771,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 				let alcoholDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Alcohol", 
 					this.AlcoholAddictionSystem.GetAddictionBackoffDurationsInRealTimeMinutesByStage(),
-					this.AlcoholAddictionSystem.GetAddictionMildWithdrawalDurationInGameTimeSeconds(),
-					this.AlcoholAddictionSystem.GetAddictionSevereWithdrawalDurationInGameTimeSeconds(),
+					this.AlcoholAddictionSystem.GetAddictionWithdrawalDurationsInGameTimeSeconds(),
 					this.AlcoholAddictionSystem.GetAddictionAmountLossPerDay(),
 					alcoholDataAccumulator.addictionAmount,
 					alcoholDataAccumulator.addictionStage, 
@@ -852,13 +781,12 @@ public final class DFInteractionSystem extends DFSystem {
 					alcoholDataAccumulator.withdrawalDuration,
 					alcoholDataAccumulator.stackCount,
 					true,
-					this.AlcoholAddictionSystem.GetEffectDuration()
+					this.AlcoholAddictionSystem.GetDefaultEffectDuration()
 				);
 
 				let narcoticDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Narcotic", 
 					this.NarcoticAddictionSystem.GetAddictionBackoffDurationsInRealTimeMinutesByStage(),
-					this.NarcoticAddictionSystem.GetAddictionMildWithdrawalDurationInGameTimeSeconds(),
-					this.NarcoticAddictionSystem.GetAddictionSevereWithdrawalDurationInGameTimeSeconds(),
+					this.NarcoticAddictionSystem.GetAddictionWithdrawalDurationsInGameTimeSeconds(),
 					this.NarcoticAddictionSystem.GetAddictionAmountLossPerDay(),
 					narcoticDataAccumulator.addictionAmount,
 					narcoticDataAccumulator.addictionStage, 
@@ -867,13 +795,6 @@ public final class DFInteractionSystem extends DFSystem {
 					narcoticDataAccumulator.withdrawalLevel, 
 					narcoticDataAccumulator.withdrawalDuration,
 					0u
-				);
-
-				let traumaDataForIter: DFAfflictionUpdateDatum = this.CalculateAfflictionStateFromTimeSkip("Trauma",
-					traumaDataAccumulator.stackCount,
-					traumaDataAccumulator.cureDuration,
-					traumaDataAccumulator.suppressionDuration,
-					traumaDataAccumulator.hasQualifyingSuppressionActiveStatusEffect
 				);
 
 				// Update the accumulators.
@@ -899,21 +820,13 @@ public final class DFInteractionSystem extends DFSystem {
 				narcoticDataAccumulator.backoffDuration = narcoticDataForIter.backoffDuration;
 				narcoticDataAccumulator.withdrawalDuration = narcoticDataForIter.withdrawalDuration;
 
-				traumaDataAccumulator.stackCount = traumaDataForIter.stackCount;
-				traumaDataAccumulator.cureDuration = traumaDataForIter.cureDuration;
-				traumaDataAccumulator.suppressionDuration = traumaDataForIter.suppressionDuration;
-				traumaDataAccumulator.hasQualifyingSuppressionActiveStatusEffect = traumaDataForIter.hasQualifyingSuppressionActiveStatusEffect;
-
 				// Does the player have an Addiction Treatment duration?
 				if addictionTreatmentDuration > 0.0 {
-					addictionTreatmentDuration = ClampF(addictionTreatmentDuration - 300.0, 0.0, HoursToGameTimeSeconds(24));
+					addictionTreatmentDuration = ClampF(addictionTreatmentDuration - 300.0, 0.0, HoursToGameTimeSeconds(12));
 				}
 
-				// "Soft" cap Nerve based on Withdrawal. "Hard" cap Nerve based on Trauma.
-				calculatedHardNerveMaxAtHour = this.NerveSystem.GetCalculatedNeedMaxInProvidedState(traumaDataForIter);
-				let withdrawalTargetForIter: Float = this.NerveSystem.GetNerveWithdrawalTargetFromProvidedState(addictionTreatmentDuration, alcoholDataAccumulator.withdrawalLevel, nicotineDataAccumulator.withdrawalLevel, narcoticDataAccumulator.withdrawalLevel);
-				let lowestNerveMaxAtHour = MinF(calculatedHardNerveMaxAtHour, withdrawalTargetForIter);
-				calculatedNerveAtHour = ClampF(calculatedNerveAtHour, 0.0, lowestNerveMaxAtHour);
+				calculatedNerveMaxAtHour = this.NerveSystem.GetCalculatedNeedMaxInProvidedState(addictionTreatmentDuration, alcoholDataAccumulator.withdrawalLevel, nicotineDataAccumulator.withdrawalLevel, narcoticDataAccumulator.withdrawalLevel);
+				calculatedNerveAtHour = ClampF(calculatedNerveAtHour, 0.0, calculatedNerveMaxAtHour);
 
 				j += 1;
 			};
@@ -923,7 +836,7 @@ public final class DFInteractionSystem extends DFSystem {
 			basicNeedsData.nutrition.value = calculatedNutritionAtHour;
 			basicNeedsData.hydration.value = calculatedHydrationAtHour;
 			basicNeedsData.nerve.value = calculatedNerveAtHour;
-			basicNeedsData.nerve.ceiling = calculatedHardNerveMaxAtHour;
+			basicNeedsData.nerve.ceiling = calculatedNerveMaxAtHour;
 			ArrayPush(calculatedBasicNeedsData, basicNeedsData);
 
 			// Store the target values for each addiction at this specific hour.
@@ -944,19 +857,15 @@ public final class DFInteractionSystem extends DFSystem {
 			addictionData.narcotic.withdrawalLevel = narcoticDataAccumulator.withdrawalLevel;
 			addictionData.narcotic.remainingBackoffDuration = narcoticDataAccumulator.backoffDuration;
 			addictionData.narcotic.remainingWithdrawalDuration = narcoticDataAccumulator.withdrawalDuration;
-			ArrayPush(calculatedAddictionData, addictionData);
 
-			// Store the target values for Trauma at this specific hour.
-			afflictionData.trauma.stackCount = traumaDataAccumulator.stackCount;
-			afflictionData.trauma.cureDuration = traumaDataAccumulator.cureDuration;
-			afflictionData.trauma.suppressionDuration = traumaDataAccumulator.suppressionDuration;
-			afflictionData.trauma.hasQualifyingSuppressionActiveStatusEffect = traumaDataAccumulator.hasQualifyingSuppressionActiveStatusEffect;
-			ArrayPush(calculatedAfflictionData, afflictionData);
+			addictionData.newAddictionTreatmentDuration = addictionTreatmentDuration;
+
+			ArrayPush(calculatedAddictionData, addictionData);
 
 			i += 1;
 		};
 
-		let calculatedData: DFFutureHoursData = new DFFutureHoursData(calculatedBasicNeedsData, calculatedAddictionData, calculatedAfflictionData);
+		let calculatedData: DFFutureHoursData = new DFFutureHoursData(calculatedBasicNeedsData, calculatedAddictionData);
 
 		return calculatedData;
 	}
@@ -969,7 +878,7 @@ public final class DFInteractionSystem extends DFSystem {
 		
 		for hub in hubs.choiceHubs {
 			DFLog(this.debugEnabled, this, "Hub Title: " + ToString(hub.title));
-			if Equals(hub.title, "Stout") {
+			if Equals(hub.title, GetLocalizedTextByKey(n"DarkFutureInteractionStoutHubTitle")) {
 				// Used to catch a Romance activity event, combined with the caption prompt.
 				this.q003_lastMeredithStoutPosition = this.player.GetWorldPosition();
 			} else if Equals(hub.title, "LocKey#46442") {
@@ -1017,7 +926,7 @@ public final class DFInteractionSystem extends DFSystem {
 		} else if this.IsDrinkCoffeeWithKerryChoice(choiceCaption) {
 			this.DrankCoffeeFromChoice();
 
-		} else if StrContains(choiceCaption, "[Smoke]") || StrContains(choiceCaption, "[Take a drag]") {
+		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSmoke")) || StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeDrag")) {
 			if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
 				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureSmoking");
 			}
@@ -1030,7 +939,7 @@ public final class DFInteractionSystem extends DFSystem {
 			uiFlags.forceMomentaryUIDisplay = true;
 			uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
-			this.NerveSystem.ChangeNeedValue(15.0, uiFlags, false, true);
+			this.NerveSystem.ChangeNeedValue(15.0, uiFlags, true);
 
 		} else if this.IsNerveRegenInteractionChoice(choiceCaption, choiceIconName) {
 			this.NerveSystem.SetNerveRegenTarget(100.0);
@@ -1039,11 +948,15 @@ public final class DFInteractionSystem extends DFSystem {
 			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
 
 		} else if this.IsSmallNerveRestorationChoice(choiceCaption, choiceIconName) {
-			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(15.0, true);
+			// We want the Nerve bar to provide immediate feedback, so directly change Nerve now instead of a queued change
+			let uiFlags: DFNeedChangeUIFlags;
+			uiFlags.forceMomentaryUIDisplay = true;
+			uiFlags.momentaryDisplayIgnoresSceneTier = true;
+
+			this.NerveSystem.ChangeNeedValue(20.0, uiFlags, true);
 
 		} else if this.IsNutritionRestorationChoice(choiceCaption, choiceIconName) {
-			this.NutritionSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
-
+			this.NutritionSystem.QueueContextuallyDelayedNeedValueChange(20.0, true);
 		}
 	}
 
@@ -1067,12 +980,9 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func SleepChoiceSelected() -> Void {
 		if this.GameStateService.IsValidGameState("SleepChoiceSelected", true) {
+			this.SetSkippingTimeFromSleeping(true);
 			this.GameStateService.SetInSleepCinematic(true);
 		}
-	}
-
-	public final func ProcessGlitterConsumed() -> Void {
-		StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.GlitterSlowTime");
 	}
 
     private final func DrankTeaFromChoice() -> Void {
@@ -1129,7 +1039,11 @@ public final class DFInteractionSystem extends DFSystem {
 	//
 	//	FX
 	//
-	public final func TryToPlaySmokingFromItemFX() {
+	public final func HandleSmokingFromItem() {
+		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice") {
+			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
+		}
+
 		if this.Settings.smokingEffectsEnabled {
 			if !this.queuedSmokingFX {
 				this.queuedSmokingFX = true;
@@ -1232,24 +1146,4 @@ public final class DFInteractionSystem extends DFSystem {
 	private final func UnregisterVomitFromInteractionChoiceStage2Callback() {
 		UnregisterDFDelayCallback(this.DelaySystem, this.vomitFromInteractionChoiceStage2DelayID);
 	}
-}
-
-//
-//	Base Game Methods
-//
-
-//	HubTimeSkipController - Catch pressing the "Skip Time" button and store a value.
-//	If pressed and the value is set, this means that we are NOT sleeping.
-//
-@wrapMethod(HubTimeSkipController)
-protected cb func OnTimeSkipButtonPressed(e: ref<inkPointerEvent>) -> Bool {
-	let interactionSystem: ref<DFInteractionSystem> = DFInteractionSystem.Get();
-
-	if IsSystemEnabledAndRunning(interactionSystem) {
-		if e.IsAction(n"click") {
-			interactionSystem.SetSkippingTimeFromRadialHubMenu(true);
-		}
-	}
-
-	return wrappedMethod(e);
 }

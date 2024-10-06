@@ -12,6 +12,22 @@ BaseStatusEffect.Drunk.gameplayTags:
 # Common Records
 #
 #
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
 DarkFutureStatusEffectTypes.AlcoholWithdrawal:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
@@ -38,7 +54,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_Cessation_UIData:
   intValues:
     - 80
     - 2
-    - 48
+    - 24
   nameValues: []
   stats: []
 
@@ -48,7 +64,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_Cessation:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -65,6 +81,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_Cessation:
     - AddictionWithdrawalCessation
     - AddictionWithdrawalCessationAlcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -87,7 +104,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression_UIData:
   intValues:
     - 70
     - 2
-    - 24
+    - 12
   nameValues: []
   stats: []
 
@@ -97,7 +114,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -114,6 +131,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Alcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -136,7 +154,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression_UIData:
   intValues:
     - 70
     - 2
-    - 24
+    - 1
   nameValues: []
   stats: []
 
@@ -146,7 +164,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -163,6 +181,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Alcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -184,8 +203,8 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression_UIData:
   floatValues: []
   intValues:
     - 55
-    - 2
-    - 24
+    - 3
+    - 12
   nameValues: []
   stats: []
 
@@ -195,7 +214,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -212,6 +231,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Alcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -233,8 +253,8 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression_UIData:
   floatValues: []
   intValues:
     - 55
-    - 2
-    - 24
+    - 3
+    - 1
   nameValues: []
   stats: []
 
@@ -244,7 +264,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -261,6 +281,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Alcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -282,8 +303,8 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression_UIData:
   floatValues: []
   intValues:
     - 40
-    - 2
-    - 48
+    - 4
+    - 24
   nameValues: []
   stats: []
 
@@ -293,7 +314,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -310,6 +331,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Alcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -331,8 +353,8 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression_UIData:
   floatValues: []
   intValues:
     - 40
-    - 2
-    - 48
+    - 4
+    - 1
   nameValues: []
   stats: []
 
@@ -342,7 +364,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -359,6 +381,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Alcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -380,8 +403,8 @@ DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression_UIData:
   floatValues: []
   intValues:
     - 25
-    - 2
-    - 48
+    - 4
+    - 24
   nameValues: []
   stats: []
 
@@ -391,7 +414,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -408,6 +431,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression:
     - AddictionWithdrawalStage4
     - AddictionWithdrawalStage4Alcohol
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []

@@ -11,7 +11,8 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Utils.RunGuard
 import DarkFuture.Main.{
-	DFNeedsDatum, 
+	DFNeedsDatum,
+	DFNeedChangeDatum,
 	DFTimeSkipData
 }
 import DarkFuture.Services.{
@@ -26,6 +27,16 @@ import DarkFuture.Services.{
 import DarkFuture.UI.DFHUDBarType
 import DarkFuture.Settings.DFSettings
 
+@wrapMethod(PlayerPuppet)
+protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
+    let effectID: TweakDBID = evt.staticData.GetID();
+	if Equals(effectID, t"HousingStatusEffect.Rested") {
+        DFEnergySystem.Get().RegisterBonusEffectCheckCallback();
+	}
+
+	return wrappedMethod(evt);
+}
+
 class DFEnergySystemEventListener extends DFNeedSystemEventListener {
 	private func GetSystemInstance() -> wref<DFNeedSystemBase> {
 		return DFEnergySystem.Get();
@@ -33,15 +44,13 @@ class DFEnergySystemEventListener extends DFNeedSystemEventListener {
 }
 
 public final class DFEnergySystem extends DFNeedSystemBase {
-	private persistent let currentStimulantToleranceStacks: Uint32 = 0u;
+	private persistent let stimulantStacks: Uint32 = 0u;
 
 	private let NerveSystem: ref<DFNerveSystem>;
 
 	private let energyRecoverLimitPerNerveStage: array<Float>;
     private let energyRecoverAmountSleeping: Float = 0.4667;
-	private let energyLimitAddictionTreatment: Float = 50.0;
-
-    private let stimulantEffectMaxStackCount: Uint32 = 3u;
+	private let stimulantMaxStacks: Uint32 = 8u;
 
     //
 	//	System Methods
@@ -59,7 +68,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 	
 	private final func GetSystemToggleSettingValue() -> Bool {
@@ -90,17 +99,17 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private func DoPostSuspendActions() -> Void {
 		super.DoPostSuspendActions();
-		this.ClearStimulantTolerance();
+		this.ClearStimulant();
+	}
+
+	private func DoPostResumeActions() -> Void {
+		super.DoPostResumeActions();
+		this.RefreshStimulantEffect();
 	}
 
     //
 	//	Overrides
 	//
-	private func ReevaluateSystem() -> Void {
-		super.ReevaluateSystem();
-		this.RefreshStimulantToleranceEffect();
-	}
-
 	private final func OnUpdateActual() -> Void {
 		this.ChangeNeedValue(this.GetEnergyChange());
 	}
@@ -109,7 +118,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.energy.value - this.GetNeedValue());
 		
 		if data.wasSleeping {
-			this.ClearStimulantTolerance();
+			this.ClearStimulant();
 		}
 	}
 
@@ -195,18 +204,24 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	public final func ChangeEnergyFromItems(energyAmount: Float, opt unclampedEnergyAmount: Float, opt contextuallyDelayed: Bool) -> Void {
 		if RunGuard(this) { return; }
 
-		// The Stimulant Tolerance effect prevents consumables from restoring Energy forever without sleeping.
+		// The Stimulant effect prevents consumables from restoring Energy forever without sleeping.
 		let shouldUpdateEnergy: Bool = false;
-		let useStimulantTolerance: Bool = false;
+		let useStimulant: Bool = false;
 
 		if energyAmount < 0.0 {
 			shouldUpdateEnergy = true;
-		} else if unclampedEnergyAmount > 0.0 && this.currentStimulantToleranceStacks < this.stimulantEffectMaxStackCount {
+		} else if unclampedEnergyAmount > 0.0 && this.stimulantStacks < this.stimulantMaxStacks {
 			shouldUpdateEnergy = true;
-			useStimulantTolerance = true;
+			useStimulant = true;
 		}
 
 		if shouldUpdateEnergy {
+			if useStimulant {
+				if energyAmount + this.GetNeedValue() > this.GetNeedMax() {
+					energyAmount = this.GetNeedMax() - this.GetNeedValue();
+				}
+			}
+			
 			if contextuallyDelayed {
 				this.QueueContextuallyDelayedNeedValueChange(energyAmount, true);
 			} else {
@@ -218,15 +233,17 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 			}
 		}
 
-		if useStimulantTolerance {
-			this.currentStimulantToleranceStacks += 1u;
-			let stimulantStackCount: Uint32 = StatusEffectHelper.GetStatusEffectByID(this.player, t"DarkFutureStatusEffect.StimulantEffect").GetStackCount();
-			if this.currentStimulantToleranceStacks == stimulantStackCount + 1u {
+		if useStimulant {
+			let stacksToApply: Uint32 = Cast<Uint32>(unclampedEnergyAmount / 10.0);
+			if this.stimulantStacks + stacksToApply > this.stimulantMaxStacks {
+				stacksToApply = this.stimulantMaxStacks - this.stimulantStacks;
+			}
+			this.stimulantStacks += stacksToApply;
+
+			let i: Uint32 = 0u;
+			while i < stacksToApply {
 				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
-			} else {
-				// The Stimulant Tolerance Stack counter and the stack count have diverged; refresh the status effect
-				// in order to bring the player-facing status effect in line with reality.
-				this.RefreshStimulantToleranceEffect();
+				i += 1u;
 			}
 		}
 	}
@@ -270,21 +287,22 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		return amountToChange;
 	}
 
-	private final func RefreshStimulantToleranceEffect() -> Void {
-		let validGameState: Bool = this.GameStateService.IsValidGameState("RefreshStimulantToleranceEffect");
-		StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
+	private final func RefreshStimulantEffect() -> Void {
+		let validGameState: Bool = this.GameStateService.IsValidGameState("RefreshStimulantEffect");
 
-		if validGameState && this.currentStimulantToleranceStacks > 0u {
-			let i = 0u;
-			while i < this.currentStimulantToleranceStacks {
+		if validGameState && this.stimulantStacks > 0u {
+			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
+
+			let i: Uint32 = 0u;
+			while i < this.stimulantStacks {
 				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
 				i += 1u;
 			}
 		}
 	}
 
-	private final func ClearStimulantTolerance() -> Void {
-		this.currentStimulantToleranceStacks = 0u;
+	private final func ClearStimulant() -> Void {
+		this.stimulantStacks = 0u;
 		StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
 	}
 }

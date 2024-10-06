@@ -5,13 +5,28 @@
 #
 
 # Common Records
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 DarkFutureStatusEffectTypes.Hydration:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
-  enumName: Thirst
+  enumName: Hydration
 
-UIIcon.DarkFutureThirstIcon:
+UIIcon.DarkFutureHydrationIcon:
   $type: gamedataUIIcon_Record
   atlasPartName: drink
   atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
@@ -42,7 +57,7 @@ DarkFutureStatusEffect.HydrationPenalty_01_UIData:
   description: l"DarkFutureHydrationPenalty01Desc"
   displayName: l"DarkFutureHydrationPenalty01Name"
   fluffText: ''
-  iconPath: DarkFutureThirstIcon
+  iconPath: DarkFutureHydrationIcon
   priority: -10
   floatValues: []
   intValues:
@@ -56,7 +71,7 @@ DarkFutureStatusEffect.HydrationPenalty_01:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -104,7 +119,7 @@ DarkFutureStatusEffect.HydrationPenalty_02_UIData:
   description: l"DarkFutureHydrationPenalty02Desc"
   displayName: l"DarkFutureHydrationPenalty02Name"
   fluffText: ''
-  iconPath: DarkFutureThirstIcon
+  iconPath: DarkFutureHydrationIcon
   priority: -10
   floatValues: []
   intValues:
@@ -118,7 +133,7 @@ DarkFutureStatusEffect.HydrationPenalty_02:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -166,7 +181,7 @@ DarkFutureStatusEffect.HydrationPenalty_03_UIData:
   description: l"DarkFutureHydrationPenalty03Desc"
   displayName: l"DarkFutureHydrationPenalty03Name"
   fluffText: ''
-  iconPath: DarkFutureThirstIcon
+  iconPath: DarkFutureHydrationIcon
   priority: -10
   floatValues: []
   intValues:
@@ -180,7 +195,7 @@ DarkFutureStatusEffect.HydrationPenalty_03:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -228,7 +243,7 @@ DarkFutureStatusEffect.HydrationPenalty_04_UIData:
   description: l"DarkFutureHydrationPenalty04Desc"
   displayName: l"DarkFutureHydrationPenalty04Name"
   fluffText: ''
-  iconPath: DarkFutureThirstIcon
+  iconPath: DarkFutureHydrationIcon
   priority: -10
   floatValues: []
   intValues:
@@ -242,7 +257,7 @@ DarkFutureStatusEffect.HydrationPenalty_04:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False

@@ -17,8 +17,16 @@ public final static func HoursToGameTimeSeconds(hours: Int32) -> Float {
     return Int32ToFloat(hours) * 3600.0;
 }
 
+public final static func GameTimeSecondsToHours(seconds: Float) -> Int32 {
+    return FloatToInt32(seconds / 3600.0);
+}
+
 public final func Int32ToFloat(value: Int32) -> Float {
     return Cast<Float>(value);
+}
+
+public final func FloatToInt32(value: Float) -> Int32 {
+    return Cast<Int32>(value);
 }
 
 public static func IsCoinFlipSuccessful() -> Bool {

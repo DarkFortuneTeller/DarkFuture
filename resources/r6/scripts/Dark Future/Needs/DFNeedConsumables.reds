@@ -16,6 +16,7 @@ import DarkFuture.Needs.DFNerveSystem
 // Allow certain types of consumables (Black Lace, etc) to be used in combat.
 // Fix a base game bug that prevented Inhalers and Injectors from being swapped between in the Backpack Inventory (but not
 // in Quick Access or the Radial Menu).
+// Disallow the use of food and drink outside of combat based on Nerve.
 @replaceMethod(InventoryGPRestrictionHelper)
 public final static func CanUse(const itemData: script_ref<InventoryItemData>, playerPuppet: wref<PlayerPuppet>) -> Bool {
 	let bb: ref<IBlackboard>;
@@ -54,6 +55,7 @@ public final static func CanUse(const itemData: script_ref<InventoryItemData>, p
 // Allow certain types of consumables (Black Lace, etc) to be used in combat.
 // Fix a base game bug that prevented Inhalers and Injectors from being swapped between in the Backpack Inventory (but not
 // in Quick Access or the Radial Menu).
+// Disallow the use of food and drink outside of combat based on Nerve.
 @replaceMethod(InventoryGPRestrictionHelper)
 public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: wref<PlayerPuppet>) -> Bool {
 	let bb: ref<IBlackboard>;
@@ -94,9 +96,8 @@ public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: w
 @wrapMethod(ConsumeAction)
 public func IsVisible(const context: script_ref<GetActionsContext>, objectActionsCallbackController: wref<gameObjectActionsCallbackController>) -> Bool {
 	let NerveSystem: wref<DFNerveSystem> = DFNerveSystem.Get();
-	let hasNausea: Bool = NerveSystem.GetNeedStage() >= NerveSystem.GetNauseaNeedStageThreshold();
 
-	if hasNausea && (this.GetItemData().HasTag(n"Food") || this.GetItemData().HasTag(n"Drink")) {
+	if NerveSystem.GetHasNausea() && (this.GetItemData().HasTag(n"Food") || this.GetItemData().HasTag(n"Drink")) {
 		return false;
 	}
 
@@ -150,15 +151,14 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	let NutritionTier6: Float = 35.0;
 	let NutritionTier7: Float = 40.0;
 
-	let BoosterNutritionPenaltyTier1: Float = -15.0;
-	let BoosterNutritionPenaltyTier2: Float = -25.0;
+	let BoosterPenaltyTier1: Float = -15.0;
+	let BoosterPenaltyTier2: Float = -25.0;
 
-	let EnergyTier1: Float = 15.0;
+	let EnergyTier1: Float = 10.0;
 	let EnergyTier2: Float = 20.0;
-	let EnergyTier3: Float = 35.0;
+	let EnergyTier3: Float = 30.0;
 	let EnergyTier4: Float = 40.0;
-	let EnergyTier5: Float = 45.0;
-	let EnergyTier6: Float = 50.0;
+	let EnergyTier5: Float = 50.0;
 
 	let CigarettesNerve: Float = 15.0;
 
@@ -184,6 +184,7 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	let DrugHydrationPenalty: Float = -70.0;
 	let DrugNutritionPenalty: Float = -70.0;
 	let DrugEnergyPenaltyLow: Float = -15.0;
+	let DrugEnergyPenaltyMed: Float = -50.0;
 	let DrugEnergyPenaltyHigh: Float = -70.0;
 
 	let LowQualityConsumableLimit: Float = 80.0;
@@ -237,9 +238,9 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 
 	if itemData.HasTag(n"DarkFutureConsumableBoosterNutritionCost") {
 		if itemData.HasTag(n"DarkFutureConsumableBoosterNutritionCostTier1") {
-			consumableBasicNeedsData.nutrition.value = BoosterNutritionPenaltyTier1;
+			consumableBasicNeedsData.nutrition.value = BoosterPenaltyTier1;
 		} else if itemData.HasTag(n"DarkFutureConsumableBoosterNutritionCostTier2") {
-			consumableBasicNeedsData.nutrition.value = BoosterNutritionPenaltyTier2;
+			consumableBasicNeedsData.nutrition.value = BoosterPenaltyTier2;
 		}
 	}
 
@@ -255,8 +256,6 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 			consumableBasicNeedsData.energy.value = EnergyTier4;
 		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier5") {
 			consumableBasicNeedsData.energy.value = EnergyTier5;
-		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier6") {
-			consumableBasicNeedsData.energy.value = EnergyTier6;
 		}
 	}
 
@@ -298,14 +297,14 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyHigh;
 	}
 
-	// Trauma Cure Drug
-	if itemData.HasTag(n"DarkFutureConsumableTraumaTreatmentDrug") {
-		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyLow;
-	}
-
 	// Addiction Treatment Drug
 	if itemData.HasTag(n"DarkFutureConsumableAddictionTreatmentDrug") {
-		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyHigh;
+		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyMed;
+	}
+
+	// Sedation Drug
+	if itemData.HasTag(n"DarkFutureConsumableSedationDrug") {
+		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyLow;
 	}
 
 	return consumableBasicNeedsData;

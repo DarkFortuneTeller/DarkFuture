@@ -12,8 +12,7 @@ import DarkFuture.Main.{
 	DFAddictionDatum,
 	DFNeedChangeDatum,
 	DFFutureHoursData,
-	DFTimeSkipData,
-	DFAfflictionDatum
+	DFTimeSkipData
 }
 import DarkFuture.Services.DFGameStateService
 import DarkFuture.Gameplay.DFInteractionSystem
@@ -181,7 +180,6 @@ protected cb func OnCloseAfterFinishing(proxy: ref<inkAnimProxy>) -> Bool {
 		tsd.hoursSkipped = this.m_hoursToSkip;
 		tsd.targetNeedValues = this.calculatedFutureValues.futureNeedsData[this.m_hoursToSkip - 1];
 		tsd.targetAddictionValues = this.calculatedFutureValues.futureAddictionData[this.m_hoursToSkip - 1];
-		tsd.targetAfflictionValues = this.calculatedFutureValues.futureAfflictionData[this.m_hoursToSkip - 1];
 		tsd.wasSleeping = this.isSleeping;
 		this.MainSystem.DispatchTimeSkipFinishedEvent(tsd);
 	}
@@ -205,7 +203,7 @@ protected cb func OnCloseAfterCanceling(proxy: ref<inkAnimProxy>) -> Bool {
 protected cb func OnUninitialize() -> Bool {
 	if this.Settings.mainSystemEnabled {
 		this.GameStateService.SetInSleepCinematic(false);
-		this.InteractionSystem.SetSkippingTimeFromRadialHubMenu(false);
+		this.InteractionSystem.SetSkippingTimeFromSleeping(false);
 	}
 	
 	return wrappedMethod();
@@ -217,6 +215,17 @@ protected cb func OnUninitialize() -> Bool {
 private final func UpdateTargetTime(angle: Float) -> Void {
 	wrappedMethod(angle);
 	this.UpdateUI();
+}
+
+@wrapMethod(TimeskipGameController)
+private final func SetTimeSkipText(textWidgetRef: inkTextRef, textParamsRef: ref<inkTextParams>, hours: Int32) -> Void {
+	wrappedMethod(textWidgetRef, textParamsRef, hours);
+	
+	if this.isSleeping {
+		textParamsRef = new inkTextParams();
+      	textParamsRef.AddNumber("value", hours);
+		inkTextRef.SetLocalizedText(textWidgetRef, n"DarkFutureTimeskipSleepText", textParamsRef);
+	}
 }
 
 //
@@ -347,12 +356,9 @@ private final func UpdateUI() -> Void {
 	this.nerveBar.SetUpdatedValue(nerve, nerveMax);
 	this.UpdateNerveBarLimit(nerveMax);
 
-	if this.isSleeping && nerveStage >= 4 {
-		this.timeskipAllowed = true;
+	if this.isSleeping && nerveStage >= 3 {
+		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveNoRecovery";
-	} else if this.isSleeping && nerveStage == 3 {
-		this.timeskipAllowed = true;
-		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveLow";
 	} else if nerve <= 1.0 {
 		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonFatal";

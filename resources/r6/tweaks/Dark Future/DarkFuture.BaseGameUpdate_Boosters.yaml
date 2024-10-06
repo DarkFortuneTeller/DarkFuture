@@ -49,27 +49,10 @@ Items.StaminaBooster_inline1.floatValues:
 
 # Standard Health Boosters have been repurposed to First Aid Kits. They now cure the Injury status.
 #
-DarkFutureStatusEffect.HealthBooster_StatModifier:
-  $type: gamedataConstantStatModifier_Record
-  value: 180.0
-  modifierType: Additive
-  statType: BaseStats.MaxDuration
-
-DarkFutureStatusEffect.HealthBoosterDuration:
-  $type: gamedataStatModifierGroup_Record
-  drawBasedOnStatType: False
-  optimiseCombinedModifiers: False
-  saveBasedOnStatType: False
-  statModsLimit: -1
-  relatedModifierGroups: []
-  statModifiers:
-    - DarkFutureStatusEffect.HealthBooster_StatModifier
-
 DarkFutureItem.InjuryCureDrugOnEquip_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableInjuryRestoreItemDesc"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues: []
   nameValues: []
@@ -85,23 +68,10 @@ DarkFutureItem.InjuryCureDrugOnEquip:
   statPools: []
   stats: []
 
-DarkFutureItem.HealthBoosterDuration:
-  $type: gamedataStatModifierGroup_Record
-  drawBasedOnStatType: False
-  optimiseCombinedModifiers: False
-  saveBasedOnStatType: False
-  statModsLimit: -1
-  relatedModifierGroups: []
-  statModifiers:
-    - DarkFutureStatusEffect.HealthBooster_StatModifier
-
 Items.HealthBooster.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
 Items.HealthBooster.quality: Quality.Uncommon
 Items.HealthBooster.OnEquip:
   - !prepend-once DarkFutureItem.InjuryCureDrugOnEquip
-Items.HealthBooster.statModifierGroups:
-  - DarkFutureItem.HealthBoosterDuration
-BaseStatusEffect.HealthBooster.duration: DarkFutureStatusEffect.HealthBoosterDuration
 BaseStatusEffect.HealthBooster_inline2.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
 
 #
@@ -162,72 +132,6 @@ Items.CarryCapacityBooster:
   tags:
     - !append-once DarkFutureConsumableBoosterNutritionCost
     - !append-once DarkFutureConsumableBoosterNutritionCostTier1
-
-#
-#
-# Stamina Booster Hydration Bonus
-#
-#
-DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureConsumableStaminaBoosterHydrationDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - -20
-  nameValues: []
-  stats: []
-
-DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureConsumableStaminaBoosterHydrationDesc"
-  localizedName: ''
-  floatValues: []
-  intValues:
-    - -30
-  nameValues: []
-  stats: []
-
-DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult:
-  $type: gamedataGameplayLogicPackage_Record
-  stackable: False
-  UIData: DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult_UIData
-  animationWrapperOverrides: []
-  effectors: []
-  items: []
-  statPools: []
-  stats: []
-
-DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult:
-  $type: gamedataGameplayLogicPackage_Record
-  stackable: False
-  UIData: DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult_UIData
-  animationWrapperOverrides: []
-  effectors: []
-  items: []
-  statPools: []
-  stats: []
-
-Items.StaminaBooster:
-  OnEquip:
-    - !append-once DarkFutureItem.StaminaBoosterOnEquip_HydrationBonusMult
-
-Items.Blackmarket_StaminaBooster:
-  OnEquip:
-    - Items.Blackmarket_StaminaBooster_inline2
-    - DarkFutureItem.BlackMarketStaminaBoosterOnEquip_HydrationBonusMult
-    - Items.Blackmarket_StaminaBooster_inline4
-
-BaseStatusEffect.StaminaBooster_inline2.description: l"DarkFutureConsumableStaminaBoosterHydrationStatusEffectDesc"
-BaseStatusEffect.StaminaBooster_inline2.intValues:
-  - 10
-  - -20
-
-BaseStatusEffect.Blackmarket_StaminaBooster_inline3.description: l"DarkFutureConsumableBlackMarketStaminaBoosterHydrationStatusEffectDesc"
-BaseStatusEffect.Blackmarket_StaminaBooster_inline3.intValues:
-  - 20
-  - -30
-  - -15
 
 #
 #

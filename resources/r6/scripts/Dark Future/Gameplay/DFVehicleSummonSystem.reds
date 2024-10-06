@@ -340,7 +340,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
     private func UnregisterListeners() -> Void {}
 
     private func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 
     private func SetupData() -> Void {

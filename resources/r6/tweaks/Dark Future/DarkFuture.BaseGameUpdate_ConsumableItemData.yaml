@@ -3,6 +3,21 @@
 # Common Records
 #
 #
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
 
 # Weights
 #
@@ -80,7 +95,7 @@ DarkFutureItem.LargeDrugWeight:
 
 DarkFutureItem.FirstAidKitDrugWeight:
   $type: gamedataConstantStatModifier_Record
-  value: 2.0
+  value: 1.0
   modifierType: Additive
   statType: BaseStats.Weight
 
@@ -215,6 +230,11 @@ DarkFutureStatusEffectTypes.Narcotic:
   enumComment: ''
   enumName: Narcotic
 
+DarkFutureStatusEffectTypes.LegendaryAlcoholXP:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: LegendaryAlcoholXP
+
 DarkFutureStatusEffectTypes.SimpleConsumable:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
@@ -302,7 +322,6 @@ DarkFutureStatusEffect.CommonDrink_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationNervePenalty"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 15
     - -5
@@ -314,9 +333,30 @@ DarkFutureStatusEffect.UncommonDrink_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydration"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 15
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.StaminaBoosterEnergy_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionEnergy"
+  localizedName: ''
+  intValues:
+    - 10
+    - 1
+    - 8
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.BlackMarketStaminaBoosterEnergy_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionEnergy"
+  localizedName: ''
+  intValues:
+    - 20
+    - 2
+    - 8
   nameValues: []
   stats: []
 
@@ -324,13 +364,13 @@ DarkFutureStatusEffect.RareCoffeeEnergyDrinks_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationEnergyHydrated"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 15
-    - 15
+    - 10
     - 85
     - 5
-    - 3
+    - 1
+    - 8
   nameValues: []
   stats: []
 
@@ -338,7 +378,6 @@ DarkFutureStatusEffect.MatapangDecaf_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationHydrated"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 20
     - 85
@@ -350,7 +389,6 @@ DarkFutureStatusEffect.RareStrangeHealthDrinks_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationNutritionHydrated"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 20
     - 15
@@ -363,7 +401,6 @@ DarkFutureStatusEffect.VitaMine_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationNutritionHydrated"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 20
     - 10
@@ -376,7 +413,6 @@ DarkFutureStatusEffect.EpicDrinks_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationHydrated"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 25
     - 85
@@ -388,7 +424,6 @@ DarkFutureStatusEffect.LegendaryDrinks_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationHydrated"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 35
     - 85
@@ -400,11 +435,11 @@ DarkFutureStatusEffect.LegendaryEnergyDrinks_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionHydrationEnergy"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 20
     - 20
-    - 3
+    - 2
+    - 8
   nameValues: []
   stats: []
 
@@ -458,7 +493,7 @@ DarkFutureStatusEffect.UncommonDrugsMrWhitey:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: RTDB.StatusEffect_inline0
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -510,7 +545,6 @@ DarkFutureStatusEffect.UncommonDrugsMrWhitey_StaminaMovement_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableItemMrWhiteyDesc"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 15
     - 15
@@ -521,41 +555,27 @@ DarkFutureStatusEffect.UncommonDrugsMrWhitey_EnergyNerveChange_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNarcoticEnergyNerveChange"
   localizedName: ''
-  maxFactor: 0
   intValues:
-    - 35
+    - 30
     - 20
     - -20
     - 1
     - 3
+    - 8
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.BlackLaceV0_UIData:
+DarkFutureStatusEffect.BlackLace_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNarcoticEnergyNerveChange"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 40
     - 30
     - -30
     - 1
-    - 3
-  nameValues: []
-  stats: []
-
-DarkFutureStatusEffect.BlackLaceV1_UIData:
-  $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureConsumableUIDescriptionNarcoticEnergyNerveChange"
-  localizedName: ''
-  maxFactor: 0
-  intValues:
-    - 45
-    - 30
-    - -30
-    - 1
-    - 3
+    - 4
+    - 8
   nameValues: []
   stats: []
 
@@ -563,7 +583,6 @@ DarkFutureStatusEffect.CommonFoodSnack_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutritionNervePenalty"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 5
     - -5
@@ -575,7 +594,6 @@ DarkFutureStatusEffect.CommonFoodLargeSnack_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutritionNervePenalty"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 10
     - -5
@@ -587,7 +605,6 @@ DarkFutureStatusEffect.CommonFoodMeal_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutritionNervePenalty"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 15
     - -10
@@ -599,7 +616,6 @@ DarkFutureStatusEffect.UncommonFood_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutrition"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 10
   nameValues: []
@@ -609,7 +625,6 @@ DarkFutureStatusEffect.UncommonFoodWholesome_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutrition"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 15
   nameValues: []
@@ -619,7 +634,6 @@ DarkFutureStatusEffect.RareFood_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutritionNourishment"
   localizedName: ''
-  maxFactor: 0
   floatValues:
     - 0.5
   intValues:
@@ -633,7 +647,6 @@ DarkFutureStatusEffect.EpicFood_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutritionNourishment"
   localizedName: ''
-  maxFactor: 0
   floatValues:
     - 0.5
   intValues:
@@ -647,7 +660,6 @@ DarkFutureStatusEffect.LegendaryFoodSnack_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutrition"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
     - 35
@@ -658,7 +670,6 @@ DarkFutureStatusEffect.LegendaryFoodMeal_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNutrition"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
     - 40
@@ -669,7 +680,6 @@ DarkFutureStatusEffect.CommonAlcohol_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 5
   nameValues: []
@@ -679,7 +689,6 @@ DarkFutureStatusEffect.UncommonAlcohol_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 6
   nameValues: []
@@ -689,7 +698,6 @@ DarkFutureStatusEffect.RareAlcohol_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 8
   nameValues: []
@@ -699,7 +707,6 @@ DarkFutureStatusEffect.EpicAlcohol_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 10
   nameValues: []
@@ -709,9 +716,17 @@ DarkFutureStatusEffect.LegendaryAlcohol_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 10
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.LegendaryAlcoholXP_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureLegendaryAlcoholItemXPDesc"
+  localizedName: ''
+  intValues:
+    - 5
   nameValues: []
   stats: []
 
@@ -739,16 +754,6 @@ DarkFutureStatusEffect.RareCoffeeEnergyDrinks_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
   UIData: DarkFutureStatusEffect.RareCoffeeEnergyDrinks_UIData
-  animationWrapperOverrides: []
-  effectors: []
-  items: []
-  statPools: []
-  stats: []
-
-DarkFutureStatusEffect.RareCoffeeWithMilk_OnEquip:
-  $type: gamedataGameplayLogicPackage_Record
-  stackable: False
-  UIData: DarkFutureStatusEffect.RareCoffeeWithMilk_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -835,20 +840,10 @@ DarkFutureStatusEffect.UncommonDrugsMrWhitey_EnergyNerveChange_OnEquip:
   statPools: []
   stats: []
 
-DarkFutureStatusEffect.BlackLaceV0_OnEquip:
+DarkFutureStatusEffect.BlackLace_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.BlackLaceV0_UIData
-  animationWrapperOverrides: []
-  effectors: []
-  items: []
-  statPools: []
-  stats: []
-
-DarkFutureStatusEffect.BlackLaceV1_OnEquip:
-  $type: gamedataGameplayLogicPackage_Record
-  stackable: False
-  UIData: DarkFutureStatusEffect.BlackLaceV1_UIData
+  UIData: DarkFutureStatusEffect.BlackLace_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -975,6 +970,16 @@ DarkFutureStatusEffect.LegendaryAlcohol_OnEquip:
   statPools: []
   stats: []
 
+DarkFutureStatusEffect.LegendaryAlcoholXP_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.LegendaryAlcoholXP_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
 DarkFutureStatusEffect.LegendaryFoodSnack_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
@@ -995,20 +1000,40 @@ DarkFutureStatusEffect.LegendaryFoodMeal_OnEquip:
   statPools: []
   stats: []
 
+DarkFutureStatusEffect.StaminaBoosterEnergy_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.StaminaBoosterEnergy_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.BlackMarketStaminaBoosterEnergy_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.BlackMarketStaminaBoosterEnergy_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
 #
 #
 # Energy Management Effects
 #
 #
-UIIcon.DarkFutureStimulantIcon:
-  $type: gamedataUIIcon_Record
-  atlasPartName: stamina_regeneration_icon
-  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
-
 DarkFutureStatusEffectTypes.Stimulant:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
   enumName: Stimulant
+
+UIIcon.DarkFutureStimulantIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: stamina_regeneration_icon
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
 
 DarkFutureStatusEffect.StimulantEffect_UIData:
   $type: gamedataStatusEffectUIData_Record
@@ -1019,13 +1044,13 @@ DarkFutureStatusEffect.StimulantEffect_UIData:
   priority: -10
   floatValues: []
   intValues:
-    - 3
+    - 8
   nameValues: []
   stats: []
 
 DarkFutureStatusEffect.StimulantEffect_MaxStacksStatMod:
   $type: gamedataConstantStatModifier_Record
-  value: 3
+  value: 8
   modifierType: Additive
   statType: BaseStats.MaxStacks
 
@@ -1059,11 +1084,116 @@ DarkFutureStatusEffect.StimulantEffect:
     - Buff
     - DarkFutureStimulant
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
   VFX: []
   canReapply: True
+
+#
+#
+# Legendary Alcohol Effect
+#
+#
+UIIcon.DarkFutureLegendaryAlcoholXPIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: xp_gain
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
+
+DarkFutureItem.LegendaryAlcoholXPDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 900
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureItem.LegendaryAlcoholXPDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.LegendaryAlcoholXPDuration_StatModifier
+
+DarkFutureStatusEffect.LegendaryAlcoholXPPackageStatSkillXP:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.05
+  modifierType: Additive
+  statType: BaseStats.XPbonusMultiplier
+
+DarkFutureStatusEffect.LegendaryAlcoholXPPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.LegendaryAlcoholXPPackageStatSkillXP
+
+DarkFutureStatusEffect.LegendaryAlcoholXPStatusEffectUIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureLegendaryAlcoholActiveEffectDesc"
+  displayName: l"DarkFutureLegendaryAlcoholActiveEffectName"
+  fluffText: ''
+  iconPath: DarkFutureLegendaryAlcoholXPIcon
+  priority: 0
+  floatValues: []
+  intValues:
+    - 5
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.LegendaryAlcoholXP:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureItem.LegendaryAlcoholXPDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.LegendaryAlcoholXP
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.LegendaryAlcoholXPStatusEffectUIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.LegendaryAlcoholXPPackage
+  SFX: []
+  VFX: []
+
+DarkFutureItems.LegendaryAlcoholXPItemActionEffect:
+  $type: gamedataObjectActionEffect_Record
+  statusEffect: DarkFutureStatusEffect.LegendaryAlcoholXP
+
+DarkFutureItems.LegendaryAlcoholConsumeAction:
+  $type: gamedataItemAction_Record
+  isDefaultLootChoice: False
+  removeAfterUse: True
+  actionName: Consume
+  hackCategory: HackCategory.NotAHack
+  objectActionType: ObjectActionType.Item
+  priority: 0
+  activationTime: []
+  completionEffects:
+    - Items.Alcohol_inline6
+    - DarkFutureItems.LegendaryAlcoholXPItemActionEffect
+  costs: []
+  durationTime: []
+  instigatorActivePrereqs: []
+  instigatorPrereqs: []
+  rewards: []
+  startEffects: []
+  targetActivePrereqs: []
+  targetPrereqs: []
 
 #
 #
@@ -1489,6 +1619,10 @@ Items.MediumQualityFood16: *UncommonFood
 Items.GoodQualityFood3: *UncommonFood
 Items.GoodQualityFood4: *UncommonFood
 Items.LowQualityFood3: *UncommonFood
+Items.HawtDawgClassic: *UncommonFood
+Items.HawtDawgCheese: *UncommonFood
+Items.HawtDawgChilli: *UncommonFood
+Items.HawtDawgKabanos: *UncommonFood
 
 #
 #
@@ -1678,18 +1812,17 @@ DarkFutureStatusEffect.Drunk_UIData:
   intValues:
     - -10
     - -10
-    - 6
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.AlcoholTrauma_UIData:
+DarkFutureStatusEffect.AlcoholNumbed_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureAlcoholItemTraumaDesc"
+  localizedDescription: l"DarkFutureAlcoholItemNumbedDesc"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
-    - 6
+    - 4
+    - -35
   nameValues: []
   stats: []
 
@@ -1697,7 +1830,6 @@ DarkFutureStatusEffect.AlcoholItemMitigationStrengthEffect_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureAlcoholItemMitigationStrengthPackageDesc"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
     - -10
@@ -1708,17 +1840,16 @@ DarkFutureStatusEffect.AlcoholItemReloadSpeedEffect_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureAlcoholItemReloadSpeedPackageDesc"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
     - -10
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.AlcoholTrauma_OnEquip:
+DarkFutureStatusEffect.AlcoholNumbed_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.AlcoholTrauma_UIData
+  UIData: DarkFutureStatusEffect.AlcoholNumbed_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -1802,7 +1933,6 @@ BaseStatusEffect.Drunk.uiData: DarkFutureStatusEffect.Drunk_UIData
 BaseStatusEffect.Drunk.packages:
   - DarkFutureStatusEffect.Alcohol_MitigationStrengthStatsPackage
   - DarkFutureStatusEffect.Alcohol_ReloadSpeedPackage
-BaseStatusEffect.Drunk_inline1.value: 5
 
 #
 #
@@ -1817,7 +1947,7 @@ Items.LowQualityAlcohol1: &CommonAlcohol
     - DarkFutureStatusEffect.CommonAlcohol_OnEquip
     - DarkFutureStatusEffect.AlcoholMitigationStrength_OnEquip
     - DarkFutureStatusEffect.AlcoholReloadSpeed_OnEquip
-    - DarkFutureStatusEffect.AlcoholTrauma_OnEquip
+    - DarkFutureStatusEffect.AlcoholNumbed_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.SmallAlcoholWeight
   tags:
@@ -1847,7 +1977,7 @@ Items.LowQualityAlcohol7: &UncommonAlcohol
     - DarkFutureStatusEffect.UncommonAlcohol_OnEquip
     - DarkFutureStatusEffect.AlcoholMitigationStrength_OnEquip
     - DarkFutureStatusEffect.AlcoholReloadSpeed_OnEquip
-    - DarkFutureStatusEffect.AlcoholTrauma_OnEquip
+    - DarkFutureStatusEffect.AlcoholNumbed_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.MediumAlcoholWeight
   tags:
@@ -1877,7 +2007,7 @@ Items.GoodQualityAlcohol1: &RareAlcohol
     - DarkFutureStatusEffect.RareAlcohol_OnEquip
     - DarkFutureStatusEffect.AlcoholMitigationStrength_OnEquip
     - DarkFutureStatusEffect.AlcoholReloadSpeed_OnEquip
-    - DarkFutureStatusEffect.AlcoholTrauma_OnEquip
+    - DarkFutureStatusEffect.AlcoholNumbed_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.MediumAlcoholWeight
   tags:
@@ -1904,7 +2034,7 @@ Items.TopQualityAlcohol1: &EpicAlcohol
     - DarkFutureStatusEffect.EpicAlcohol_OnEquip
     - DarkFutureStatusEffect.AlcoholMitigationStrength_OnEquip
     - DarkFutureStatusEffect.AlcoholReloadSpeed_OnEquip
-    - DarkFutureStatusEffect.AlcoholTrauma_OnEquip
+    - DarkFutureStatusEffect.AlcoholNumbed_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.LargeAlcoholWeight
   tags:
@@ -1927,12 +2057,14 @@ Items.TopQualityAlcohol7: *EpicAlcohol
 Items.TopQualityAlcohol8: &LegendaryAlcohol
   quality: Quality.Legendary
   objectActions:
-    - !append-once ItemAction.Drop
+    - DarkFutureItems.LegendaryAlcoholConsumeAction
+    - ItemAction.Drop
   OnEquip:
+    - DarkFutureStatusEffect.LegendaryAlcoholXP_OnEquip
     - DarkFutureStatusEffect.LegendaryAlcohol_OnEquip
     - DarkFutureStatusEffect.AlcoholMitigationStrength_OnEquip
     - DarkFutureStatusEffect.AlcoholReloadSpeed_OnEquip
-    - DarkFutureStatusEffect.AlcoholTrauma_OnEquip
+    - DarkFutureStatusEffect.AlcoholNumbed_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.SmallAlcoholWeight
   tags:
@@ -1955,14 +2087,14 @@ Items.OxyBooster:
   statModifiers:
     - !append-once DarkFutureItem.SmallDrugWeight
 
-Items.BlackMarket_HealthBooster: &MediumBoosters
+Items.Blackmarket_HealthBooster: &MediumBoosters
   objectActions:
     - !remove ItemAction.ConsumableDisassemble
   statModifiers:
     - !append-once DarkFutureItem.MediumDrugWeight
-Items.BlackMarket_MemoryBooster: *MediumBoosters
-Items.BlackMarket_StaminaBooster: *MediumBoosters
-Items.BlackMarket_CarryCapacityBooster: *MediumBoosters
+Items.Blackmarket_MemoryBooster: *MediumBoosters
+Items.Blackmarket_StaminaBooster: *MediumBoosters
+Items.Blackmarket_CarryCapacityBooster: *MediumBoosters
 
 Items.StaminaBooster: &LargeBoosters
   objectActions:
@@ -1980,14 +2112,50 @@ Items.HealthBooster:
 
 #
 #
+# Stamina Booster
+#
+#
+Items.StaminaBooster.tags:
+  - !append-once DarkFutureConsumableEnergy
+  - !append-once DarkFutureConsumableEnergyTier1
+Items.StaminaBooster.OnEquip:
+  - !append-once DarkFutureStatusEffect.StaminaBoosterEnergy_OnEquip
+
+Items.Blackmarket_StaminaBooster.tags:
+  - !append-once DarkFutureConsumableEnergy
+  - !append-once DarkFutureConsumableEnergyTier2
+Items.Blackmarket_StaminaBooster.OnEquip:
+    - !append-once DarkFutureStatusEffect.BlackMarketStaminaBoosterEnergy_OnEquip
+
+#
+#
 # Uncommon Drugs
 #
 #
-
 # MrWhitey
+DarkFutureItem.MrWhiteyPrice:
+  $type: gamedataConstantStatModifier_Record
+  value: 7
+  modifierType: Multiplier
+  statType: BaseStats.Price
+
 Items.LowQualityFood6: &UncommonDrugsMrWhitey
   consumableBaseName: DarkFutureConsumableBaseName.Narcotic
   quality: Quality.Uncommon
+  itemType: ItemType.Con_LongLasting
+  buyPrice:
+    - Price.BasePrice
+    - Price.BuyMultiplier
+    - Price.ItemQualityMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - DarkFutureItem.MrWhiteyPrice
+  sellPrice:
+    - Price.BasePrice
+    - Price.SellMultiplier
+    - Price.ItemQualitySellMultiplier
+    - Price.CraftingTraitMultiplier
+    - Price.SellPriceIntrinsicModMult
+    - DarkFutureItem.MrWhiteyPrice
   objectActions:
     - DarkFutureStatusEffect.UncommonDrugsMrWhitey_Consume
     - ItemAction.Drop
@@ -1996,7 +2164,8 @@ Items.LowQualityFood6: &UncommonDrugsMrWhitey
     - DarkFutureStatusEffect.UncommonDrugsMrWhitey_EnergyNerveChange_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.SmallDrugWeight
-  statModifierGroups: []
+  statModifierGroups:
+    - DarkFutureStatusEffect.NarcoticsDuration
   tags:
     - !remove Food
     - !append-once DarkFutureConsumableEnergy
@@ -2017,12 +2186,12 @@ Items.MediumQualityFood11.localizedDescription: l"DarkFutureMrWhiteyMintRevisedD
 # Black Lace
 #
 #
-Items.BlackLaceV0:
+Items.BlackLaceV0: &BlackLace
   consumableBaseName: DarkFutureConsumableBaseName.Narcotic
   objectActions:
     - !remove ItemAction.ConsumableDisassemble
   OnEquip:
-    - !append-once DarkFutureStatusEffect.BlackLaceV0_OnEquip
+    - !append-once DarkFutureStatusEffect.BlackLace_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.SmallDrugWeight
   tags:
@@ -2034,28 +2203,11 @@ Items.BlackLaceV0:
     - !append-once DarkFutureConsumableAddictiveNarcoticStrong
     - !append-once DarkFutureConsumableOverrideTierWithAddictionHeader
     - !append-once DarkFutureConsumableCombatUseAllowed
+Items.BlackLaceV1: *BlackLace
 
-Items.BlackLaceV1:
-  consumableBaseName: DarkFutureConsumableBaseName.Narcotic
-  objectActions:
-    - !remove ItemAction.ConsumableDisassemble
-  OnEquip:
-    - !append-once DarkFutureStatusEffect.BlackLaceV1_OnEquip
-  statModifiers:
-    - !append-once DarkFutureItem.SmallDrugWeight
-  tags:
-    - !append-once IllegalItem
-    - !append-once DarkFutureConsumableEnergy
-    - !append-once DarkFutureConsumableEnergyTier5
-    - !append-once DarkFutureConsumableAddictive
-    - !append-once DarkFutureConsumableAddictiveNarcotic
-    - !append-once DarkFutureConsumableAddictiveNarcoticStrong
-    - !append-once DarkFutureConsumableOverrideTierWithAddictionHeader
-    - !append-once DarkFutureConsumableCombatUseAllowed
-
-BaseStatusEffect.BlackLaceV0.maxStacks: RTDB.StatusEffect_inline0
+BaseStatusEffect.BlackLaceV0.maxStacks: DarkFutureStatusEffect.SingleStack
 BaseStatusEffect.BlackLaceV0.statusEffectType: DarkFutureStatusEffectTypes.Narcotic
-BaseStatusEffect.BlackLaceV1.maxStacks: RTDB.StatusEffect_inline0
+BaseStatusEffect.BlackLaceV1.maxStacks: DarkFutureStatusEffect.SingleStack
 BaseStatusEffect.BlackLaceV1.statusEffectType: DarkFutureStatusEffectTypes.Narcotic
 
 # Bug Fix: Black Lace did not have a Status Effect description in the base game; add one.
@@ -2092,13 +2244,8 @@ BaseStatusEffect.BlackLaceV1.gameplayTags:
   - !append-once DarkFutureConsumableNarcoticRandomNerveChangeTier2
 
 # Add VFX to Black Lace on consume
-DarkFutureStatusEffect.BlackLaceVFX:
-  $type: gamedataStatusEffectFX_Record
-  name: DarkFutureStatusEffect.MethVFX
-  shouldReapply: False
-
 BaseStatusEffect.BlackLaceV0.VFX:
-  - DarkFutureStatusEffect.BlackLaceVFX
+  - DarkFutureStatusEffect.MethVFX
 
 BaseStatusEffect.BlackLaceV1.VFX:
-  - DarkFutureStatusEffect.BlackLaceVFX
+  - DarkFutureStatusEffect.MethVFX

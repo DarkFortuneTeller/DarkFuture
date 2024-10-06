@@ -1,3 +1,24 @@
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
+DarkFutureStatusEffect.MethVFX:
+  $type: gamedataStatusEffectFX_Record
+  name: reflex_buster
+  shouldReapply: False
+
 DarkFutureStatusEffect.InhalerVFX:
   $type: gamedataStatusEffectFX_Record
   name: splinter_buff
@@ -27,96 +48,105 @@ DarkFutureStatusEffect.NoDuration:
 
 #
 #
-# Trauma Cure Consumable
+# Combat Nerve Loss Bonus Consumable
 #
 #
-DarkFutureConsumableBaseName.TraumaTreatment:
+DarkFutureConsumableBaseName.Sedation:
   $type: gamedataConsumableBaseName_Record
-  enumName: TraumaTreatment
+  enumName: Sedation
 
-DarkFutureStatusEffectTypes.TraumaTreatment:
+DarkFutureStatusEffectTypes.Sedation:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
-  enumName: TraumaTreatment
+  enumName: Sedation
 
-UIIcon.DarkFutureTraumaTreatmentIcon:
-  $type: gamedataUIIcon_Record
-  atlasPartName: johnny_pills
-  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+DarkFutureItem.SedationDrugDurationValue:
+  $type: gamedataConstantStatModifier_Record
+  value: 900
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
 
-DarkFutureStatusEffect.TraumaTreatment_UIData:
+DarkFutureItem.SedationDrugDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.SedationDrugDurationValue
+
+DarkFutureStatusEffect.Sedation_UIData:
   $type: gamedataStatusEffectUIData_Record
-  description: l"DarkFutureConsumableTraumaTreatmentEffectDesc"
-  displayName: l"DarkFutureConsumableTraumaTreatmentEffectName"
+  description: l"DarkFutureNumbedDesc"
+  displayName: l"DarkFutureNumbed02Name"
   fluffText: ''
-  iconPath: DarkFutureTraumaTreatmentIcon
+  iconPath: qh_brainmelt
   priority: -10
   floatValues: []
   intValues:
-    - 24
+    - -50
   nameValues: []
   stats: []
 
 # Effect on item use only. Prevents unintended VFX application.
-DarkFutureStatusEffect.TraumaTreatmentInhaler:
+DarkFutureStatusEffect.SedationInhaler:
   $type: gamedataStatusEffect_Record
   duration: DarkFutureStatusEffect.NoDuration
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
   replicated: False
   savable: True
-  statusEffectType: DarkFutureStatusEffectTypes.TraumaTreatment
+  statusEffectType: DarkFutureStatusEffectTypes.Sedation
   stopActiveSfxOnDeactivate: True
   debugTags: []
   gameplayTags:
     - Buff
-    - DarkFutureTraumaTreatmentInhaler
-    - DarkFutureInfiniteDurationEffect
+    - DarkFutureSedationInhaler
   immunityStats: []
   packages: []
   SFX: []
   VFX:
     - DarkFutureStatusEffect.InhalerVFX
 
-DarkFutureStatusEffect.TraumaTreatment:
+DarkFutureStatusEffect.Sedation:
   $type: gamedataStatusEffect_Record
-  duration: BaseStats.InfiniteDuration
+  duration: DarkFutureItem.SedationDrugDuration
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
   replicated: False
   savable: True
-  statusEffectType: DarkFutureStatusEffectTypes.TraumaTreatment
+  statusEffectType: DarkFutureStatusEffectTypes.Sedation
   stopActiveSfxOnDeactivate: True
-  uiData: DarkFutureStatusEffect.TraumaTreatment_UIData
+  uiData: DarkFutureStatusEffect.Sedation_UIData
   debugTags: []
   gameplayTags:
     - Buff
-    - DarkFutureTraumaTreatmentBuff
-    - DarkFutureInfiniteDurationEffect
+    - DarkFutureSedationBuff
   immunityStats: []
   packages: []
   SFX: []
   VFX: []
 
-DarkFutureItem.TraumaTreatmentDrugOnEquipCompletionEffect:
+DarkFutureItem.SedationDrugOnEquipCompletionEffect:
   $type: gamedataObjectActionEffect_Record
-  statusEffect: DarkFutureStatusEffect.TraumaTreatment
+  statusEffect: DarkFutureStatusEffect.Sedation
 
-DarkFutureItem.TraumaTreatmentDrugOnEquipInhalerCompletionEffect:
+DarkFutureItem.SedationDrugOnEquipInhalerCompletionEffect:
   $type: gamedataObjectActionEffect_Record
-  statusEffect: DarkFutureStatusEffect.TraumaTreatmentInhaler
+  statusEffect: DarkFutureStatusEffect.SedationInhaler
 
-DarkFutureItem.TraumaTreatmentDrugObjectAction:
+DarkFutureItem.SedationDrugObjectAction:
   $type: gamedataItemAction_Record
   isDefaultLootChoice: False
   removeAfterUse: True
@@ -126,8 +156,8 @@ DarkFutureItem.TraumaTreatmentDrugObjectAction:
   priority: 0
   activationTime: []
   completionEffects:
-    - DarkFutureItem.TraumaTreatmentDrugOnEquipCompletionEffect
-    - DarkFutureItem.TraumaTreatmentDrugOnEquipInhalerCompletionEffect
+    - DarkFutureItem.SedationDrugOnEquipCompletionEffect
+    - DarkFutureItem.SedationDrugOnEquipInhalerCompletionEffect
   costs: []
   durationTime: []
   instigatorActivePrereqs: []
@@ -138,51 +168,41 @@ DarkFutureItem.TraumaTreatmentDrugObjectAction:
   targetActivePrereqs: []
   targetPrereqs: []
 
-DarkFutureItem.TraumaTreatmentDrugOnEquip_UIData:
+DarkFutureItem.SedationDrugOnEquip_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureConsumableUIDescriptionTraumaTreatment"
+  localizedDescription: l"DarkFutureConsumableUIDescriptionSedation"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
+    - -50
     - -15
-    - 24
   nameValues: []
   stats: []
 
-DarkFutureItem.TraumaTreatmentDrugOnEquip:
+DarkFutureItem.SedationDrugOnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.TraumaTreatmentDrugOnEquip_UIData
+  UIData: DarkFutureItem.SedationDrugOnEquip_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.TraumaCurePriceMult:
-  $type: gamedataConstantStatModifier_Record
-  value: 2
-  modifierType: Multiplier
-  statType: BaseStats.Price
-
-DarkFutureItem.TraumaTreatmentDrug:
+DarkFutureItem.SedationDrug:
   $type: gamedataConsumableItem_Record
-  castPoint: 0.5
-  consumableBaseName: DarkFutureConsumableBaseName.TraumaTreatment
+  consumableBaseName: DarkFutureConsumableBaseName.Sedation
   consumableType: ConsumableType.Drug
-  cycleDuration: 0.899999976
-  initBlendDuration: 0.100000001
-  removePoint: 0.899999976
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
-  appearanceName: drug_3
+  appearanceName: base_junk_item_medicine_bottle
   canDrop: True
   crosshair: Crosshairs.None
   deprecated: False
   dropObject: defaultItemDrop
   enableNpcRPGData: False
+  entityName: base_junk_item
   equipArea: EquipmentArea.Consumable
   friendlyName: ''
   garmentOffset: 0
@@ -196,7 +216,7 @@ DarkFutureItem.TraumaTreatmentDrug:
   isSingleInstance: True
   itemCategory: ItemCategory.Consumable
   itemSecondaryAction: ItemAction.Consume
-  itemType: ItemType.Con_Edible
+  itemType: ItemType.Con_LongLasting
   localizedName: ''
   mass: 1
   minigameInstance: minigame_v2.DefaultItemMinigame
@@ -214,24 +234,20 @@ DarkFutureItem.TraumaTreatmentDrug:
   appearanceSuffixesOwnerOverride: []
   attachmentSlots: []
   buyPrice:
-    - Price.ConsumableBasePrice
-    - Price.ItemQualityMultiplier
-    - Price.PlusTierMultiplier
+    - Price.BlackmarketLongLastingConsumable
     - Price.BuyPrice_StreetCred_Discount
-    - Price.LongLastingConsumable
-    - DarkFutureItem.TraumaCurePriceMult
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: l"DarkFutureItemNameTraumaTreatment"
+  displayName: l"DarkFutureItemNameSedation"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions: []
   hairSkinnedMeshComponents: []
-  localizedDescription: l"DarkFutureItemDescriptionTraumaTreatment"
+  localizedDescription: l"DarkFutureItemDescriptionSedation"
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.TraumaTreatmentDrugOnEquip
+    - DarkFutureItem.SedationDrugOnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -239,12 +255,7 @@ DarkFutureItem.TraumaTreatmentDrug:
   previewBBoxOverride: []
   requiredSlots: []
   sellPrice:
-    - Price.ConsumableBasePrice
-    - Price.SellMultiplier
-    - Price.ItemQualityMultiplier
-    - Price.PlusTierMultiplier
-    - Price.LongLastingConsumable
-    - DarkFutureItem.TraumaCurePriceMult
+    - Price.BlackmarketLongLastingConsumable
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -253,14 +264,16 @@ DarkFutureItem.TraumaTreatmentDrug:
     - Consumable
     - Drug
     - Medical
-    - DarkFutureConsumableTraumaTreatmentDrug
+    - IllegalItem
+    - DarkFutureConsumableSedationDrug
   variants: []
   visualTags: []
   effectors: []
   objectActions:
-    - DarkFutureItem.TraumaTreatmentDrugObjectAction
+    - DarkFutureItem.SedationDrugObjectAction
     - ItemAction.Drop
-  statModifierGroups: []
+  statModifierGroups:
+    - DarkFutureItem.SedationDrugDuration
   statModifiers:
     - Items.LongLasting_inline0
     - DarkFutureItem.SmallDrugWeight
@@ -320,7 +333,7 @@ DarkFutureStatusEffect.Weakened:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -371,7 +384,6 @@ DarkFutureItem.NerveRestoreDrugOnEquip_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNerveRestore"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
     - 60
@@ -399,21 +411,18 @@ DarkFutureItem.NerveRestorePriceMult:
 
 DarkFutureItem.NerveRestoreDrug:
   $type: gamedataConsumableItem_Record
-  castPoint: 0.5
   consumableBaseName: DarkFutureConsumableBaseName.NerveRestore
   consumableType: ConsumableType.Drug
-  cycleDuration: 0.899999976
-  initBlendDuration: 0.100000001
-  removePoint: 0.899999976
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
-  appearanceName: drug_3
+  appearanceName: drug_15
   canDrop: True
   crosshair: Crosshairs.None
   deprecated: False
   dropObject: defaultItemDrop
   enableNpcRPGData: False
+  entityName: base_inhaler_item
   equipArea: EquipmentArea.Consumable
   friendlyName: ''
   garmentOffset: 0
@@ -534,7 +543,7 @@ DarkFutureStatusEffect.AddictionTreatmentInhaler:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -547,6 +556,7 @@ DarkFutureStatusEffect.AddictionTreatmentInhaler:
     - Buff
     - DarkFutureAddictionTreatmentInhaler
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -559,7 +569,7 @@ DarkFutureStatusEffect.AddictionTreatment:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -573,6 +583,7 @@ DarkFutureStatusEffect.AddictionTreatment:
     - Buff
     - DarkFutureAddictionTreatmentBuff
     - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -612,10 +623,9 @@ DarkFutureItem.AddictionTreatmentDrugOnEquip_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionAddictionTreatment"
   localizedName: ''
-  maxFactor: 0
   floatValues: []
   intValues:
-    - -70
+    - -50
     - 12
   nameValues: []
   stats: []
@@ -632,21 +642,18 @@ DarkFutureItem.AddictionTreatmentDrugOnEquip:
 
 DarkFutureItem.AddictionTreatmentDrug:
   $type: gamedataConsumableItem_Record
-  castPoint: 0.5
   consumableBaseName: DarkFutureConsumableBaseName.AddictionTreatment
   consumableType: ConsumableType.Drug
-  cycleDuration: 0.899999976
-  initBlendDuration: 0.100000001
-  removePoint: 0.899999976
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
-  appearanceName: drug_3
+  appearanceName: drug_10
   canDrop: True
   crosshair: Crosshairs.None
   deprecated: False
   dropObject: defaultItemDrop
   enableNpcRPGData: False
+  entityName: base_inhaler_item
   equipArea: EquipmentArea.Consumable
   friendlyName: ''
   garmentOffset: 0
@@ -722,8 +729,7 @@ DarkFutureItem.AddictionTreatmentDrug:
   objectActions:
     - DarkFutureItem.AddictionTreatmentDrugObjectAction
     - ItemAction.Drop
-  statModifierGroups:
-    - DarkFutureItem.AddictionTreatmentDrugDuration
+  statModifierGroups: []
   statModifiers:
     - Items.LongLasting_inline0
     - DarkFutureItem.SmallDrugWeight
@@ -830,7 +836,7 @@ DarkFutureStatusEffect.GlitterSlowTime:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: False
   isAffectedByTimeDilationPlayer: False
-  maxStacks: RTDB.StatusEffect_inline0
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -893,7 +899,7 @@ DarkFutureStatusEffect.GlitterStaminaMovement:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: RTDB.StatusEffect_inline0
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -916,13 +922,12 @@ DarkFutureStatusEffect.GlitterStaminaMovement:
     - DarkFutureStatusEffect.Glitter_StaminaMovement_StatsPackage
   SFX: []
   VFX:
-    - DarkFutureStatusEffect.InhalerVFX
+    - DarkFutureStatusEffect.MethVFX
 
 DarkFutureStatusEffect.Glitter_SlowTime_OnEquipUIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableItemGlitterSlowTimeDesc"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 12
   nameValues: []
@@ -932,7 +937,6 @@ DarkFutureStatusEffect.Glitter_StaminaMovement_OnEquipUIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableItemGlitterDesc"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 25
     - 25
@@ -943,13 +947,13 @@ DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquipUIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNarcoticEnergyNerveChange"
   localizedName: ''
-  maxFactor: 0
   intValues:
     - 50
     - 50
     - -50
     - 1
-    - 3
+    - 5
+    - 8
   nameValues: []
   stats: []
 
@@ -1009,20 +1013,17 @@ DarkFutureItems.GlitterObjectAction:
 
 DarkFutureItem.Glitter:
   $type: gamedataConsumableItem_Record
-  castPoint: 0.5
   consumableBaseName: DarkFutureConsumableBaseName.Narcotic
-  cycleDuration: 0.899999976
-  initBlendDuration: 0.100000001
-  removePoint: 0.899999976
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
-  appearanceName: drug_7
+  appearanceName: drug_4
   canDrop: True
   crosshair: Crosshairs.None
   deprecated: False
   dropObject: defaultItemDrop
   enableNpcRPGData: False
+  entityName: base_inhaler_item
   equipArea: EquipmentArea.Consumable
   friendlyName: ''
   garmentOffset: 0
@@ -1096,7 +1097,7 @@ DarkFutureItem.Glitter:
     - HasModel
     - IllegalItem
     - DarkFutureConsumableEnergy
-    - DarkFutureConsumableEnergyTier6
+    - DarkFutureConsumableEnergyTier5
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNarcotic
     - DarkFutureConsumableAddictiveNarcoticStrong
@@ -1129,26 +1130,34 @@ DarkFutureVendors.FirstAidKitQuantityChance:
   modifierType: Additive
   statType: BaseStats.Quantity
 
-DarkFutureVendors.TraumaTreatmentQuantityChance:
+DarkFutureVendors.SedationDrugQuantityChance:
   $type: gamedataRandomStatModifier_Record
-  max: 4.5
-  min: 2.0
+  max: 10.5
+  min: 6.0
   useControlledRandom: False
   modifierType: Additive
   statType: BaseStats.Quantity
 
 DarkFutureVendors.NarcoticQuantityChance:
   $type: gamedataRandomStatModifier_Record
-  max: 2.5
-  min: 1.0
+  max: 5.5
+  min: 2.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.NerveRestoreDrugQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 5.5
+  min: 2.0
   useControlledRandom: False
   modifierType: Additive
   statType: BaseStats.Quantity
 
 DarkFutureVendors.AddictionTreatmentQuantityChance:
   $type: gamedataRandomStatModifier_Record
-  max: 5.5
-  min: 2.0
+  max: 10.5
+  min: 6.0
   useControlledRandom: False
   modifierType: Additive
   statType: BaseStats.Quantity
@@ -1171,12 +1180,12 @@ DarkFutureVendors.FirstAidKit:
   quantity:
     - DarkFutureVendors.FirstAidKitQuantityChance
 
-DarkFutureVendors.TraumaTreatment:
+DarkFutureVendors.SedationDrug:
   $type: gamedataVendorItem_Record
-  item: DarkFutureItem.TraumaTreatmentDrug
+  item: DarkFutureItem.SedationDrug
   generationPrereqs: []
   quantity:
-    - DarkFutureVendors.TraumaTreatmentQuantityChance
+    - DarkFutureVendors.SedationDrugQuantityChance
 
 DarkFutureVendors.AddictionTreatmentDrug:
   $type: gamedataVendorItem_Record
@@ -1190,14 +1199,7 @@ DarkFutureVendors.NerveRestoreDrug:
   item: DarkFutureItem.NerveRestoreDrug
   generationPrereqs: []
   quantity:
-    - Vendors.Uncommonly_Present
-
-DarkFutureVendors.NerveRestoreDrug_100:
-  $type: gamedataVendorItem_Record
-  item: DarkFutureItem.NerveRestoreDrug
-  generationPrereqs: []
-  quantity:
-    - Vendors.Always_Present
+    - DarkFutureVendors.NerveRestoreDrugQuantityChance
 
 DarkFutureVendors.Glitter:
   $type: gamedataVendorItem_Record
@@ -1226,10 +1228,8 @@ DarkFutureVendors.BlackLaceV1:
 #
 Vendors.BlackMarketMedicStore.itemStock: &StandardMedicVendors
   - !append-once DarkFutureVendors.FirstAidKit
-  - !append-once DarkFutureVendors.NerveRestoreDrug_100
   - !append-once DarkFutureVendors.NerveRestoreDrug
   - !append-once DarkFutureVendors.AddictionTreatmentDrug
-  - !append-once DarkFutureVendors.TraumaTreatment
 Vendors.bls_ina_se1_medicstore_01.itemStock: *StandardMedicVendors
 Vendors.cct_cpz_medic_01.itemStock: *StandardMedicVendors
 Vendors.cct_dtn_medic_01.itemStock: *StandardMedicVendors
@@ -1253,7 +1253,7 @@ Vendors.cz_stadium_medic_01.itemStock:
   - !append-once DarkFutureVendors.FirstAidKit
   - !append-once DarkFutureVendors.NerveRestoreDrug
   - !append-once DarkFutureVendors.AddictionTreatmentDrug
-  - !append-once DarkFutureVendors.TraumaTreatment
+  - !append-once DarkFutureVendors.SedationDrug
   - !append-once DarkFutureVendors.Glitter
   - !append-once DarkFutureVendors.BlackLaceV0
   - !append-once DarkFutureVendors.BlackLaceV1
@@ -1262,12 +1262,12 @@ Vendors.cz_con_medic_01.itemStock:
   - !append-once DarkFutureVendors.FirstAidKit
   - !append-once DarkFutureVendors.NerveRestoreDrug
   - !append-once DarkFutureVendors.AddictionTreatmentDrug
-  - !append-once DarkFutureVendors.TraumaTreatment
+  - !append-once DarkFutureVendors.SedationDrug
 
 # Illegal Drug Vendors
 #
 Vendors.wbr_jpn_medicstore_02.itemStock: &IllegalDrugVendors
-  - DarkFutureVendors.NerveRestoreDrug_100
+  - Vendors.BaseMoney
   - DarkFutureVendors.NerveRestoreDrug
   - DarkFutureVendors.Glitter
   - DarkFutureVendors.BlackLaceV0

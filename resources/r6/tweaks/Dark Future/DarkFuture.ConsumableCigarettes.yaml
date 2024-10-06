@@ -1,3 +1,19 @@
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
 DarkFutureStatusEffectTypes.Smoking:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
@@ -8,6 +24,12 @@ DarkFutureItem.CigaretteWeight:
   value: 0.1
   modifierType: Additive
   statType: BaseStats.Weight
+
+DarkFutureItem.CigarettePrice:
+  $type: gamedataConstantStatModifier_Record
+  value: 5
+  modifierType: Multiplier
+  statType: BaseStats.Price
 
 UIIcon.base_junk_item_cigarette_pack_c:
   $type: gamedataUIIcon_Record
@@ -39,25 +61,13 @@ DarkFutureItem.CigaretteDuration:
   statModifiers:
     - DarkFutureItem.CigaretteDuration_StatModifier
 
-BaseStatusEffect.CigarettePackageStatHealthOutOfCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.80
-  modifierType: Multiplier
-  statType: BaseStats.HealthOutOfCombatRegenRate
-
-BaseStatusEffect.CigarettePackageStatHealthInCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.80
-  modifierType: Multiplier
-  statType: BaseStats.HealthInCombatRegenRate
-
-BaseStatusEffect.CigarettePackageStatStamina:
+DarkFutureStatusEffect.CigarettePackageStatStamina:
   $type: gamedataConstantStatModifier_Record
   value: 0.80
   modifierType: Multiplier
   statType: BaseStats.Stamina
 
-BaseStatusEffect.CigarettePackage:
+DarkFutureStatusEffect.CigarettePackage:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
   animationWrapperOverrides: []
@@ -65,11 +75,9 @@ BaseStatusEffect.CigarettePackage:
   items: []
   statPools: []
   stats:
-    - BaseStatusEffect.CigarettePackageStatHealthOutOfCombatRegenRate
-    - BaseStatusEffect.CigarettePackageStatHealthInCombatRegenRate
-    - BaseStatusEffect.CigarettePackageStatStamina
+    - DarkFutureStatusEffect.CigarettePackageStatStamina
 
-BaseStatusEffect.CigaretteStatusEffectUIData:
+DarkFutureStatusEffect.CigaretteStatusEffectUIData:
   $type: gamedataStatusEffectUIData_Record
   description: l"DarkFutureCigaretteStatusEffectDesc"
   displayName: l"DarkFutureCigaretteStatusEffectDisplayName"
@@ -78,7 +86,6 @@ BaseStatusEffect.CigaretteStatusEffectUIData:
   priority: 0
   floatValues: []
   intValues:
-    - -20
     - -20
   nameValues: []
   stats: []
@@ -89,7 +96,7 @@ DarkFutureStatusEffect.Smoking:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -97,17 +104,17 @@ DarkFutureStatusEffect.Smoking:
   savable: True
   statusEffectType: DarkFutureStatusEffectTypes.Smoking
   stopActiveSfxOnDeactivate: True
-  uiData: BaseStatusEffect.CigaretteStatusEffectUIData
+  uiData: DarkFutureStatusEffect.CigaretteStatusEffectUIData
   debugTags: []
   gameplayTags:
     - Debuff
     - DarkFutureSmoking
-    - DarkFutureSmokingFX
+    - DarkFutureSmokingFromItem
     - DarkFutureAddictionPrimaryEffect
     - DarkFutureAddictionPrimaryEffectNicotine
   immunityStats: []
   packages:
-    - BaseStatusEffect.CigarettePackage
+    - DarkFutureStatusEffect.CigarettePackage
   SFX: []
   VFX: []
 
@@ -117,7 +124,7 @@ DarkFutureStatusEffect.SmokingFromChoice:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: <TDBID:95F8F814:19>
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -125,7 +132,7 @@ DarkFutureStatusEffect.SmokingFromChoice:
   savable: True
   statusEffectType: DarkFutureStatusEffectTypes.Smoking
   stopActiveSfxOnDeactivate: True
-  uiData: BaseStatusEffect.CigaretteStatusEffectUIData
+  uiData: DarkFutureStatusEffect.CigaretteStatusEffectUIData
   debugTags: []
   gameplayTags:
     - Debuff
@@ -135,15 +142,15 @@ DarkFutureStatusEffect.SmokingFromChoice:
     - DarkFutureAddictionPrimaryEffectNicotine
   immunityStats: []
   packages:
-    - BaseStatusEffect.CigarettePackage
+    - DarkFutureStatusEffect.CigarettePackage
   SFX: []
   VFX: []
 
-Items.CigaretteItemActionEffectCommon:
+DarkFutureItems.CigaretteItemActionEffectCommon:
   $type: gamedataObjectActionEffect_Record
   statusEffect: DarkFutureStatusEffect.Smoking
 
-Items.CigaretteItemActionCommon:
+DarkFutureItems.CigaretteItemActionCommon:
   $type: gamedataItemAction_Record
   isDefaultLootChoice: False
   removeAfterUse: True
@@ -153,7 +160,7 @@ Items.CigaretteItemActionCommon:
   priority: 0
   activationTime: []
   completionEffects:
-    - Items.CigaretteItemActionEffectCommon
+    - DarkFutureItems.CigaretteItemActionEffectCommon
   costs: []
   durationTime: []
   instigatorActivePrereqs: []
@@ -163,7 +170,7 @@ Items.CigaretteItemActionCommon:
   targetActivePrereqs: []
   targetPrereqs: []
 
-Items.CigaretteStatPackageUIDataCommon:
+DarkFutureItems.CigaretteStatPackageUIDataCommon:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureCigaretteStatPackageDesc"
   localizedName: ''
@@ -171,14 +178,13 @@ Items.CigaretteStatPackageUIDataCommon:
   intValues:
     - 15
     - -20
-    - -20
   nameValues: []
   stats: []
 
-Items.CigaretteStatPackageCommon:
+DarkFutureItems.CigaretteStatPackageCommon:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: Items.CigaretteStatPackageUIDataCommon
+  UIData: DarkFutureItems.CigaretteStatPackageUIDataCommon
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -187,11 +193,6 @@ Items.CigaretteStatPackageCommon:
 
 Items.GenericJunkItem23:
   $type: gamedataConsumableItem_Record
-  castPoint: 0.5
-  consumableBaseName: ConsumableBaseName.Cigarette
-  cycleDuration: 0.899999976
-  initBlendDuration: 0.100000001
-  removePoint: 0.899999976
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
@@ -232,9 +233,11 @@ Items.GenericJunkItem23:
   appearanceSuffixesOwnerOverride: []
   attachmentSlots: []
   buyPrice:
-    - Price.Food
+    - Price.BasePrice
+    - Price.BuyMultiplier
+    - Price.ItemQualityMultiplier
     - Price.BuyPrice_StreetCred_Discount
-    - Price.GoodQualityFood
+    - DarkFutureItem.CigarettePrice
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
@@ -247,7 +250,7 @@ Items.GenericJunkItem23:
   localizedDescription: LocKey#45742
   OnAttach: []
   OnEquip:
-    - Items.CigaretteStatPackageCommon
+    - DarkFutureItems.CigaretteStatPackageCommon
   OnLooted: []
   parts: []
   placementSlots:
@@ -255,11 +258,12 @@ Items.GenericJunkItem23:
   previewBBoxOverride: []
   requiredSlots: []
   sellPrice:
-    - Price.Food
+    - Price.BasePrice
     - Price.SellMultiplier
+    - Price.ItemQualitySellMultiplier
     - Price.CraftingTraitMultiplier
     - Price.SellPriceIntrinsicModMult
-    - Price.GoodQualityFood
+    - DarkFutureItem.CigarettePrice
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -276,7 +280,7 @@ Items.GenericJunkItem23:
   visualTags: []
   effectors: []
   objectActions:
-    - Items.CigaretteItemActionCommon
+    - DarkFutureItems.CigaretteItemActionCommon
     - ItemAction.Drop
   statModifierGroups:
     - DarkFutureItem.CigaretteDuration
@@ -288,11 +292,6 @@ Items.GenericJunkItem23:
 
 Items.GenericJunkItem24:
   $type: gamedataConsumableItem_Record
-  castPoint: 0.5
-  consumableBaseName: ConsumableBaseName.Cigarette
-  cycleDuration: 0.899999976
-  initBlendDuration: 0.100000001
-  removePoint: 0.899999976
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
@@ -333,9 +332,11 @@ Items.GenericJunkItem24:
   appearanceSuffixesOwnerOverride: []
   attachmentSlots: []
   buyPrice:
-    - Price.Food
+    - Price.BasePrice
+    - Price.BuyMultiplier
+    - Price.ItemQualityMultiplier
     - Price.BuyPrice_StreetCred_Discount
-    - Price.GoodQualityFood
+    - DarkFutureItem.CigarettePrice
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
@@ -348,7 +349,7 @@ Items.GenericJunkItem24:
   localizedDescription: LocKey#45743
   OnAttach: []
   OnEquip:
-    - Items.CigaretteStatPackageCommon
+    - DarkFutureItems.CigaretteStatPackageCommon
   OnLooted: []
   parts: []
   placementSlots:
@@ -356,11 +357,12 @@ Items.GenericJunkItem24:
   previewBBoxOverride: []
   requiredSlots: []
   sellPrice:
-    - Price.Food
+    - Price.BasePrice
     - Price.SellMultiplier
+    - Price.ItemQualitySellMultiplier
     - Price.CraftingTraitMultiplier
     - Price.SellPriceIntrinsicModMult
-    - Price.GoodQualityFood
+    - DarkFutureItem.CigarettePrice
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -377,7 +379,7 @@ Items.GenericJunkItem24:
   visualTags: []
   effectors: []
   objectActions:
-    - Items.CigaretteItemActionCommon
+    - DarkFutureItems.CigaretteItemActionCommon
     - ItemAction.Drop
   statModifierGroups:
     - DarkFutureItem.CigaretteDuration
@@ -387,13 +389,9 @@ Items.GenericJunkItem24:
   statPools: []
   weakspots: []
 
-Items.DarkFutureCigarettePackC:
+DarkFutureItem.CigarettePackC:
   $type: gamedataConsumableItem_Record
-  castPoint: 0.5
   consumableBaseName: ConsumableBaseName.Cigarette
-  cycleDuration: 0.899999976
-  initBlendDuration: 0.100000001
-  removePoint: 0.899999976
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
@@ -434,9 +432,11 @@ Items.DarkFutureCigarettePackC:
   appearanceSuffixesOwnerOverride: []
   attachmentSlots: []
   buyPrice:
-    - Price.Food
+    - Price.BasePrice
+    - Price.BuyMultiplier
+    - Price.ItemQualityMultiplier
     - Price.BuyPrice_StreetCred_Discount
-    - Price.GoodQualityFood
+    - DarkFutureItem.CigarettePrice
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
@@ -449,7 +449,7 @@ Items.DarkFutureCigarettePackC:
   localizedDescription: l"DarkFutureCigarette03Desc"
   OnAttach: []
   OnEquip:
-    - Items.CigaretteStatPackageCommon
+    - DarkFutureItems.CigaretteStatPackageCommon
   OnLooted: []
   parts: []
   placementSlots:
@@ -457,11 +457,12 @@ Items.DarkFutureCigarettePackC:
   previewBBoxOverride: []
   requiredSlots: []
   sellPrice:
-    - Price.Food
+    - Price.BasePrice
     - Price.SellMultiplier
+    - Price.ItemQualitySellMultiplier
     - Price.CraftingTraitMultiplier
     - Price.SellPriceIntrinsicModMult
-    - Price.GoodQualityFood
+    - DarkFutureItem.CigarettePrice
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -478,7 +479,7 @@ Items.DarkFutureCigarettePackC:
   visualTags: []
   effectors: []
   objectActions:
-    - Items.CigaretteItemActionCommon
+    - DarkFutureItems.CigaretteItemActionCommon
     - ItemAction.Drop
   statModifierGroups:
     - DarkFutureItem.CigaretteDuration
@@ -493,7 +494,7 @@ Items.DarkFutureCigarettePackC:
 #
 DarkFutureVendors.CigarettePackC:
   $type: gamedataVendorItem_Record
-  item: Items.DarkFutureCigarettePackC
+  item: DarkFutureItem.CigarettePackC
   generationPrereqs: []
   quantity:
     - Vendors.MediumQuantity

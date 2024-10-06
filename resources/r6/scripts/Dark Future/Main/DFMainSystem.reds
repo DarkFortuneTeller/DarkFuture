@@ -33,8 +33,7 @@ import DarkFuture.Addictions.{
     DFNarcoticAddictionSystem
 }
 import DarkFuture.Afflictions.{
-    DFInjuryAfflictionSystem,
-    DFTraumaAfflictionSystem
+    DFInjuryAfflictionSystem
 }
 import DarkFuture.UI.DFHUDSystem
 
@@ -69,26 +68,16 @@ public struct DFAddictionDatum {
 
 public struct DFAfflictionUpdateDatum {
 	public let stackCount: Uint32;
-	public let cureDuration: Float;
-	public let suppressionDuration: Float;
-    public let hasQualifyingSuppressionActiveStatusEffect: Bool;
-}
-
-public struct DFAfflictionDatum {
-    public let injury: DFAfflictionUpdateDatum;
-    public let trauma: DFAfflictionUpdateDatum;
 }
 
 public struct DFFutureHoursData {
     public let futureNeedsData: array<DFNeedsDatum>;
     public let futureAddictionData: array<DFAddictionDatum>;
-    public let futureAfflictionData: array<DFAfflictionDatum>;
 }
 
 public struct DFTimeSkipData {
     public let targetNeedValues: DFNeedsDatum;
     public let targetAddictionValues: DFAddictionDatum;
-    public let targetAfflictionValues: DFAfflictionDatum;
     public let hoursSkipped: Int32;
     public let wasSleeping: Bool;
 }
@@ -263,7 +252,6 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // Afflictions
         DFInjuryAfflictionSystem.GetInstance(gameInstance).Init(this.player);
-        DFTraumaAfflictionSystem.GetInstance(gameInstance).Init(this.player);
 
         // UI
         DFHUDSystem.GetInstance(gameInstance).Init(this.player);
@@ -304,7 +292,6 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // Afflictions
         DFInjuryAfflictionSystem.GetInstance(gameInstance).Resume();
-        DFTraumaAfflictionSystem.GetInstance(gameInstance).Resume();
 
         // UI
         DFHUDSystem.GetInstance(gameInstance).Resume();
@@ -319,7 +306,6 @@ public final class DFMainSystem extends ScriptableSystem {
         DFHUDSystem.GetInstance(gameInstance).Suspend();
 
         // Afflictions
-        DFTraumaAfflictionSystem.GetInstance(gameInstance).Suspend();
         DFInjuryAfflictionSystem.GetInstance(gameInstance).Suspend();
         
         // Cyberware Service

@@ -77,16 +77,12 @@ public final static func CreateInputHint(context: GameInstance, isVisible: Bool)
 //
 @wrapMethod(HudPhoneGameController) // extends SongbirdAudioCallGameController
 protected cb func OnInitialize() -> Bool {
-	DFLog(true, this, "OnInitialize");
 	let val: Bool = wrappedMethod();
-	let settings: ref<DFSettings> = DFSettings.Get();
 	
-	if settings.mainSystemEnabled && settings.showHUDUI {
-		if Equals(this.m_RootWidget.GetName(), n"songbird_audiocall") {       // Songbird Audio Call
-			this.m_RootWidget.SetMargin(new inkMargin(0.0, 72.0, 0.0, 0.0));  // Original: 0.0, 0.0
-		} else if Equals(this.m_RootWidget.GetName(), n"Root") {              // Songbird Holo Call
-			this.m_RootWidget.SetMargin(new inkMargin(70.0, 85.0, 0.0, 0.0)); // Original: 70.0, 0.0
-		}
+	if Equals(this.m_RootWidget.GetName(), n"songbird_audiocall") {       // Songbird Audio Call
+		DFHUDSystem.Get().SetSongbirdAudiocallWidget(this.m_RootWidget);
+	} else if Equals(this.m_RootWidget.GetName(), n"Root") {              // Songbird Holo Call
+		DFHUDSystem.Get().SetSongbirdHolocallWidget(this.m_RootWidget);
 	}
 
 	return val;
@@ -96,19 +92,9 @@ protected cb func OnInitialize() -> Bool {
 //
 @wrapMethod(NewHudPhoneGameController)
 protected cb func OnInitialize() -> Bool {
-	DFLog(true, this, "OnInitialize");
 	let val: Bool = wrappedMethod();
-	let settings: ref<DFSettings> = DFSettings.Get();
-	
-	if settings.mainSystemEnabled && settings.showHUDUI {
-		let newHoloCallVerticalOffset: Float = 85.0;
-		
-		// Standard Holo and Audio Calls
-		let rootWidget: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
-		rootWidget.GetWidgetByPathName(n"incomming_call_slot").SetMargin(new inkMargin(68.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0)); // Original: -50.0, 300.0
-		rootWidget.GetWidgetByPathName(n"holoaudio_call_slot").SetMargin(new inkMargin(80.0, 284.0 + newHoloCallVerticalOffset, 0.0, 0.0)); // Original: 80.0, 284.0
-		rootWidget.GetWidgetByPathName(n"holoaudio_call_marker").SetMargin(new inkMargin(-50.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0)); // Original: -50.0, 300.0
-	}
+
+	DFHUDSystem.Get().SetNewHudPhoneWidget(this.GetRootCompoundWidget());
 	
 	return val;
 }
@@ -174,6 +160,10 @@ public final class DFHUDSystem extends DFSystem {
 	private let energyBar: ref<DFNeedsHUDBar>;
 	private let nerveBar: ref<DFNeedsHUDBar>;
 
+	private let songbirdAudiocallWidget: ref<inkWidget>;
+	private let songbirdHolocallWidget: ref<inkWidget>;
+	private let newHudPhoneWidget: ref<inkCompoundWidget>;
+
 	private let HUDUIBlockedDueToMenuOpen: Bool = false;
 	private let HUDUIBlockedDueToCameraControl: Bool = false;
 
@@ -190,7 +180,7 @@ public final class DFHUDSystem extends DFSystem {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 
 	private final func GetSystemToggleSettingValue() -> Bool {
@@ -222,6 +212,7 @@ public final class DFHUDSystem extends DFSystem {
 		if !IsDefined(fullScreenSlot) {
 			fullScreenSlot = this.CreateFullScreenSlot(inkHUD);
 			this.widgetSlot = this.CreateWidgetSlot(fullScreenSlot);
+			this.UpdateHUDWidgetPositionAndScale();
 			this.CreateBars(this.widgetSlot, inkSystem, attachedPlayer);
 			DFLog(this.debugEnabled, this, "Should have created bar widgets!");
 			DFLog(this.debugEnabled, this, ToString(this.hydrationBar));
@@ -233,16 +224,20 @@ public final class DFHUDSystem extends DFSystem {
 
 			this.widgetSlot.SetVisible(this.Settings.mainSystemEnabled && this.Settings.showHUDUI);
 		}
+
+		this.UpdateAllBaseGameHUDWidgetPositions();
 	}
 
 	private func DoPostSuspendActions() -> Void {
 		this.HUDUIBlockedDueToMenuOpen = false;
 		this.HUDUIBlockedDueToCameraControl = false;
 		this.widgetSlot.SetVisible(false);
+		this.UpdateAllBaseGameHUDWidgetPositions();
 	}
 
 	private func DoPostResumeActions() -> Void {
 		this.widgetSlot.SetVisible(this.Settings.mainSystemEnabled && this.Settings.showHUDUI);
+		this.UpdateAllBaseGameHUDWidgetPositions();
 	}
 
 	private func DoStopActions() -> Void {}
@@ -269,11 +264,23 @@ public final class DFHUDSystem extends DFSystem {
 			this.energyBar.UpdateColorTheme(this.Settings.energyHUDUIColorTheme);
 		}
 
-		if IsDefined(this.widgetSlot) {
-			if ArrayContains(changedSettings, "showHUDUI") {
+		if ArrayContains(changedSettings, "showHUDUI") {
+			if IsDefined(this.widgetSlot) {
 				this.widgetSlot.SetVisible(this.Settings.showHUDUI);
 			}
+
+			this.UpdateAllBaseGameHUDWidgetPositions();
 		}
+
+		if ArrayContains(changedSettings, "hudUIScale") || ArrayContains(changedSettings, "hudUIPosX") || ArrayContains(changedSettings, "hudUIPosY") {
+			this.UpdateHUDWidgetPositionAndScale();
+		}
+
+		if ArrayContains(changedSettings, "updateHolocallVerticalPosition") || ArrayContains(changedSettings, "holocallVerticalPositionOffset") {
+			this.UpdateAllBaseGameHUDWidgetPositions();
+		}
+
+
 
 		if ArrayContains(changedSettings, "nerveLossIsFatal") && IsDefined(this.nerveBar) {
 			if this.Settings.nerveLossIsFatal {
@@ -304,10 +311,16 @@ public final class DFHUDSystem extends DFSystem {
 		widgetSlot.SetFitToContent(true);
 		widgetSlot.Reparent(parent);
 
-		// Set the initial position within the full-screen slot.
-		widgetSlot.SetTranslation(70.0, 240.0);
-
 		return widgetSlot;
+	}
+
+	private final func UpdateHUDWidgetPositionAndScale() -> Void {
+		let scale: Float = this.Settings.hudUIScale;
+		let posX: Float = this.Settings.hudUIPosX;
+		let posY: Float = this.Settings.hudUIPosY;
+
+		this.widgetSlot.SetScale(new Vector2(scale, scale));
+		this.widgetSlot.SetTranslation(posX, posY);
 	}
 
 	private final func CreateBars(slot: ref<inkCompoundWidget>, inkSystem: ref<inkSystem>, attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -321,6 +334,8 @@ public final class DFHUDSystem extends DFSystem {
 		if this.Settings.nerveLossIsFatal {
 			this.nerveBar.SetPulseContinuouslyAtLowThreshold(true, 0.1);
 		}
+
+		// The Nerve Bar is in its own Bar Group so that it can display independently.
 		let nerveBarGroup: ref<DFNeedsHUDBarGroup> = new DFNeedsHUDBarGroup();
 		nerveBarGroup.Init(attachedPlayer, true);
 		nerveBarGroup.AddBarToGroup(this.nerveBar);
@@ -437,5 +452,61 @@ public final class DFHUDSystem extends DFSystem {
 		// Player took or released control of a camera, turret, or the Sniper's Nest.
 		this.HUDUIBlockedDueToCameraControl = hasControl;
 		this.SendUpdateAllUIRequest();
+	}
+
+	public final func SetSongbirdAudiocallWidget(widget: ref<inkWidget>) {
+		this.songbirdAudiocallWidget = widget;
+		this.UpdateSongbirdAudiocallWidgetPosition();
+	}
+
+	public final func SetSongbirdHolocallWidget(widget: ref<inkWidget>) {
+		this.songbirdHolocallWidget = widget;
+		this.UpdateSongbirdHolocallWidgetPosition();
+	}
+
+	public final func SetNewHudPhoneWidget(widget: ref<inkCompoundWidget>) {
+		this.newHudPhoneWidget = widget;
+		this.UpdateNewHudPhoneWidgetPosition();
+	}
+
+	public final func UpdateSongbirdAudiocallWidgetPosition() {
+		if IsDefined(this.songbirdAudiocallWidget) && this.Settings.updateHolocallVerticalPosition {
+			if this.Settings.mainSystemEnabled && this.Settings.showHUDUI {
+				this.songbirdAudiocallWidget.SetMargin(new inkMargin(0.0, this.Settings.holocallVerticalPositionOffset - 13.0, 0.0, 0.0));
+			} else {
+				this.songbirdAudiocallWidget.SetMargin(new inkMargin(0.0, 0.0, 0.0, 0.0));
+			}
+		}
+	}
+
+	public final func UpdateSongbirdHolocallWidgetPosition() {
+		if IsDefined(this.songbirdHolocallWidget) && this.Settings.updateHolocallVerticalPosition {
+			if this.Settings.mainSystemEnabled && this.Settings.showHUDUI {
+				this.songbirdHolocallWidget.SetMargin(new inkMargin(70.0, this.Settings.holocallVerticalPositionOffset, 0.0, 0.0));
+			} else {
+				this.songbirdHolocallWidget.SetMargin(new inkMargin(70.0, 0.0, 0.0, 0.0));
+			}
+		}
+	}
+
+	public final func UpdateNewHudPhoneWidgetPosition() {
+		if IsDefined(this.newHudPhoneWidget) && this.Settings.updateHolocallVerticalPosition {
+			if this.Settings.mainSystemEnabled && this.Settings.showHUDUI {
+				let newHoloCallVerticalOffset: Float = this.Settings.holocallVerticalPositionOffset;
+				this.newHudPhoneWidget.GetWidgetByPathName(n"incomming_call_slot").SetMargin(new inkMargin(68.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
+				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_slot").SetMargin(new inkMargin(80.0, 284.0 + newHoloCallVerticalOffset, 0.0, 0.0));
+				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_marker").SetMargin(new inkMargin(-50.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
+			} else {
+				this.newHudPhoneWidget.GetWidgetByPathName(n"incomming_call_slot").SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
+				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_slot").SetMargin(new inkMargin(80.0, 284.0, 0.0, 0.0));
+				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_marker").SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
+			}
+		}
+	}
+
+	public final func UpdateAllBaseGameHUDWidgetPositions() {
+		this.UpdateSongbirdAudiocallWidgetPosition();
+		this.UpdateSongbirdHolocallWidgetPosition();
+		this.UpdateNewHudPhoneWidgetPosition();
 	}
 }

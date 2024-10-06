@@ -15,8 +15,8 @@ import DarkFuture.Utils.{
 	Int32ToFloat
 }
 import DarkFuture.Main.{
-	DFNeedsDatum, 
-	DFAfflictionUpdateDatum,
+	DFNeedsDatum,
+	DFNeedChangeDatum,
 	DFTimeSkipData
 }
 import DarkFuture.Addictions.{
@@ -24,7 +24,6 @@ import DarkFuture.Addictions.{
 	DFNicotineAddictionSystem,
 	DFNarcoticAddictionSystem
 }
-import DarkFuture.Afflictions.DFTraumaAfflictionSystem
 import DarkFuture.Services.{
 	DFCyberwareService,
 	DFPlayerStateService,
@@ -64,6 +63,13 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 
 		} else if DFGameStateService.Get().IsValidGameState("OnStatusEffectRemoved") && Equals(effectID, t"BaseStatusEffect.FocusedCoolPerkSE") {
 			nerveSystem.UpdateWeaponShake();
+
+		} else if Equals(effectID, t"HousingStatusEffect.Refreshed") {
+        	nerveSystem.RegisterBonusEffectCheckCallback();
+
+		} else if Equals(effectID, t"DarkFutureStatusEffect.Sedation") || Equals(effectID, t"DarkFutureStatusEffect.Numbed") {
+			nerveSystem.DeduplicateSedationEffects(effectID);
+
 		}
 	}
     
@@ -150,20 +156,6 @@ public class DangerUpdateDelayCallback extends DFDelayCallback {
 	}
 }
 
-public class WithdrawalUpdateDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		return new WithdrawalUpdateDelayCallback();
-	}
-
-	public func InvalidateDelayID() -> Void {
-		DFNerveSystem.Get().withdrawalUpdateDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		DFNerveSystem.Get().OnUpdateFromWithdrawal();
-	}
-}
-
 public class NerveBreathingDangerTransitionCallback extends DFDelayCallback {
 	public static func Create() -> ref<DFDelayCallback> {
 		return new NerveBreathingDangerTransitionCallback();
@@ -194,12 +186,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let AlcoholAddictionSystem: ref<DFAlcoholAddictionSystem>;
 	private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
 	private let NarcoticAddictionSystem: ref<DFNarcoticAddictionSystem>;
-	private let TraumaSystem: ref<DFTraumaAfflictionSystem>;
 
 	private let baseAlcoholNerveValueChangeAmount: Float = 5.0;
 	private let nerveAmountOnVehicleKnockdown: Float = 2.0;
-	private let nerveLossInCombatOrTrace: Float = 0.25;
-	private let nerveLossHeat: Float = 0.1;
+	private let nerveLossInDanger: Float = 0.25;
 	private let nerveLossInWithdrawal: Float = 0.5;
 	private let nerveRegenAmountRapid: Float = 1.0;
 	private let nerveRegenAmountSlow: Float = 0.05;
@@ -207,13 +197,13 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let criticalNerveFXThreshold: Float = 10.0;
 	private let extremelyCriticalNerveFXThreshold: Float = 5.0;
 	private let playingCriticalNerveFX: Bool = false;
-	private let nauseaNeedStageThreshold: Int32 = 3;
+	private let nauseaNeedStageThreshold: Int32 = 4;
 	private let nerveRecoverAmountSleeping: Float = 0.1166675;
+	private let nerveRecoverAmountSleepingMax: Float = 75.0;
 	
-	private let nerveRestoreInFuryOnKill: Float = 2.0;
-	private let nerveRestoreFinisherOnKill: Float = 2.0;
-	private let nerveCalmMindBonusFactor: Float = 0.5;
-
+	private let nerveRestoreInFuryOnKill: Float = 1.0;
+	private let numbedNerveLossBonusMult: Float = 0.35;
+	private let sedatedNerveLossBonusMult: Float = 0.50;
     private let boosterMemoryTraceNerveLossBonusMult: Float = 0.35;
 	private let boosterMemoryBlackMarketTraceNerveLossBonusMult: Float = 0.50;
 
@@ -240,7 +230,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 	// Regen
 	private let currentNerveRegenTarget: Float = 10.0; // Default: criticalNerveRegenTarget
-	private let currentNerveWithdrawalTarget: Float = 100.0;
+	private let currentNerveWithdrawalLimit: Float = 100.0;
 
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFNerveSystem> {
 		let instance: ref<DFNerveSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Needs.DFNerveSystem") as DFNerveSystem;
@@ -255,7 +245,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 
 	private final func GetSystemToggleSettingValue() -> Bool {
@@ -281,7 +271,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
 		this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
 		this.NarcoticAddictionSystem = DFNarcoticAddictionSystem.GetInstance(gameInstance);
-		this.TraumaSystem = DFTraumaAfflictionSystem.GetInstance(gameInstance);
 	}
 
 	private func SetupData() -> Void {
@@ -297,23 +286,23 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
 		super.InitSpecific(attachedPlayer);
 		this.CheckForCriticalNerve();
-		this.UpdateNerveWithdrawalTarget();
+		this.UpdateNerveWithdrawalLimit();
 	}
 
 	private func DoPostSuspendActions() -> Void {
 		super.DoPostSuspendActions();
 		this.StopCriticalNerveEffects(true);
 		this.StopNerveBreathingEffects();
-		this.lastDangerState = new DFPlayerDangerState(false, false, false);
+		this.lastDangerState = new DFPlayerDangerState(false, false);
 		this.lastNerveForCriticalFXCheck = 100.0;
 		this.currentNerveRegenTarget = this.criticalNerveRegenTarget;
-		this.currentNerveWithdrawalTarget = 100.0;
+		this.currentNerveWithdrawalLimit = 100.0;
 	}
 
 	private func DoPostResumeActions() -> Void {
 		super.DoPostResumeActions();
 		this.CheckForCriticalNerve();
-		this.UpdateNerveWithdrawalTarget();
+		this.UpdateNerveWithdrawalLimit();
 	}
 
 	public final func OnTimeSkipStart() -> Void {
@@ -351,7 +340,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		super.UnregisterAllDelayCallbacks();
 
 		this.UnregisterDangerUpdateCallback();
-		this.UnregisterWithdrawalUpdateCallback();
 		this.UnregisterNerveBreathingDangerTransitionCallback();
 		this.UnregisterNerveRegenCallback();
 		this.UnregisterPlayerDeathCallback();
@@ -416,25 +404,122 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private final func OnTimeSkipFinishedActual(data: DFTimeSkipData) -> Void {
 		DFLog(this.debugEnabled, this, "OnTimeSkipFinishedActual");
 
-		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.nerve.value - this.GetNeedValue());
+		let currentValue: Float = this.GetNeedValue();
+
+		if currentValue < data.targetNeedValues.nerve.ceiling {
+			this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.nerve.value - currentValue);
+		} else {
+			this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.nerve.value - data.targetNeedValues.nerve.ceiling);
+		}
 	}
 
 	private final func OnItemConsumedActual(itemData: wref<gameItemData>) {
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemData);
 
 		if consumableNeedsData.nerve.value != 0.0 {
-			// Alcohol is also partially handled in ProcessAddictiveItemOrWorkspotUsed().
-			// Narcotics are handled in ProcessNarcoticsNerveChangeOffsetEffectRemoved().
-
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
 			uiFlags.instantUIChange = true;
 			uiFlags.forceBright = true;
-
-			let suppressRecoveryNotification: Bool = itemData.HasTag(n"DarkFutureConsumableAddictiveNicotine");
-
-			this.ChangeNeedValue(this.GetClampedNeedChangeFromData(consumableNeedsData.nerve), uiFlags, false, suppressRecoveryNotification);
+			let isNicotine: Bool = itemData.HasTag(n"DarkFutureConsumableAddictiveNicotine");
+			
+			let clampedValue: Float = this.GetClampedNeedChangeFromData(consumableNeedsData.nerve);
+			this.ChangeNeedValue(clampedValue, uiFlags, isNicotine, this.GetNerveLimitAfterItemUse(itemData));
 		}
+	}
+
+	public final func GetNerveLimitAfterItemUse(itemData: wref<gameItemData>) -> Float {
+		let updatedNerveMax: Float = 100.0;
+
+		if IsDefined(itemData) {
+			// If currently affected by Addiction Treatment, the max is always 100.0.
+			let addictionTreatmentDuration: Float = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds();
+			if addictionTreatmentDuration > 0.0 {
+				return 100.0;
+			}
+
+			if itemData.HasTag(n"DarkFutureConsumableAddictionTreatmentDrug") {
+				return 100.0;
+			}
+
+			let alcoholWithdrawalLevel: Int32 = this.AlcoholAddictionSystem.GetWithdrawalLevel();
+			if itemData.HasTag(n"DarkFutureConsumableAddictiveAlcohol") {
+				let alcoholStatus: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.player, t"BaseStatusEffect.Drunk");
+				let newAlcoholStackCount: Uint32;
+				if IsDefined(alcoholStatus) {
+					newAlcoholStackCount = alcoholStatus.GetStackCount() + 1u;
+				} else {
+					newAlcoholStackCount = 1u;
+				}
+				let minStacksPerStage: array<Uint32> = this.AlcoholAddictionSystem.GetAddictionMinStacksPerStage();
+				if newAlcoholStackCount >= minStacksPerStage[this.AlcoholAddictionSystem.GetAddictionStage()] {
+					alcoholWithdrawalLevel = 0;
+				}
+			}
+			let nicotineWithdrawalLevel: Int32 = itemData.HasTag(n"DarkFutureConsumableAddictiveNicotine") ? 0 : this.NicotineAddictionSystem.GetWithdrawalLevel();
+			let narcoticWithdrawalLevel: Int32 = itemData.HasTag(n"DarkFutureConsumableAddictiveNarcotic") ? 0 : this.NarcoticAddictionSystem.GetWithdrawalLevel();
+
+			let alcoholLimits: array<Float> = this.AlcoholAddictionSystem.GetAddictionNerveLimits();
+			let nicotineLimits: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveLimits();
+			let narcoticLimits: array<Float> = this.NarcoticAddictionSystem.GetAddictionNerveLimits();
+
+			let newAlcoholLimit: Float = alcoholLimits[alcoholWithdrawalLevel];
+			let newNicotineLimit: Float = nicotineLimits[nicotineWithdrawalLevel];
+			let newNarcoticLimit: Float = narcoticLimits[narcoticWithdrawalLevel];
+
+			updatedNerveMax = newAlcoholLimit < updatedNerveMax ? newAlcoholLimit : updatedNerveMax;
+			updatedNerveMax = newNicotineLimit < updatedNerveMax ? newNicotineLimit : updatedNerveMax;
+			updatedNerveMax = newNarcoticLimit < updatedNerveMax ? newNarcoticLimit : updatedNerveMax;
+		}
+
+		return updatedNerveMax;
+	}
+
+	public final func GetNerveLimitAfterAlcoholUse() -> Float {
+		// This function helps work around a race condition when consuming alcohol and satisfying an alcohol addiction.
+		// Due to this, some Nerve that would be restored when satisfying the addiction would be "thrown away" otherwise.
+		// Predict what the Nerve limit would be if specifically one alcohol item were consumed and use that result
+		// as a Nerve Max Override in the ChangeNeedValue() function call in ApplyBaseAlcoholNerveValueChange().
+
+		let updatedNerveMax: Float = 100.0;
+
+		// If currently affected by Addiction Treatment, the max is always 100.0.
+		let addictionTreatmentDuration: Float = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds();
+		if addictionTreatmentDuration > 0.0 {
+			return 100.0;
+		}
+
+		let alcoholWithdrawalLevel: Int32 = this.AlcoholAddictionSystem.GetWithdrawalLevel();
+		let alcoholStatus: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.player, t"BaseStatusEffect.Drunk");
+		let newAlcoholStackCount: Uint32;
+		if IsDefined(alcoholStatus) {
+			// By the time this function is checked, the new alcohol stack has already applied. Take the stack
+			// count directly.
+			newAlcoholStackCount = alcoholStatus.GetStackCount();
+		} else {
+			newAlcoholStackCount = 1u;
+		}
+		let minStacksPerStage: array<Uint32> = this.AlcoholAddictionSystem.GetAddictionMinStacksPerStage();
+		if newAlcoholStackCount >= minStacksPerStage[this.AlcoholAddictionSystem.GetAddictionStage()] {
+			alcoholWithdrawalLevel = 0;
+		}
+
+		let nicotineWithdrawalLevel: Int32 = this.NicotineAddictionSystem.GetWithdrawalLevel();
+		let narcoticWithdrawalLevel: Int32 = this.NarcoticAddictionSystem.GetWithdrawalLevel();
+
+		let alcoholLimits: array<Float> = this.AlcoholAddictionSystem.GetAddictionNerveLimits();
+		let nicotineLimits: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveLimits();
+		let narcoticLimits: array<Float> = this.NarcoticAddictionSystem.GetAddictionNerveLimits();
+
+		let newAlcoholLimit: Float = alcoholLimits[alcoholWithdrawalLevel];
+		let newNicotineLimit: Float = nicotineLimits[nicotineWithdrawalLevel];
+		let newNarcoticLimit: Float = narcoticLimits[narcoticWithdrawalLevel];
+
+		updatedNerveMax = newAlcoholLimit < updatedNerveMax ? newAlcoholLimit : updatedNerveMax;
+		updatedNerveMax = newNicotineLimit < updatedNerveMax ? newNicotineLimit : updatedNerveMax;
+		updatedNerveMax = newNarcoticLimit < updatedNerveMax ? newNarcoticLimit : updatedNerveMax;
+
+		return updatedNerveMax;
 	}
 
 	private final func GetNeedHUDBarType() -> DFHUDBarType {
@@ -566,13 +651,11 @@ public final class DFNerveSystem extends DFNeedSystemBase {
     //
 	//	RunGuard Protected Methods
 	//
-	public final func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt forceTraumaAccumulation: Bool, opt suppressRecoveryNotification: Bool) -> Void {
+	public final func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt suppressRecoveryNotification: Bool, opt maxOverride: Float) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "ChangeNeedValue: amount = " + ToString(amount) + ", uiFlags = " + ToString(uiFlags) + ", forceTraumaAccumulation = " + ToString(forceTraumaAccumulation));
+		DFLog(this.debugEnabled, this, "ChangeNeedValue: amount = " + ToString(amount) + ", uiFlags = " + ToString(uiFlags));
 
-		this.TraumaSystem.AccumulateNerveLoss(amount, forceTraumaAccumulation);
-
-		let needMax: Float = this.GetCalculatedNeedMax();
+		let needMax: Float = maxOverride > 0.0 ? maxOverride : this.GetCalculatedNeedMax();
 		this.needValue = ClampF(this.needValue + amount, 0.0, needMax);
 		this.needMax = needMax;
 		this.UpdateNeedHUDUI(uiFlags.forceMomentaryUIDisplay, uiFlags.instantUIChange, uiFlags.forceBright, uiFlags.momentaryDisplayIgnoresSceneTier);
@@ -619,13 +702,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			this.UnregisterDangerUpdateCallback();
 		}
 
-		if Equals(mode, DFNerveSystemUpdateMode.Withdrawal) {
-			DFLog(this.debugEnabled, this, "     Setting mode: Withdrawal");
-			this.RegisterWithdrawalUpdateCallback();
-		} else {
-			this.UnregisterWithdrawalUpdateCallback();
-		}
-
 		if Equals(mode, DFNerveSystemUpdateMode.Regen) {
 			DFLog(this.debugEnabled, this, "     Setting mode: Regen");
 			this.RegisterNerveRegenCallback();
@@ -643,7 +719,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		uiFlags.forceMomentaryUIDisplay = true;
 		uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
-		this.ChangeNeedValue(this.baseAlcoholNerveValueChangeAmount, uiFlags);
+		this.ChangeNeedValue(this.baseAlcoholNerveValueChangeAmount, uiFlags, false, this.GetNerveLimitAfterAlcoholUse());
 	}
 
 	public final func CheckFuryNerveOnKill(evt: ref<gameDeathEvent>) -> Void {
@@ -662,13 +738,12 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 		DFLog(this.debugEnabled, this, "---- AutoSetUpdateMode ----");
 		let inDanger: Bool = this.PlayerStateService.GetInDanger();
-		let inWithdrawal: Bool = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds() == 0.0 && this.GetNerveWithdrawalTarget() != 100.0;
 		let regenTarget: Float = this.GetNerveRegenTarget();
-		let regen: Bool = this.GetNeedValue() < regenTarget && (Equals(regenTarget, 100.0) || (this.HydrationSystem.GetNeedStage() < 4 && this.NutritionSystem.GetNeedStage() < 4 && this.EnergySystem.GetNeedStage() < 4));
+		let regen: Bool = this.GetNeedValue() < regenTarget && (Equals(regenTarget, this.GetNeedMax()) || (this.HydrationSystem.GetNeedStage() < 4 && this.NutritionSystem.GetNeedStage() < 4 && this.EnergySystem.GetNeedStage() < 4));
 
-		DFLog(this.debugEnabled, this, "     inDanger: " + ToString(inDanger));
-		DFLog(this.debugEnabled, this, "     inWithdrawal: " + ToString(inWithdrawal));
-		DFLog(this.debugEnabled, this, "     regen: " + ToString(regen));
+		DFLog(this.debugEnabled, this, "inDanger: " + ToString(inDanger));
+		DFLog(this.debugEnabled, this, "regenTarget: " + ToString(regenTarget));
+		DFLog(this.debugEnabled, this, "regen: " + ToString(regen));
 
 		if inDanger {
 			DFLog(this.debugEnabled, this, "     Setting mode: Danger");
@@ -678,10 +753,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			DFLog(this.debugEnabled, this, "     Setting mode: Regen");
 			DFLog(this.debugEnabled, this, "     Setting mode: Target: " + regenTarget);
 			this.SetUpdateMode(DFNerveSystemUpdateMode.Regen);
-
-		} else if inWithdrawal && this.GetNerveWithdrawalTarget() < this.GetNeedValue() {
-			DFLog(this.debugEnabled, this, "     Setting mode: Withdrawal (GetNerveWithdrawalTarget = " + ToString(this.GetNerveWithdrawalTarget()) + ")");
-			this.SetUpdateMode(DFNerveSystemUpdateMode.Withdrawal);
 
 		} else {
 			DFLog(this.debugEnabled, this, "     Setting mode: Time");
@@ -720,22 +791,35 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		return 0.0;
 	}
 
-    public final func GetNerveChangeFromDanger() -> Float {
-		if this.lastDangerState.InCombat {
-			let baseNerveLossInCombat: Float = ((this.nerveLossInCombatOrTrace * (this.Settings.nerveLossRateInDangerPct / 100.0)) * (1.0 - this.CyberwareService.GetNerveCostFromStressBonusMult())) * -1.0;
-			// Does the player have Adrenaline and the Calm Mind perk?
-			if PlayerDevelopmentSystem.GetData(this.player).IsNewPerkBoughtAnyLevel(gamedataNewPerkType.Body_Central_Perk_3_1) && 
-				this.StatPoolsSystem.GetStatPoolValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatPoolType.Overshield, false) > 0.00 {
-				return baseNerveLossInCombat * this.nerveCalmMindBonusFactor;
-			} else {
-				return baseNerveLossInCombat;
-			}
-		
-		} else if this.lastDangerState.BeingRevealed {
-			return ((this.nerveLossInCombatOrTrace * (this.Settings.nerveLossRateInDangerPct / 100.0)) * (1.0 - (this.CyberwareService.GetNerveCostFromStressBonusMult() + this.GetMemoryBoosterTraceNerveLossBonusMult()))) * -1.0;
+	public final func DeduplicateSedationEffects(effectID: TweakDBID) {
+		// Sedation should win over Numbed. If Sedation is applied, cancel Numbed. If Numbed is applied, remove it if Sedation already applied.
+		if Equals(effectID, t"DarkFutureStatusEffect.Sedation") {
+			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed");
+		} else if Equals(effectID, t"DarkFutureStatusEffect.Numbed") && StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Sedation") {
+			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed");
+		}
+	}
 
-		} else if this.lastDangerState.HasHeat {
-			return ((this.nerveLossHeat * (this.Settings.nerveLossRateHeatPct / 100.0)) * (1.0 - this.CyberwareService.GetNerveCostFromStressBonusMult())) * -1.0;
+    public final func GetNerveChangeFromDanger() -> Float {
+		if this.lastDangerState.InCombat || this.lastDangerState.BeingRevealed {
+			let baseNerveLossInDanger: Float = (this.nerveLossInDanger * (this.Settings.nerveLossRateInDangerPct / 100.0)) * -1.0;
+			let nerveLossBonusMult: Float = 1.0;
+
+			// Add combat bonuses.
+			if this.lastDangerState.InCombat {
+				nerveLossBonusMult -= this.GetSedationNerveLossBonusMult();
+			}
+
+			// Add hacking bonuses.
+			if this.lastDangerState.BeingRevealed {
+				nerveLossBonusMult -= this.GetMemoryBoosterTraceNerveLossBonusMult();
+			}
+			
+			let totalNerveLossBonusMult: Float = MaxF(nerveLossBonusMult, 0.0);
+			let totalNerveLoss: Float = baseNerveLossInDanger * totalNerveLossBonusMult;
+			DFLog(this.debugEnabled, this, "GetNerveChangeFromDanger() totalNerveLossBonusMult:" + ToString(totalNerveLossBonusMult) + ", totalNerveLoss:" + ToString(totalNerveLoss));
+
+			return totalNerveLoss;
 		
 		} else {
 			// Failsafe - Not in danger, but this function was called anyway.
@@ -743,21 +827,12 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		}
 	}
 
-	public final func GetNerveChangeFromWithdrawal() -> Float {
-		if this.GetNerveWithdrawalTarget() != 100.0 {
-			return (this.nerveLossInWithdrawal * -1.0) * (this.Settings.nerveLossRateInWithdrawalPct / 100.0);
-		} else {
-			// Failsafe - Not in withdrawal, but this function was called anyway.
-			return 0.0;
-		}	
-	}
-
 	public final func GetNerveRegenTarget() -> Float {
 		return this.currentNerveRegenTarget;
 	}
 
-	public final func GetNerveWithdrawalTarget() -> Float {
-		return this.currentNerveWithdrawalTarget;
+	public final func GetNerveWithdrawalLimit() -> Float {
+		return this.currentNerveWithdrawalLimit;
 	}
 
 	public final func ShouldRegenDueToCriticalNerve() -> Bool {
@@ -777,25 +852,29 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		this.AutoSetUpdateMode();
 	}
 
-	public final func UpdateNerveWithdrawalTarget() -> Void {
-		this.currentNerveWithdrawalTarget = this.GetNerveWithdrawalTargetFromProvidedState(
+	public final func UpdateNerveWithdrawalLimit() -> Void {
+		this.currentNerveWithdrawalLimit = this.GetNerveWithdrawalLimitFromProvidedState(
 												this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds(), 
 												this.AlcoholAddictionSystem.GetWithdrawalLevel(),
 												this.NicotineAddictionSystem.GetWithdrawalLevel(),
 												this.NarcoticAddictionSystem.GetWithdrawalLevel());
-		this.AutoSetUpdateMode();
+		this.ForceNeedMaxValueUpdate();
 	}
 
-	public final func GetNerveWithdrawalTargetFromProvidedState(addictionTreatmentDuration: Float, alcoholWithdrawalLevel: Int32, nicotineWithdrawalLevel: Int32, narcoticWithdrawalLevel: Int32) -> Float {
+	private final func ForceNeedMaxValueUpdate() -> Void {
+		this.ChangeNeedValue(0.0);
+	}
+
+	public final func GetNerveWithdrawalLimitFromProvidedState(addictionTreatmentDuration: Float, alcoholWithdrawalLevel: Int32, nicotineWithdrawalLevel: Int32, narcoticWithdrawalLevel: Int32) -> Float {
 		let withdrawalTarget: Float = 100.0;
 
 		if addictionTreatmentDuration > 0.0 {
 			return withdrawalTarget;
 		}
 		
-		let alcoholNerveTargets: array<Float> = this.AlcoholAddictionSystem.GetAddictionNerveTargets();
-		let nicotineNerveTargets: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveTargets();
-		let narcoticNerveTargets: array<Float> = this.NarcoticAddictionSystem.GetAddictionNerveTargets();
+		let alcoholNerveTargets: array<Float> = this.AlcoholAddictionSystem.GetAddictionNerveLimits();
+		let nicotineNerveTargets: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveLimits();
+		let narcoticNerveTargets: array<Float> = this.NarcoticAddictionSystem.GetAddictionNerveLimits();
 
 		let alcoholWithdrawalTarget = alcoholNerveTargets[alcoholWithdrawalLevel];
 		let nicotineWithdrawalTarget = nicotineNerveTargets[nicotineWithdrawalLevel];
@@ -808,19 +887,25 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		return withdrawalTarget;
 	}
 
-	public final func GetNauseaNeedStageThreshold() -> Int32 {
-		return this.nauseaNeedStageThreshold;
-	}
-
 	public final func GetHasNausea() -> Bool {
-		return this.GetNeedStage() >= this.GetNauseaNeedStageThreshold();
+		return this.GetNeedStage() >= this.nauseaNeedStageThreshold;
 	}
 
     private final func GetMemoryBoosterTraceNerveLossBonusMult() -> Float {
-		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.MemoryBooster") {
-			return this.boosterMemoryTraceNerveLossBonusMult;
-		} else if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.Blackmarket_MemoryBooster") {
+		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.Blackmarket_MemoryBooster") {
 			return this.boosterMemoryBlackMarketTraceNerveLossBonusMult;
+		} else if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.MemoryBooster") {
+			return this.boosterMemoryTraceNerveLossBonusMult; 
+		} else {
+			return 0.0;
+		}
+	}
+
+	private final func GetSedationNerveLossBonusMult() -> Float {
+		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Sedation") {
+			return this.sedatedNerveLossBonusMult;
+		} else if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed") {
+			return this.numbedNerveLossBonusMult;
 		} else {
 			return 0.0;
 		}
@@ -854,24 +939,35 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         this.lastDangerState = dangerState;
     }
 
-	private final func GetCalculatedNeedMaxInProvidedState(traumaData: DFAfflictionUpdateDatum) -> Float {
+	private final func GetCalculatedNeedMaxInProvidedState(addictionTreatmentDuration: Float, alcoholWithdrawalLevel: Int32, nicotineWithdrawalLevel: Int32, narcoticWithdrawalLevel: Int32) -> Float {
 		let needMax: Float = 100.0;
 
-		if this.TraumaSystem.IsAfflictionSuppressed(traumaData) {
+		if addictionTreatmentDuration > 0.0 {
 			return needMax;
 		}
 		
-		let penaltyPerStack: Float = 10.0;
-		return needMax - (penaltyPerStack * Cast<Float>(traumaData.stackCount));
+		let alcoholNerveLimits: array<Float> = this.AlcoholAddictionSystem.GetAddictionNerveLimits();
+		let nicotineNerveLimits: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveLimits();
+		let narcoticNerveLimits: array<Float> = this.NarcoticAddictionSystem.GetAddictionNerveLimits();
+
+		let alcoholWithdrawalLimit = alcoholNerveLimits[alcoholWithdrawalLevel];
+		let nicotineWithdrawalLimit = nicotineNerveLimits[nicotineWithdrawalLevel];
+		let narcoticWithdrawalLimit = narcoticNerveLimits[narcoticWithdrawalLevel];
+
+		needMax = alcoholWithdrawalLimit < needMax ? alcoholWithdrawalLimit : needMax;
+		needMax = nicotineWithdrawalLimit < needMax ? nicotineWithdrawalLimit : needMax;
+		needMax = narcoticWithdrawalLimit < needMax ? narcoticWithdrawalLimit : needMax;
+
+		return needMax;
 	}
 
 	private final func GetCalculatedNeedMax() -> Float {
-		let traumaData: DFAfflictionUpdateDatum;
-		traumaData.stackCount = this.TraumaSystem.GetAfflictionStacks();
-		traumaData.cureDuration = this.TraumaSystem.GetCurrentAfflictionCureDurationInGameTimeSeconds();
-		traumaData.suppressionDuration = this.TraumaSystem.GetCurrentAfflictionSuppressionDurationInGameTimeSeconds();
-		traumaData.hasQualifyingSuppressionActiveStatusEffect = this.TraumaSystem.HasQualifyingSuppressionActiveStatusEffect();
-		return this.GetCalculatedNeedMaxInProvidedState(traumaData);
+		let addictionTreatmentDuration: Float = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds();
+		let alcoholWithdrawalLevel: Int32 = this.AlcoholAddictionSystem.GetWithdrawalLevel();
+		let nicotineWithdrawalLevel: Int32 = this.NicotineAddictionSystem.GetWithdrawalLevel();
+		let narcoticWithdrawalLevel: Int32 = this.NarcoticAddictionSystem.GetWithdrawalLevel();
+
+		return this.GetCalculatedNeedMaxInProvidedState(addictionTreatmentDuration, alcoholWithdrawalLevel, nicotineWithdrawalLevel, narcoticWithdrawalLevel);
 	}
 
 	private final func TryToTransitionNerveBreathingEffects() -> Void {
@@ -927,8 +1023,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private final func TransitionToNerveLowBreathingEffect() -> Void {
 		this.currentNerveBreathingFXStage = 1;
 
-		// If Hydration Breathing FX playing, stop the SFX only, allow the camera effect to decay out as normal
-		this.HydrationSystem.StopHydrationBreathingSFXIfBreathingFXPlaying();
+		// If Out Of Breath FX playing, stop the SFX only, allow the camera effect to decay out as normal
+		this.PlayerStateService.StopOutOfBreathSFXIfBreathingFXPlaying();
 
 		this.StopNerveBreathingHighEffect();
 		this.PlayNerveBreathingLowEffect();
@@ -937,8 +1033,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private final func TransitionToNerveHighBreathingEffect() -> Void {
 		this.currentNerveBreathingFXStage = 2;
 
-		// If Hydration Breathing FX playing, stop the SFX only, allow the camera effect to decay out as normal
-		this.HydrationSystem.StopHydrationBreathingSFXIfBreathingFXPlaying();
+		// If Out Of Breath FX playing, stop the SFX only, allow the camera effect to decay out as normal
+		this.PlayerStateService.StopOutOfBreathSFXIfBreathingFXPlaying();
 
 		this.StopNerveBreathingLowEffect();
 		this.PlayNerveBreathingHighEffect();
@@ -993,7 +1089,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			}
 		}
 
-		if this.GameStateService.IsValidGameState("CheckForCriticalNerve", true) {
+		if this.GameStateService.IsValidGameState("CheckForCriticalNerve", true, true) {
 			if currentNerve > 0.0 {
 				if currentNerve <= this.criticalNerveFXThreshold {
 					this.PlayCriticalNerveEffects();
@@ -1049,7 +1145,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		
 		this.PlayCriticalNerveEffects();
 		this.TryToTransitionNerveBreathingEffects();
-		this.HydrationSystem.StopHydrationBreathingSFX();
+		this.PlayerStateService.StopOutOfBreathSFX();
 
 		this.QueueCriticalNerveSFXDeath();
 		this.RegisterPlayerDeathCallback();
@@ -1122,7 +1218,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		uiFlags.forceMomentaryUIDisplay = true;
 		uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
-		if this.GetNerveRegenTarget() < 100.0 {
+		if this.GetNerveRegenTarget() < this.GetNeedMax() {
 			this.ChangeNeedValue(this.nerveRegenAmountSlow, uiFlags);
 		} else {
 			this.ChangeNeedValue(this.nerveRegenAmountRapid, uiFlags);
@@ -1144,38 +1240,13 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		}
 	}
 
-	public final func OnUpdateFromWithdrawal() -> Void {
-		if this.GameStateService.IsValidGameState("OnUpdateFromWithdrawal") {
-			let withdrawalTarget: Float = this.GetNerveWithdrawalTarget();
-			let needValue: Float = this.GetNeedValue();
-			if withdrawalTarget != 100.0 && needValue > withdrawalTarget {
-				let amount: Float = this.GetNerveChangeFromWithdrawal();
-				let keepUpdating: Bool = true;
-
-				if needValue - amount < withdrawalTarget {
-					amount = needValue - withdrawalTarget;
-					keepUpdating = false;
-				}
-				this.ChangeNeedValue(amount);
-				
-				if keepUpdating {
-					this.RegisterWithdrawalUpdateCallback();
-				} else {
-					this.AutoSetUpdateMode();
-				}
-			} else {
-				this.AutoSetUpdateMode();
-			}
-		}
-	}
-
 	public final func OnVehicleKnockdown() -> Void {
 		if this.GameStateService.IsValidGameState("OnVehicleKnockdown") {
 			DFLog(this.debugEnabled, this, "OnVehicleKnockdown");
 
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
-			this.ChangeNeedValue(-(this.nerveAmountOnVehicleKnockdown), uiFlags, true);
+			this.ChangeNeedValue(-(this.nerveAmountOnVehicleKnockdown), uiFlags);
 		}
 	}
 
@@ -1210,10 +1281,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		RegisterDFDelayCallback(this.DelaySystem, DangerUpdateDelayCallback.Create(), this.dangerUpdateDelayID, this.dangerUpdateDelayInterval);
 	}
 
-	private final func RegisterWithdrawalUpdateCallback() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, WithdrawalUpdateDelayCallback.Create(), this.withdrawalUpdateDelayID, this.withdrawalUpdateDelayInterval);
-	}
-
 	private final func RegisterNerveBreathingDangerTransitionCallback() -> Void {
 		RegisterDFDelayCallback(this.DelaySystem, NerveBreathingDangerTransitionCallback.Create(), this.nerveBreathingDangerTransitionDelayID, this.nerveBreathingDangerTransitionDelayInterval);
 	}
@@ -1231,10 +1298,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	//
 	private final func UnregisterDangerUpdateCallback() -> Void {
 		UnregisterDFDelayCallback(this.DelaySystem, this.dangerUpdateDelayID);
-	}
-
-	private final func UnregisterWithdrawalUpdateCallback() -> Void {
-		UnregisterDFDelayCallback(this.DelaySystem, this.withdrawalUpdateDelayID);
 	}
 
 	private final func UnregisterNerveBreathingDangerTransitionCallback() -> Void {

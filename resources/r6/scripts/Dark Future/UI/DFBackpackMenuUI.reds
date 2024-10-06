@@ -16,11 +16,16 @@ import DarkFuture.Needs.{
 	DFEnergySystem,
 	DFNerveSystem
 }
+import DarkFuture.Addictions.{
+	DFAlcoholAddictionSystem,
+	DFNicotineAddictionSystem,
+	DFNarcoticAddictionSystem
+}
+import DarkFuture.Services.DFPlayerStateService
 import DarkFuture.UI.{
 	DFNeedsMenuBar,
 	DFNeedsMenuBarSetupData
 }
-import DarkFuture.Afflictions.DFTraumaAfflictionSystem
 
 @addField(BackpackMainGameController)
 private let Settings: wref<DFSettings>;
@@ -36,6 +41,18 @@ private let EnergySystem: wref<DFEnergySystem>;
 
 @addField(BackpackMainGameController)
 private let NerveSystem: wref<DFNerveSystem>;
+
+@addField(BackpackMainGameController)
+private let PlayerStateService: wref<DFPlayerStateService>;
+
+@addField(BackpackMainGameController)
+private let AlcoholAddictionSystem: wref<DFAlcoholAddictionSystem>;
+
+@addField(BackpackMainGameController)
+private let NicotineAddictionSystem: wref<DFNicotineAddictionSystem>;
+
+@addField(BackpackMainGameController)
+private let NarcoticAddictionSystem: wref<DFNarcoticAddictionSystem>;
 
 @addField(BackpackMainGameController)
 private let barCluster: ref<inkVerticalPanel>;
@@ -80,6 +97,11 @@ protected cb func OnInitialize() -> Bool {
 	this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
 	this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
 	this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
+	this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
+	this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
+	this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
+	this.NarcoticAddictionSystem = DFNarcoticAddictionSystem.GetInstance(gameInstance);
+
 	let parentWidget: ref<inkCompoundWidget> = this.GetRootCompoundWidget();
 	
 	this.CreateNeedsBarCluster(parentWidget);
@@ -100,28 +122,56 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 			if itemData.HasTag(n"Consumable") {
 				let needsData: DFNeedsDatum = GetConsumableNeedsData(itemData);
 
-				this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, this.HydrationSystem.GetNeedMax());
-				this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.NutritionSystem.GetNeedMax());
-				this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue() + needsData.energy.value, this.EnergySystem.GetNeedMax());
-				
-				// Handle Trauma, the Trauma Treatment drug, and Alcohol
-				//
-				// Don't show Nerve increasing beyond the current limit (applies to drinking Alcohol, when that drink would suppress Trauma); that 
-				// increase will get eaten because it occurs before the Trauma System has an opportunity to suppress the effect, and having the 
-				// Nerve System accurately react to and predict asynchronous Trauma system events isn't something the system is well equipped to deal 
-				// with at the present moment. For now, it's better that the "reward" of drinking Alcohol be the temporary removal of the Trauma effect,
-				// even if a small amount of potential Nerve benefit is lost.
-				let nerveMax: Float = this.NerveSystem.GetNeedMax();
-				let nerveValue: Float = this.NerveSystem.GetNeedValue();
-				let potentialNewValue: Float = nerveValue + needsData.nerve.value + needsData.nerve.valueOnStatusEffectApply;
-				potentialNewValue = MaxF(MinF(potentialNewValue, needsData.nerve.ceiling), needsData.nerve.floor);
-				this.nerveBar.SetUpdatedValue(potentialNewValue, nerveMax);
-
-				if nerveMax < 100.0 && this.WouldItemRemoveNerveLimit(itemData) {
-					this.UpdateNerveBarLimit(100.0);
+				// Show the increase in Hydration and Nutrition if player's Nerve is not too low.
+				if this.NerveSystem.GetHasNausea() {
+					this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
+					this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), this.NutritionSystem.GetNeedMax());
 				} else {
-					this.UpdateNerveBarLimit(nerveMax);
-				}	
+					this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, this.HydrationSystem.GetNeedMax());
+					this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.NutritionSystem.GetNeedMax());
+				}
+
+				// Show the increase in Energy if player does not have too much Stimulant.
+				let energyToRestore: Float = needsData.energy.value;
+				let canRestoreEnergy: Bool = this.EnergySystem.stimulantStacks < this.EnergySystem.stimulantMaxStacks;
+				let updatedEnergyValue: Float = 0.0;
+
+				if canRestoreEnergy {
+					// We can restore the full energy amount.
+					updatedEnergyValue = this.EnergySystem.GetNeedValue() + energyToRestore;
+				} else {
+					// We cannot restore Energy.
+					updatedEnergyValue = this.EnergySystem.GetNeedValue();
+				}
+				this.energyBar.SetUpdatedValue(updatedEnergyValue, this.EnergySystem.GetNeedMax());
+				
+				// Handle Addiction Withdrawal and Alcohol
+				let nerveMax: Float = this.NerveSystem.GetNerveLimitAfterItemUse(itemData);
+				let nerveValue: Float = this.NerveSystem.GetNeedValue();
+				let potentialNewValue: Float = nerveValue + (needsData.nerve.value + needsData.nerve.valueOnStatusEffectApply);
+
+				if nerveValue > potentialNewValue {
+					// Decreasing
+					if nerveValue >= needsData.nerve.floor {
+						if potentialNewValue < needsData.nerve.floor {
+							potentialNewValue = needsData.nerve.floor;
+						}
+					} else {
+						potentialNewValue = nerveValue;
+					}
+				} else if nerveValue < potentialNewValue {
+					// Increasing
+					if nerveValue <= needsData.nerve.ceiling {
+						if potentialNewValue > needsData.nerve.ceiling {
+							potentialNewValue = needsData.nerve.ceiling;
+						}
+					} else {
+						potentialNewValue = nerveValue;
+					}
+				}
+
+				this.nerveBar.SetUpdatedValue(potentialNewValue, nerveMax);
+				this.UpdateNerveBarLimit(nerveMax);
 			};
 		};
 	}
@@ -256,23 +306,6 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 	barSetupData = new DFNeedsMenuBarSetupData(rowTwo, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 0.0, 0.0, 0.0, false);
 	this.nutritionBar = new DFNeedsMenuBar();
 	this.nutritionBar.Init(barSetupData);	
-}
-
-@addMethod(BackpackMainGameController)
-private final func WouldItemRemoveNerveLimit(itemData: wref<gameItemData>) -> Bool {
-	if IsDefined(itemData) {
-		if itemData.HasTag(n"DarkFutureConsumableAddictiveAlcohol") {
-			let alcoholStatus: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.m_player, t"BaseStatusEffect.Drunk");
-			if IsDefined(alcoholStatus) {
-				let alcoholStackCount: Uint32 = alcoholStatus.GetStackCount();
-				if DFTraumaAfflictionSystem.Get().GetAfflictionStacks() <= (alcoholStackCount + 1u) {
-					return true;
-				}
-			}
-		}
-	}
-
-	return false;
 }
 
 @addMethod(BackpackMainGameController)

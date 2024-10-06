@@ -160,7 +160,7 @@ public final class DFGameStateService extends DFSystem {
     }
 
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = false;
+        this.debugEnabled = true;
     }
 
     private func DoPostSuspendActions() -> Void {
