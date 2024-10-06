@@ -224,7 +224,7 @@ public final class DFNotificationService extends DFSystem {
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 
 	private final func GetSystemToggleSettingValue() -> Bool {

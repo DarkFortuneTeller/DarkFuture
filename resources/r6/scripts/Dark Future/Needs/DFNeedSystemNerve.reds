@@ -245,7 +245,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 
 	private final func GetSystemToggleSettingValue() -> Bool {

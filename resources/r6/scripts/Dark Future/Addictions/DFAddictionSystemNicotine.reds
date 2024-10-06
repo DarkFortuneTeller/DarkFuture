@@ -58,7 +58,7 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 	//	DFSystem Required Methods
 	//
 	private final func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 
 	private func GetSystemToggleSettingValue() -> Bool {

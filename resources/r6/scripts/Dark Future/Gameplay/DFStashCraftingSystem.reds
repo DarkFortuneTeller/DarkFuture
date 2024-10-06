@@ -26,7 +26,7 @@ public final class DFStashCraftingSystem extends DFSystem {
 	}
 
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = true;
+        this.debugEnabled = false;
     }
     private func GetSystemToggleSettingValue() -> Bool {
         return this.Settings.stashCraftingEnabled;

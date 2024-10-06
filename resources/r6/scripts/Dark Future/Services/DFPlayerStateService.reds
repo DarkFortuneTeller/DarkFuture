@@ -366,7 +366,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = true;
+        this.debugEnabled = false;
     }
 
     private final func GetSystemToggleSettingValue() -> Bool {

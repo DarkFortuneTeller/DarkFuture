@@ -62,7 +62,7 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 	
 	private func DoPostSuspendActions() -> Void {

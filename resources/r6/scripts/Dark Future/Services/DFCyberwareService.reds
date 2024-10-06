@@ -81,7 +81,7 @@ public final class DFCyberwareService extends DFSystem {
 	}
 	
 	private final func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 
 	private final func GetSystems() -> Void {

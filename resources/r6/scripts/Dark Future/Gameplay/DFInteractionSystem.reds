@@ -249,7 +249,7 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 	private final func DoPostResumeActions() -> Void {}
 	private final func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 	private final func DoStopActions() -> Void {}
 	private final func SetupData() -> Void {}

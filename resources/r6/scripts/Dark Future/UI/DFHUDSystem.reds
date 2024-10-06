@@ -180,7 +180,7 @@ public final class DFHUDSystem extends DFSystem {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 
 	private final func GetSystemToggleSettingValue() -> Bool {

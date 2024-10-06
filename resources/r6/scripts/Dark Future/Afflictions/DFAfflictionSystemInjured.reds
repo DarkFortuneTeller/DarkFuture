@@ -70,7 +70,7 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
     }
 
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = true;
+        this.debugEnabled = false;
     }
 
 	private func SetupData() -> Void {
