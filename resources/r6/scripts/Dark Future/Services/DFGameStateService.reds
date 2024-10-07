@@ -113,8 +113,11 @@ class DFGameStateServiceEventListener extends DFSystemEventListener {
 }
 
 public final class DFGameStateService extends DFSystem {
+    private persistent let hasShownActivationMessage: Bool = false;
+
     private let BlackboardSystem: ref<BlackboardSystem>;
     private let QuestsSystem: ref<QuestsSystem>;
+    private let NotificationService: ref<DFNotificationService>;
 
     private let playerStateMachineBlackboard: ref<IBlackboard>;
     private let playerSMDef: ref<PlayerStateMachineDef>;
@@ -188,6 +191,7 @@ public final class DFGameStateService extends DFSystem {
         let gameInstance = GetGameInstance();
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
+        this.NotificationService = DFNotificationService.GetInstance(gameInstance);
     }
 
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -330,10 +334,29 @@ public final class DFGameStateService extends DFSystem {
             return GameState.TemporarilyInvalid;
         }
 
+        this.TryToShowActivationMessage();
         return GameState.Valid;
     }
 
     public final func IsValidGameState(callerName: String, opt ignoreTemporarilyInvalid: Bool, opt ignoreSleepCinematic: Bool) -> Bool {
         return Equals(this.GetGameState(callerName, ignoreTemporarilyInvalid, ignoreSleepCinematic), GameState.Valid);
     }
+
+    private func GetActivationTitleKey() -> CName {
+		return n"DarkFutureTutorialActivateTitle";
+	}
+
+	private func GetActivationMessageKey() -> CName {
+		return n"DarkFutureTutorialActivate";
+	}
+
+    private final func TryToShowActivationMessage() -> Void {
+        if !this.hasShownActivationMessage {
+			this.hasShownActivationMessage = true;
+			let tutorial: DFTutorial;
+			tutorial.title = GetLocalizedTextByKey(this.GetActivationTitleKey());
+			tutorial.message = GetLocalizedTextByKey(this.GetActivationMessageKey());
+			this.NotificationService.QueueTutorial(tutorial);
+		}
+	}
 }

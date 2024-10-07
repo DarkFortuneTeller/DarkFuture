@@ -21,11 +21,17 @@ import DarkFuture.Addictions.{
 	DFNicotineAddictionSystem,
 	DFNarcoticAddictionSystem
 }
-import DarkFuture.Services.DFPlayerStateService
+import DarkFuture.Services.{
+	DFGameStateService,
+	DFPlayerStateService
+}
 import DarkFuture.UI.{
 	DFNeedsMenuBar,
 	DFNeedsMenuBarSetupData
 }
+
+@addField(BackpackMainGameController)
+private let GameStateService: wref<DFGameStateService>;
 
 @addField(BackpackMainGameController)
 private let Settings: wref<DFSettings>;
@@ -97,6 +103,7 @@ protected cb func OnInitialize() -> Bool {
 	this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
 	this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
 	this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
+	this.GameStateService = DFGameStateService.GetInstance(gameInstance);
 	this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
 	this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
 	this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
@@ -186,7 +193,7 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 protected cb func OnItemFilterClick(evt: ref<inkPointerEvent>) -> Bool {
 	let val: Bool = wrappedMethod(evt);
 
-	if this.Settings.mainSystemEnabled {
+	if this.GameStateService.IsValidGameState("OnItemFilterClick") {
 		if evt.IsAction(n"click") {
 			let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
 			if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) {
@@ -209,7 +216,7 @@ protected cb func OnItemFilterClick(evt: ref<inkPointerEvent>) -> Bool {
 protected cb func OnFilterButtonSpawned(widget: ref<inkWidget>, callbackData: ref<BackpackFilterButtonSpawnedCallbackData>) -> Bool {
 	let val: Bool = wrappedMethod(widget, callbackData);
 
-	if this.Settings.mainSystemEnabled {
+	if this.GameStateService.IsValidGameState("OnFilterButtonSpawned") {
 		let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
 		if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) {
 			this.SetBarClusterFadeIn();

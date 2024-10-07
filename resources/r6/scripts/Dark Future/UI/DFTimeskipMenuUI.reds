@@ -246,7 +246,7 @@ private final func SetOriginalValuesInUI() -> Void {
 @addMethod(TimeskipGameController)
 private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void {
 	this.barCluster = new inkVerticalPanel();
-	this.barCluster.SetVisible(this.Settings.mainSystemEnabled);
+	this.barCluster.SetVisible(this.GameStateService.IsValidGameState("CreateNeedsBarCluster"));
 	this.barCluster.SetName(n"NeedsBarCluster");
 	this.barCluster.SetAnchor(inkEAnchor.TopCenter);
 	this.barCluster.SetAnchorPoint(new Vector2(0.5, 0.5));
@@ -306,7 +306,7 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 @addMethod(TimeskipGameController)
 private final func CreateTimeskipAllowedReasonWidget(parent: ref<inkCompoundWidget>) -> Void {
 	let reasonWidget: ref<inkVerticalPanel> = new inkVerticalPanel();
-	reasonWidget.SetVisible(this.Settings.mainSystemEnabled);
+	reasonWidget.SetVisible(this.GameStateService.IsValidGameState("CreateTimeskipAllowedReasonWidget"));
 	reasonWidget.SetName(n"ReasonWidget");
 	reasonWidget.SetFitToContent(true);
 	reasonWidget.SetSize(new Vector2(150.0, 32.0));
@@ -336,7 +336,7 @@ private final func CreateTimeskipAllowedReasonWidget(parent: ref<inkCompoundWidg
 
 @addMethod(TimeskipGameController)
 private final func UpdateUI() -> Void {
-	if !this.Settings.mainSystemEnabled { return; }
+	if !this.GameStateService.IsValidGameState("UpdateUI") { return; }
 
 	let index: Int32 = this.m_hoursToSkip - 1;
 
