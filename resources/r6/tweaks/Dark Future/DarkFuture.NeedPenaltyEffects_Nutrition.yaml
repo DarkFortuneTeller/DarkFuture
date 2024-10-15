@@ -77,7 +77,7 @@ DarkFutureStatusEffect.NutritionPenalty_01_UIData:
   displayName: l"DarkFutureNutritionPenalty01Name"
   fluffText: ''
   iconPath: DarkFutureNutritionIcon
-  priority: -10
+  priority: -3
   floatValues: []
   intValues:
     - -10
@@ -182,7 +182,7 @@ DarkFutureStatusEffect.NutritionPenalty_02_UIData:
   displayName: l"DarkFutureNutritionPenalty02Name"
   fluffText: ''
   iconPath: DarkFutureNutritionIcon
-  priority: -10
+  priority: -3
   floatValues: []
   intValues:
     - -20
@@ -288,7 +288,7 @@ DarkFutureStatusEffect.NutritionPenalty_03_UIData:
   displayName: l"DarkFutureNutritionPenalty03Name"
   fluffText: ''
   iconPath: DarkFutureNutritionIcon
-  priority: -10
+  priority: -3
   floatValues: []
   intValues:
     - -30
@@ -394,7 +394,7 @@ DarkFutureStatusEffect.NutritionPenalty_04_UIData:
   displayName: l"DarkFutureNutritionPenalty04Name"
   fluffText: ''
   iconPath: DarkFutureNutritionIcon
-  priority: -10
+  priority: -3
   floatValues: []
   intValues:
     - -40

@@ -59,7 +59,7 @@ DarkFutureStatusEffect.EnergyPenalty_01_UIData:
   displayName: l"DarkFutureEnergyPenalty01Name"
   fluffText: ''
   iconPath: DarkFutureEnergyIcon
-  priority: -10
+  priority: -2
   floatValues: []
   intValues:
     - -15
@@ -166,7 +166,7 @@ DarkFutureStatusEffect.EnergyPenalty_02_UIData:
   displayName: l"DarkFutureEnergyPenalty02Name"
   fluffText: ''
   iconPath: DarkFutureEnergyIcon
-  priority: -10
+  priority: -2
   floatValues: []
   intValues:
     - -30
@@ -275,7 +275,7 @@ DarkFutureStatusEffect.EnergyPenalty_03_UIData:
   displayName: l"DarkFutureEnergyPenalty03Name"
   fluffText: ''
   iconPath: DarkFutureEnergyIcon
-  priority: -10
+  priority: -2
   floatValues: []
   intValues:
     - -45
@@ -384,7 +384,7 @@ DarkFutureStatusEffect.EnergyPenalty_04_UIData:
   displayName: l"DarkFutureEnergyPenalty04Name"
   fluffText: ''
   iconPath: DarkFutureEnergyIcon
-  priority: -10
+  priority: -2
   floatValues: []
   intValues:
     - -60

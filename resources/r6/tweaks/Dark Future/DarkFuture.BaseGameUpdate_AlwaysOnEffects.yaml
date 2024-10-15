@@ -83,13 +83,13 @@ DarkFutureStatusEffectTypes.AlwaysOnCarryCapacity:
   enumComment: ''
   enumName: DarkFutureAlwaysOnCarryCapacity
 
-DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifier:
+DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifierFull:
   $type: gamedataConstantStatModifier_Record
   value: -80
   modifierType: Additive
   statType: BaseStats.CarryCapacity
 
-DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackage:
+DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackageFull:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
   animationWrapperOverrides: []
@@ -97,9 +97,9 @@ DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackage:
   items: []
   statPools: []
   stats:
-    - DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifier
+    - DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifierFull
 
-DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity:
+DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull:
   $type: gamedataStatusEffect_Record
   duration: BaseStats.InfiniteDuration
   dynamicDuration: False
@@ -118,6 +118,45 @@ DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity:
     - DarkFutureAlwaysOn
   immunityStats: []
   packages:
-    - DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackage
+    - DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackageFull
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifierHalf:
+  $type: gamedataConstantStatModifier_Record
+  value: -40
+  modifierType: Additive
+  statType: BaseStats.CarryCapacity
+
+DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackageHalf:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.AlwaysOn_CarryCapacityStatModifierHalf
+
+DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityHalf:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.AlwaysOnCarryCapacity
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - DarkFutureAlwaysOn
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackageHalf
   SFX: []
   VFX: []

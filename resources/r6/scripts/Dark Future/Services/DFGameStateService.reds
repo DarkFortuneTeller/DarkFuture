@@ -21,6 +21,9 @@ import DarkFuture.Main.{
     DFMainSystem,
     DFTimeSkipData
 }
+import DarkFuture.UI.{
+	DFHUDBarType
+}
 
 enum GameState {
     Valid = 0,
@@ -334,7 +337,7 @@ public final class DFGameStateService extends DFSystem {
             return GameState.TemporarilyInvalid;
         }
 
-        this.TryToShowActivationMessage();
+        this.TryToShowActivationMessageAndBars();
         return GameState.Valid;
     }
 
@@ -350,13 +353,23 @@ public final class DFGameStateService extends DFSystem {
 		return n"DarkFutureTutorialActivate";
 	}
 
-    private final func TryToShowActivationMessage() -> Void {
+    private final func TryToShowActivationMessageAndBars() -> Void {
         if !this.hasShownActivationMessage {
 			this.hasShownActivationMessage = true;
 			let tutorial: DFTutorial;
 			tutorial.title = GetLocalizedTextByKey(this.GetActivationTitleKey());
 			tutorial.message = GetLocalizedTextByKey(this.GetActivationMessageKey());
 			this.NotificationService.QueueTutorial(tutorial);
+
+            // Also ping the UI once on first start-up.
+            let uiToShow: DFUIDisplay;
+			uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
+
+            let oneTimeBarDisplay: DFNotification;
+            oneTimeBarDisplay.allowPlaybackInCombat = false;
+            oneTimeBarDisplay.ui = uiToShow;
+
+            this.NotificationService.QueueNotification(oneTimeBarDisplay);
 		}
 	}
 }

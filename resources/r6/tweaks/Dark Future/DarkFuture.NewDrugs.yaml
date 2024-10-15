@@ -82,7 +82,7 @@ DarkFutureStatusEffect.Sedation_UIData:
   displayName: l"DarkFutureNumbed02Name"
   fluffText: ''
   iconPath: qh_brainmelt
-  priority: -10
+  priority: -9
   floatValues: []
   intValues:
     - -50
@@ -321,7 +321,7 @@ DarkFutureStatusEffect.Weakened_UIData:
   displayName: l"DarkFutureConsumableNerveRestoreEffectName"
   fluffText: ''
   iconPath: DarkFutureNerveRestoreDrugDebuffIcon
-  priority: -10
+  priority: -7
   floatValues: []
   intValues: []
   nameValues: []
@@ -529,7 +529,7 @@ DarkFutureStatusEffect.AddictionTreatment_UIData:
   displayName: l"DarkFutureConsumableAddictionTreatmentEffectName"
   fluffText: ''
   iconPath: craving_for_drugs_icon
-  priority: -10
+  priority: -8
   floatValues: []
   intValues:
     - 12
@@ -1138,6 +1138,14 @@ DarkFutureVendors.SedationDrugQuantityChance:
   modifierType: Additive
   statType: BaseStats.Quantity
 
+DarkFutureVendors.SedationDrugQuantityLowChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 3.5
+  min: 0.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
 DarkFutureVendors.NarcoticQuantityChance:
   $type: gamedataRandomStatModifier_Record
   max: 5.5
@@ -1187,6 +1195,13 @@ DarkFutureVendors.SedationDrug:
   quantity:
     - DarkFutureVendors.SedationDrugQuantityChance
 
+DarkFutureVendors.SedationDrugUncommon:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.SedationDrug
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.SedationDrugQuantityLowChance
+
 DarkFutureVendors.AddictionTreatmentDrug:
   $type: gamedataVendorItem_Record
   item: DarkFutureItem.AddictionTreatmentDrug
@@ -1230,6 +1245,7 @@ Vendors.BlackMarketMedicStore.itemStock: &StandardMedicVendors
   - !append-once DarkFutureVendors.FirstAidKit
   - !append-once DarkFutureVendors.NerveRestoreDrug
   - !append-once DarkFutureVendors.AddictionTreatmentDrug
+  - !append-once DarkFutureVendors.SedationDrugUncommon
 Vendors.bls_ina_se1_medicstore_01.itemStock: *StandardMedicVendors
 Vendors.cct_cpz_medic_01.itemStock: *StandardMedicVendors
 Vendors.cct_dtn_medic_01.itemStock: *StandardMedicVendors

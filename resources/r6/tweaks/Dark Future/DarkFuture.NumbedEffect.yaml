@@ -14,7 +14,7 @@ DarkFutureStatusEffect.Numbed_UIData:
   displayName: l"DarkFutureNumbed01Name"
   fluffText: ''
   iconPath: qh_brainmelt
-  priority: -10
+  priority: -6
   floatValues: []
   intValues:
     - -35

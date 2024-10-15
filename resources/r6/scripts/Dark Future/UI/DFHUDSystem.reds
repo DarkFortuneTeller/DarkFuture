@@ -37,7 +37,7 @@ public final func PushGameContext(context: UIGameContext) -> Void {
 
 	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
 	if IsSystemEnabledAndRunning(HUDSystem) {
-		HUDSystem.UpdateAllHUDUIFromUIContextChange(true);
+		HUDSystem.UpdateAllHUDUIFromUIContextChange(true, context);
 	}
 }
 
@@ -163,6 +163,7 @@ public final class DFHUDSystem extends DFSystem {
 	private let songbirdAudiocallWidget: ref<inkWidget>;
 	private let songbirdHolocallWidget: ref<inkWidget>;
 	private let newHudPhoneWidget: ref<inkCompoundWidget>;
+	private let statusEffectListWidget: ref<inkWidget>;
 
 	private let HUDUIBlockedDueToMenuOpen: Bool = false;
 	private let HUDUIBlockedDueToCameraControl: Bool = false;
@@ -276,7 +277,10 @@ public final class DFHUDSystem extends DFSystem {
 			this.UpdateHUDWidgetPositionAndScale();
 		}
 
-		if ArrayContains(changedSettings, "updateHolocallVerticalPosition") || ArrayContains(changedSettings, "holocallVerticalPositionOffset") {
+		if ArrayContains(changedSettings, "updateHolocallVerticalPosition") || 
+		   ArrayContains(changedSettings, "holocallVerticalPositionOffset") ||
+		   ArrayContains(changedSettings, "updateStatusEffectListVerticalPosition") || 
+		   ArrayContains(changedSettings, "statusEffectListVerticalPositionOffset") {
 			this.UpdateAllBaseGameHUDWidgetPositions();
 		}
 
@@ -436,14 +440,23 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func UpdateAllHUDUIFromUIContextChange(menuOpen: Bool, opt context: UIGameContext) -> Void {
-		this.HUDUIBlockedDueToMenuOpen = menuOpen;
-		if !menuOpen && Equals(context, UIGameContext.RadialWheel) {
-			// Force momentary display of UI when exiting the Radial Wheel.
-			let uiToShow: DFUIDisplay;
-			uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
+		if menuOpen {
+			if Equals(context, UIGameContext.RadialWheel) {
+				// Force momentary display of UI when entering the Radial Wheel.
+				this.HUDUIBlockedDueToMenuOpen = false;
 
-			this.DisplayUI(uiToShow);
+				let uiToShow: DFUIDisplay;
+				uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
+
+				this.DisplayUI(uiToShow);
+			} else {
+				// A menu was opened, but it was not the Radial Menu. Block the HUD UI.
+				this.HUDUIBlockedDueToMenuOpen = true;
+				this.SendUpdateAllUIRequest();
+			}
 		} else {
+			// A menu was closed.
+			this.HUDUIBlockedDueToMenuOpen = false;
 			this.SendUpdateAllUIRequest();
 		}
 	}
@@ -469,29 +482,38 @@ public final class DFHUDSystem extends DFSystem {
 		this.UpdateNewHudPhoneWidgetPosition();
 	}
 
+	public final func SetRadialWheelStatusEffectListWidget(widget: ref<inkWidget>) {
+		this.statusEffectListWidget = widget;
+		this.UpdateStatusEffectListWidgetPosition();
+	}
+
 	public final func UpdateSongbirdAudiocallWidgetPosition() {
-		if IsDefined(this.songbirdAudiocallWidget) && this.Settings.updateHolocallVerticalPosition {
-			if this.Settings.mainSystemEnabled && this.Settings.showHUDUI {
+		if IsDefined(this.songbirdAudiocallWidget) &&
+		   this.Settings.mainSystemEnabled && 
+		   this.Settings.showHUDUI &&
+		   this.Settings.updateHolocallVerticalPosition {
 				this.songbirdAudiocallWidget.SetMargin(new inkMargin(0.0, this.Settings.holocallVerticalPositionOffset - 13.0, 0.0, 0.0));
 			} else {
 				this.songbirdAudiocallWidget.SetMargin(new inkMargin(0.0, 0.0, 0.0, 0.0));
-			}
 		}
 	}
 
 	public final func UpdateSongbirdHolocallWidgetPosition() {
-		if IsDefined(this.songbirdHolocallWidget) && this.Settings.updateHolocallVerticalPosition {
-			if this.Settings.mainSystemEnabled && this.Settings.showHUDUI {
+		if IsDefined(this.songbirdHolocallWidget) &&
+		   this.Settings.mainSystemEnabled &&
+		   this.Settings.showHUDUI &&
+		   this.Settings.updateHolocallVerticalPosition {
 				this.songbirdHolocallWidget.SetMargin(new inkMargin(70.0, this.Settings.holocallVerticalPositionOffset, 0.0, 0.0));
 			} else {
 				this.songbirdHolocallWidget.SetMargin(new inkMargin(70.0, 0.0, 0.0, 0.0));
-			}
 		}
 	}
 
 	public final func UpdateNewHudPhoneWidgetPosition() {
-		if IsDefined(this.newHudPhoneWidget) && this.Settings.updateHolocallVerticalPosition {
-			if this.Settings.mainSystemEnabled && this.Settings.showHUDUI {
+		if IsDefined(this.newHudPhoneWidget) && 
+		   this.Settings.mainSystemEnabled &&
+		   this.Settings.showHUDUI && 
+		   this.Settings.updateHolocallVerticalPosition {
 				let newHoloCallVerticalOffset: Float = this.Settings.holocallVerticalPositionOffset;
 				this.newHudPhoneWidget.GetWidgetByPathName(n"incomming_call_slot").SetMargin(new inkMargin(68.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
 				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_slot").SetMargin(new inkMargin(80.0, 284.0 + newHoloCallVerticalOffset, 0.0, 0.0));
@@ -500,7 +522,17 @@ public final class DFHUDSystem extends DFSystem {
 				this.newHudPhoneWidget.GetWidgetByPathName(n"incomming_call_slot").SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
 				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_slot").SetMargin(new inkMargin(80.0, 284.0, 0.0, 0.0));
 				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_marker").SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
-			}
+		}
+	}
+
+	public final func UpdateStatusEffectListWidgetPosition() {
+		if IsDefined(this.statusEffectListWidget) && 
+		   this.Settings.mainSystemEnabled &&
+		   this.Settings.showHUDUI &&
+		   this.Settings.updateStatusEffectListVerticalPosition {
+				this.statusEffectListWidget.SetMargin(new inkMargin(100.0, 0.0, 0.0, 650.0 - this.Settings.statusEffectListVerticalPositionOffset));
+			} else {
+				this.statusEffectListWidget.SetMargin(new inkMargin(100.0, 0.0, 0.0, 650.0));
 		}
 	}
 
@@ -508,5 +540,6 @@ public final class DFHUDSystem extends DFSystem {
 		this.UpdateSongbirdAudiocallWidgetPosition();
 		this.UpdateSongbirdHolocallWidgetPosition();
 		this.UpdateNewHudPhoneWidgetPosition();
+		this.UpdateStatusEffectListWidgetPosition();
 	}
 }

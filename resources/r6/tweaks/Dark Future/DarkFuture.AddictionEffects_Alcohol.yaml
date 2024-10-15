@@ -49,7 +49,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_Cessation_UIData:
   displayName: l"DarkFutureAlcoholWithdrawalCessationName"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 80
@@ -99,7 +99,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression_UIData:
   displayName: l"DarkFutureAlcoholWithdrawal01Name"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 70
@@ -149,7 +149,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression_UIData:
   displayName: l"DarkFutureAlcoholWithdrawal01Name"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 70
@@ -199,7 +199,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression_UIData:
   displayName: l"DarkFutureAlcoholWithdrawal02Name"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 55
@@ -249,7 +249,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression_UIData:
   displayName: l"DarkFutureAlcoholWithdrawal02Name"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 55
@@ -299,7 +299,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression_UIData:
   displayName: l"DarkFutureAlcoholWithdrawal03Name"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 40
@@ -349,7 +349,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression_UIData:
   displayName: l"DarkFutureAlcoholWithdrawal03Name"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 40
@@ -399,7 +399,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression_UIData:
   displayName: l"DarkFutureAlcoholWithdrawal04Name"
   fluffText: ''
   iconPath: DarkFutureAlcoholWithdrawalIcon
-  priority: -10
+  priority: -13
   floatValues: []
   intValues:
     - 25

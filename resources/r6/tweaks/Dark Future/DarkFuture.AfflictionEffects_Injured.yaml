@@ -44,7 +44,7 @@ DarkFutureStatusEffect.Injury_UIData:
   displayName: l"DarkFutureInjury01Name"
   fluffText: ''
   iconPath: crippled_icon
-  priority: -10
+  priority: -11
   floatValues: []
   intValues:
     - -20

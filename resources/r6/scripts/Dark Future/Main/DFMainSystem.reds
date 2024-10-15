@@ -88,8 +88,10 @@ protected cb func OnLateInit(evt: ref<LateInit>) -> Bool {
 
 	// Now that we know that the Radial Wheel is done initializing, it's now safe to act on systems
     // that might apply status effects.
-	let DFMainSystem: ref<DFMainSystem> = DFMainSystem.Get();
-	DFMainSystem.OnRadialWheelLateInitDone();
+	DFMainSystem.Get().OnRadialWheelLateInitDone();
+    
+    let widgetSlot: ref<inkWidget> = inkWidgetRef.Get(this.statusEffects.slotAnchorRef);
+	DFHUDSystem.Get().SetRadialWheelStatusEffectListWidget(widgetSlot);
 
 	return val;
 }
@@ -165,7 +167,7 @@ class DFMainSystemEventListeners extends ScriptableService {
 }
 
 public final class DFMainSystem extends ScriptableSystem {
-    private let debugEnabled: Bool = true;
+    private let debugEnabled: Bool = false;
 
     private let player: ref<PlayerPuppet>;
 
@@ -346,12 +348,20 @@ public final class DFMainSystem extends ScriptableSystem {
                 StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");
             }
 			
-            if settings.reducedCarryWeight {
-                if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity") {
-                    StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity");
+            if Equals(settings.reducedCarryWeight, DFReducedCarryWeightAmount.Full) {
+                if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull") {
+                    StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull");
                 }
             } else {
-                StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity");
+                StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull");
+            }
+
+            if Equals(settings.reducedCarryWeight, DFReducedCarryWeightAmount.Half) {
+                if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityHalf") {
+                    StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityHalf");
+                }
+            } else {
+                StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityHalf");
             }
 		} else {
             StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");

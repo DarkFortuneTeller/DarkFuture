@@ -36,7 +36,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData:
   displayName: l"DarkFutureNicotineWithdrawalCessationName"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 80
@@ -85,7 +85,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData:
   displayName: l"DarkFutureNicotineWithdrawal01Name"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 80
@@ -134,7 +134,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression_UIData:
   displayName: l"DarkFutureNicotineWithdrawal01Name"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 80
@@ -183,7 +183,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData:
   displayName: l"DarkFutureNicotineWithdrawal02Name"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 70
@@ -232,7 +232,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression_UIData:
   displayName: l"DarkFutureNicotineWithdrawal02Name"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 70
@@ -281,7 +281,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData:
   displayName: l"DarkFutureNicotineWithdrawal03Name"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 60
@@ -330,7 +330,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression_UIData:
   displayName: l"DarkFutureNicotineWithdrawal03Name"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 60
@@ -379,7 +379,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData:
   displayName: l"DarkFutureNicotineWithdrawal04Name"
   fluffText: ''
   iconPath: DarkFutureNicotineWithdrawalIcon
-  priority: -10
+  priority: -12
   floatValues: []
   intValues:
     - 50

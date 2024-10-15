@@ -46,7 +46,7 @@ public final static func RunGuard(system: ref<DFSystem>, opt suppressLog: Bool) 
     //
     if NotEquals(system.state, DFSystemState.Running) {
         if !suppressLog {
-            DFLog(true, system, "############## System not running, exiting function call.", DFLogLevel.Warning);
+            //DFLog(true, system, "############## System not running, exiting function call.", DFLogLevel.Warning);
         }
         return true;
     } else {

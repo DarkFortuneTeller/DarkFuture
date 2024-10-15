@@ -38,7 +38,7 @@ UIIcon.DarkFutureHydrationIcon:
 #
 DarkFutureStatusEffect.HydrationPenalty_01_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.80
+  value: 0.90
   modifierType: Multiplier
   statType: BaseStats.StaminaRegenRate
 
@@ -58,10 +58,10 @@ DarkFutureStatusEffect.HydrationPenalty_01_UIData:
   displayName: l"DarkFutureHydrationPenalty01Name"
   fluffText: ''
   iconPath: DarkFutureHydrationIcon
-  priority: -10
+  priority: -4
   floatValues: []
   intValues:
-    - -20
+    - -10
   nameValues: []
   stats: []
 
@@ -100,7 +100,7 @@ DarkFutureStatusEffect.HydrationPenalty_01:
 #
 DarkFutureStatusEffect.HydrationPenalty_02_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.60
+  value: 0.75
   modifierType: Multiplier
   statType: BaseStats.StaminaRegenRate
 
@@ -120,10 +120,10 @@ DarkFutureStatusEffect.HydrationPenalty_02_UIData:
   displayName: l"DarkFutureHydrationPenalty02Name"
   fluffText: ''
   iconPath: DarkFutureHydrationIcon
-  priority: -10
+  priority: -4
   floatValues: []
   intValues:
-    - -40
+    - -25
   nameValues: []
   stats: []
 
@@ -162,7 +162,7 @@ DarkFutureStatusEffect.HydrationPenalty_02:
 #
 DarkFutureStatusEffect.HydrationPenalty_03_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.40
+  value: 0.50
   modifierType: Multiplier
   statType: BaseStats.StaminaRegenRate
 
@@ -182,10 +182,10 @@ DarkFutureStatusEffect.HydrationPenalty_03_UIData:
   displayName: l"DarkFutureHydrationPenalty03Name"
   fluffText: ''
   iconPath: DarkFutureHydrationIcon
-  priority: -10
+  priority: -4
   floatValues: []
   intValues:
-    - -60
+    - -50
   nameValues: []
   stats: []
 
@@ -224,7 +224,7 @@ DarkFutureStatusEffect.HydrationPenalty_03:
 #
 DarkFutureStatusEffect.HydrationPenalty_04_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.20
+  value: 0.25
   modifierType: Multiplier
   statType: BaseStats.StaminaRegenRate
 
@@ -244,10 +244,10 @@ DarkFutureStatusEffect.HydrationPenalty_04_UIData:
   displayName: l"DarkFutureHydrationPenalty04Name"
   fluffText: ''
   iconPath: DarkFutureHydrationIcon
-  priority: -10
+  priority: -4
   floatValues: []
   intValues:
-    - -80
+    - -75
   nameValues: []
   stats: []
 

@@ -198,8 +198,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let extremelyCriticalNerveFXThreshold: Float = 5.0;
 	private let playingCriticalNerveFX: Bool = false;
 	private let nauseaNeedStageThreshold: Int32 = 4;
-	private let nerveRecoverAmountSleeping: Float = 0.1166675;
-	private let nerveRecoverAmountSleepingMax: Float = 75.0;
+	private let nerveRecoverAmountSleeping: Float = 0.083333334;
+	private let nerveRecoverAmountSleepingMax: Float = 100.0;
 	
 	private let nerveRestoreInFuryOnKill: Float = 1.0;
 	private let numbedNerveLossBonusMult: Float = 0.35;
@@ -620,6 +620,14 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 	private final func GetTutorialMessageKey() -> CName {
 		return n"DarkFutureTutorialNerve";
+	}
+
+	private func GetHasShownTutorialForNeed() -> Bool {
+		return this.PlayerStateService.hasShownNerveTutorial;
+	}
+
+	private func SetHasShownTutorialForNeed(hasShownTutorial: Bool) -> Void {
+		this.PlayerStateService.hasShownNerveTutorial = hasShownTutorial;
 	}
 
 	//

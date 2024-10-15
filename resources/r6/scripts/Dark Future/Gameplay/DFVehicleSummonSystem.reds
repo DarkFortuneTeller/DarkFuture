@@ -131,6 +131,17 @@ protected cb func OnSummonStartedEvent(evt: ref<SummonStartedEvent>) -> Bool {
 
 // QuickSlotsManager
 //
+@addField(QuickSlotsManager)
+private let activeVehicleJustSet: Bool;
+
+@wrapMethod(QuickSlotsManager)
+public final func SetActiveVehicle(vehicleData: PlayerVehicle) -> Void {
+    // Used to prevent summoning by tapping the Summon hotkey; require the menu to be opened.
+    this.activeVehicleJustSet = true;
+
+    wrappedMethod(vehicleData);
+}
+
 @wrapMethod(QuickSlotsManager)
 public final func SummonVehicle(force: Bool) -> Void {
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
@@ -141,8 +152,10 @@ public final func SummonVehicle(force: Bool) -> Void {
             return;
         };
     
-        if vehicleSummonSystem.GetRemainingSummonCredits() > 0 {
+        if vehicleSummonSystem.GetRemainingSummonCredits() > 0 && this.activeVehicleJustSet {
+            // We have summon credits, and we used the menu to select it; summon a vehicle.
             vehicleSummonSystem.UseSummonCredit();
+            this.activeVehicleJustSet = false;
             let dpadAction: ref<DPADActionPerformed>;
             dpadAction = new DPADActionPerformed();
             dpadAction.action = EHotkey.DPAD_RIGHT;
@@ -150,7 +163,9 @@ public final func SummonVehicle(force: Bool) -> Void {
             dpadAction.successful = true;
             GameInstance.GetVehicleSystem(GetGameInstance()).SpawnPlayerVehicle(this.GetActiveVehicleType());
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(dpadAction);
+
         } else {
+            // We don't have summon credits, or we did not use the menu; if we have an active vehicle, ping it.
             let lastSummonedVehicle: ref<VehicleComponent> = vehicleSummonSystem.GetLastSummonedVehicle();
             if IsDefined(lastSummonedVehicle) && !lastSummonedVehicle.GetPS().GetIsDestroyed() {
                 // Simulate the "pinging" vehicle behavior of when tapping the summon button

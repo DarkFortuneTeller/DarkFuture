@@ -10,6 +10,12 @@ module DarkFuture.Settings
 import DarkFuture.Logging.*
 import DarkFuture.Utils.DFBarColorThemeName
 
+enum DFReducedCarryWeightAmount {
+	Full = 0,
+	Half = 1,
+	Off = 2
+}
+
 //	ModSettings - Register if Mod Settings installed
 //
 @if(ModuleExists("ModSettingsModule")) 
@@ -53,7 +59,7 @@ public class SettingChangedEvent extends CallbackSystemEvent {
 //	Dark Future Settings
 //
 public class DFSettings extends ScriptableSystem {
-	private let debugEnabled: Bool = true;
+	private let debugEnabled: Bool = false;
 
 	//
 	//	CHANGE TRACKING
@@ -68,7 +74,7 @@ public class DFSettings extends ScriptableSystem {
 	private let _nutritionHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.PigeonPost;
 	private let _energyHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.PigeonPost;
 	private let _increasedStaminaRecoveryTime: Bool = true;
-	private let _reducedCarryWeight: Bool = true;
+	private let _reducedCarryWeight: DFReducedCarryWeightAmount = DFReducedCarryWeightAmount.Full;
 	private let _alcoholAddictionEnabled: Bool = true;
 	private let _alcoholAddictionStage1WithdrawalDurationInGameTimeHours: Int32 = 12;
 	private let _alcoholAddictionStage2WithdrawalDurationInGameTimeHours: Int32 = 24;
@@ -124,6 +130,8 @@ public class DFSettings extends ScriptableSystem {
 	private let _hudUIPosY: Float = 240.0;
 	private let _updateHolocallVerticalPosition: Bool = true;
 	private let _holocallVerticalPositionOffset: Float = 85.0;
+	private let _updateStatusEffectListVerticalPosition: Bool = true;
+	private let _statusEffectListVerticalPositionOffset: Float = 80.0;
 	private let _needNegativeEffectsRepeatEnabled: Bool = true;
 	private let _needNegativeEffectsRepeatFrequencyModerateInRealTimeSeconds: Float = 300.0;
 	private let _needNegativeEffectsRepeatFrequencySevereInRealTimeSeconds: Float = 180.0;
@@ -480,6 +488,16 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "holocallVerticalPositionOffset");
 		}
 
+		if NotEquals(this._updateStatusEffectListVerticalPosition, this.updateStatusEffectListVerticalPosition) {
+			this._updateStatusEffectListVerticalPosition = this.updateStatusEffectListVerticalPosition;
+			ArrayPush(changedSettings, "updateStatusEffectListVerticalPosition");
+		}
+
+		if NotEquals(this._statusEffectListVerticalPositionOffset, this.statusEffectListVerticalPositionOffset) {
+			this._statusEffectListVerticalPositionOffset = this.statusEffectListVerticalPositionOffset;
+			ArrayPush(changedSettings, "statusEffectListVerticalPositionOffset");
+		}
+
 
 		if NotEquals(this._needNegativeEffectsRepeatEnabled, this.needNegativeEffectsRepeatEnabled) {
 			this._needNegativeEffectsRepeatEnabled = this.needNegativeEffectsRepeatEnabled;
@@ -535,16 +553,19 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayGeneral")
 	@runtimeProperty("ModSettings.category.order", "20")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingIncreasedStaminaRecoveryTime")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingIncreasedStaminaRecoveryTimeDesc")
-	public let increasedStaminaRecoveryTime: Bool = true;
-
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingReducedCarryWeight")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingReducedCarryWeightDesc")
+	@runtimeProperty("ModSettings.displayValues.Full", "DarkFutureReducedCarryWeightAmountFull")
+    @runtimeProperty("ModSettings.displayValues.Half", "DarkFutureReducedCarryWeightAmountHalf")
+	@runtimeProperty("ModSettings.displayValues.Off", "DarkFutureReducedCarryWeightAmountOff")
+	public let reducedCarryWeight: DFReducedCarryWeightAmount = DFReducedCarryWeightAmount.Full;
+	
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayGeneral")
 	@runtimeProperty("ModSettings.category.order", "20")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingReducedCarryWeight")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingReducedCarryWeightDesc")
-	public let reducedCarryWeight: Bool = true;
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingIncreasedStaminaRecoveryTime")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingIncreasedStaminaRecoveryTimeDesc")
+	public let increasedStaminaRecoveryTime: Bool = true;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayGeneral")
@@ -1428,6 +1449,25 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.min", "0.0")
 	@runtimeProperty("ModSettings.max", "1600.0")
 	public let holocallVerticalPositionOffset: Float = 85.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
+	@runtimeProperty("ModSettings.category.order", "110")
+	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingUpdateStatusEffectListPosition")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingUpdateStatusEffectListPositionDesc")
+	public let updateStatusEffectListVerticalPosition: Bool = true;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
+	@runtimeProperty("ModSettings.category.order", "110")
+	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingStatusEffectListVerticalPositionOffset")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingStatusEffectListVerticalPositionOffsetDesc")
+	@runtimeProperty("ModSettings.step", "0.5")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "1600.0")
+	public let statusEffectListVerticalPositionOffset: Float = 80.0;
 
 	// -------------------------------------------------------------------------
 	// Sounds and Visual Effects

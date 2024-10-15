@@ -179,11 +179,19 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	}
 
 	private final func GetTutorialTitleKey() -> CName {
-		return n"DarkFutureTutorialHydrationTitle";
+		return n"DarkFutureTutorialCombinedNeedsTitle";
 	}
 
 	private final func GetTutorialMessageKey() -> CName {
-		return n"DarkFutureTutorialHydration";
+		return n"DarkFutureTutorialCombinedNeeds";
+	}
+
+	private func GetHasShownTutorialForNeed() -> Bool {
+		return this.PlayerStateService.hasShownBasicNeedsTutorial;
+	}
+
+	private func SetHasShownTutorialForNeed(hasShownTutorial: Bool) -> Void {
+		this.PlayerStateService.hasShownBasicNeedsTutorial = hasShownTutorial;
 	}
 
 	//
@@ -203,6 +211,6 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 		// Subtract 100 points every 18 in-game hours.
 
 		// (Points to Lose) / ((Target In-Game Hours * 60 In-Game Minutes) / In-Game Update Interval (5 Minutes))
-		return (100.0 / ((18.0 * 60.0) / 5.0) * -1.0) * (this.Settings.hydrationLossRatePct / 100.0);
+		return (100.0 / ((20.0 * 60.0) / 5.0) * -1.0) * (this.Settings.hydrationLossRatePct / 100.0);
 	}
 }

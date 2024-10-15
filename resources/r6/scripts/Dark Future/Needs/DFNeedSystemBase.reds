@@ -244,7 +244,6 @@ public abstract class DFNeedSystemEventListener extends DFSystemEventListener {
 
 public abstract class DFNeedSystemBase extends DFSystem {
     private persistent let needValue: Float = 100.0;
-	private persistent let hasShownTutorial: Bool = false;
 	
 	private let MainSystem: ref<DFMainSystem>;
 	private let InteractionSystem: ref<DFInteractionSystem>;
@@ -431,6 +430,15 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	private func GetTutorialMessageKey() -> CName {
 		this.LogMissingOverrideError("GetTutorialMessageKey");
 		return n"";
+	}
+
+	private func GetHasShownTutorialForNeed() -> Bool {
+		this.LogMissingOverrideError("GetHasShownTutorialForNeed");
+		return false;
+	}
+
+	private func SetHasShownTutorialForNeed(hasShownTutorial: Bool) -> Void {
+		this.LogMissingOverrideError("SetHasShownTutorialForNeed");
 	}
 
 	//
@@ -702,8 +710,8 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	private final func TryToShowTutorial() -> Void {
         if RunGuard(this) { return; }
 
-        if this.Settings.tutorialsEnabled && !this.hasShownTutorial && this.GetNeedStage() > 0 {
-			this.hasShownTutorial = true;
+        if this.Settings.tutorialsEnabled && !this.GetHasShownTutorialForNeed() && this.GetNeedStage() > 0 {
+			this.SetHasShownTutorialForNeed(true);
 			let tutorial: DFTutorial;
 			tutorial.title = GetLocalizedTextByKey(this.GetTutorialTitleKey());
 			tutorial.message = GetLocalizedTextByKey(this.GetTutorialMessageKey());

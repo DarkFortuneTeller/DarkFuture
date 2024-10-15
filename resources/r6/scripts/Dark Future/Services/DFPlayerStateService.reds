@@ -294,6 +294,8 @@ class DFPlayerStateServiceEventListeners extends DFSystemEventListener {
 public final class DFPlayerStateService extends DFSystem {
     private persistent let remainingAddictionTreatmentEffectDurationInGameTimeSeconds: Float = 0.0;
     public persistent let hasShownAddictionTutorial: Bool = false;
+	public persistent let hasShownBasicNeedsTutorial: Bool = false;
+	public persistent let hasShownNerveTutorial: Bool = false;
 
     private let BlackboardSystem: ref<BlackboardSystem>;
     private let PreventionSystem: ref<PreventionSystem>;
@@ -485,12 +487,22 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
     private final func UpdateFastTravelState() -> Void {
+        let gameInstance = GetGameInstance();
+
         if this.Settings.mainSystemEnabled && this.Settings.fastTravelDisabled {
-            FastTravelSystem.AddFastTravelLock(n"DarkFuture", GetGameInstance());
+            // Used by Metro Gate scene condition
+            GameInstance.GetQuestsSystem(gameInstance).SetFactStr("darkfuture_fasttravel_disabled", 1);
+
+            // Used by DataTerms
+            FastTravelSystem.AddFastTravelLock(n"DarkFuture", gameInstance);
             TweakDBManager.SetFlat(t"WorldMap.FastTravelFilterGroup.filterName", n"DarkFutureUILabelMapFilterFastTravel");
             TweakDBManager.UpdateRecord(t"WorldMap.FastTravelFilterGroup");
         } else {
-            FastTravelSystem.RemoveFastTravelLock(n"DarkFuture", GetGameInstance());
+            // Used by Metro Gate scene condition
+            GameInstance.GetQuestsSystem(gameInstance).SetFactStr("darkfuture_fasttravel_disabled", 0);
+
+            // Used by DataTerms
+            FastTravelSystem.RemoveFastTravelLock(n"DarkFuture", gameInstance);
             TweakDBManager.SetFlat(t"WorldMap.FastTravelFilterGroup.filterName", n"UI-Menus-WorldMap-Filter-FastTravel");
             TweakDBManager.UpdateRecord(t"WorldMap.FastTravelFilterGroup");
         }

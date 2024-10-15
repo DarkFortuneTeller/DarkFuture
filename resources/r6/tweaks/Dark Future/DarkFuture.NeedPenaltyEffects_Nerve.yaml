@@ -86,7 +86,7 @@ DarkFutureStatusEffect.NervePenalty_01_UIData:
   displayName: l"DarkFutureNervePenalty01Name"
   fluffText: ''
   iconPath: NervePenalty
-  priority: -10
+  priority: -5
   floatValues: []
   intValues: []
   nameValues: []
@@ -348,7 +348,7 @@ DarkFutureStatusEffect.NervePenalty_02_UIData:
   displayName: l"DarkFutureNervePenalty02Name"
   fluffText: ''
   iconPath: NervePenalty
-  priority: -10
+  priority: -5
   floatValues: []
   intValues: []
   nameValues: []
@@ -635,7 +635,7 @@ DarkFutureStatusEffect.NervePenalty_03_UIData:
   displayName: l"DarkFutureNervePenalty03Name"
   fluffText: ''
   iconPath: NervePenalty
-  priority: -10
+  priority: -5
   floatValues: []
   intValues: []
   nameValues: []
@@ -922,7 +922,7 @@ DarkFutureStatusEffect.NervePenalty_04_UIData:
   displayName: l"DarkFutureNervePenalty04Name"
   fluffText: ''
   iconPath: NervePenalty
-  priority: -10
+  priority: -5
   floatValues: []
   intValues: []
   nameValues: []

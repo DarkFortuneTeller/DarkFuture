@@ -18,6 +18,7 @@ import DarkFuture.Main.{
 import DarkFuture.Services.{
 	DFGameStateService,
 	DFNotificationService,
+	DFPlayerStateService,
 	DFAudioCue,
 	DFVisualEffect,
 	DFUIDisplay,
@@ -191,11 +192,19 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func GetTutorialTitleKey() -> CName {
-		return n"DarkFutureTutorialEnergyTitle";
+		return n"DarkFutureTutorialCombinedNeedsTitle";
 	}
 
 	private final func GetTutorialMessageKey() -> CName {
-		return n"DarkFutureTutorialEnergy";
+		return n"DarkFutureTutorialCombinedNeeds";
+	}
+
+	private func GetHasShownTutorialForNeed() -> Bool {
+		return this.PlayerStateService.hasShownBasicNeedsTutorial;
+	}
+
+	private func SetHasShownTutorialForNeed(hasShownTutorial: Bool) -> Void {
+		this.PlayerStateService.hasShownBasicNeedsTutorial = hasShownTutorial;
 	}
 
     //

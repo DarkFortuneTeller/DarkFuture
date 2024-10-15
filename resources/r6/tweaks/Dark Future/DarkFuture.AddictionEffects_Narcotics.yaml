@@ -31,7 +31,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_Cessation_UIData:
   displayName: l"DarkFutureNarcoticWithdrawalCessationName"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 80
@@ -80,7 +80,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression_UIData:
   displayName: l"DarkFutureNarcoticWithdrawal01Name"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 80
@@ -129,7 +129,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression_UIData:
   displayName: l"DarkFutureNarcoticWithdrawal01Name"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 80
@@ -178,7 +178,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression_UIData:
   displayName: l"DarkFutureNarcoticWithdrawal02Name"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 60
@@ -227,7 +227,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression_UIData:
   displayName: l"DarkFutureNarcoticWithdrawal02Name"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 60
@@ -276,7 +276,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression_UIData:
   displayName: l"DarkFutureNarcoticWithdrawal03Name"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 40
@@ -325,7 +325,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression_UIData:
   displayName: l"DarkFutureNarcoticWithdrawal03Name"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 40
@@ -374,7 +374,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression_UIData:
   displayName: l"DarkFutureNarcoticWithdrawal04Name"
   fluffText: ''
   iconPath: drugged_icon
-  priority: -10
+  priority: -14
   floatValues: []
   intValues:
     - 20
