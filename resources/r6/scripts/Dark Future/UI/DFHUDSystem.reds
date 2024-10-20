@@ -89,12 +89,19 @@ protected cb func OnInitialize() -> Bool {
 }
 
 // Move normal Audio / Holocall Widget
+// Note: Wrapping the OnInitialize callback was causing a crash when taking control of cameras and turrets, use OnPhoneCall() instead.
 //
 @wrapMethod(NewHudPhoneGameController)
-protected cb func OnInitialize() -> Bool {
-	let val: Bool = wrappedMethod();
+protected cb func OnPhoneCall(value: Variant) -> Bool {
+	let val: Bool = wrappedMethod(value);
 
-	DFHUDSystem.Get().SetNewHudPhoneWidget(this.GetRootCompoundWidget());
+	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
+	let phoneWidget = this.GetRootCompoundWidget();
+
+	if IsDefined(phoneWidget) {
+		HUDSystem.UpdateNewHudPhoneWidgetPosition(phoneWidget);
+	}
+	
 	
 	return val;
 }
@@ -162,7 +169,6 @@ public final class DFHUDSystem extends DFSystem {
 
 	private let songbirdAudiocallWidget: ref<inkWidget>;
 	private let songbirdHolocallWidget: ref<inkWidget>;
-	private let newHudPhoneWidget: ref<inkCompoundWidget>;
 	private let statusEffectListWidget: ref<inkWidget>;
 
 	private let HUDUIBlockedDueToMenuOpen: Bool = false;
@@ -478,8 +484,7 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func SetNewHudPhoneWidget(widget: ref<inkCompoundWidget>) {
-		this.newHudPhoneWidget = widget;
-		this.UpdateNewHudPhoneWidgetPosition();
+		
 	}
 
 	public final func SetRadialWheelStatusEffectListWidget(widget: ref<inkWidget>) {
@@ -509,19 +514,26 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	public final func UpdateNewHudPhoneWidgetPosition() {
-		if IsDefined(this.newHudPhoneWidget) && 
-		   this.Settings.mainSystemEnabled &&
-		   this.Settings.showHUDUI && 
-		   this.Settings.updateHolocallVerticalPosition {
-				let newHoloCallVerticalOffset: Float = this.Settings.holocallVerticalPositionOffset;
-				this.newHudPhoneWidget.GetWidgetByPathName(n"incomming_call_slot").SetMargin(new inkMargin(68.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
-				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_slot").SetMargin(new inkMargin(80.0, 284.0 + newHoloCallVerticalOffset, 0.0, 0.0));
-				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_marker").SetMargin(new inkMargin(-50.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
-			} else {
-				this.newHudPhoneWidget.GetWidgetByPathName(n"incomming_call_slot").SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
-				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_slot").SetMargin(new inkMargin(80.0, 284.0, 0.0, 0.0));
-				this.newHudPhoneWidget.GetWidgetByPathName(n"holoaudio_call_marker").SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
+	public final func UpdateNewHudPhoneWidgetPosition(widget: wref<inkCompoundWidget>) {
+		if IsDefined(widget) {
+			let incomingCallSlot = widget.GetWidgetByPathName(n"incomming_call_slot");
+			let holoAudioCallSlot = widget.GetWidgetByPathName(n"holoaudio_call_slot");
+			let holoAudioCallMarker = widget.GetWidgetByPathName(n"holoaudio_call_marker");
+
+			if IsDefined(incomingCallSlot) && IsDefined(holoAudioCallSlot) && IsDefined(holoAudioCallMarker) {
+				if this.Settings.mainSystemEnabled &&
+				this.Settings.showHUDUI && 
+				this.Settings.updateHolocallVerticalPosition {
+					let newHoloCallVerticalOffset: Float = this.Settings.holocallVerticalPositionOffset;
+					incomingCallSlot.SetMargin(new inkMargin(68.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
+					holoAudioCallSlot.SetMargin(new inkMargin(80.0, 284.0 + newHoloCallVerticalOffset, 0.0, 0.0));
+					holoAudioCallMarker.SetMargin(new inkMargin(-50.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
+				} else {
+					incomingCallSlot.SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
+					holoAudioCallSlot.SetMargin(new inkMargin(80.0, 284.0, 0.0, 0.0));
+					holoAudioCallMarker.SetMargin(new inkMargin(-50.0, 300.0, 0.0, 0.0));
+				}
+			}
 		}
 	}
 
@@ -539,7 +551,6 @@ public final class DFHUDSystem extends DFSystem {
 	public final func UpdateAllBaseGameHUDWidgetPositions() {
 		this.UpdateSongbirdAudiocallWidgetPosition();
 		this.UpdateSongbirdHolocallWidgetPosition();
-		this.UpdateNewHudPhoneWidgetPosition();
 		this.UpdateStatusEffectListWidgetPosition();
 	}
 }

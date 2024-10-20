@@ -51,7 +51,8 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private let energyRecoverLimitPerNerveStage: array<Float>;
     private let energyRecoverAmountSleeping: Float = 0.4667;
-	private let stimulantMaxStacks: Uint32 = 8u;
+	private let stimulantMaxStacks: Uint32 = 10u;
+	private let stimulantNerveLossPenaltyPerStack: Float = 0.1;
 
     //
 	//	System Methods
@@ -266,6 +267,14 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 		// (Points to Lose) / ((Target In-Game Hours * 60 In-Game Minutes) / In-Game Update Interval (5 Minutes))
 		return (100.0 / ((36.0 * 60.0) / 5.0) * -1.0) * (this.Settings.energyLossRatePct / 100.0);
+	}
+
+	public final func GetStimulantStacks() -> Uint32 {
+		return this.stimulantStacks;
+	}
+
+	public final func GetStimulantNerveLossPenaltyPerStack() -> Float {
+		return this.stimulantNerveLossPenaltyPerStack;
 	}
 
 	private final func GetEnergyChangeWithRecoverLimit(energyValue: Float, nerveValue: Float, isSleeping: Bool) -> Float {

@@ -223,6 +223,9 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 
         } else if Equals(effectID, t"DarkFutureStatusEffect.AddictionTreatmentInhaler") {
             playerStateService.OnAddictionTreatmentDrugConsumed();
+
+        } else if ArrayContains(effectTags, n"DarkFutureStaminaBooster") {
+            playerStateService.UpdateStaminaCosts();
         }
     } else {
         // DARK FUTURE DISABLED
@@ -271,8 +274,8 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 
     // Run regardless of Dark Future enable state:
     //
-    // Update Stamina costs when Smoking effect is removed.
-    if ArrayContains(effectTags, n"DarkFutureAddictionPrimaryEffectNicotine") {
+    // Update Stamina costs when Smoking or Stamina Booster effect is removed.
+    if ArrayContains(effectTags, n"DarkFutureAddictionPrimaryEffectNicotine") || ArrayContains(effectTags, n"DarkFutureStaminaBooster") {
         playerStateService.UpdateStaminaCosts();
     }
 
@@ -553,28 +556,34 @@ public final class DFPlayerStateService extends DFSystem {
         let totalSprintCost: Float = 0.0;
         let totalJumpCost: Float = 0.0;
 
+        if !this.GameStateService.IsValidGameState("UpdateStaminaCosts") {
+			this.ClearStaminaCosts();
+        }
+
         if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureAddictionPrimaryEffectNicotine") {
             totalSprintCost += this.playerSmokingPenaltyStaminaCostSprinting;
             totalJumpCost += this.playerSmokingPenaltyStaminaCostJumping;
         }
 
 		let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
+        let hasStaminaBooster: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureStaminaBooster");
+        
 		DFLog(this.debugEnabled, this, "    hydrationStage = " + ToString(hydrationStage));
 
-		if hydrationStage < 2 || !this.GameStateService.IsValidGameState("UpdateStaminaCosts") {
-			this.ClearStaminaCosts();
-		} else if hydrationStage == 2 {
-            totalSprintCost += this.playerHydrationPenalty02StaminaCostSprinting;
-            totalJumpCost += this.playerHydrationPenalty02StaminaCostJumping;
+		if !hasStaminaBooster {
+            if hydrationStage == 2 {
+                totalSprintCost += this.playerHydrationPenalty02StaminaCostSprinting;
+                totalJumpCost += this.playerHydrationPenalty02StaminaCostJumping;
 
-		} else if hydrationStage == 3 {
-            totalSprintCost += this.playerHydrationPenalty03StaminaCostSprinting;
-            totalJumpCost += this.playerHydrationPenalty03StaminaCostJumping;
+            } else if hydrationStage == 3 {
+                totalSprintCost += this.playerHydrationPenalty03StaminaCostSprinting;
+                totalJumpCost += this.playerHydrationPenalty03StaminaCostJumping;
 
-		} else if hydrationStage == 4 {
-            totalSprintCost += this.playerHydrationPenalty04StaminaCostSprinting;
-            totalJumpCost += this.playerHydrationPenalty04StaminaCostJumping;
-		}
+            } else if hydrationStage == 4 {
+                totalSprintCost += this.playerHydrationPenalty04StaminaCostSprinting;
+                totalJumpCost += this.playerHydrationPenalty04StaminaCostJumping;
+            }
+        }
 
         if FromVariant<Float>(TweakDBInterface.GetFlat(t"player.staminaCosts.sprint")) != totalSprintCost {
             TweakDBManager.SetFlat(t"player.staminaCosts.sprint", totalSprintCost);

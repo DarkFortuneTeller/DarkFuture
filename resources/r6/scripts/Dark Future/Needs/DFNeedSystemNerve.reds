@@ -822,6 +822,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			if this.lastDangerState.BeingRevealed {
 				nerveLossBonusMult -= this.GetMemoryBoosterTraceNerveLossBonusMult();
 			}
+
+			// Add Stimulant penalties.
+			let stimulantStacks: Uint32 = this.EnergySystem.GetStimulantStacks();
+			nerveLossBonusMult += (this.EnergySystem.GetStimulantNerveLossPenaltyPerStack() * Cast<Float>(stimulantStacks));
 			
 			let totalNerveLossBonusMult: Float = MaxF(nerveLossBonusMult, 0.0);
 			let totalNerveLoss: Float = baseNerveLossInDanger * totalNerveLossBonusMult;

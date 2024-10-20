@@ -138,18 +138,17 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 
 public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) -> DFNeedsDatum {
 	// Consumable Need Restoration Values
-	let HydrationTier1: Float = 15.0;
-	let HydrationTier2: Float = 20.0;
-	let HydrationTier3: Float = 25.0;
-	let HydrationTier4: Float = 35.0;
+	let HydrationTier1: Float = 5.0;
+	let HydrationTier2: Float = 10.0;
+	let HydrationTier3: Float = 15.0;
 
-	let NutritionTier1: Float = 5.0;
-	let NutritionTier2: Float = 10.0;
-	let NutritionTier3: Float = 15.0;
-	let NutritionTier4: Float = 25.0;
-	let NutritionTier5: Float = 30.0;
-	let NutritionTier6: Float = 35.0;
-	let NutritionTier7: Float = 40.0;
+	let NutritionTier1: Float = 3.0;
+	let NutritionTier2: Float = 5.0;
+	let NutritionTier3: Float = 8.0;
+	let NutritionTier4: Float = 10.0;
+	let NutritionTier5: Float = 12.0;
+	let NutritionTier6: Float = 15.0;
+	let NutritionTier7: Float = 20.0;
 
 	let BoosterPenaltyTier1: Float = -15.0;
 	let BoosterPenaltyTier2: Float = -25.0;
@@ -177,8 +176,9 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	let AlcoholNerveTier3: Float = 3.0;  // 8
 	let AlcoholNerveTier4: Float = 5.0; // 10
 
-	let NervePenaltyTier1: Float = -5.0;
-	let NervePenaltyTier2: Float = -10.0;
+	let NervePenaltyTier1: Float = -1.0;
+	let NervePenaltyTier2: Float = -2.0;
+	let NervePenaltyTier3: Float = -3.0;
 
 	let DrugNerveAmount: Float = 60.0;
 	let DrugHydrationPenalty: Float = -70.0;
@@ -187,7 +187,7 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	let DrugEnergyPenaltyMed: Float = -50.0;
 	let DrugEnergyPenaltyHigh: Float = -70.0;
 
-	let LowQualityConsumableLimit: Float = 80.0;
+	let LowQualityConsumableNerveLossLimit: Float = 70.0;
 
 	let consumableBasicNeedsData: DFNeedsDatum;
 
@@ -212,8 +212,6 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 			consumableBasicNeedsData.hydration.value = HydrationTier2;
 		} else if itemData.HasTag(n"DarkFutureConsumableHydrationTier3") {
 			consumableBasicNeedsData.hydration.value = HydrationTier3;
-		} else if itemData.HasTag(n"DarkFutureConsumableHydrationTier4") {
-			consumableBasicNeedsData.hydration.value = HydrationTier4;
 		}
 	}
 
@@ -285,8 +283,10 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 			consumableBasicNeedsData.nerve.value = NervePenaltyTier1;
 		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyOnConsumeTier2") {
 			consumableBasicNeedsData.nerve.value = NervePenaltyTier2;
+		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyOnConsumeTier3") {
+			consumableBasicNeedsData.nerve.value = NervePenaltyTier3;
 		}
-		consumableBasicNeedsData.nerve.floor = LowQualityConsumableLimit;
+		consumableBasicNeedsData.nerve.floor = LowQualityConsumableNerveLossLimit;
 	}
 
 	// Nerve Restore Drug

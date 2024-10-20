@@ -952,8 +952,17 @@ DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquipUIData:
     - 50
     - -50
     - 1
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Glitter_Stimulant_OnEquipUIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionStimulantPlural"
+  localizedName: ''
+  intValues:
     - 5
-    - 8
+    - 10
+    - 10
   nameValues: []
   stats: []
 
@@ -981,6 +990,16 @@ DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
   UIData: DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquipUIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.Glitter_Stimulant_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.Glitter_Stimulant_OnEquipUIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -1075,6 +1094,7 @@ DarkFutureItem.Glitter:
     - DarkFutureStatusEffect.Glitter_SlowTime_OnEquip
     - DarkFutureStatusEffect.Glitter_StaminaMovement_OnEquip
     - DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquip
+    - DarkFutureStatusEffect.Glitter_Stimulant_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
