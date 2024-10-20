@@ -1,5 +1,8 @@
 # Dark Future
- An Urban Survival Gameplay and Immersion mod for Cyberpunk 2077.
+ An Urban Survival, Gameplay, and Immersion mod for Cyberpunk 2077.
+
+## Documentation
+Please see the [Dark Future Wiki](https://wiki.darkfuture2077.com).
 
 ## Getting Started
 ### Requirements
@@ -24,10 +27,7 @@ Or, install the release archive using Vortex.
 
 Or, install the mod directly from the [Dark Future Nexus Mods page](https://www.nexusmods.com/cyberpunk2077/mods/16300).
 
-### Unistallation
+### Uninstallation
 Toggle **Enable Dark Future** to **Off** in the Dark Future Mod Settings Menu. Save your game and exit.
 
 Then, remove all Dark Future files from the Cyberpunk 2077 directory. Or, uninstall the mod using Vortex.
-
-## Documentation
-Please see the [Dark Future Wiki](https://wiki.darkfuture2077.com).
