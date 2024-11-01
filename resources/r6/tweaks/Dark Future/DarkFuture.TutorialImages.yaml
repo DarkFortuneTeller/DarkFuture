@@ -1,0 +1,4 @@
+UIIcon.DarkFutureTutorialWelcome:
+  $type: gamedataUIIcon_Record
+  atlasPartName: welcome
+  atlasResourcePath: darkfuture\tutorial_images\tutorial_images.inkatlas

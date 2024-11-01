@@ -131,12 +131,12 @@ public class DFSettings extends ScriptableSystem {
 	private let _updateHolocallVerticalPosition: Bool = true;
 	private let _holocallVerticalPositionOffset: Float = 85.0;
 	private let _updateStatusEffectListVerticalPosition: Bool = true;
-	private let _statusEffectListVerticalPositionOffset: Float = 80.0;
+	private let _statusEffectListVerticalPositionOffset: Float = 85.0;
 	private let _needNegativeEffectsRepeatEnabled: Bool = true;
 	private let _needNegativeEffectsRepeatFrequencyModerateInRealTimeSeconds: Float = 300.0;
 	private let _needNegativeEffectsRepeatFrequencySevereInRealTimeSeconds: Float = 180.0;
 	private let _lowNerveBreathingEffectEnabled: Bool = true;
-	private let _showNeedStatusIcons: Bool = true;
+	private let _showAllStatusIcons: Bool = true;
 	private let _timescale: Float = 8.0;
 	// Internal change tracking use only. DO NOT USE.
 	// Internal change tracking use only. DO NOT USE.
@@ -519,9 +519,9 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "lowNerveBreathingEffectEnabled");
 		}
 
-		if NotEquals(this._showNeedStatusIcons, this.showNeedStatusIcons) {
-			this._showNeedStatusIcons = this.showNeedStatusIcons;
-			ArrayPush(changedSettings, "showNeedStatusIcons");
+		if NotEquals(this._showAllStatusIcons, this.showAllStatusIcons) {
+			this._showAllStatusIcons = this.showAllStatusIcons;
+			ArrayPush(changedSettings, "showAllStatusIcons");
 		}
 
 		if NotEquals(this._timescale, this.timescale) {
@@ -1291,9 +1291,9 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
 	@runtimeProperty("ModSettings.category.order", "110")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingShowNeedStatusIcons")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingShowNeedStatusIconsDesc")
-	public let showNeedStatusIcons: Bool = true;
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingShowAllStatusIcons")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingShowAllStatusIconsDesc")
+	public let showAllStatusIcons: Bool = true;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
@@ -1467,7 +1467,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "0.5")
 	@runtimeProperty("ModSettings.min", "0.0")
 	@runtimeProperty("ModSettings.max", "1600.0")
-	public let statusEffectListVerticalPositionOffset: Float = 80.0;
+	public let statusEffectListVerticalPositionOffset: Float = 85.0;
 
 	// -------------------------------------------------------------------------
 	// Sounds and Visual Effects

@@ -51,8 +51,8 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private let energyRecoverLimitPerNerveStage: array<Float>;
     private let energyRecoverAmountSleeping: Float = 0.4667;
-	private let stimulantMaxStacks: Uint32 = 10u;
-	private let stimulantNerveLossPenaltyPerStack: Float = 0.1;
+	private let stimulantMaxStacks: Uint32 = 4u;
+	private let stimulantEnergyRestoreMultPerStack: Float = 0.25;
 
     //
 	//	System Methods
@@ -154,14 +154,23 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 			this.NotificationService.QueueNotification(notification);
 		} else if stage == 2 || stage == 1 {
 			if this.Settings.needNegativeSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_exhale_02", 20);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_exhale_02", 20);
+				} else {
+					notification.sfx = new DFAudioCue(n"ono_v_breath_heavy", 20);
+				}
 			}
 
 			notification.ui = new DFUIDisplay(DFHUDBarType.Energy, false, true);
 			this.NotificationService.QueueNotification(notification);
 		} else if stage == 0 {
 			if this.Settings.needPositiveSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_pre_insert_splinter", 30);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_pre_insert_splinter", 30);
+				} else {
+					notification.sfx = new DFAudioCue(n"q001_sc_01_v_male_sigh", 30);
+				}
+				
 				this.NotificationService.QueueNotification(notification);
 			}
 		}
@@ -227,6 +236,8 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 		if shouldUpdateEnergy {
 			if useStimulant {
+				energyAmount *= (1.0 - (this.stimulantEnergyRestoreMultPerStack * Cast<Float>(this.stimulantStacks)));
+
 				if energyAmount + this.GetNeedValue() > this.GetNeedMax() {
 					energyAmount = this.GetNeedMax() - this.GetNeedValue();
 				}
@@ -244,17 +255,8 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		}
 
 		if useStimulant {
-			let stacksToApply: Uint32 = Cast<Uint32>(unclampedEnergyAmount / 10.0);
-			if this.stimulantStacks + stacksToApply > this.stimulantMaxStacks {
-				stacksToApply = this.stimulantMaxStacks - this.stimulantStacks;
-			}
-			this.stimulantStacks += stacksToApply;
-
-			let i: Uint32 = 0u;
-			while i < stacksToApply {
-				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
-				i += 1u;
-			}
+			this.stimulantStacks += 1u;
+			StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
 		}
 	}
 
@@ -271,10 +273,6 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	public final func GetStimulantStacks() -> Uint32 {
 		return this.stimulantStacks;
-	}
-
-	public final func GetStimulantNerveLossPenaltyPerStack() -> Float {
-		return this.stimulantNerveLossPenaltyPerStack;
 	}
 
 	private final func GetEnergyChangeWithRecoverLimit(energyValue: Float, nerveValue: Float, isSleeping: Bool) -> Float {

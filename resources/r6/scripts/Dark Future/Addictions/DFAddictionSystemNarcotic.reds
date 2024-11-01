@@ -449,9 +449,13 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 			} else {
 				if this.Settings.narcoticsSFXEnabled {
 					let notification: DFNotification;
-					notification.sfx = new DFAudioCue(n"ono_v_laughs_soft", 10);
+					if Equals(this.player.GetResolvedGenderName(), n"Female") {
+						notification.sfx = new DFAudioCue(n"ono_v_laughs_soft", 10);
+					} else {
+						notification.sfx = new DFAudioCue(n"ono_v_laughs_hard", 10);
+					}
 					this.NotificationService.QueueNotification(notification);
-				}   
+				}
 			}
 
 			this.StartNarcoticFX(nerveChange);

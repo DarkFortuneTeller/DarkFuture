@@ -516,6 +516,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
                         let tutorial: DFTutorial;
                         tutorial.title = GetLocalizedTextByKey(n"DarkFutureTutorialAddictionTitle");
                         tutorial.message = GetLocalizedTextByKey(n"DarkFutureTutorialAddiction");
+                        tutorial.iconID = t"";
                         this.NotificationService.QueueTutorial(tutorial);
                     }
 

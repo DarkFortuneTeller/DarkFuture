@@ -140,7 +140,11 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 			this.NotificationService.QueueNotification(notification);
 		} else if stage == 2 || stage == 1 {
 			if this.Settings.needNegativeSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_curious", 20);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_curious", 20);
+				} else {
+					notification.sfx = new DFAudioCue(n"ono_v_bump", 20);
+				}
 			}
 
 			notification.ui = new DFUIDisplay(DFHUDBarType.Hydration, false, true);

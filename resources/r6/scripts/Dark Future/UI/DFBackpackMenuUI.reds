@@ -138,18 +138,15 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 					this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.NutritionSystem.GetNeedMax());
 				}
 
-				// Show the increase in Energy if player does not have too much Stimulant.
-				let energyToRestore: Float = needsData.energy.value;
-				let canRestoreEnergy: Bool = this.EnergySystem.stimulantStacks < this.EnergySystem.stimulantMaxStacks;
+				// If restoring, show the increase in Energy if player does not have too much Stimulant.
+				let energyToChange: Float = needsData.energy.value;
 				let updatedEnergyValue: Float = 0.0;
-
-				if canRestoreEnergy {
-					// We can restore the full energy amount.
-					updatedEnergyValue = this.EnergySystem.GetNeedValue() + energyToRestore;
-				} else {
-					// We cannot restore Energy.
-					updatedEnergyValue = this.EnergySystem.GetNeedValue();
+				
+				if energyToChange > 0.0 {
+					energyToChange *= (1.0 - (this.EnergySystem.stimulantEnergyRestoreMultPerStack * Cast<Float>(this.EnergySystem.stimulantStacks)));
 				}
+
+				updatedEnergyValue = this.EnergySystem.GetNeedValue() + energyToChange;
 				this.energyBar.SetUpdatedValue(updatedEnergyValue, this.EnergySystem.GetNeedMax());
 				
 				// Handle Addiction Withdrawal and Alcohol

@@ -531,6 +531,9 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         
 		let notification: DFNotification;
 
+		// Allow Nerve notifications to play during combat.
+		notification.allowPlaybackInCombat = true;
+
 		if stage == 4 {
 			if this.Settings.needNegativeSFXEnabled {
 				notification.sfx = new DFAudioCue(n"ono_v_fear_panic_scream", 10);
@@ -577,7 +580,12 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 		} else if stage == 0 && !suppressRecoveryNotification {
 			if this.Settings.needPositiveSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_music_start", 30);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_music_start", 30);
+				} else {
+					notification.sfx = new DFAudioCue(n"ono_v_pre_insert_splinter", 30);
+				}
+				
 			}
 
 			// Don't show the UI when recovering if it is the result of
@@ -822,10 +830,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			if this.lastDangerState.BeingRevealed {
 				nerveLossBonusMult -= this.GetMemoryBoosterTraceNerveLossBonusMult();
 			}
-
-			// Add Stimulant penalties.
-			let stimulantStacks: Uint32 = this.EnergySystem.GetStimulantStacks();
-			nerveLossBonusMult += (this.EnergySystem.GetStimulantNerveLossPenaltyPerStack() * Cast<Float>(stimulantStacks));
 			
 			let totalNerveLossBonusMult: Float = MaxF(nerveLossBonusMult, 0.0);
 			let totalNerveLoss: Float = baseNerveLossInDanger * totalNerveLossBonusMult;

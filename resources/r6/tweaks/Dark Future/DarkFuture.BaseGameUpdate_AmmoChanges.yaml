@@ -7,28 +7,20 @@ DarkFuture.AmmoSellPriceMultiplier:
   statType: BaseStats.Price
 
 #
-# Disallow Disassembling, Apply Price Changes
+# Apply Price Changes
 #
 Ammo.HandgunAmmo:
-  objectActions:
-    - ItemAction.Drop
   sellPrice:
     - !append-once DarkFuture.AmmoSellPriceMultiplier
 
 Ammo.ShotgunAmmo:
-  objectActions:
-    - ItemAction.Drop
   sellPrice:
     - !append-once DarkFuture.AmmoSellPriceMultiplier
 
 Ammo.RifleAmmo:
-  objectActions:
-    - ItemAction.Drop
   sellPrice:
     - !append-once DarkFuture.AmmoSellPriceMultiplier
 
 Ammo.SniperRifleAmmo:
-  objectActions:
-    - ItemAction.Drop
   sellPrice:
     - !append-once DarkFuture.AmmoSellPriceMultiplier

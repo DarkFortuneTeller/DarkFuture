@@ -158,12 +158,7 @@ public final class DFGameStateService extends DFSystem {
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
-    public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
-        if ArrayContains(changedSettings, "showNeedStatusIcons") {
-            // "Bounce" all status effects.
-            GameInstance.GetCallbackSystem().DispatchEvent(DFGameStateServiceSceneTierChangedEvent.Create(this.gameplayTier));
-        }
-    }
+    public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
     private func SetupDebugLogging() -> Void {
         this.debugEnabled = false;
@@ -359,6 +354,7 @@ public final class DFGameStateService extends DFSystem {
 			let tutorial: DFTutorial;
 			tutorial.title = GetLocalizedTextByKey(this.GetActivationTitleKey());
 			tutorial.message = GetLocalizedTextByKey(this.GetActivationMessageKey());
+            tutorial.iconID = t"UIIcon.DarkFutureTutorialWelcome";
 			this.NotificationService.QueueTutorial(tutorial);
 
             // Also ping the UI once on first start-up.

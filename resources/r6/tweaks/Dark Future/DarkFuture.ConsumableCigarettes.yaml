@@ -21,7 +21,7 @@ DarkFutureStatusEffectTypes.Smoking:
 
 DarkFutureItem.CigaretteWeight:
   $type: gamedataConstantStatModifier_Record
-  value: 0.1
+  value: 0.3
   modifierType: Additive
   statType: BaseStats.Weight
 

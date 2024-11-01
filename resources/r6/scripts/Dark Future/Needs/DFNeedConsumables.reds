@@ -148,16 +148,15 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	let NutritionTier4: Float = 10.0;
 	let NutritionTier5: Float = 12.0;
 	let NutritionTier6: Float = 15.0;
-	let NutritionTier7: Float = 20.0;
+	let NutritionTier7: Float = 18.0;
 
 	let BoosterPenaltyTier1: Float = -15.0;
 	let BoosterPenaltyTier2: Float = -25.0;
 
-	let EnergyTier1: Float = 10.0;
-	let EnergyTier2: Float = 20.0;
-	let EnergyTier3: Float = 30.0;
+	let EnergyTier1: Float = 15.0;
+	let EnergyTier2: Float = 25.0;
+	let EnergyTier3: Float = 35.0;
 	let EnergyTier4: Float = 40.0;
-	let EnergyTier5: Float = 50.0;
 
 	let CigarettesNerve: Float = 15.0;
 
@@ -180,12 +179,9 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	let NervePenaltyTier2: Float = -2.0;
 	let NervePenaltyTier3: Float = -3.0;
 
-	let DrugNerveAmount: Float = 60.0;
-	let DrugHydrationPenalty: Float = -70.0;
-	let DrugNutritionPenalty: Float = -70.0;
+	let DrugNerveAmount: Float = 30.0;
 	let DrugEnergyPenaltyLow: Float = -15.0;
 	let DrugEnergyPenaltyMed: Float = -50.0;
-	let DrugEnergyPenaltyHigh: Float = -70.0;
 
 	let LowQualityConsumableNerveLossLimit: Float = 70.0;
 
@@ -252,8 +248,6 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 			consumableBasicNeedsData.energy.value = EnergyTier3;
 		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier4") {
 			consumableBasicNeedsData.energy.value = EnergyTier4;
-		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier5") {
-			consumableBasicNeedsData.energy.value = EnergyTier5;
 		}
 	}
 
@@ -292,9 +286,7 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	// Nerve Restore Drug
 	if itemData.HasTag(n"DarkFutureConsumableNerveRestoreDrug") {
 		consumableBasicNeedsData.nerve.value = DrugNerveAmount;
-		consumableBasicNeedsData.hydration.value = DrugHydrationPenalty;
-		consumableBasicNeedsData.nutrition.value = DrugNutritionPenalty;
-		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyHigh;
+		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyMed;
 	}
 
 	// Addiction Treatment Drug

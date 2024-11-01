@@ -82,6 +82,7 @@ public struct DFNotificationPlaybackSet {
 public struct DFTutorial {
 	public let title: String;
 	public let message: String;
+	public let iconID: TweakDBID;
 }
 
 public final class DFNotificationCallback extends IScriptable {
@@ -270,7 +271,7 @@ public final class DFNotificationService extends DFSystem {
     private final func QueueNotification(notification: DFNotification) -> Void {
 		DFLog(this.debugEnabled, this, "QueueNotification sfx = " + ToString(notification.sfx) + ", vfx = " + ToString(notification.vfx) + ", ui = " + ToString(notification.ui) + ", callback = " + ToString(notification.callback) + ", allowPlaybackInCombat = " + ToString(notification.allowPlaybackInCombat));
 		
-		if notification.allowPlaybackInCombat {
+		if notification.allowPlaybackInCombat && this.player.IsInCombat() {
 			ArrayPush(this.inCombatNotificationQueue, notification);
 			this.RegisterProcessInCombatNotificationQueueCallback();
 		} else {
@@ -517,6 +518,7 @@ public final class DFNotificationService extends DFSystem {
 				popupDatum.message = tutorialMessage;
 				popupDatum.isModal = true;
 				popupDatum.videoType = VideoType.Unknown;
+				popupDatum.iconID = tutorial.iconID;
 
 				blackboardDef.SetVariant(GetAllBlackboardDefs().UIGameData.Popup_Settings, ToVariant(popupSettingsDatum));
 				blackboardDef.SetVariant(GetAllBlackboardDefs().UIGameData.Popup_Data, ToVariant(popupDatum));

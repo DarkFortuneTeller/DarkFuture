@@ -290,7 +290,10 @@ public final class DFHUDSystem extends DFSystem {
 			this.UpdateAllBaseGameHUDWidgetPositions();
 		}
 
-
+		if ArrayContains(changedSettings, "showAllStatusIcons") {
+            // "Bounce" all relevant status effects.
+            this.UpdateStatusIcons();
+        }
 
 		if ArrayContains(changedSettings, "nerveLossIsFatal") && IsDefined(this.nerveBar) {
 			if this.Settings.nerveLossIsFatal {
@@ -467,32 +470,32 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	public final func OnTakeControlOfCameraUpdate(hasControl: Bool) {
+	public final func OnTakeControlOfCameraUpdate(hasControl: Bool) -> Void {
 		// Player took or released control of a camera, turret, or the Sniper's Nest.
 		this.HUDUIBlockedDueToCameraControl = hasControl;
 		this.SendUpdateAllUIRequest();
 	}
 
-	public final func SetSongbirdAudiocallWidget(widget: ref<inkWidget>) {
+	public final func SetSongbirdAudiocallWidget(widget: ref<inkWidget>) -> Void {
 		this.songbirdAudiocallWidget = widget;
 		this.UpdateSongbirdAudiocallWidgetPosition();
 	}
 
-	public final func SetSongbirdHolocallWidget(widget: ref<inkWidget>) {
+	public final func SetSongbirdHolocallWidget(widget: ref<inkWidget>) -> Void {
 		this.songbirdHolocallWidget = widget;
 		this.UpdateSongbirdHolocallWidgetPosition();
 	}
 
-	public final func SetNewHudPhoneWidget(widget: ref<inkCompoundWidget>) {
+	public final func SetNewHudPhoneWidget(widget: ref<inkCompoundWidget>) -> Void {
 		
 	}
 
-	public final func SetRadialWheelStatusEffectListWidget(widget: ref<inkWidget>) {
+	public final func SetRadialWheelStatusEffectListWidget(widget: ref<inkWidget>) -> Void {
 		this.statusEffectListWidget = widget;
 		this.UpdateStatusEffectListWidgetPosition();
 	}
 
-	public final func UpdateSongbirdAudiocallWidgetPosition() {
+	public final func UpdateSongbirdAudiocallWidgetPosition() -> Void {
 		if IsDefined(this.songbirdAudiocallWidget) &&
 		   this.Settings.mainSystemEnabled && 
 		   this.Settings.showHUDUI &&
@@ -503,7 +506,7 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	public final func UpdateSongbirdHolocallWidgetPosition() {
+	public final func UpdateSongbirdHolocallWidgetPosition() -> Void {
 		if IsDefined(this.songbirdHolocallWidget) &&
 		   this.Settings.mainSystemEnabled &&
 		   this.Settings.showHUDUI &&
@@ -514,7 +517,7 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	public final func UpdateNewHudPhoneWidgetPosition(widget: wref<inkCompoundWidget>) {
+	public final func UpdateNewHudPhoneWidgetPosition(widget: wref<inkCompoundWidget>) -> Void {
 		if IsDefined(widget) {
 			let incomingCallSlot = widget.GetWidgetByPathName(n"incomming_call_slot");
 			let holoAudioCallSlot = widget.GetWidgetByPathName(n"holoaudio_call_slot");
@@ -537,7 +540,7 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	public final func UpdateStatusEffectListWidgetPosition() {
+	public final func UpdateStatusEffectListWidgetPosition() -> Void {
 		if IsDefined(this.statusEffectListWidget) && 
 		   this.Settings.mainSystemEnabled &&
 		   this.Settings.showHUDUI &&
@@ -548,9 +551,14 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	public final func UpdateAllBaseGameHUDWidgetPositions() {
+	public final func UpdateAllBaseGameHUDWidgetPositions() -> Void {
 		this.UpdateSongbirdAudiocallWidgetPosition();
 		this.UpdateSongbirdHolocallWidgetPosition();
 		this.UpdateStatusEffectListWidgetPosition();
+	}
+
+	private final func UpdateStatusIcons() -> Void {
+		StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DummyBuffStatus");
+		StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DummyDebuffStatus");
 	}
 }

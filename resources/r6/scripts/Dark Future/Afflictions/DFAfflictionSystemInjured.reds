@@ -120,6 +120,7 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
             let tutorial: DFTutorial;
             tutorial.title = GetLocalizedTextByKey(this.GetTutorialTitleKey());
             tutorial.message = GetLocalizedTextByKey(this.GetTutorialMessageKey());
+            tutorial.iconID = t"";
             this.NotificationService.QueueTutorial(tutorial);
         }
     }

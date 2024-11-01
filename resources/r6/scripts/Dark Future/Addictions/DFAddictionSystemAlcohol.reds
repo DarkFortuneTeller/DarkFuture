@@ -234,7 +234,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
     private final func PlayWithdrawalAdvanceSFX() -> Void {
 		if this.Settings.addictionSFXEnabled {
 			let notification: DFNotification;
-			notification.sfx = new DFAudioCue(n"ono_v_bump", 10);
+			notification.sfx = new DFAudioCue(n"ono_v_fall", 10);
 			this.NotificationService.QueueNotification(notification);
 		}
     }

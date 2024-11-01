@@ -132,7 +132,11 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		let notification: DFNotification;
 		if stage == 4 || stage == 3 {
 			if this.Settings.needNegativeSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_effort_long", 10);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_effort_long", 10);
+				} else {
+					notification.sfx = new DFAudioCue(n"ono_v_effort", 10);
+				}
 			}
 
 			if this.Settings.nutritionNeedVFXEnabled {
@@ -143,7 +147,11 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 
 		} else if stage == 2 || stage == 1 {
 			if this.Settings.needNegativeSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_greet", 20);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_greet", 20);
+				} else {
+					notification.sfx = new DFAudioCue(n"ono_v_bump", 20);
+				}
 			}
 
 			notification.ui = new DFUIDisplay(DFHUDBarType.Nutrition, false, true);
@@ -151,7 +159,11 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 
 		} else if stage == 0 {
 			if this.Settings.needPositiveSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_phone", 30);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_phone", 30);
+				} else {
+					notification.sfx = new DFAudioCue(n"ono_v_exhale_02", 30);
+				}
 				this.NotificationService.QueueNotification(notification);
 			}
 		}

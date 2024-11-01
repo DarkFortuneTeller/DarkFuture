@@ -26,7 +26,7 @@ DarkFutureStatusEffect.InhalerVFX:
 
 DarkFutureItem.SmallDrugWeight:
   $type: gamedataConstantStatModifier_Record
-  value: 0.1
+  value: 0.3
   modifierType: Additive
   statType: BaseStats.Weight
 
@@ -386,10 +386,8 @@ DarkFutureItem.NerveRestoreDrugOnEquip_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - 60
-    - -70
-    - -70
-    - -70
+    - 30
+    - -50
   nameValues: []
   stats: []
 
@@ -492,7 +490,7 @@ DarkFutureItem.NerveRestoreDrug:
     - DarkFutureConsumableNerveRestoreDrug
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNarcotic
-    - DarkFutureConsumableAddictiveNarcoticStrong
+    - DarkFutureConsumableAddictiveNarcoticWeak
     - DarkFutureConsumableOverrideTierWithAddictionHeader
     - DarkFutureConsumableCombatUseAllowed
   variants: []
@@ -948,21 +946,19 @@ DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquipUIData:
   localizedDescription: l"DarkFutureConsumableUIDescriptionNarcoticEnergyNerveChange"
   localizedName: ''
   intValues:
-    - 50
+    - 40
     - 50
     - -50
     - 1
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.Glitter_Stimulant_OnEquipUIData:
+DarkFutureStatusEffect.Stimulant_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureConsumableUIDescriptionStimulantPlural"
+  localizedDescription: l"DarkFutureConsumableUIDescriptionStimulant"
   localizedName: ''
   intValues:
-    - 5
-    - 10
-    - 10
+    - -25
   nameValues: []
   stats: []
 
@@ -996,10 +992,10 @@ DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquip:
   statPools: []
   stats: []
 
-DarkFutureStatusEffect.Glitter_Stimulant_OnEquip:
+DarkFutureStatusEffect.Stimulant_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.Glitter_Stimulant_OnEquipUIData
+  UIData: DarkFutureStatusEffect.Stimulant_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -1094,7 +1090,7 @@ DarkFutureItem.Glitter:
     - DarkFutureStatusEffect.Glitter_SlowTime_OnEquip
     - DarkFutureStatusEffect.Glitter_StaminaMovement_OnEquip
     - DarkFutureStatusEffect.Glitter_EnergyNerveChange_OnEquip
-    - DarkFutureStatusEffect.Glitter_Stimulant_OnEquip
+    - DarkFutureStatusEffect.Stimulant_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -1117,7 +1113,7 @@ DarkFutureItem.Glitter:
     - HasModel
     - IllegalItem
     - DarkFutureConsumableEnergy
-    - DarkFutureConsumableEnergyTier5
+    - DarkFutureConsumableEnergyTier4
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNarcotic
     - DarkFutureConsumableAddictiveNarcoticStrong
