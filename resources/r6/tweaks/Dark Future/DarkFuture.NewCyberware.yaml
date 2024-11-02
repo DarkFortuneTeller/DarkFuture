@@ -18,7 +18,7 @@ DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
+    - -25
     - 3
   nameValues: []
   stats: []
@@ -29,7 +29,7 @@ DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
+    - -25
     - 3
   nameValues: []
   stats: []
@@ -40,7 +40,7 @@ DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
+    - -25
     - 2
   nameValues: []
   stats: []
@@ -51,7 +51,7 @@ DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
+    - -25
     - 2
   nameValues: []
   stats: []
@@ -62,7 +62,7 @@ DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus_UID
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
+    - -25
     - 2
   nameValues: []
   stats: []

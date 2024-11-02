@@ -136,7 +136,7 @@ public class DFSettings extends ScriptableSystem {
 	private let _needNegativeEffectsRepeatFrequencyModerateInRealTimeSeconds: Float = 300.0;
 	private let _needNegativeEffectsRepeatFrequencySevereInRealTimeSeconds: Float = 180.0;
 	private let _lowNerveBreathingEffectEnabled: Bool = true;
-	private let _showAllStatusIcons: Bool = true;
+	private let _hidePersistentStatusIcons: Bool = false;
 	private let _timescale: Float = 8.0;
 	// Internal change tracking use only. DO NOT USE.
 	// Internal change tracking use only. DO NOT USE.
@@ -519,9 +519,9 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "lowNerveBreathingEffectEnabled");
 		}
 
-		if NotEquals(this._showAllStatusIcons, this.showAllStatusIcons) {
-			this._showAllStatusIcons = this.showAllStatusIcons;
-			ArrayPush(changedSettings, "showAllStatusIcons");
+		if NotEquals(this._hidePersistentStatusIcons, this.hidePersistentStatusIcons) {
+			this._hidePersistentStatusIcons = this.hidePersistentStatusIcons;
+			ArrayPush(changedSettings, "hidePersistentStatusIcons");
 		}
 
 		if NotEquals(this._timescale, this.timescale) {
@@ -1291,9 +1291,9 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
 	@runtimeProperty("ModSettings.category.order", "110")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingShowAllStatusIcons")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingShowAllStatusIconsDesc")
-	public let showAllStatusIcons: Bool = true;
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingHidePersistentStatusIcons")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingHidePersistentStatusIconsDesc")
+	public let hidePersistentStatusIcons: Bool = false;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")

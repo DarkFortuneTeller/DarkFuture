@@ -140,4 +140,15 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
             }
         }
     }
+
+    public func CureAffliction() -> Void {
+        if this.GetAfflictionStacks() > 0u {
+            let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
+            notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
+            notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureInjuryCuredNotification");
+            GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
+        }
+
+        super.CureAffliction();
+    }
 }

@@ -221,8 +221,6 @@ public final class DFHUDSystem extends DFSystem {
 			this.widgetSlot = this.CreateWidgetSlot(fullScreenSlot);
 			this.UpdateHUDWidgetPositionAndScale();
 			this.CreateBars(this.widgetSlot, inkSystem, attachedPlayer);
-			DFLog(this.debugEnabled, this, "Should have created bar widgets!");
-			DFLog(this.debugEnabled, this, ToString(this.hydrationBar));
 
 			// Watch for changes to client resolution. Set the correct resolution now to scale all widgets.
 			this.virtualResolutionWatcher = new VirtualResolutionWatcher();
@@ -233,6 +231,7 @@ public final class DFHUDSystem extends DFSystem {
 		}
 
 		this.UpdateAllBaseGameHUDWidgetPositions();
+		this.SendUpdateAllUIRequest();
 	}
 
 	private func DoPostSuspendActions() -> Void {
@@ -290,7 +289,7 @@ public final class DFHUDSystem extends DFSystem {
 			this.UpdateAllBaseGameHUDWidgetPositions();
 		}
 
-		if ArrayContains(changedSettings, "showAllStatusIcons") {
+		if ArrayContains(changedSettings, "hidePersistentStatusIcons") {
             // "Bounce" all relevant status effects.
             this.UpdateStatusIcons();
         }
@@ -484,10 +483,6 @@ public final class DFHUDSystem extends DFSystem {
 	public final func SetSongbirdHolocallWidget(widget: ref<inkWidget>) -> Void {
 		this.songbirdHolocallWidget = widget;
 		this.UpdateSongbirdHolocallWidgetPosition();
-	}
-
-	public final func SetNewHudPhoneWidget(widget: ref<inkCompoundWidget>) -> Void {
-		
 	}
 
 	public final func SetRadialWheelStatusEffectListWidget(widget: ref<inkWidget>) -> Void {

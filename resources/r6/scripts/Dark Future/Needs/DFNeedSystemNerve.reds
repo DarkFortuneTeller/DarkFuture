@@ -202,10 +202,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let nerveRecoverAmountSleepingMax: Float = 100.0;
 	
 	private let nerveRestoreInFuryOnKill: Float = 1.0;
-	private let numbedNerveLossBonusMult: Float = 0.35;
-	private let sedatedNerveLossBonusMult: Float = 0.50;
-    private let boosterMemoryTraceNerveLossBonusMult: Float = 0.35;
-	private let boosterMemoryBlackMarketTraceNerveLossBonusMult: Float = 0.50;
+	private let numbedNerveLossBonusMult: Float = 0.25;
+	private let sedatedNerveLossBonusMult: Float = 0.35;
+    private let boosterMemoryTraceNerveLossBonusMult: Float = 0.25;
+	private let boosterMemoryBlackMarketTraceNerveLossBonusMult: Float = 0.35;
 
 	private let currentNerveBreathingFXStage: Int32 = 0;
 
@@ -226,7 +226,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let lastDangerState: DFPlayerDangerState;
 
 	private let lastNerveForCriticalFXCheck: Float = 100.0;
-	private let cyberwareSecondHeartNerveRestoreAmount: Float = 30.0;
+	private let cyberwareSecondHeartNerveRestoreAmount: Float = 10.0;
 
 	// Regen
 	private let currentNerveRegenTarget: Float = 10.0; // Default: criticalNerveRegenTarget

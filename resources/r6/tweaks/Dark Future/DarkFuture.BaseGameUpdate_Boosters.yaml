@@ -144,7 +144,7 @@ DarkFutureItem.MemoryBoosterOnEquip_NerveLossCostBonusMult_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
+    - -25
   nameValues: []
   stats: []
 
@@ -154,7 +154,7 @@ DarkFutureItem.BlackMarketMemoryBoosterOnEquip_NerveLossCostBonusMult_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -50
+    - -35
   nameValues: []
   stats: []
 
@@ -191,11 +191,11 @@ Items.Blackmarket_MemoryBooster:
 BaseStatusEffect.MemoryBooster_inline2.description: l"DarkFutureConsumableMemoryBoosterNerveLossStatusEffectDesc"
 BaseStatusEffect.MemoryBooster_inline2.intValues:
   - 2
-  - -35
+  - -25
 
 # BUG FIX: This actually did not have a Status Effect description in the base game.
 BaseStatusEffect.Blackmarket_MemoryBooster_inline3.description: l"DarkFutureConsumableBlackMarketMemoryBoosterNerveLossStatusEffectDesc"
 BaseStatusEffect.Blackmarket_MemoryBooster_inline3.intValues:
   - 4
-  - -50
+  - -35
   - -20

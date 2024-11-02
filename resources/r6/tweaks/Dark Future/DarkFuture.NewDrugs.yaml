@@ -85,7 +85,7 @@ DarkFutureStatusEffect.Sedation_UIData:
   priority: -9
   floatValues: []
   intValues:
-    - -50
+    - -35
   nameValues: []
   stats: []
 
@@ -174,7 +174,7 @@ DarkFutureItem.SedationDrugOnEquip_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -50
+    - -35
     - -15
   nameValues: []
   stats: []

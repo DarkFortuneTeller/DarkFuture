@@ -214,7 +214,7 @@ public final static func GetLabelKey(filterType: ItemFilterCategory) -> CName {
 //
 @wrapMethod(buffListGameController)
 protected cb func OnBuffDataChanged(value: Variant) -> Bool {
-	if !DFSettings.Get().showAllStatusIcons {
+	if DFSettings.Get().hidePersistentStatusIcons {
 		let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
     	wrappedMethod(filteredBuffDataList);
 	} else {
@@ -226,7 +226,7 @@ protected cb func OnBuffDataChanged(value: Variant) -> Bool {
 //
 @wrapMethod(buffListGameController)
 protected cb func OnDeBuffDataChanged(value: Variant) -> Bool {
-	if !DFSettings.Get().showAllStatusIcons {
+	if DFSettings.Get().hidePersistentStatusIcons {
     	let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
     	wrappedMethod(filteredBuffDataList);
 	} else {

@@ -107,7 +107,7 @@ DarkFutureItem.LargeDrugWeight:
 
 DarkFutureItem.FirstAidKitDrugWeight:
   $type: gamedataConstantStatModifier_Record
-  value: 1.0
+  value: 1.5
   modifierType: Additive
   statType: BaseStats.Weight
 
@@ -382,12 +382,21 @@ DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Hydration_UIData:
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Energy_UIData:
+DarkFutureStatusEffect.RareCoffee_Energy_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionEnergy"
   localizedName: ''
   intValues:
     - 15
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.RareEnergyDrinks_Energy_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionEnergy"
+  localizedName: ''
+  intValues:
+    - 25
   nameValues: []
   stats: []
 
@@ -802,10 +811,20 @@ DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Hydration_OnEquip:
   statPools: []
   stats: []
 
-DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Energy_OnEquip:
+DarkFutureStatusEffect.RareCoffee_Energy_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Energy_UIData
+  UIData: DarkFutureStatusEffect.RareCoffee_Energy_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.RareEnergyDrinks_Energy_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.RareEnergyDrinks_Energy_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -1381,7 +1400,7 @@ Items.LowQualityDrink1: &RareCoffee
   quality: Quality.Rare
   OnEquip:
     - DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Hydration_OnEquip
-    - DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Energy_OnEquip
+    - DarkFutureStatusEffect.RareCoffee_Energy_OnEquip
     - DarkFutureStatusEffect.Hydrated_OnEquip
     - DarkFutureStatusEffect.Stimulant_OnEquip
   statModifiers:
@@ -1410,7 +1429,7 @@ Items.MediumQualityDrink10:
   quality: Quality.Rare
   OnEquip:
     - DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Hydration_OnEquip
-    - DarkFutureStatusEffect.RareCoffeeEnergyDrinks_Energy_OnEquip
+    - DarkFutureStatusEffect.RareEnergyDrinks_Energy_OnEquip
     - DarkFutureStatusEffect.Hydrated_OnEquip
     - DarkFutureStatusEffect.Stimulant_OnEquip
   statModifiers:
@@ -1980,7 +1999,7 @@ DarkFutureStatusEffect.AlcoholNumbed_UIData:
   floatValues: []
   intValues:
     - 4
-    - -35
+    - -25
   nameValues: []
   stats: []
 
