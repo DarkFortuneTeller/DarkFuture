@@ -152,6 +152,42 @@ public class MainSystemItemConsumedEvent extends CallbackSystemEvent {
     }
 }
 
+public class MainSystemLifecycleInitEvent extends CallbackSystemEvent {
+    static func Create() -> ref<MainSystemLifecycleInitEvent> {
+        return new MainSystemLifecycleInitEvent();
+    }
+}
+
+public class MainSystemLifecycleInitDoneEvent extends CallbackSystemEvent {
+    static func Create() -> ref<MainSystemLifecycleInitDoneEvent> {
+        return new MainSystemLifecycleInitDoneEvent();
+    }
+}
+
+public class MainSystemLifecycleResumeEvent extends CallbackSystemEvent {
+    static func Create() -> ref<MainSystemLifecycleResumeEvent> {
+        return new MainSystemLifecycleResumeEvent();
+    }
+}
+
+public class MainSystemLifecycleResumeDoneEvent extends CallbackSystemEvent {
+    static func Create() -> ref<MainSystemLifecycleResumeDoneEvent> {
+        return new MainSystemLifecycleResumeDoneEvent();
+    }
+}
+
+public class MainSystemLifecycleSuspendEvent extends CallbackSystemEvent {
+    static func Create() -> ref<MainSystemLifecycleSuspendEvent> {
+        return new MainSystemLifecycleSuspendEvent();
+    }
+}
+
+public class MainSystemLifecycleSuspendDoneEvent extends CallbackSystemEvent {
+    static func Create() -> ref<MainSystemLifecycleSuspendDoneEvent> {
+        return new MainSystemLifecycleSuspendDoneEvent();
+    }
+}
+
 class DFMainSystemEventListeners extends ScriptableService {
     private func GetSystemInstance() -> wref<DFMainSystem> {
 		return DFMainSystem.Get();
@@ -226,6 +262,9 @@ public final class DFMainSystem extends ScriptableSystem {
         // Settings
         DFSettings.GetInstance(gameInstance).Init(this.player);
 
+        // Lifecycle Hook - Start
+        this.DispatchLifecycleInitEvent();
+
         // Services
         DFGameStateService.GetInstance(gameInstance).Init(this.player);
         DFNotificationService.GetInstance(gameInstance).Init(this.player);
@@ -260,11 +299,17 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // Reconcile settings changes
         DFSettings.GetInstance(gameInstance).ReconcileSettings();
+
+        // Lifecycle Hook - Done
+        this.DispatchLifecycleInitDoneEvent();
     }
 
     private final func ResumeAll() -> Void {
         DFLog(this.debugEnabled, this, "!!!!! DFMainSystem:ResumeAll !!!!!");
         let gameInstance = GetGameInstance();
+
+        // Lifecycle Hook - Start
+        this.DispatchLifecycleResumeEvent();
 
         // Services
         DFGameStateService.GetInstance(gameInstance).Resume();
@@ -297,12 +342,18 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // UI
         DFHUDSystem.GetInstance(gameInstance).Resume();
+
+        // Lifecycle Hook - Done
+        this.DispatchLifecycleResumeDoneEvent();
     }
 
     private final func SuspendAll() -> Void {
         DFLog(this.debugEnabled, this, "!!!!! DFMainSystem:SuspendAll !!!!!");
 
         let gameInstance = GetGameInstance();
+
+        // Lifecycle Hook - Start
+        this.DispatchLifecycleSuspendEvent();
 
         // UI
         DFHUDSystem.GetInstance(gameInstance).Suspend();
@@ -335,6 +386,9 @@ public final class DFMainSystem extends ScriptableSystem {
         DFPlayerStateService.GetInstance(gameInstance).Suspend();
         DFNotificationService.GetInstance(gameInstance).Suspend();
         DFGameStateService.GetInstance(gameInstance).Suspend();
+
+        // Lifecycle Hook - Done
+        this.DispatchLifecycleSuspendDoneEvent();
     }
 
     private final func RefreshAlwaysOnEffects() -> Void {
@@ -404,5 +458,32 @@ public final class DFMainSystem extends ScriptableSystem {
 
     public final func DispatchItemConsumedEvent(data: wref<gameItemData>) -> Void {
         GameInstance.GetCallbackSystem().DispatchEvent(MainSystemItemConsumedEvent.Create(data));
+    }
+
+    //
+    //  Lifecycle Events for Dark Future Add-Ons and Mods
+    //
+    public final func DispatchLifecycleInitEvent() -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemLifecycleInitEvent.Create());
+    }
+
+    public final func DispatchLifecycleInitDoneEvent() -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemLifecycleInitDoneEvent.Create());
+    }
+
+    public final func DispatchLifecycleResumeEvent() -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemLifecycleResumeEvent.Create());
+    }
+
+    public final func DispatchLifecycleResumeDoneEvent() -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemLifecycleResumeDoneEvent.Create());
+    }
+
+    public final func DispatchLifecycleSuspendEvent() -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemLifecycleSuspendEvent.Create());
+    }
+
+    public final func DispatchLifecycleSuspendDoneEvent() -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemLifecycleSuspendDoneEvent.Create());
     }
 }
