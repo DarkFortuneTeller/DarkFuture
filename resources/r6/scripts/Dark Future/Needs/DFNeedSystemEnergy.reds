@@ -136,6 +136,10 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		return DFHUDBarType.Energy;
 	}
 
+	private final func GetNeedType() -> DFNeedType {
+		return DFNeedType.Energy;
+	}
+
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
 		DFLog(this.debugEnabled, this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
         

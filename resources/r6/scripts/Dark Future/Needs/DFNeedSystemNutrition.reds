@@ -126,6 +126,10 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		return DFHUDBarType.Nutrition;
 	}
 
+	private final func GetNeedType() -> DFNeedType {
+		return DFNeedType.Nutrition;
+	}
+
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
 		DFLog(this.debugEnabled, this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
         

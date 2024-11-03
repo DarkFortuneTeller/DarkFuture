@@ -526,6 +526,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		return DFHUDBarType.Nerve;
 	}
 
+	private final func GetNeedType() -> DFNeedType {
+		return DFNeedType.Nerve;
+	}
+
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
 		DFLog(this.debugEnabled, this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
         
@@ -692,6 +696,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		this.TryToShowTutorial();
 		
 		this.lastNeedStage = stage;
+
+		this.DispatchNeedValueChangedEvent(this.needValue);
 		DFLog(this.debugEnabled, this, "ChangeNeedValue: New needValue = " + ToString(this.needValue));
 	}
 

@@ -126,6 +126,10 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 		return DFHUDBarType.Hydration;
 	}
 
+	private final func GetNeedType() -> DFNeedType {
+		return DFNeedType.Hydration;
+	}
+
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
 		DFLog(this.debugEnabled, this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
 		

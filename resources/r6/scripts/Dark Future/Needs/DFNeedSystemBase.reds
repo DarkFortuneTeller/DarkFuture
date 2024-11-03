@@ -45,6 +45,14 @@ import DarkFuture.UI.{
 	HUDSystemUpdateUIRequestEvent
 }
 
+public enum DFNeedType {
+  None = 0,
+  Hydration = 1,
+  Nutrition = 2,
+  Energy = 3,
+  Nerve = 4
+}
+
 public struct DFNeedChangeUIFlags {
 	public let forceMomentaryUIDisplay: Bool;
 	public let instantUIChange: Bool;
@@ -56,6 +64,11 @@ public struct DFQueuedNeedValueChange {
 	public let value: Float;
 	public let forceMomentaryUIDisplay: Bool;
 	public let effectToApplyAfterValueChange: TweakDBID;
+}
+
+public struct DFNeedValueChangedEventDatum {
+	public let needType: DFNeedType;
+	public let newValue: Float;
 }
 
 public class NeedUpdateDelayCallback extends DFDelayCallback {
@@ -197,6 +210,20 @@ public class UpdateHUDUIEvent extends CallbackSystemEvent {
 
     static func Create(data: DFNeedHUDUIUpdate) -> ref<UpdateHUDUIEvent> {
         let event = new UpdateHUDUIEvent();
+        event.data = data;
+        return event;
+    }
+}
+
+public class NeedValueChangedEvent extends CallbackSystemEvent {
+	private let data: DFNeedValueChangedEventDatum;
+
+	public func GetData() -> DFNeedValueChangedEventDatum {
+        return this.data;
+    }
+
+    static func Create(data: DFNeedValueChangedEventDatum) -> ref<NeedValueChangedEvent> {
+        let event = new NeedValueChangedEvent();
         event.data = data;
         return event;
     }
@@ -399,6 +426,11 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		return DFHUDBarType.None;
 	}
 
+	private func GetNeedType() -> DFNeedType {
+		this.LogMissingOverrideError("GetNeedType");
+		return DFNeedType.None;
+	}
+
 	private func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
 		this.LogMissingOverrideError("QueueNeedStageNotification");
     }
@@ -546,6 +578,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		
 		this.lastNeedStage = stage;
 
+		this.DispatchNeedValueChangedEvent(this.needValue);
 		DFLog(this.debugEnabled, this, "ChangeNeedValue: New needValue = " + ToString(this.needValue));
 	}
 
@@ -877,4 +910,12 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	private final func LogMissingOverrideError(funcName: String) -> Void {
 		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
 	}
+
+	//
+    //  Events for Dark Future Add-Ons and Mods
+    //
+    public final func DispatchNeedValueChangedEvent(newValue: Float) -> Void {
+		let data = new DFNeedValueChangedEventDatum(this.GetNeedType(), newValue);
+        GameInstance.GetCallbackSystem().DispatchEvent(NeedValueChangedEvent.Create(data));
+    }
 }
