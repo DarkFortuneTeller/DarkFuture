@@ -20,6 +20,8 @@ Cyberpunk 2077 2.13. The mod is Phantom Liberty-aware but the expansion is not r
 
 [Mod Settings](https://www.nexusmods.com/cyberpunk2077/mods/4885) 0.2.8+
 
+[Input Loader](https://www.nexusmods.com/cyberpunk2077/mods/4575) 0.2.2+
+
 ### Installation
 Extract the release archive `DarkFuture-x.x-for-x.x.zip` into the Cyberpunk 2077 directory.
 
