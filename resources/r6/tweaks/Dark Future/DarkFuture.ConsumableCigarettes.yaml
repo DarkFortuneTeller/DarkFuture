@@ -19,13 +19,13 @@ DarkFutureStatusEffectTypes.Smoking:
   enumComment: ''
   enumName: Smoking
 
-DarkFutureItem.CigaretteWeight:
+DarkFutureItem.SmallDrugWeight:
   $type: gamedataConstantStatModifier_Record
   value: 0.3
   modifierType: Additive
   statType: BaseStats.Weight
 
-DarkFutureItem.CigarettePrice:
+DarkFuturePrice.Cigarettes:
   $type: gamedataConstantStatModifier_Record
   value: 5
   modifierType: Multiplier
@@ -170,21 +170,40 @@ DarkFutureItems.CigaretteItemActionCommon:
   targetActivePrereqs: []
   targetPrereqs: []
 
-DarkFutureItems.CigaretteStatPackageUIDataCommon:
+DarkFutureStatusEffect.ConsumableNerveCigarettes_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 15
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableCigarettePenalty_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureCigaretteStatPackageDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 15
     - -20
   nameValues: []
   stats: []
 
-DarkFutureItems.CigaretteStatPackageCommon:
+DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItems.CigaretteStatPackageUIDataCommon
+  UIData: DarkFutureStatusEffect.ConsumableNerveCigarettes_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableCigarettePenalty_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -237,7 +256,7 @@ Items.GenericJunkItem23:
     - Price.BuyMultiplier
     - Price.ItemQualityMultiplier
     - Price.BuyPrice_StreetCred_Discount
-    - DarkFutureItem.CigarettePrice
+    - DarkFuturePrice.Cigarettes
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
@@ -247,10 +266,11 @@ Items.GenericJunkItem23:
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#45742
+  localizedDescription: l"Gameplay-Misc-Junk-LocalizedDescription-GenericJunkItem23"
   OnAttach: []
   OnEquip:
-    - DarkFutureItems.CigaretteStatPackageCommon
+    - DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -263,7 +283,7 @@ Items.GenericJunkItem23:
     - Price.ItemQualitySellMultiplier
     - Price.CraftingTraitMultiplier
     - Price.SellPriceIntrinsicModMult
-    - DarkFutureItem.CigarettePrice
+    - DarkFuturePrice.Cigarettes
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -286,7 +306,7 @@ Items.GenericJunkItem23:
     - DarkFutureItem.CigaretteDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.CigaretteWeight
+    - DarkFutureItem.SmallDrugWeight
   statPools: []
   weakspots: []
 
@@ -336,7 +356,7 @@ Items.GenericJunkItem24:
     - Price.BuyMultiplier
     - Price.ItemQualityMultiplier
     - Price.BuyPrice_StreetCred_Discount
-    - DarkFutureItem.CigarettePrice
+    - DarkFuturePrice.Cigarettes
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
@@ -346,10 +366,11 @@ Items.GenericJunkItem24:
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#45743
+  localizedDescription: l"Gameplay-Misc-Junk-LocalizedDescription-GenericJunkItem24"
   OnAttach: []
   OnEquip:
-    - DarkFutureItems.CigaretteStatPackageCommon
+    - DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -362,7 +383,7 @@ Items.GenericJunkItem24:
     - Price.ItemQualitySellMultiplier
     - Price.CraftingTraitMultiplier
     - Price.SellPriceIntrinsicModMult
-    - DarkFutureItem.CigarettePrice
+    - DarkFuturePrice.Cigarettes
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -385,7 +406,7 @@ Items.GenericJunkItem24:
     - DarkFutureItem.CigaretteDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.CigaretteWeight
+    - DarkFutureItem.SmallDrugWeight
   statPools: []
   weakspots: []
 
@@ -436,7 +457,7 @@ DarkFutureItem.CigarettePackC:
     - Price.BuyMultiplier
     - Price.ItemQualityMultiplier
     - Price.BuyPrice_StreetCred_Discount
-    - DarkFutureItem.CigarettePrice
+    - DarkFuturePrice.Cigarettes
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
@@ -449,7 +470,8 @@ DarkFutureItem.CigarettePackC:
   localizedDescription: l"DarkFutureCigarette03Desc"
   OnAttach: []
   OnEquip:
-    - DarkFutureItems.CigaretteStatPackageCommon
+    - DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -462,7 +484,7 @@ DarkFutureItem.CigarettePackC:
     - Price.ItemQualitySellMultiplier
     - Price.CraftingTraitMultiplier
     - Price.SellPriceIntrinsicModMult
-    - DarkFutureItem.CigarettePrice
+    - DarkFuturePrice.Cigarettes
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -485,7 +507,7 @@ DarkFutureItem.CigarettePackC:
     - DarkFutureItem.CigaretteDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.CigaretteWeight
+    - DarkFutureItem.SmallDrugWeight
   statPools: []
   weakspots: []
 

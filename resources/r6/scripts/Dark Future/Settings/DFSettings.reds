@@ -9,11 +9,26 @@ module DarkFuture.Settings
 
 import DarkFuture.Logging.*
 import DarkFuture.Utils.DFBarColorThemeName
+import DarkFuture.Gameplay.{
+	EnhancedVehicleSystemCompatPowerBehaviorDriver,
+	EnhancedVehicleSystemCompatPowerBehaviorPassenger
+}
 
 enum DFReducedCarryWeightAmount {
 	Full = 0,
 	Half = 1,
 	Off = 2
+}
+
+public enum DFRoadDetectionToleranceSetting {
+	Curb = 0,
+	Roadside = 1,
+	Secluded = 2
+}
+
+public enum DFSleepQualitySetting {
+	Limited = 0,
+	Full = 1
 }
 
 //	ModSettings - Register if Mod Settings installed
@@ -60,6 +75,184 @@ public class SettingChangedEvent extends CallbackSystemEvent {
 //
 public class DFSettings extends ScriptableSystem {
 	private let debugEnabled: Bool = false;
+
+	private func OnAttach() {
+		GameInstance.GetCallbackSystem().RegisterCallback(n"Session/Start", this, n"OnSessionStart");
+	}
+
+	public final func OnSessionStart(evt: ref<GameSessionEvent>) {
+		DFLog(this.debugEnabled, this, "OnSessionStart - Injecting TweakDB updates.");
+		
+		// Ammo Changes
+		//
+		if this.ammoWeightEnabled {
+			// Weight
+			//
+			TweakDBManager.SetFlat(t"DarkFutureItem.HandgunAmmoWeight.value", this.weightHandgunAmmo);
+			TweakDBManager.SetFlat(t"DarkFutureItem.RifleAmmoWeight.value", this.weightRifleAmmo);
+			TweakDBManager.SetFlat(t"DarkFutureItem.ShotgunAmmoWeight.value", this.weightShotgunAmmo);
+			TweakDBManager.SetFlat(t"DarkFutureItem.SniperAmmoWeight.value", this.weightSniperAmmo);
+
+			// Quantity
+			//
+			TweakDBManager.SetFlat(t"DarkFutureItem.HandgunAmmoQuantityOverride.value", 99999001.0); // +999
+			TweakDBManager.SetFlat(t"DarkFutureItem.RifleAmmoQuantityOverride.value", 99999001.0);	 // +999
+			TweakDBManager.SetFlat(t"DarkFutureItem.ShotgunAmmoQuantityOverride.value", 99999800.0); // +200
+			TweakDBManager.SetFlat(t"DarkFutureItem.SniperAmmoQuantityOverride.value", 99999825.0);  // +175
+			
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.HandgunAmmoWeight");
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.RifleAmmoWeight");
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.ShotgunAmmoWeight");
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.SniperAmmoWeight");
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.HandgunAmmoQuantityOverride");
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.RifleAmmoQuantityOverride");
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.ShotgunAmmoQuantityOverride");
+			TweakDBManager.UpdateRecord(t"DarkFutureItem.SniperAmmoQuantityOverride");
+
+		}
+
+		// Ammo - Price
+		TweakDBManager.SetFlat(t"DarkFutureItem.AmmoHandgunBuyPriceMultiplier.value", this.priceHandgunAmmo);
+		TweakDBManager.SetFlat(t"DarkFutureItem.AmmoRifleBuyPriceMultiplier.value", this.priceRifleAmmo);
+		TweakDBManager.SetFlat(t"DarkFutureItem.AmmoShotgunBuyPriceMultiplier.value", this.priceShotgunAmmo);
+		TweakDBManager.SetFlat(t"DarkFutureItem.AmmoSniperBuyPriceMultiplier.value", this.priceSniperAmmo);
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.AmmoHandgunBuyPriceMultiplier");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.AmmoRifleBuyPriceMultiplier");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.AmmoShotgunBuyPriceMultiplier");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.AmmoSniperBuyPriceMultiplier");
+
+		// Consumable Basic Needs
+		//
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableHydrationTier1_UIData.intValues", [Cast<Int32>(this.hydrationTier1)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableHydrationTier2_UIData.intValues", [Cast<Int32>(this.hydrationTier2)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableHydrationTier3_UIData.intValues", [Cast<Int32>(this.hydrationTier3)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNutritionTier1_UIData.intValues", [Cast<Int32>(this.nutritionTier1)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNutritionTier2_UIData.intValues", [Cast<Int32>(this.nutritionTier2)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNutritionTier3_UIData.intValues", [Cast<Int32>(this.nutritionTier3)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNutritionTier4_UIData.intValues", [Cast<Int32>(this.nutritionTier4)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableEnergyTier1_UIData.intValues", [Cast<Int32>(this.energyTier1)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableEnergyTier2_UIData.intValues", [Cast<Int32>(this.energyTier2)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableEnergyTier3_UIData.intValues", [Cast<Int32>(this.energyTier3)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_UIData.intValues", [Cast<Int32>(this.nerveAlcoholTier1)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_UIData.intValues", [Cast<Int32>(this.nerveAlcoholTier2)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_UIData.intValues", [Cast<Int32>(this.nerveAlcoholTier3)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNerveCigarettes_UIData.intValues", [Cast<Int32>(this.nerveCigarettes)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNervePenaltyDrinkTier1_UIData.intValues", [-1 * CeilF(this.hydrationTier1 * this.GetLowQualityConsumablePenaltyFactorAsPercentage()), Cast<Int32>(this.nerveLowQualityConsumablePenaltyLimit)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier1_UIData.intValues", [-1 * CeilF(this.nutritionTier1 * this.GetLowQualityConsumablePenaltyFactorAsPercentage()), Cast<Int32>(this.nerveLowQualityConsumablePenaltyLimit)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier2_UIData.intValues", [-1 * CeilF(this.nutritionTier2 * this.GetLowQualityConsumablePenaltyFactorAsPercentage()), Cast<Int32>(this.nerveLowQualityConsumablePenaltyLimit)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier3_UIData.intValues", [-1 * CeilF(this.nutritionTier3 * this.GetLowQualityConsumablePenaltyFactorAsPercentage()), Cast<Int32>(this.nerveLowQualityConsumablePenaltyLimit)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.WeakNarcotic_NerveChange_UIData.intValues", [Cast<Int32>(this.nerveWeakNarcotics), -1 * Cast<Int32>(this.nerveWeakNarcotics), 1]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.StrongNarcotic_NerveChange_UIData.intValues", [Cast<Int32>(this.nerveStrongNarcotics), -1 * Cast<Int32>(this.nerveStrongNarcotics), 1]);
+
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableHydrationTier1_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableHydrationTier2_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableHydrationTier3_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNutritionTier1_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNutritionTier2_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNutritionTier3_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNutritionTier4_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableEnergyTier1_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableEnergyTier2_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableEnergyTier3_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNerveCigarettes_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNervePenaltyDrinkTier1_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier1_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier2_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier3_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.WeakNarcotic_NerveChange_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.StrongNarcotic_NerveChange_UIData");
+
+		// Consumable Weight
+		//
+		TweakDBManager.SetFlat(t"DarkFutureItem.VerySmallFoodWeight.value", this.weightFoodVerySmall);
+		TweakDBManager.SetFlat(t"DarkFutureItem.SmallFoodWeight.value", this.weightFoodSmall);
+		TweakDBManager.SetFlat(t"DarkFutureItem.MediumFoodWeight.value", this.weightFoodMedium);
+		TweakDBManager.SetFlat(t"DarkFutureItem.LargeFoodWeight.value", this.weightFoodLarge);
+		TweakDBManager.SetFlat(t"DarkFutureItem.SmallDrinkWeight.value", this.weightDrinkSmall);
+		TweakDBManager.SetFlat(t"DarkFutureItem.LargeDrinkWeight.value", this.weightDrinkLarge);
+		TweakDBManager.SetFlat(t"DarkFutureItem.SmallDrugWeight.value", this.weightDrugSmall);
+		TweakDBManager.SetFlat(t"DarkFutureItem.MediumDrugWeight.value", this.weightDrugMedium);
+		TweakDBManager.SetFlat(t"DarkFutureItem.LargeDrugWeight.value", this.weightDrugLarge);
+		TweakDBManager.SetFlat(t"DarkFutureItem.FirstAidKitDrugWeight.value", this.weightTraumaKit);
+
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.VerySmallFoodWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.SmallFoodWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.MediumFoodWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.LargeFoodWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.SmallDrinkWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.LargeDrinkWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.SmallDrugWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.MediumDrugWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.LargeDrugWeight");
+		TweakDBManager.UpdateRecord(t"DarkFutureItem.FirstAidKitDrugWeight");
+
+		// Consumable Prices
+		//
+		TweakDBManager.SetFlat(t"DarkFuturePrice.NomadDrinks.value", this.priceDrinkNomad);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.CommonDrinks.value", this.priceDrinkCommon);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.UncommonDrinks.value", this.priceDrinkUncommon);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.RareDrinks.value", this.priceDrinkRare);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.EpicDrinks.value", this.priceDrinkEpic);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.LegendaryDrinks.value", this.priceDrinkLegendary);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.IllegalDrinks.value", this.priceDrinkIllegal);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.NomadFood.value", this.priceFoodNomad);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.CommonFoodSnack.value", this.priceFoodCommonSnackSmall);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.CommonFoodLargeSnack.value", this.priceFoodCommonSnackLarge);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.CommonFoodMeal.value", this.priceFoodCommonMeal);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.UncommonFood.value", this.priceFoodUncommon);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.RareFood.value", this.priceFoodRare);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.EpicFood.value", this.priceFoodEpic);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.LegendaryFoodSnack.value", this.priceFoodIllegalSnack);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.LegendaryFoodMeal.value", this.priceFoodIllegalMeal);
+		TweakDBManager.SetFlat(t"Price.LowQualityAlcohol.value", this.priceAlcoholLowQuality);
+		TweakDBManager.SetFlat(t"Price.MediumQualityAlcohol.value", this.priceAlcoholMediumQuality);
+		TweakDBManager.SetFlat(t"Price.GoodQualityAlcohol.value", this.priceAlcoholGoodQuality);
+		TweakDBManager.SetFlat(t"Price.TopQualityAlcohol.value", this.priceAlcoholTopQuality);
+		TweakDBManager.SetFlat(t"Price.ExquisiteQualityAlcohol.value", this.priceAlcoholExquisiteQuality);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.Cigarettes.value", this.priceCigarettes);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.MrWhitey.value", this.priceMrWhitey);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.Pharmaceuticals.value", this.pricePharmaceuticals);
+		TweakDBManager.SetFlat(t"DarkFuturePrice.IllegalDrugs.value", this.priceIllegalDrugs);
+
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.NomadDrinks");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.CommonDrinks");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.UncommonDrinks");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.RareDrinks");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.EpicDrinks");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.LegendaryDrinks");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.IllegalDrinks");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.NomadFood");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.CommonFoodSnack");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.CommonFoodLargeSnack");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.CommonFoodMeal");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.UncommonFood");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.RareFood");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.EpicFood");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.LegendaryFoodSnack");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.LegendaryFoodMeal");
+		TweakDBManager.UpdateRecord(t"Price.LowQualityAlcohol");
+		TweakDBManager.UpdateRecord(t"Price.MediumQualityAlcohol");
+		TweakDBManager.UpdateRecord(t"Price.GoodQualityAlcohol");
+		TweakDBManager.UpdateRecord(t"Price.TopQualityAlcohol");
+		TweakDBManager.UpdateRecord(t"Price.ExquisiteQualityAlcohol");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.Cigarettes");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.MrWhitey");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.Pharmaceuticals");
+		TweakDBManager.UpdateRecord(t"DarkFuturePrice.IllegalDrugs");
+	}
+
+	private final func ToggleAmmoCrafting(craftingEnabled: Bool) {
+		let craftingSystem: ref<CraftingSystem> = CraftingSystem.GetInstance(GetGameInstance());
+    	let playerCraftBook: ref<CraftBook> = craftingSystem.GetPlayerCraftBook();
+
+		playerCraftBook.HideRecipe(t"Ammo.HandgunAmmo", !this.ammoCraftingEnabled);
+		playerCraftBook.HideRecipe(t"Ammo.ShotgunAmmo", !this.ammoCraftingEnabled);
+		playerCraftBook.HideRecipe(t"Ammo.RifleAmmo", !this.ammoCraftingEnabled);
+		playerCraftBook.HideRecipe(t"Ammo.SniperRifleAmmo", !this.ammoCraftingEnabled);
+	}
 
 	//
 	//	CHANGE TRACKING
@@ -123,7 +316,6 @@ public class DFSettings extends ScriptableSystem {
 	private let _maxVehicleSummonCredits: Int32 = 2;
 	private let _hoursPerSummonCredit: Int32 = 8;
 	private let _nerveLossIsFatal: Bool = true;
-	private let _nerveWeaponSwayEnabled: Bool = true;
 	private let _criticalNerveVFXEnabled: Bool = true;
 	private let _hudUIScale: Float = 1.0;
 	private let _hudUIPosX: Float = 70.0;
@@ -138,6 +330,8 @@ public class DFSettings extends ScriptableSystem {
 	private let _lowNerveBreathingEffectEnabled: Bool = true;
 	private let _hidePersistentStatusIcons: Bool = false;
 	private let _timescale: Float = 8.0;
+	private let _compatibilityProjectE3HUD: Bool = false;
+	private let _compatibilityProjectE3UI: Bool = false;
 	// Internal change tracking use only. DO NOT USE.
 	// Internal change tracking use only. DO NOT USE.
 
@@ -162,6 +356,10 @@ public class DFSettings extends ScriptableSystem {
 
 	public func OnModSettingsChange() -> Void {
 		this.ReconcileSettings();
+	}
+
+	public final func GetLowQualityConsumablePenaltyFactorAsPercentage() -> Float {
+		return this.nerveLowQualityConsumablePenaltyFactor / 100.0;
 	}
 
 	public final func ReconcileSettings() -> Void {
@@ -453,11 +651,6 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "nerveLossIsFatal");
 		}
 
-		if NotEquals(this._nerveWeaponSwayEnabled, this.nerveWeaponSwayEnabled) {
-			this._nerveWeaponSwayEnabled = this.nerveWeaponSwayEnabled;
-			ArrayPush(changedSettings, "nerveWeaponSwayEnabled");
-		}
-
 		if NotEquals(this._criticalNerveVFXEnabled, this.criticalNerveVFXEnabled) {
 			this._criticalNerveVFXEnabled = this.criticalNerveVFXEnabled;
 			ArrayPush(changedSettings, "criticalNerveVFXEnabled");
@@ -529,10 +722,23 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "timescale");
 		}
 
+		if NotEquals(this._compatibilityProjectE3HUD, this.compatibilityProjectE3HUD) {
+			this._compatibilityProjectE3HUD = this.compatibilityProjectE3HUD;
+			ArrayPush(changedSettings, "compatibilityProjectE3HUD");
+		}
+
+		if NotEquals(this._compatibilityProjectE3UI, this.compatibilityProjectE3UI) {
+			this._compatibilityProjectE3UI = this.compatibilityProjectE3UI;
+			ArrayPush(changedSettings, "compatibilityProjectE3UI");
+		}
+		
 		if ArraySize(changedSettings) > 0 {
 			DFLog(this.debugEnabled, this, "        ...the following settings have changed: " + ToString(changedSettings));
 			GameInstance.GetCallbackSystem().DispatchEvent(SettingChangedEvent.Create(changedSettings));
 		}
+
+		DFLog(this.debugEnabled, this, "        ...updating ammo crafting recipe availability...");
+		this.ToggleAmmoCrafting(this.ammoCraftingEnabled);
 
 		DFLog(this.debugEnabled, this, "        ...done!");
 	}
@@ -582,7 +788,7 @@ public class DFSettings extends ScriptableSystem {
 	public let noConsumablesInStash: Bool = true;
 
 	// -------------------------------------------------------------------------
-	// Fast Travel
+	// Gameplay - Fast Travel
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayFastTravel")
@@ -599,17 +805,17 @@ public class DFSettings extends ScriptableSystem {
 	public let hideFastTravelMarkers: Bool = true;
 	
 	// -------------------------------------------------------------------------
-	// Vehicle Summoning
+	// Gameplay - Vehicle Summoning
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicles")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSummoning")
 	@runtimeProperty("ModSettings.category.order", "40")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingLimitVehicleSummoning")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingLimitVehicleSummoningDesc")
 	public let limitVehicleSummoning: Bool = true;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicles")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSummoning")
 	@runtimeProperty("ModSettings.category.order", "40")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingMaxVehicleSummonCredits")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingMaxVehicleSummonCreditsDesc")
@@ -619,7 +825,7 @@ public class DFSettings extends ScriptableSystem {
 	public let maxVehicleSummonCredits: Int32 = 2;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicles")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSummoning")
 	@runtimeProperty("ModSettings.category.order", "40")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingHoursPerSummonCredit")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingHoursPerSummonCreditDesc")
@@ -629,7 +835,109 @@ public class DFSettings extends ScriptableSystem {
 	public let hoursPerSummonCredit: Int32 = 8;
 
 	// -------------------------------------------------------------------------
-	// Gameplay - Basic Needs
+	// Gameplay - Sleeping In Vehicles
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
+	@runtimeProperty("ModSettings.category.order", "45")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAllowSleepingInVehicles")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingAllowSleepingInVehiclesDesc")
+	public let allowSleepingInVehicles: Bool = true;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
+	@runtimeProperty("ModSettings.category.order", "45")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingSleepingInVehiclesRoadDetection")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingSleepingInVehiclesRoadDetectionDesc")
+	@runtimeProperty("ModSettings.displayValues.Curb", "DarkFutureSettingSleepingInVehiclesRoadDetectionSettingCurb")
+    @runtimeProperty("ModSettings.displayValues.Roadside", "DarkFutureSettingSleepingInVehiclesRoadDetectionSettingRoadside")
+	@runtimeProperty("ModSettings.displayValues.Secluded", "DarkFutureSettingSleepingInVehiclesRoadDetectionSettingSecluded")
+	public let sleepingInVehiclesRoadDetectionToleranceSetting: DFRoadDetectionToleranceSetting = DFRoadDetectionToleranceSetting.Roadside;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
+	@runtimeProperty("ModSettings.category.order", "45")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingEnergyLimitSleepInVehicle")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingEnergyLimitSleepInVehicleDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let limitedEnergySleepingInVehicles: Float = 70.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
+	@runtimeProperty("ModSettings.category.order", "45")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingVehicleSleepQualityCity")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingVehicleSleepQualityCityDesc")
+	@runtimeProperty("ModSettings.displayValues.Limited", "DarkFutureSettingSleepQualityLimited")
+    @runtimeProperty("ModSettings.displayValues.Full", "DarkFutureSettingSleepQualityFull")
+	public let vehicleSleepQualityCity: DFSleepQualitySetting = DFSleepQualitySetting.Limited;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
+	@runtimeProperty("ModSettings.category.order", "45")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingVehicleSleepQualityBadlands")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingVehicleSleepQualityBadlandsDesc")
+	@runtimeProperty("ModSettings.displayValues.Limited", "DarkFutureSettingSleepQualityLimited")
+    @runtimeProperty("ModSettings.displayValues.Full", "DarkFutureSettingSleepQualityFull")
+	public let vehicleSleepQualityBadlands: DFSleepQualitySetting = DFSleepQualitySetting.Limited;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
+	@runtimeProperty("ModSettings.category.order", "45")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingForceFPPWhenSleepingInVehicle")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingForceFPPWhenSleepingInVehicleDesc")
+	public let forceFPPWhenSleepingInVehicle: Bool = true;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
+	@runtimeProperty("ModSettings.category.order", "45")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingShowSleepingInVehiclesInputHint")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingShowSleepingInVehiclesInputHintDesc")
+	public let showSleepingInVehiclesInputHint: Bool = true;
+
+	// -------------------------------------------------------------------------
+	// Gameplay - Sleep Encounters
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleepEncounters")
+	@runtimeProperty("ModSettings.category.order", "48")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingEnableRandomEncountersWhenSleepingInVehicles")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingEnableRandomEncountersWhenSleepingInVehiclesDesc")
+	public let enableRandomEncountersWhenSleepingInVehicles: Bool = true;
+	
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleepEncounters")
+	@runtimeProperty("ModSettings.category.order", "48")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingRandomEncounterChanceGangDistrict")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingRandomEncounterChanceGangDistrictDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let randomEncounterChanceGangDistrict: Float = 30.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleepEncounters")
+	@runtimeProperty("ModSettings.category.order", "48")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingRandomEncounterChanceCityCenter")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingRandomEncounterChanceCityCenterDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let randomEncounterChanceCityCenter: Float = 20.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleepEncounters")
+	@runtimeProperty("ModSettings.category.order", "48")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingRandomEncounterChanceBadlands")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingRandomEncounterChanceBadlandsDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let randomEncounterChanceBadlands: Float = 15.0;
+
+	// -------------------------------------------------------------------------
+	// Survival - Basic Needs
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
@@ -638,7 +946,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingHydrationLossRatePctDesc")
 	@runtimeProperty("ModSettings.step", "0.5")
 	@runtimeProperty("ModSettings.min", "0.0")
-	@runtimeProperty("ModSettings.max", "400.0")
+	@runtimeProperty("ModSettings.max", "800.0")
 	public let hydrationLossRatePct: Float = 100.0;
 	
 	@runtimeProperty("ModSettings.mod", "Dark Future")
@@ -648,7 +956,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingNutritionLossRatePctDesc")
 	@runtimeProperty("ModSettings.step", "0.5")
 	@runtimeProperty("ModSettings.min", "0.0")
-	@runtimeProperty("ModSettings.max", "400.0")
+	@runtimeProperty("ModSettings.max", "800.0")
 	public let nutritionLossRatePct: Float = 100.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
@@ -658,18 +966,28 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingEnergyLossRatePctDesc")
 	@runtimeProperty("ModSettings.step", "0.5")
 	@runtimeProperty("ModSettings.min", "0.0")
-	@runtimeProperty("ModSettings.max", "400.0")
+	@runtimeProperty("ModSettings.max", "800.0")
 	public let energyLossRatePct: Float = 100.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
 	@runtimeProperty("ModSettings.category.order", "50")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNerveLossRateInDangerPct")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingNerveLossRateInDangerPctDesc")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNerveLossRateInCombatPct")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingNerveLossRateInCombatPctDesc")
 	@runtimeProperty("ModSettings.step", "0.5")
 	@runtimeProperty("ModSettings.min", "0.0")
-	@runtimeProperty("ModSettings.max", "400.0")
-	public let nerveLossRateInDangerPct: Float = 100.0;
+	@runtimeProperty("ModSettings.max", "800.0")
+	public let nerveLossRateInCombatPct: Float = 100.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
+	@runtimeProperty("ModSettings.category.order", "50")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNerveLossRateWhenTracedPct")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingNerveLossRateWhenTracedPctDesc")
+	@runtimeProperty("ModSettings.step", "0.5")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "800.0")
+	public let nerveLossRateWhenTracedPct: Float = 200.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
@@ -686,7 +1004,27 @@ public class DFSettings extends ScriptableSystem {
 	public let nerveWeaponSwayEnabled: Bool = true;
 
 	// -------------------------------------------------------------------------
-	// Gameplay - Alcohol Addiction
+	// Survival - Injury
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAfflictionInjury")
+	@runtimeProperty("ModSettings.category.order", "55")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingInjuryAfflictionEnabled")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingInjuryAfflictionEnabledDesc")
+	public let injuryAfflictionEnabled: Bool = true;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAfflictionInjury")
+	@runtimeProperty("ModSettings.category.order", "55")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingInjuryAccumulationRate")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingInjuryAccumulationRateDesc")
+	@runtimeProperty("ModSettings.step", "0.5")
+	@runtimeProperty("ModSettings.min", "0.5")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let injuryHealthLossAccumulationRate: Float = 5.0;
+
+	// -------------------------------------------------------------------------
+	// Survival - Alcohol Addiction
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -876,7 +1214,7 @@ public class DFSettings extends ScriptableSystem {
 	public let alcoholAddictionBackoffDurationStage4: Float = 10.0;
 
 	// -------------------------------------------------------------------------
-	// Gameplay - Nicotine Addiction
+	// Survival - Nicotine Addiction
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1066,7 +1404,7 @@ public class DFSettings extends ScriptableSystem {
 	public let nicotineAddictionBackoffDurationStage4: Float = 10.0;
 
 	// -------------------------------------------------------------------------
-	// Gameplay - Narcotic Addiction
+	// Survival - Narcotic Addiction
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -1266,26 +1604,6 @@ public class DFSettings extends ScriptableSystem {
 	public let narcoticAddictionBackoffDurationStage4: Float = 10.0;
 
 	// -------------------------------------------------------------------------
-	// Gameplay - Injury
-	// -------------------------------------------------------------------------
-	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAfflictionInjury")
-	@runtimeProperty("ModSettings.category.order", "90")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingInjuryAfflictionEnabled")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingInjuryAfflictionEnabledDesc")
-	public let injuryAfflictionEnabled: Bool = true;
-
-	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAfflictionInjury")
-	@runtimeProperty("ModSettings.category.order", "90")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingInjuryAccumulationRate")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingInjuryAccumulationRateDesc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "100.0")
-	public let injuryHealthLossAccumulationRate: Float = 5.0;
-
-	// -------------------------------------------------------------------------
 	// Interface
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
@@ -1320,6 +1638,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.displayValues.Rose", "DarkFutureColorThemeNameRose")
     @runtimeProperty("ModSettings.displayValues.HotPink", "DarkFutureColorThemeNameHotPink")
 	@runtimeProperty("ModSettings.displayValues.PanelRed", "DarkFutureColorThemeNamePanelRed")
+	@runtimeProperty("ModSettings.displayValues.MainRed", "DarkFutureColorThemeNameMainRed")
 	@runtimeProperty("ModSettings.displayValues.Magenta", "DarkFutureColorThemeNameMagenta")
 	@runtimeProperty("ModSettings.displayValues.PigeonPost", "DarkFutureColorThemeNamePigeonPost")
     @runtimeProperty("ModSettings.displayValues.MainBlue", "DarkFutureColorThemeNameMainBlue")
@@ -1338,6 +1657,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.displayValues.Rose", "DarkFutureColorThemeNameRose")
     @runtimeProperty("ModSettings.displayValues.HotPink", "DarkFutureColorThemeNameHotPink")
 	@runtimeProperty("ModSettings.displayValues.PanelRed", "DarkFutureColorThemeNamePanelRed")
+	@runtimeProperty("ModSettings.displayValues.MainRed", "DarkFutureColorThemeNameMainRed")
 	@runtimeProperty("ModSettings.displayValues.Magenta", "DarkFutureColorThemeNameMagenta")
 	@runtimeProperty("ModSettings.displayValues.PigeonPost", "DarkFutureColorThemeNamePigeonPost")
     @runtimeProperty("ModSettings.displayValues.MainBlue", "DarkFutureColorThemeNameMainBlue")
@@ -1356,6 +1676,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.displayValues.Rose", "DarkFutureColorThemeNameRose")
     @runtimeProperty("ModSettings.displayValues.HotPink", "DarkFutureColorThemeNameHotPink")
 	@runtimeProperty("ModSettings.displayValues.PanelRed", "DarkFutureColorThemeNamePanelRed")
+	@runtimeProperty("ModSettings.displayValues.MainRed", "DarkFutureColorThemeNameMainRed")
 	@runtimeProperty("ModSettings.displayValues.Magenta", "DarkFutureColorThemeNameMagenta")
 	@runtimeProperty("ModSettings.displayValues.PigeonPost", "DarkFutureColorThemeNamePigeonPost")
     @runtimeProperty("ModSettings.displayValues.MainBlue", "DarkFutureColorThemeNameMainBlue")
@@ -1374,6 +1695,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.displayValues.Rose", "DarkFutureColorThemeNameRose")
     @runtimeProperty("ModSettings.displayValues.HotPink", "DarkFutureColorThemeNameHotPink")
 	@runtimeProperty("ModSettings.displayValues.PanelRed", "DarkFutureColorThemeNamePanelRed")
+	@runtimeProperty("ModSettings.displayValues.MainRed", "DarkFutureColorThemeNameMainRed")
 	@runtimeProperty("ModSettings.displayValues.Magenta", "DarkFutureColorThemeNameMagenta")
 	@runtimeProperty("ModSettings.displayValues.PigeonPost", "DarkFutureColorThemeNamePigeonPost")
     @runtimeProperty("ModSettings.displayValues.MainBlue", "DarkFutureColorThemeNameMainBlue")
@@ -1397,6 +1719,17 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAdvancedSettings")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAdvancedSettingsDesc")
 	public let interfaceAdvancedSettings: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
+	@runtimeProperty("ModSettings.category.order", "110")
+	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingHUDUIMinOpacity")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingHUDUIMinOpacityDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let hudUIMinOpacity: Float = 15.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
@@ -1430,6 +1763,39 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.min", "0.0")
 	@runtimeProperty("ModSettings.max", "2160.0")
 	public let hudUIPosY: Float = 240.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
+	@runtimeProperty("ModSettings.category.order", "110")
+	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBackpackUIScale")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingBackpackUIScaleDesc")
+	@runtimeProperty("ModSettings.step", "0.01")
+	@runtimeProperty("ModSettings.min", "0.1")
+	@runtimeProperty("ModSettings.max", "4.0")
+	public let backpackUIScale: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
+	@runtimeProperty("ModSettings.category.order", "110")
+	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBackpackUIPosX")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingBackpackUIPosXDesc")
+	@runtimeProperty("ModSettings.step", "0.5")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "3840.0")
+	public let backpackUIPosX: Float = 675.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
+	@runtimeProperty("ModSettings.category.order", "110")
+	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBackpackUIPosY")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingBackpackUIPosYDesc")
+	@runtimeProperty("ModSettings.step", "0.5")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "2160.0")
+	public let backpackUIPosY: Float = 425.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
@@ -1516,6 +1882,14 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAdvancedSettings")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingAdvancedSettingsDesc")
+	public let fxAdvancedSettings: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
+	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionSFXEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionSFXEnabledDesc")
 	public let addictionSFXEnabled: Bool = true;
@@ -1523,6 +1897,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingOutOfBreathEffectEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingOutOfBreathEffectEnabledDesc")
 	public let outOfBreathEffectEnabled: Bool = true;
@@ -1530,6 +1905,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingLowNerveBreathingEffectEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingLowNerveBreathingEffectEnabledDesc")
 	public let lowNerveBreathingEffectEnabled: Bool = true;
@@ -1537,6 +1913,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNarcoticsSFXEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingNarcoticsSFXEnabledDesc")
 	public let narcoticsSFXEnabled: Bool = true;
@@ -1544,6 +1921,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNerveNeedVFXEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingNerveNeedVFXEnabledDesc")
 	public let nerveNeedVFXEnabled: Bool = true;
@@ -1551,6 +1929,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCriticalNerveVFXEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingCriticalNerveVFXEnabledDesc")
 	public let criticalNerveVFXEnabled: Bool = true;
@@ -1558,6 +1937,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingHydrationNeedVFXEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingHydrationNeedVFXEnabledDesc")
 	public let hydrationNeedVFXEnabled: Bool = true;
@@ -1565,6 +1945,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNutritionNeedVFXEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingNutritionNeedVFXEnabledDesc")
 	public let nutritionNeedVFXEnabled: Bool = true;
@@ -1572,6 +1953,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingEnergyNeedVFXEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingEnergyNeedVFXEnabledDesc")
 	public let energyNeedVFXEnabled: Bool = true;
@@ -1579,6 +1961,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingOutOfBreathCameraEffectEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingOutOfBreathCameraEffectEnabledDesc")
 	public let outOfBreathCameraEffectEnabled: Bool = true;
@@ -1586,6 +1969,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingSmokingEffectsEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingSmokingEffectsEnabledDesc")
 	public let smokingEffectsEnabled: Bool = true;
@@ -1593,6 +1977,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
+	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNauseaInteractableEffectEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingNauseaInteractableEffectEnabledDesc")
 	public let nauseaInteractableEffectEnabled: Bool = true;
@@ -1615,22 +2000,802 @@ public class DFSettings extends ScriptableSystem {
 	public let addictionMessagesEnabled: Bool = true;		
 
 	// -------------------------------------------------------------------------
+	// Compatibility
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryCompatibility")
+	@runtimeProperty("ModSettings.category.order", "150")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCompatibilityEnhancedVehicleSystemPowerBehaviorOnSleepVehicle")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingCompatibilityEnhancedVehicleSystemPowerBehaviorOnSleepVehicleDesc")
+	@runtimeProperty("ModSettings.displayValues.DoNothing", "DarkFutureCompatEVSPowerBehaviorDoNothing")
+    @runtimeProperty("ModSettings.displayValues.TurnOff", "DarkFutureCompatEVSPowerBehaviorTurnOff")
+	@runtimeProperty("ModSettings.displayValues.TurnOn", "DarkFutureCompatEVSPowerBehaviorTurnOn")
+	public let compatibilityEnhancedVehicleSystemPowerBehaviorOnSleep: EnhancedVehicleSystemCompatPowerBehaviorDriver = EnhancedVehicleSystemCompatPowerBehaviorDriver.TurnOff;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryCompatibility")
+	@runtimeProperty("ModSettings.category.order", "150")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCompatibilityEnhancedVehicleSystemPowerBehaviorOnWakeVehicle")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingCompatibilityEnhancedVehicleSystemPowerBehaviorOnWakeVehicleDesc")
+	@runtimeProperty("ModSettings.displayValues.DoNothing", "DarkFutureCompatEVSPowerBehaviorDoNothing")
+	@runtimeProperty("ModSettings.displayValues.TurnOff", "DarkFutureCompatEVSPowerBehaviorTurnOff")
+    @runtimeProperty("ModSettings.displayValues.TurnOn", "DarkFutureCompatEVSPowerBehaviorTurnOn")
+	public let compatibilityEnhancedVehicleSystemPowerBehaviorOnWake: EnhancedVehicleSystemCompatPowerBehaviorDriver = EnhancedVehicleSystemCompatPowerBehaviorDriver.TurnOn;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryCompatibility")
+	@runtimeProperty("ModSettings.category.order", "150")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCompatibilityEnhancedVehicleSystemPowerBehaviorAsPassenger")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingCompatibilityEnhancedVehicleSystemPowerBehaviorAsPassengerDesc")
+	@runtimeProperty("ModSettings.displayValues.DoNothing", "DarkFutureCompatEVSPowerBehaviorDoNothing")
+	@runtimeProperty("ModSettings.displayValues.SameAsDriver", "DarkFutureCompatEVSPowerBehaviorSameAsDriver")
+	public let compatibilityEnhancedVehicleSystemPowerBehaviorAsPassenger: EnhancedVehicleSystemCompatPowerBehaviorPassenger = EnhancedVehicleSystemCompatPowerBehaviorPassenger.SameAsDriver;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryCompatibility")
+	@runtimeProperty("ModSettings.category.order", "150")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCompatibilityWannabeEdgerunner")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingCompatibilityWannabeEdgerunnerDesc")
+	public let compatibilityWannabeEdgerunner: Bool = true;
+	
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryCompatibility")
+	@runtimeProperty("ModSettings.category.order", "150")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCompatibilityProjectE3HUD")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingCompatibilityProjectE3HUDDesc")
+	public let compatibilityProjectE3HUD: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryCompatibility")
+	@runtimeProperty("ModSettings.category.order", "150")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCompatibilityProjectE3UI")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingCompatibilityProjectE3UIDesc")
+	public let compatibilityProjectE3UI: Bool = false;
+
+	// -------------------------------------------------------------------------
 	// Misc
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryMisc")
-	@runtimeProperty("ModSettings.category.order", "140")
+	@runtimeProperty("ModSettings.category.order", "160")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingTutorialsEnabled")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingTutorialsEnabledDesc")
 	public let tutorialsEnabled: Bool = true;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryMisc")
-	@runtimeProperty("ModSettings.category.order", "140")
+	@runtimeProperty("ModSettings.category.order", "160")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingTimescale")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingTimescaleDesc")
 	@runtimeProperty("ModSettings.step", "0.1")
 	@runtimeProperty("ModSettings.min", "1.0")
 	@runtimeProperty("ModSettings.max", "40.0")
 	public let timescale: Float = 8.0;
+
+	// -------------------------------------------------------------------------
+	// Advanced - Consumable Restoration
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAdvancedSettings")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingAdvancedSettingsDesc")
+	public let showConsumableRestorationSettings: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsHydrationTier1")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationHydrationDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let hydrationTier1: Float = 15.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsHydrationTier2")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationHydrationDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let hydrationTier2: Float = 20.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsHydrationTier3")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationHydrationDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let hydrationTier3: Float = 30.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNutritionTier1")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNutritionDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nutritionTier1: Float = 8.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNutritionTier2")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNutritionDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nutritionTier2: Float = 15.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNutritionTier3")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNutritionDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nutritionTier3: Float = 20.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNutritionTier4")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNutritionDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nutritionTier4: Float = 30.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsEnergyTier1")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationEnergyDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let energyTier1: Float = 15.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsEnergyTier2")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationEnergyDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let energyTier2: Float = 25.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsEnergyTier3")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationEnergyDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let energyTier3: Float = 35.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveAlcoholTier1")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveAlcoholInteractionDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveAlcoholTier1: Float = 6.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveAlcoholTier2")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveAlcoholTier2: Float = 8.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveAlcoholTier3")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveAlcoholTier3: Float = 10.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveCigarettes")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveCigarettes: Float = 15.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveNarcoticsWeak")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveNarcoticsDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveWeakNarcotics: Float = 20.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveNarcoticsPotent")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveNarcoticsDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveStrongNarcotics: Float = 40.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNervePenaltyFactor")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsNervePenaltyFactorDesc")
+	@runtimeProperty("ModSettings.step", "10.0")
+	@runtimeProperty("ModSettings.min", "10.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveLowQualityConsumablePenaltyFactor: Float = 50.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
+	@runtimeProperty("ModSettings.category.order", "170")
+	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNervePenaltyLimit")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsNervePenaltyLimitDesc")
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let nerveLowQualityConsumablePenaltyLimit: Float = 70.0;
+
+	// -------------------------------------------------------------------------
+	// Advanced - Consumable Weight
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAdvancedSettings")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingAdvancedSettingsDesc")
+	public let showConsumableWeightSettings: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightFoodVerySmall")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightFoodVerySmall: Float = 0.6;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightFoodSmall")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightFoodSmall: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightFoodMedium")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightFoodMedium: Float = 1.2;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightFoodLarge")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightFoodLarge: Float = 1.6;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightDrinkSmall")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightDrinkSmall: Float = 0.8;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightDrinkLarge")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightDrinkLarge: Float = 1.2;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightDrugSmall")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightDrugSmall: Float = 0.3;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightDrugMedium")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightDrugMedium: Float = 0.6;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightDrugLarge")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightDrugLarge: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableWeight")
+	@runtimeProperty("ModSettings.category.order", "180")
+	@runtimeProperty("ModSettings.dependency", "showConsumableWeightSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightDrugTraumaKit")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let weightTraumaKit: Float = 2.0;
+
+	// -------------------------------------------------------------------------
+	// Advanced - Consumable Prices
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAdvancedSettings")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingAdvancedSettingsDesc")
+	public let showConsumablePriceSettings: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrinkNomad")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceDrinkNomad: Float = 0.65;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrinkCommon")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceDrinkCommon: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrinkUncommon")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceDrinkUncommon: Float = 1.25;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrinkRare")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceDrinkRare: Float = 2.5;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrinkEpic")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceDrinkEpic: Float = 4.4;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrinkLegendary")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceDrinkLegendary: Float = 10.25;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrinkIllegal")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceDrinkIllegal: Float = 31.25;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodNomad")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodNomad: Float = 1.5;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodCommonSmallSnack")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodCommonSnackSmall: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodCommonLargeSnack")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodCommonSnackLarge: Float = 1.5;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodCommonMeal")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodCommonMeal: Float = 2.5;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodUncommon")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodUncommon: Float = 3.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodRare")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodRare: Float = 5.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodEpic")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodEpic: Float = 9.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodLegendarySnack")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodIllegalSnack: Float = 50.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceFoodLegendaryMeal")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceFoodIllegalMeal: Float = 75.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAlcoholLowQuality")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceAlcoholLowQuality: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAlcoholMediumQuality")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceAlcoholMediumQuality: Float = 2.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAlcoholGoodQuality")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceAlcoholGoodQuality: Float = 3.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAlcoholTopQuality")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceAlcoholTopQuality: Float = 5.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAlcoholExquisiteQuality")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceAlcoholExquisiteQuality: Float = 10.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceCigarettes")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceCigarettes: Float = 5.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceMrWhitey")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceMrWhitey: Float = 7.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPricePharmaceuticals")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let pricePharmaceuticals: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumablePrice")
+	@runtimeProperty("ModSettings.category.order", "185")
+	@runtimeProperty("ModSettings.dependency", "showConsumablePriceSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceDrugsIllegal")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.05")
+	@runtimeProperty("ModSettings.min", "0.05")
+	@runtimeProperty("ModSettings.max", "100.0")
+	public let priceIllegalDrugs: Float = 1.0;
+
+	// -------------------------------------------------------------------------
+	// Advanced - Ammo
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAdvancedSettings")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingAdvancedSettingsDesc")
+	public let showAmmoSettings: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsAmmoWeight")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsAmmoWeightDesc")
+	public let ammoWeightEnabled: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsAmmoCrafting")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsAmmoCraftingDesc")
+	public let ammoCraftingEnabled: Bool = true;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightAmmoHandgun")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.01")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "0.5")
+	public let weightHandgunAmmo: Float = 0.01;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightAmmoRifle")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.01")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "0.5")
+	public let weightRifleAmmo: Float = 0.01;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightAmmoShotgun")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.01")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "0.5")
+	public let weightShotgunAmmo: Float = 0.03;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsWeightAmmoSniper")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsWeightGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.01")
+	@runtimeProperty("ModSettings.min", "0.0")
+	@runtimeProperty("ModSettings.max", "0.5")
+	public let weightSniperAmmo: Float = 0.05;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAmmoHandgun")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.1")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let priceHandgunAmmo: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAmmoRifle")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.1")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let priceRifleAmmo: Float = 1.0;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAmmoShotgun")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.1")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let priceShotgunAmmo: Float = 1.5;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsPriceAmmoSniper")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsPriceGeneralDesc")
+	@runtimeProperty("ModSettings.step", "0.1")
+	@runtimeProperty("ModSettings.min", "0.1")
+	@runtimeProperty("ModSettings.max", "10.0")
+	public let priceSniperAmmo: Float = 2.0;
 }

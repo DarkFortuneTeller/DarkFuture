@@ -12,6 +12,7 @@ import DarkFuture.System.{
     DFSystem,
     DFSystemState
 }
+import DarkFuture.Main.DFTimeSkipType
 
 public final static func HoursToGameTimeSeconds(hours: Int32) -> Float {
     return Int32ToFloat(hours) * 3600.0;
@@ -53,3 +54,35 @@ public final static func RunGuard(system: ref<DFSystem>, opt suppressLog: Bool) 
         return false;
     }
 }
+
+public final static func IsSleeping(timeSkipType: DFTimeSkipType) -> Bool {
+    return NotEquals(timeSkipType, DFTimeSkipType.TimeSkip);
+}
+
+public final static func IsPlayerInBadlands(player: wref<PlayerPuppet>) -> Bool {
+    let parentDistrict: String = GetTopLevelParentDistrictName(player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord());
+    return Equals(parentDistrict, "Badlands") || Equals(parentDistrict, "SouthBadlands") || Equals(parentDistrict, "NorthBadlands");
+}
+
+public final static func GetTopLevelParentDistrictName(districtRecord: wref<District_Record>) -> String {
+    return GetTopLevelParentDistrictNameRecursive(districtRecord).EnumName();
+}
+
+public final static func GetTopLevelParentDistrictNameRecursive(districtRecord: wref<District_Record>) -> wref<District_Record> {
+    let topLevelDistrictRecord: wref<District_Record>;
+    
+    let parent = districtRecord.ParentDistrict();
+    if IsDefined(parent) {
+        topLevelDistrictRecord = GetTopLevelParentDistrictNameRecursive(parent);
+    } else {
+        topLevelDistrictRecord = districtRecord;
+    }
+
+    return topLevelDistrictRecord;
+}
+
+@if(ModuleExists("RevisedBackpack"))
+public final static func IsRevisedBackpackInstalled() -> Bool { return true; }
+
+@if(!ModuleExists("RevisedBackpack"))
+public final static func IsRevisedBackpackInstalled() -> Bool { return false; }

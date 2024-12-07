@@ -22,6 +22,11 @@ import DarkFuture.Settings.{
 }
 import DarkFuture.Services.DFGameStateService
 
+public enum DFSummonCreditWidgetAppearance {
+    Default = 0,
+    ProjectE3 = 1
+}
+
 //
 // Overrides
 //
@@ -47,7 +52,7 @@ protected func Select(previous: ref<inkVirtualCompoundItemController>, next: ref
         let summonCredits: Int32 = vehicleSummonSystem.GetRemainingSummonCredits();
 
         if summonCredits > 0 {
-            repairText.SetText(GetLocalizedText("LocKey#94196"));
+            repairText.SetText(GetLocalizedTextByKey(n"Story-base-gameplay-gui-widgets-vehicle_control-vehicles_manager-repairing"));
 
             if summonCredits < vehicleSummonSystem.GetMaxSummonCredits() {
                 titleText.SetText("CALL VEHICLE // CREDITS: " + ToString(vehicleSummonSystem.GetRemainingSummonCredits()) + " // NEXT CREDIT IN: " + vehicleSummonSystem.GetSummonCooldownRemainingTimeString());
@@ -399,6 +404,14 @@ public final class DFVehicleSummonSystem extends DFSystem {
                 this.remainingCooldownTime = this.summonCreditCooldownDurationGameTimeSeconds;
             }
         }
+
+        if ArrayContains(changedSettings, "compatibilityProjectE3HUD") {
+            if this.Settings.compatibilityProjectE3HUD {
+                this.SetSummonCreditWidgetAppearance(DFSummonCreditWidgetAppearance.ProjectE3);
+            } else {
+                this.SetSummonCreditWidgetAppearance(DFSummonCreditWidgetAppearance.Default);
+            }
+        }
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {
@@ -424,8 +437,10 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
     private final func DoPostResumeActions() -> Void {
         this.SetupData();
-        if IsDefined(this.hotkeySummonCreditCanvas) {
-            this.hotkeySummonCreditCanvas.SetVisible(true);
+        if IsSystemEnabledAndRunning(this) {
+            if IsDefined(this.hotkeySummonCreditCanvas) {
+                this.hotkeySummonCreditCanvas.SetVisible(true);
+            }
         }
     }
 
@@ -455,7 +470,11 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
     public final func SetHotkeySummonCreditState(state: Bool) {
         if state {
-            this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Blue");
+            if this.Settings.compatibilityProjectE3HUD {
+                this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Red");
+            } else {
+                this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Blue");
+            }
         } else {
             this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.MildRed");
         }
@@ -611,5 +630,22 @@ public final class DFVehicleSummonSystem extends DFSystem {
     public final func SetCarHotkeyController(controller: ref<CarHotkeyController>) -> Void {
         DFLog(this.debugEnabled, this, "SetCarHotkeyController " + ToString(controller));
         this.chkController = controller;
+    }
+
+    public final func SetSummonCreditWidgetAppearance(appearance: DFSummonCreditWidgetAppearance) {
+        if IsDefined(this.hotkeySummonCreditCanvas) && IsDefined(this.hotkeySummonCreditBackground) {
+            switch appearance {
+                case DFSummonCreditWidgetAppearance.Default:
+                    this.hotkeySummonCreditCanvas.SetMargin(new inkMargin(158.0, 35.0, 0.0, 0.0));
+                    this.hotkeySummonCreditCanvas.SetScale(new Vector2(1.0, 1.0));
+                    this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Blue");
+                    break;
+                case DFSummonCreditWidgetAppearance.ProjectE3:
+                    this.hotkeySummonCreditCanvas.SetMargin(new inkMargin(34.0, 152.0, 0.0, 0.0));
+                    this.hotkeySummonCreditCanvas.SetScale(new Vector2(0.8, 0.8));
+                    this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Red");
+                    break;
+            }
+        }
     }
 }

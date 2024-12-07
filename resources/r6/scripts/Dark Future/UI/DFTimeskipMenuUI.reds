@@ -5,17 +5,24 @@
 // - Handles the UI meters in the Timeskip Menu.
 //
 
-import DarkFuture.Settings.DFSettings
+import DarkFuture.Settings.{
+	DFSettings,
+	DFSleepQualitySetting
+}
 import DarkFuture.Main.{
 	DFMainSystem,
 	DFNeedsDatum,
 	DFAddictionDatum,
 	DFNeedChangeDatum,
 	DFFutureHoursData,
-	DFTimeSkipData
+	DFTimeSkipData,
+	DFTimeSkipType
 }
 import DarkFuture.Services.DFGameStateService
-import DarkFuture.Gameplay.DFInteractionSystem
+import DarkFuture.Gameplay.{
+	DFInteractionSystem,
+	DFVehicleSleepSystem
+}
 import DarkFuture.Needs.{
 	DFHydrationSystem,
 	DFNutritionSystem,
@@ -27,6 +34,8 @@ import DarkFuture.UI.{
 	DFNeedsMenuBarSetupData
 }
 import DarkFuture.Utils.{
+	IsSleeping,
+	IsPlayerInBadlands,
 	DFHDRColor,
 	GetDarkFutureHDRColor
 }
@@ -42,6 +51,9 @@ private let MainSystem: wref<DFMainSystem>;
 
 @addField(TimeskipGameController)
 private let InteractionSystem: wref<DFInteractionSystem>;
+
+@addField(TimeskipGameController)
+private let VehicleSleepSystem: wref<DFVehicleSleepSystem>;
 
 @addField(TimeskipGameController)
 private let HydrationSystem: wref<DFHydrationSystem>;
@@ -74,7 +86,7 @@ private let hydrationBar: ref<DFNeedsMenuBar>;
 private let calculatedFutureValues: DFFutureHoursData;
 
 @addField(TimeskipGameController)
-private let isSleeping: Bool;
+private let timeSkipType: DFTimeSkipType;
 
 @addField(TimeskipGameController)
 private let timeskipAllowed: Bool = true;
@@ -96,6 +108,7 @@ protected cb func OnInitialize() -> Bool {
 	this.MainSystem = DFMainSystem.GetInstance(gameInstance);
 	this.GameStateService = DFGameStateService.GetInstance(gameInstance);
 	this.InteractionSystem = DFInteractionSystem.GetInstance(gameInstance);
+	this.VehicleSleepSystem = DFVehicleSleepSystem.GetInstance(gameInstance);
 	this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
 	this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
 	this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
@@ -103,8 +116,8 @@ protected cb func OnInitialize() -> Bool {
 	
 	if this.Settings.mainSystemEnabled {
 		this.MainSystem.DispatchTimeSkipStartEvent();
-		this.calculatedFutureValues = this.InteractionSystem.GetCalculatedValuesForFutureHours();
-		this.isSleeping = this.InteractionSystem.IsPlayerSleeping();
+		this.timeSkipType = this.GetTimeskipType(this.NerveSystem.GetNeedStage());
+		this.calculatedFutureValues = this.InteractionSystem.GetCalculatedValuesForFutureHours(this.timeSkipType);
 	}
 
 	let value: Bool = wrappedMethod();
@@ -113,6 +126,7 @@ protected cb func OnInitialize() -> Bool {
 	this.CreateNeedsBarCluster(root.GetWidget(n"container") as inkCanvas);
 	this.CreateTimeskipAllowedReasonWidget(root);
 	this.SetOriginalValuesInUI();
+	this.UpdateAllBarsAppearance();
 	this.UpdateUI();
     
 	return value;
@@ -180,7 +194,7 @@ protected cb func OnCloseAfterFinishing(proxy: ref<inkAnimProxy>) -> Bool {
 		tsd.hoursSkipped = this.m_hoursToSkip;
 		tsd.targetNeedValues = this.calculatedFutureValues.futureNeedsData[this.m_hoursToSkip - 1];
 		tsd.targetAddictionValues = this.calculatedFutureValues.futureAddictionData[this.m_hoursToSkip - 1];
-		tsd.wasSleeping = this.isSleeping;
+		tsd.timeSkipType = this.timeSkipType;
 		this.MainSystem.DispatchTimeSkipFinishedEvent(tsd);
 	}
 	return wrappedMethod(proxy);
@@ -221,7 +235,7 @@ private final func UpdateTargetTime(angle: Float) -> Void {
 private final func SetTimeSkipText(textWidgetRef: inkTextRef, textParamsRef: ref<inkTextParams>, hours: Int32) -> Void {
 	wrappedMethod(textWidgetRef, textParamsRef, hours);
 	
-	if this.isSleeping {
+	if IsSleeping(this.timeSkipType) {
 		textParamsRef = new inkTextParams();
       	textParamsRef.AddNumber("value", hours);
 		inkTextRef.SetLocalizedText(textWidgetRef, n"DarkFutureTimeskipSleepText", textParamsRef);
@@ -344,8 +358,8 @@ private final func UpdateUI() -> Void {
 	let nutrition: Float = this.calculatedFutureValues.futureNeedsData[index].nutrition.value;
 	let energy: Float = this.calculatedFutureValues.futureNeedsData[index].energy.value;
 	let nerve: Float = this.calculatedFutureValues.futureNeedsData[index].nerve.value;
+	let nerveStageAtValue: Int32 = this.NerveSystem.GetNeedStageAtValue(nerve);
 
-	let nerveStage: Int32 = this.NerveSystem.GetNeedStageAtValue(nerve);
 	let timeskipAllowedReasonKey: CName = n"";
 
 	this.hydrationBar.SetUpdatedValue(hydration, 100.0);
@@ -356,18 +370,56 @@ private final func UpdateUI() -> Void {
 	this.nerveBar.SetUpdatedValue(nerve, nerveMax);
 	this.UpdateNerveBarLimit(nerveMax);
 
-	if this.isSleeping && nerveStage >= 3 {
+	if IsSleeping(this.timeSkipType) && nerveStageAtValue >= this.NerveSystem.insomniaNeedStageThreshold {
 		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveNoRecovery";
 	} else if nerve <= 1.0 {
 		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonFatal";
+	} else if Equals(this.timeSkipType, DFTimeSkipType.LimitedSleep) {
+		this.timeskipAllowed = true;
+		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonLimitedSleepVehicle";
 	} else {
 		this.timeskipAllowed = true;
 	}
 
 	this.UpdateConfirmButton(this.timeskipAllowed);
 	this.RefreshTimeskipAllowedReasonWidget(this.timeskipAllowed, timeskipAllowedReasonKey);
+}
+
+@addMethod(TimeskipGameController)
+private final func GetTimeskipType(nerveStage: Int32) -> DFTimeSkipType {
+	let sleepingInBed: Bool = this.InteractionSystem.IsPlayerSleeping();
+	let sleepingInVehicle: Bool = this.VehicleSleepSystem.GetSleepingInVehicle();
+
+	if sleepingInBed {
+		return DFTimeSkipType.FullSleep;
+
+	} else if sleepingInVehicle {
+		let inBadlands: Bool = IsPlayerInBadlands(this.GameStateService.player);
+		
+		if (inBadlands && Equals(this.Settings.vehicleSleepQualityBadlands, DFSleepQualitySetting.Limited)) {
+			return DFTimeSkipType.LimitedSleep;
+
+		} else if !inBadlands && Equals(this.Settings.vehicleSleepQualityCity, DFSleepQualitySetting.Limited) {
+			return DFTimeSkipType.LimitedSleep;
+
+		} else {
+			return DFTimeSkipType.FullSleep;
+		}
+
+	} else {
+		return DFTimeSkipType.TimeSkip;
+	}
+}
+
+@addMethod(TimeskipGameController)
+private final func UpdateAllBarsAppearance() -> Void {
+	let useProjectE3UI: Bool = this.Settings.compatibilityProjectE3UI;
+	this.hydrationBar.UpdateAppearance(useProjectE3UI);
+	this.nutritionBar.UpdateAppearance(useProjectE3UI);
+	this.energyBar.UpdateAppearance(useProjectE3UI);
+	this.nerveBar.UpdateAppearance(useProjectE3UI);
 }
 
 @addMethod(TimeskipGameController)

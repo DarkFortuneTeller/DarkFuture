@@ -3,6 +3,41 @@
 # Capacity Boosters
 #
 #
+# Drug Price Adjustment Settings
+DarkFuturePrice.Pharmaceuticals:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Multiplier
+  statType: BaseStats.Price
+
+Items.CarryCapacityBooster: &DrugPrice
+  buyPrice:
+    - !append-once DarkFuturePrice.Pharmaceuticals
+  sellPrice:
+    - !append-once DarkFuturePrice.Pharmaceuticals
+Items.HealthBooster: *DrugPrice
+Items.OxyBooster: *DrugPrice
+Items.MemoryBooster: *DrugPrice
+Items.StaminaBooster: *DrugPrice
+
+# Black Market Drug Price Adjustment Settings
+DarkFuturePrice.IllegalDrugs:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Multiplier
+  statType: BaseStats.Price
+
+Items.Blackmarket_CarryCapacityBooster: &BlackmarketDrugPrice
+  buyPrice:
+    - !append-once DarkFuturePrice.IllegalDrugs
+  sellPrice:
+    - !append-once DarkFuturePrice.IllegalDrugs
+Items.Blackmarket_HealthBooster: *BlackmarketDrugPrice
+Items.Blackmarket_MemoryBooster: *BlackmarketDrugPrice
+Items.Blackmarket_StaminaBooster: *BlackmarketDrugPrice
+Items.BlackLaceV0: *BlackmarketDrugPrice
+Items.BlackLaceV1: *BlackmarketDrugPrice
+
 # Ol' Donkey
 BaseStatusEffect.Blackmarket_CarryCapacityBooster_inline1:
   $type: gamedataConstantStatModifier_Record
@@ -43,11 +78,11 @@ Items.StaminaBooster_inline1.floatValues:
 
 #
 #
-# Health Booster (Now First Aid Kit)
+# Health Booster (Now Trauma Kit)
 #
 #
 
-# Standard Health Boosters have been repurposed to First Aid Kits. They now cure the Injury status.
+# Standard Health Boosters have been repurposed to Trauma Kits. They now cure the Injury status.
 #
 DarkFutureItem.InjuryCureDrugOnEquip_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record

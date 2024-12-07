@@ -22,6 +22,10 @@ import DarkFuture.Main.{
     DFMainSystem,
     DFTimeSkipData
 }
+import DarkFuture.UI.{
+    DFHUDSystem,
+    DFNeedsHUDBar
+}
 import DarkFuture.Addictions.DFNicotineAddictionSystem
 import DarkFuture.Needs.DFHydrationSystem
 import DarkFuture.Needs.DFNerveSystem
@@ -292,6 +296,16 @@ class DFPlayerStateServiceEventListeners extends DFSystemEventListener {
     private func GetSystemInstance() -> wref<DFPlayerStateService> {
 		return DFPlayerStateService.Get();
 	}
+
+    private cb func OnLoad() {
+		super.OnLoad();
+
+        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DFGameStateServiceSceneTierChangedEvent", this, n"OnGameStateServiceSceneTierChangedEvent", true);
+    }
+
+    private cb func OnGameStateServiceSceneTierChangedEvent(event: ref<DFGameStateServiceSceneTierChangedEvent>) {
+		this.GetSystemInstance().OnSceneTierChanged(event.GetData());
+	}
 }
 
 public final class DFPlayerStateService extends DFSystem {
@@ -391,7 +405,7 @@ public final class DFPlayerStateService extends DFSystem {
 
     private func DoPostSuspendActions() -> Void {
         this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds = 0.0;
-        this.RemoveAddictionTreatmentEffect(true);
+        this.RefreshAddictionTreatmentEffect();
 
         StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Sedation");
         StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Weakened");
@@ -464,6 +478,13 @@ public final class DFPlayerStateService extends DFSystem {
     //
     //  System-Specific Methods
     //
+    public func OnSceneTierChanged(value: GameplayTier) -> Void {
+		if RunGuard(this, true) { return; }
+		DFLog(this.debugEnabled, this, "OnSceneTierChanged value = " + ToString(value));
+
+		this.RefreshAddictionTreatmentEffect();
+	}
+
     protected cb func OnLocomotionStateChanged(value: Int32) -> Void {
 		if RunGuard(this) { return; }
 		
@@ -741,7 +762,9 @@ public final class DFPlayerStateService extends DFSystem {
 
 			if this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds <= 0.0 {
 				this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds = 0.0;
-				this.RemoveAddictionTreatmentEffect();
+				this.RefreshAddictionTreatmentEffect();
+                this.DispatchAddictionTreatmentEffectAppliedOrRemovedEvent();
+                this.NerveSystem.UpdateNerveWithdrawalLimit();
 			}
             DFLog(this.debugEnabled, this, "remainingAddictionTreatmentEffectDurationInGameTimeSeconds = " + ToString(this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds));
 		}
@@ -759,12 +782,32 @@ public final class DFPlayerStateService extends DFSystem {
         }
 
         if lastTreatmentDurationValue > 0.0 && this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds <= 0.0 {
-            this.RemoveAddictionTreatmentEffect(true);
+            this.RefreshAddictionTreatmentEffect();
+            this.NerveSystem.UpdateNerveWithdrawalLimit();
         }
 
         DFLog(this.debugEnabled, this, "remainingAddictionTreatmentEffectDurationInGameTimeSeconds = " + ToString(this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds));
         this.DispatchAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent(addictionData);
         this.RegisterAddictionTreatmentDurationUpdateCallback();
+    }
+
+    private func RefreshAddictionTreatmentEffect() -> Void {
+		DFLog(this.debugEnabled, this, "RefreshAddictionTreatmentEffect");
+        let shouldApply: Bool = false;
+
+        if this.GameStateService.IsValidGameState("DFPlayerStateService:RefreshAddictionTreatmentEffect") {
+            if this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds > 0.0 {
+                if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
+                    shouldApply = true;
+                }
+            }
+        }
+
+        if shouldApply {
+            StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment");
+        } else {
+            StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment");
+        }
     }
 
     public final func OnAddictionTreatmentDrugConsumed() -> Void {
@@ -777,18 +820,6 @@ public final class DFPlayerStateService extends DFSystem {
 		// Refresh player-facing status effects.
 		this.DispatchAddictionTreatmentEffectAppliedOrRemovedEvent();
 
-        // Update the Nerve limit.
-        this.NerveSystem.UpdateNerveWithdrawalLimit();
-	}
-
-    private final func RemoveAddictionTreatmentEffect(opt noEvent: Bool) -> Void {
-        // Refresh player-facing status effects.
-        StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment");
-
-        if !noEvent {
-            this.DispatchAddictionTreatmentEffectAppliedOrRemovedEvent();
-        }
-        
         // Update the Nerve limit.
         this.NerveSystem.UpdateNerveWithdrawalLimit();
 	}
@@ -833,24 +864,35 @@ public final class DFPlayerStateService extends DFSystem {
 //	Base Game Methods
 //
 
-//  PlayerPuppet - Let the Nerve System know when Combat state changes. (Counts as being "In Danger".)
+//  PlayerPuppet - Let the Nerve System and Bar know when Combat state changes. (Counts as being "In Danger".)
 //
 @wrapMethod(PlayerPuppet)
 protected cb func OnCombatStateChanged(newState: Int32) -> Bool {
 	let result: Bool = wrappedMethod(newState);
 
-	DFNerveSystem.Get().OnDangerStateChanged(DFPlayerStateService.Get().GetPlayerDangerState());
+    this.DFReportDangerStateChanged();
 
 	return result;
 }
 
-//  PlayerPuppet - Let the Nerve System know when the player is being traced by a Quickhack that was uploaded undetected. (Counts as being "In Danger".)
+//  PlayerPuppet - Let the Nerve System and Bar know when the player is being traced by a Quickhack that was uploaded undetected. (Counts as being "In Danger".)
 //
 @wrapMethod(PlayerPuppet)
 public final func SetIsBeingRevealed(isBeingRevealed: Bool) -> Void {
 	wrappedMethod(isBeingRevealed);
 
-	DFNerveSystem.Get().OnDangerStateChanged(DFPlayerStateService.Get().GetPlayerDangerState());
+	this.DFReportDangerStateChanged();
+}
+
+@addMethod(PlayerPuppet)
+public final func DFReportDangerStateChanged() -> Void {
+    let gameInstance = GetGameInstance();
+    let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.GetInstance(gameInstance);
+    let dangerState = PlayerStateService.GetPlayerDangerState();
+    let inDanger: Bool = PlayerStateService.GetInDangerFromState(dangerState);
+
+	DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
+    DFHUDSystem.GetInstance(gameInstance).nerveBar.SetInDanger(inDanger);
 }
 
 //  GameObject - Let other systems know that a player OnDamageReceived event occurred. (Used by the Injury system.)

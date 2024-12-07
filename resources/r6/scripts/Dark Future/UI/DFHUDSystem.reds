@@ -220,7 +220,7 @@ public final class DFHUDSystem extends DFSystem {
 			fullScreenSlot = this.CreateFullScreenSlot(inkHUD);
 			this.widgetSlot = this.CreateWidgetSlot(fullScreenSlot);
 			this.UpdateHUDWidgetPositionAndScale();
-			this.CreateBars(this.widgetSlot, inkSystem, attachedPlayer);
+			this.CreateBars(this.widgetSlot, attachedPlayer);
 
 			// Watch for changes to client resolution. Set the correct resolution now to scale all widgets.
 			this.virtualResolutionWatcher = new VirtualResolutionWatcher();
@@ -301,6 +301,18 @@ public final class DFHUDSystem extends DFSystem {
 				this.nerveBar.SetPulseContinuouslyAtLowThreshold(false);
 			}
 		}
+
+		if ArrayContains(changedSettings, "compatibilityProjectE3HUD") && IsDefined(this.nerveBar) && IsDefined(this.hydrationBar) && IsDefined(this.nutritionBar) && IsDefined(this.energyBar) {
+			let shouldShear: Bool = true;
+			if this.Settings.compatibilityProjectE3HUD {
+				shouldShear = false;
+			}
+
+			this.nerveBar.UpdateShear(shouldShear);
+			this.hydrationBar.UpdateShear(shouldShear);
+			this.nutritionBar.UpdateShear(shouldShear);
+			this.energyBar.UpdateShear(shouldShear);
+		}
 	}
 
 	private final func CreateFullScreenSlot(inkHUD: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
@@ -335,7 +347,7 @@ public final class DFHUDSystem extends DFSystem {
 		this.widgetSlot.SetTranslation(posX, posY);
 	}
 
-	private final func CreateBars(slot: ref<inkCompoundWidget>, inkSystem: ref<inkSystem>, attachedPlayer: ref<PlayerPuppet>) -> Void {
+	private final func CreateBars(slot: ref<inkCompoundWidget>, attachedPlayer: ref<PlayerPuppet>) -> Void {
 		slot.RemoveAllChildren();
 
 		let nerveIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";

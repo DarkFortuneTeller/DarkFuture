@@ -356,23 +356,19 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 			if IsSystemEnabledAndRunning(this.NerveSystem) && ArrayContains(effectGameplayTags, n"DarkFutureConsumableNarcoticRandomNerveChange") {
 				let nerveChangeRange: DFNarcoticsNerveChangeRange;
 
-				if Equals(this.InteractionSystem.GetLastAttemptedChoiceCaption(), GetLocalizedTextByKey(n"DarkFutureInteractionTakeInhaler")) {
+				if Equals(this.InteractionSystem.GetLastAttemptedChoiceCaption(), GetLocalizedTextByKey(this.InteractionSystem.locKey_Interaction_Q003TakeInhaler)) {
 					// q003 - Dum Dum inhaler scene
 					nerveChangeRange.min = 20.0;
 					nerveChangeRange.max = 20.0;
 					ArrayPush(this.nerveChangeFromNarcoticsQueue, nerveChangeRange);
 				} else {
 					if ArrayContains(effectGameplayTags, n"DarkFutureConsumableNarcoticRandomNerveChangeTier1") {
-						nerveChangeRange.min = -1.0 * this.nerveChangeFromNarcoticsMinTier1;
-						nerveChangeRange.max = this.nerveChangeFromNarcoticsMaxTier1;
+						nerveChangeRange.min = -1.0 * this.Settings.nerveWeakNarcotics;
+						nerveChangeRange.max = this.Settings.nerveWeakNarcotics;
 						ArrayPush(this.nerveChangeFromNarcoticsQueue, nerveChangeRange);
 					} else if ArrayContains(effectGameplayTags, n"DarkFutureConsumableNarcoticRandomNerveChangeTier2") {
-						nerveChangeRange.min = -1.0 * this.nerveChangeFromNarcoticsMinTier2;
-						nerveChangeRange.max = this.nerveChangeFromNarcoticsMaxTier2;
-						ArrayPush(this.nerveChangeFromNarcoticsQueue, nerveChangeRange);
-					} else if ArrayContains(effectGameplayTags, n"DarkFutureConsumableNarcoticRandomNerveChangeTier3") {
-						nerveChangeRange.min = -1.0 * this.nerveChangeFromNarcoticsMinTier3;
-						nerveChangeRange.max = this.nerveChangeFromNarcoticsMaxTier3;
+						nerveChangeRange.min = -1.0 * this.Settings.nerveStrongNarcotics;
+						nerveChangeRange.max = this.Settings.nerveStrongNarcotics;
 						ArrayPush(this.nerveChangeFromNarcoticsQueue, nerveChangeRange);
 					}
 				}

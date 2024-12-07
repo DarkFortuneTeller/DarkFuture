@@ -540,6 +540,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
             withdrawalLevel = 5;
 		} else if withdrawalLevel == 5 {
 			this.SetWithdrawalLevel(0);
+            withdrawalLevel = 0;
 		}
 
 		if withdrawalLevel > 0 {

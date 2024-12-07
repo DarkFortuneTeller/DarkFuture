@@ -11,6 +11,7 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Settings.DFSettings
 import DarkFuture.Main.DFTimeSkipData
+import DarkFuture.Utils.IsRevisedBackpackInstalled
 
 public final class DFStashCraftingSystem extends DFSystem {
     public let inGameMenuGameController: ref<gameuiInGameMenuGameController>;
@@ -127,10 +128,13 @@ protected cb func OnSetUserData(userData: ref<IScriptable>) -> Bool {
 //  a disabled state, instead of always showing "Unavailable" outside of
 //  the Stash context.
 //
+//  Update (1.1): Show the "Unavailable" button if Revised Backpack is installed
+//  in order to avoid a "floating" button.
+//
 @wrapMethod(MenuItemController)
 public final func Init(const menuData: script_ref<MenuData>) -> Void {
     wrappedMethod(menuData);
-    if this.m_menuData.disabled && Equals(inkImageRef.GetTexturePart(this.m_icon), n"ico_cafting") {
+    if this.m_menuData.disabled && Equals(inkImageRef.GetTexturePart(this.m_icon), n"ico_cafting") && !IsRevisedBackpackInstalled() {
         this.GetRootWidget().SetVisible(false);
     }
 }

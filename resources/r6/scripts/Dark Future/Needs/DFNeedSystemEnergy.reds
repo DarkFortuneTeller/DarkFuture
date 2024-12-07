@@ -9,11 +9,15 @@ module DarkFuture.Needs
 
 import DarkFuture.Logging.*
 import DarkFuture.System.*
-import DarkFuture.Utils.RunGuard
+import DarkFuture.Utils.{
+	RunGuard,
+	IsSleeping
+}
 import DarkFuture.Main.{
 	DFNeedsDatum,
 	DFNeedChangeDatum,
-	DFTimeSkipData
+	DFTimeSkipData,
+	DFTimeSkipType
 }
 import DarkFuture.Services.{
 	DFGameStateService,
@@ -26,16 +30,9 @@ import DarkFuture.Services.{
 	DFNotificationCallback
 }
 import DarkFuture.UI.DFHUDBarType
-import DarkFuture.Settings.DFSettings
-
-@wrapMethod(PlayerPuppet)
-protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
-    let effectID: TweakDBID = evt.staticData.GetID();
-	if Equals(effectID, t"HousingStatusEffect.Rested") {
-        DFEnergySystem.Get().RegisterBonusEffectCheckCallback();
-	}
-
-	return wrappedMethod(evt);
+import DarkFuture.Settings.{
+	DFSettings,
+	DFSleepQualitySetting
 }
 
 class DFEnergySystemEventListener extends DFNeedSystemEventListener {
@@ -49,7 +46,6 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private let NerveSystem: ref<DFNerveSystem>;
 
-	private let energyRecoverLimitPerNerveStage: array<Float>;
     private let energyRecoverAmountSleeping: Float = 0.4667;
 	private let stimulantMaxStacks: Uint32 = 4u;
 	private let stimulantEnergyRestoreMultPerStack: Float = 0.25;
@@ -96,7 +92,6 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 			t"DarkFutureStatusEffect.EnergyPenalty_03",
 			t"DarkFutureStatusEffect.EnergyPenalty_04"
 		];
-		this.energyRecoverLimitPerNerveStage = [100.0, 100.0, 100.0, 50.0, 0.0, 0.0];
 	}
 
 	private func DoPostSuspendActions() -> Void {
@@ -118,10 +113,18 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private final func OnTimeSkipFinishedActual(data: DFTimeSkipData) -> Void {
 		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.energy.value - this.GetNeedValue());
-		
-		if data.wasSleeping {
+
+		// If Energy is fully replenished, and the time skip reason is sleeping, clear stimulant.
+		if data.targetNeedValues.energy.value > 99.0 && 
+		   (Equals(data.timeSkipType, DFTimeSkipType.FullSleep) || (Equals(data.timeSkipType, DFTimeSkipType.LimitedSleep))) {
+			
 			this.ClearStimulant();
 		}
+	}
+
+	public final func PerformQuestSleep() -> Void {
+		this.QueueContextuallyDelayedNeedValueChange(100.0);
+		this.ClearStimulant();
 	}
 
 	private final func OnItemConsumedActual(itemData: wref<gameItemData>) {
@@ -260,7 +263,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 		if useStimulant {
 			this.stimulantStacks += 1u;
-			StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
+			this.RefreshStimulantEffect();
 		}
 	}
 
@@ -279,13 +282,19 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		return this.stimulantStacks;
 	}
 
-	private final func GetEnergyChangeWithRecoverLimit(energyValue: Float, nerveValue: Float, isSleeping: Bool) -> Float {
+	private final func GetEnergyChangeWithRecoverLimit(energyValue: Float, timeSkipType: DFTimeSkipType) -> Float {
 		let amountToChange: Float;
 
-		if isSleeping {
-			let nerveStage: Int32 = this.NerveSystem.GetNeedStageAtValue(nerveValue);
-			let recoverLimit: Float = this.energyRecoverLimitPerNerveStage[nerveStage];
-			
+		if IsSleeping(timeSkipType) {
+			let recoverLimit: Float;
+			switch timeSkipType {
+				case DFTimeSkipType.FullSleep:
+					recoverLimit = 100.0;
+					break;
+				case DFTimeSkipType.LimitedSleep:
+					recoverLimit = this.Settings.limitedEnergySleepingInVehicles;
+					break;
+			}
 
 			if energyValue > recoverLimit {
 				amountToChange = this.GetEnergyChange();
@@ -299,7 +308,6 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 					amountToChange = recoverLimit - energyValue;
 				}
 			}
-		
 		} else {
 			amountToChange = this.GetEnergyChange();
 		}
@@ -307,18 +315,27 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		return amountToChange;
 	}
 
+	private func ReevaluateSystem() -> Void {
+		super.ReevaluateSystem();
+		this.RefreshStimulantEffect();
+	}
+
 	private final func RefreshStimulantEffect() -> Void {
 		let validGameState: Bool = this.GameStateService.IsValidGameState("RefreshStimulantEffect");
+		StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
 
 		if validGameState && this.stimulantStacks > 0u {
-			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
-
 			let i: Uint32 = 0u;
 			while i < this.stimulantStacks {
 				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
 				i += 1u;
 			}
 		}
+	}
+
+	public func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt suppressRecoveryNotification: Bool, opt maxOverride: Float) -> Void {
+		super.ChangeNeedValue(amount, uiFlags, suppressRecoveryNotification, maxOverride);
+		this.CheckIfBonusEffectsValid();
 	}
 
 	private final func ClearStimulant() -> Void {

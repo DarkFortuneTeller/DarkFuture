@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<bindings>
+
+	<!-- Base game Input Contexts -->
+	<context name="VehicleDriveBase" append="true" >
+        <action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
+    </context>
+
+	<context name="VehiclePassenger" append="true" >
+		<action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
+	</context>
+
+	<!-- Mappings -->
+	<mapping name="DFVehicleSleepMapping" type="Button" >
+		<button id="IK_X" />
+		<button id="IK_Pad_DigitRight" />
+	</mapping>
+
+	<!-- Hold Actions -->
+    <hold action="DFVehicleSleepAction" timeout="1.0" />
+</bindings>

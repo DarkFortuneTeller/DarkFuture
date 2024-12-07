@@ -95,8 +95,6 @@ private let barClusterfadeOutAnim: ref<inkAnimDef>;
 //
 @wrapMethod(BackpackMainGameController)
 protected cb func OnInitialize() -> Bool {
-	wrappedMethod();
-
 	let gameInstance = GetGameInstance();
 	this.Settings = DFSettings.GetInstance(gameInstance);
 	this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
@@ -113,6 +111,8 @@ protected cb func OnInitialize() -> Bool {
 	
 	this.CreateNeedsBarCluster(parentWidget);
 	this.SetOriginalValuesInUI();
+
+	wrappedMethod();
 }
 
 //	BackpackMainGameController - Update the UI when hovering over consumable items.
@@ -195,6 +195,7 @@ protected cb func OnItemFilterClick(evt: ref<inkPointerEvent>) -> Bool {
 			let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
 			if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) {
 				this.SetBarClusterFadeIn();
+				this.UpdateAllBarsAppearance();
 			} else {
 				this.SetBarClusterFadeOut();
 			}
@@ -217,6 +218,7 @@ protected cb func OnFilterButtonSpawned(widget: ref<inkWidget>, callbackData: re
 		let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
 		if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) {
 			this.SetBarClusterFadeIn();
+			this.UpdateAllBarsAppearance();
 		} else {
 			this.SetBarClusterFadeOut();
 		}
@@ -251,7 +253,6 @@ protected cb func OnItemDisplayHoverOut(evt: ref<ItemDisplayHoverOutEvent>) -> B
 //
 //	New Methods
 //
-
 @addMethod(BackpackMainGameController)
 private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void {
 	this.barCluster = new inkVerticalPanel();
@@ -259,7 +260,8 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 	this.barCluster.SetName(n"NeedsBarCluster");
 	this.barCluster.SetAnchor(inkEAnchor.TopCenter);
 	this.barCluster.SetAnchorPoint(new Vector2(0.5, 0.5));
-	this.barCluster.SetTranslation(new Vector2(675.0, 425.0));
+	this.barCluster.SetScale(new Vector2(this.Settings.backpackUIScale, this.Settings.backpackUIScale));
+	this.barCluster.SetTranslation(new Vector2(this.Settings.backpackUIPosX, this.Settings.backpackUIPosY));
 	this.barCluster.Reparent(parent, 12);
 
 	let rowOne: ref<inkHorizontalPanel> = new inkHorizontalPanel();
@@ -337,6 +339,15 @@ private final func SetBarClusterFadeIn() -> Void {
 	fadeInInterp.SetDuration(0.075);
 	this.barClusterfadeInAnim.AddInterpolator(fadeInInterp);
 	this.barClusterfadeInAnimProxy = this.barCluster.PlayAnimation(this.barClusterfadeInAnim);
+}
+
+@addMethod(BackpackMainGameController)
+private final func UpdateAllBarsAppearance() -> Void {
+	let useProjectE3UI: Bool = this.Settings.compatibilityProjectE3UI;
+	this.hydrationBar.UpdateAppearance(useProjectE3UI);
+	this.nutritionBar.UpdateAppearance(useProjectE3UI);
+	this.energyBar.UpdateAppearance(useProjectE3UI);
+	this.nerveBar.UpdateAppearance(useProjectE3UI);
 }
 
 @addMethod(BackpackMainGameController)

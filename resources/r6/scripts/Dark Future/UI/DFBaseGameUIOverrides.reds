@@ -17,6 +17,21 @@ import DarkFuture.Addictions.{
 //  INVENTORY ITEMS
 // ===================================================
 
+//  UIInventoryItemsManager - Allow ammo to be seen in the inventory.
+//
+@wrapMethod(UIInventoryItemsManager)
+public final static func GetBlacklistedTags() -> array<CName> {
+	let filteredTags: array<CName> = wrappedMethod();
+
+	if DFSettings.Get().ammoWeightEnabled {
+		if ArrayContains(filteredTags, n"Ammo") {
+			ArrayRemove(filteredTags, n"Ammo");
+		};
+	}
+
+	return filteredTags;
+}
+
 //  UIInventoryItemsManager - Prevent the storage of consumables in stash.
 //
 @wrapMethod(UIInventoryItemsManager)
@@ -100,15 +115,30 @@ public func Update(data: ref<MinimalItemTooltipData>) -> Void {
 	this.TryToShowCombatConsumableHeader(data.itemData);
 }
 
+// ItemTooltipBottomModule - Show the price on ammo.
+//
+@wrapMethod(ItemTooltipBottomModule)
+public final static func ShouldDisplayPrice(displayContext: InventoryTooltipDisplayContext, isSellable: Bool, itemData: ref<gameItemData>, itemType: gamedataItemType, opt lootItemType: LootItemType) -> Bool {
+	if NotEquals(displayContext, InventoryTooltipDisplayContext.Vendor) && DFSettings.Get().ammoWeightEnabled && Equals(itemType, gamedataItemType.Con_Ammo) {
+		return true;
+	} else {
+		return wrappedMethod(displayContext, isSellable, itemData, itemType, lootItemType);
+	}
+}
+
 // ItemTooltipBottomModule - Update the weight precision for consumables.
 //
 @addMethod(ItemTooltipBottomModule)
 public final func TryToShowNewItemWeights(itemData: wref<gameItemData>) -> Void {
 	let isConsumable: Bool = itemData.HasTag(n"Consumable");
+	let isAmmo: Bool = itemData.HasTag(n"Ammo");
 
 	if isConsumable {
 		let itemWeight: Float = RPGManager.GetItemWeight(itemData);
 		inkTextRef.SetText(this.m_weightText, s"\(FloatToStringPrec(itemWeight, 1))");
+	} else if isAmmo {
+		let itemWeight: Float = RPGManager.GetItemWeight(itemData);
+		inkTextRef.SetText(this.m_weightText, s"\(FloatToStringPrec(itemWeight, 2))");
 	}
 }
 
@@ -122,11 +152,10 @@ public final func NEW_Update(data: wref<UIInventoryItem>, player: wref<PlayerPup
 	}
 }
 
-// ItemQuantityPickerController - Update the weight precision of consumables when dropping.
+// ItemQuantityPickerController - Update the weight precision of consumables and ammo when dropping.
 //
 @replaceMethod(ItemQuantityPickerController)
 protected final func UpdateWeight() -> Void {
-	let shouldUpdateWeight: Bool = DFSettings.Get().mainSystemEnabled;
 	let itemData: ref<gameItemData>;
 	if IsDefined(this.m_inventoryItem) {
 		itemData = this.m_inventoryItem.GetItemData();
@@ -136,9 +165,12 @@ protected final func UpdateWeight() -> Void {
 	
 	let weight: Float = RPGManager.GetItemWeight(itemData) * Cast<Float>(this.m_choosenQuantity);
 	let isConsumable: Bool = itemData.HasTag(n"Consumable");
+	let isAmmo: Bool = itemData.HasTag(n"Ammo");
 
-	if shouldUpdateWeight && isConsumable {
+	if isConsumable {
 		inkTextRef.SetText(this.m_weightText, FloatToStringPrec(weight, 1));
+	} else if isAmmo {
+		inkTextRef.SetText(this.m_weightText, FloatToStringPrec(weight, 2));
 	} else {
 		inkTextRef.SetText(this.m_weightText, FloatToStringPrec(weight, 0));
 	}
@@ -147,6 +179,7 @@ protected final func UpdateWeight() -> Void {
 // ItemCategoryFliter
 //		Remove Healing Items from Consumables.
 //		Cluster all Charged Consumables under the same category.
+//		Locate Ammo under Ranged Weapons.
 //
 @wrapMethod(ItemCategoryFliter)
 public final static func IsOfCategoryType(filter: ItemFilterCategory, data: wref<gameItemData>) -> Bool {
@@ -156,14 +189,17 @@ public final static func IsOfCategoryType(filter: ItemFilterCategory, data: wref
 			return data.HasTag(n"Consumable") && !data.HasTag(n"ChargedConsumable");
 		} else if Equals(filter, ItemFilterCategory.Grenades) {
 			return data.HasTag(n"ChargedConsumable");
-		};
-	};
+		} else if Equals(filter, ItemFilterCategory.RangedWeapons) && settings.ammoWeightEnabled {
+			return data.HasTag(n"RangedWeapon") || data.HasTag(n"Ammo");
+		}
+	}
 	return wrappedMethod(filter, data);
 }
 
 //	CraftingDataView
 //		Remove Healing Items from Consumables.
 //		Cluster all Charged Consumables under the same category.
+//		Locate Ammo under Ranged Weapons.
 //
 @wrapMethod(CraftingDataView)
 public func FilterItem(item: ref<IScriptable>) -> Bool {
@@ -185,7 +221,9 @@ public func FilterItem(item: ref<IScriptable>) -> Bool {
 			return itemRecord.TagsContains(n"Consumable") && !itemRecord.TagsContains(n"ChargedConsumable");
 		} else if Equals(this.m_itemFilterType, ItemFilterCategory.Grenades) {
 			return itemRecord.TagsContains(n"ChargedConsumable");
-		};
+		} else if Equals(this.m_itemFilterType, ItemFilterCategory.RangedWeapons) && settings.ammoWeightEnabled {
+			return itemRecord.TagsContains(n"Ammo");
+		}
 	}
 
 	return wrappedMethod(item);
@@ -197,9 +235,15 @@ public func FilterItem(item: ref<IScriptable>) -> Bool {
 @wrapMethod(ItemFilterCategories)
 public final static func GetLabelKey(filterType: ItemFilterCategory) -> CName {
 	let settings: ref<DFSettings> = DFSettings.Get();
-	if settings.mainSystemEnabled && settings.newInventoryFilters {
-		if Equals(filterType, ItemFilterCategory.Grenades) {
+	if settings.mainSystemEnabled {
+		if settings.newInventoryFilters && Equals(filterType, ItemFilterCategory.Grenades) {
 			return n"UI-Filter-DarkFutureChargedConsumables";
+		}
+
+		if settings.ammoWeightEnabled {
+			if Equals(filterType, ItemFilterCategory.RangedWeapons) {
+				return n"UI-Filter-DarkFutureRangedWeaponsAmmo";
+			}
 		}
 	}
 
@@ -214,43 +258,41 @@ public final static func GetLabelKey(filterType: ItemFilterCategory) -> CName {
 //
 @wrapMethod(buffListGameController)
 protected cb func OnBuffDataChanged(value: Variant) -> Bool {
-	if DFSettings.Get().hidePersistentStatusIcons {
-		let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
-    	wrappedMethod(filteredBuffDataList);
-	} else {
-		wrappedMethod(value);
-	}
+	let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
+    wrappedMethod(filteredBuffDataList);
 }
 
 // buffListGameController - Selectively hide certain status icons based on settings.
 //
 @wrapMethod(buffListGameController)
 protected cb func OnDeBuffDataChanged(value: Variant) -> Bool {
-	if DFSettings.Get().hidePersistentStatusIcons {
-    	let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
-    	wrappedMethod(filteredBuffDataList);
-	} else {
-		wrappedMethod(value);
-	}
+	let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
+    wrappedMethod(filteredBuffDataList);
 }
 
 // buffListGameController - Selectively hide certain status icons based on settings.
 //
 @addMethod(buffListGameController)
 private final func GetFilteredBuffList(value: Variant) -> array<BuffInfo> {
+	let hideDFPersistentStatusIcons: Bool = DFSettings.Get().hidePersistentStatusIcons;
 	let buffDataList: array<BuffInfo> = FromVariant<array<BuffInfo>>(value);
 	let filteredBuffDataList: array<BuffInfo>;
 	for buff in buffDataList {
 		let buffTags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buff.buffID).GameplayTags();
-		if !ArrayContains(buffTags, n"DarkFutureCanHideOnBuffBar") {
+		
+		if buff.timeRemaining <= 0.0 && !ArrayContains(buffTags, n"DarkFutureInfiniteDurationEffect") {
+			// Filter out buffs that are infinite duration, but don't have the infinite duration Dark Future tag.
+		
+		} else if hideDFPersistentStatusIcons && ArrayContains(buffTags, n"DarkFutureCanHideOnBuffBar") {
+			// Filter out buffs that should be hidden on the buff bar regardless based on Dark Future settings.
+
+		} else {
 			ArrayPush(filteredBuffDataList, buff);
 		}
 	}
 
 	return filteredBuffDataList;
 }
-
-
 
 // inkCooldownGameController - The Status Effect Cooldown system, by default, doesn't know how to handle displaying Status Effects that
 // have an infinite duration.
@@ -261,7 +303,7 @@ public final func RequestCooldownVisualization(buffData: UIBuffInfo) -> Void {
 	// Edit Start
 	// -1.00 = Infinite Duration
 	let tags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buffData.buffID).GameplayTags();
-    if buffData.timeRemaining <= 0.00 && !ArrayContains(tags, n"DarkFutureInfiniteDurationEffect") {
+    if buffData.timeRemaining <= 0.0 && !ArrayContains(tags, n"DarkFutureInfiniteDurationEffect") {
 		return;
 	// Edit End
     };
@@ -360,7 +402,7 @@ private final func SetTimeRemaining(time: Float) -> Void {
 
 @replaceMethod(SingleCooldownManager)
 public final func Update(timeLeft: Float, stackCount: Uint32) -> Void {
-    let fraction: Float;
+	let fraction: Float;
     let updatedSize: Float;
 	// Edit Start
 	if timeLeft <= 0.01 && !ArrayContains(this.m_gameplayTags, n"DarkFutureInfiniteDurationEffect") {
@@ -385,4 +427,26 @@ public final func Update(timeLeft: Float, stackCount: Uint32) -> Void {
     if timeLeft <= this.m_outroDuration {
       this.FillOutroAnimationStart();
     };
+}
+
+@wrapMethod(SingleplayerMenuGameController)
+protected cb func OnInitialize() -> Bool {
+	let r = wrappedMethod();
+
+	let srh: wref<inkISystemRequestsHandler> = this.GetSystemRequestsHandler();
+
+	if IsDefined(srh) {
+		let langGroup: ref<ConfigGroup> = srh.GetUserSettings().GetGroup(n"/language");
+		let subtitleVar: ref<ConfigVarListName> = langGroup.GetVar(n"Subtitles") as ConfigVarListName;
+		let onscreenVar: ref<ConfigVarListName> = langGroup.GetVar(n"OnScreen") as ConfigVarListName;
+
+		let subtitleValue = subtitleVar.GetValue();
+		let onscreenValue = onscreenVar.GetValue();
+
+		if NotEquals(subtitleValue, onscreenValue) {
+			srh.RequestSystemNotificationGeneric(n"DarkFutureWarningInvalidLanguageSettingTitle", n"DarkFutureWarningInvalidLanguageSetting");
+		}
+	}
+	
+	return r;
 }

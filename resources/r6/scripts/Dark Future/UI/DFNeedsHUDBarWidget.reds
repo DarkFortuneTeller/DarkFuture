@@ -414,10 +414,11 @@ public class DFNeedsHUDBar extends inkCanvas {
     private let m_previousValue: Float = 1.0;
     private let m_MaxChangeNegativeBarFlashSize: Float = 500.0;
     private let m_animDuration: Float = 2.0;
+    private let m_inDanger: Bool = false;
 
     private let m_pulseStopDelayID: DelayID;
     private let m_pulseStopDelayInterval: Float = 3.0;
-    private let m_continuousPulseAtLowThreshold: Bool = false;
+    private let m_continuousPulseAtLowThresholdInCombat: Bool = false;
     private let m_continuousPulseThreshold: Float = 0.0;
 
     private let m_shouldForceBrightOnNextFadeIn: Bool = false;
@@ -440,8 +441,13 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     public final func SetPulseContinuouslyAtLowThreshold(pulse: Bool, opt threshold: Float) -> Void {
-        this.m_continuousPulseAtLowThreshold = pulse;
+        this.m_continuousPulseAtLowThresholdInCombat = pulse;
         this.m_continuousPulseThreshold = threshold;
+    }
+
+    public final func SetInDanger(inDanger: Bool) -> Void {
+        this.m_inDanger = inDanger;
+        this.EvaluateBarPulse(this.m_currentValue, this.m_previousValue);
     }
 
     private final func CreateBar() -> ref<inkCanvas> {
@@ -596,6 +602,21 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_changeNegativeBar.SetTintColor(newColorTheme.ChangeNegativeColor);
     }
 
+    public final func UpdateShear(shouldShear: Bool) {
+        let shear: Float = 0.0;
+        if shouldShear {
+            shear = 0.5;
+        }
+
+        this.m_bg.SetShear(new Vector2(shear, 0.0));
+        this.m_emptyBar.SetShear(new Vector2(shear, 0.0));
+        this.m_border.SetShear(new Vector2(shear, 0.0));
+        this.m_fullBar.SetShear(new Vector2(shear, 0.0));
+        this.m_barcap.SetShear(new Vector2(shear, 0.0));
+        this.m_changePositiveBar.SetShear(new Vector2(shear, 0.0));
+        this.m_changeNegativeBar.SetShear(new Vector2(shear, 0.0));
+    }
+
     private final func StopAnimProxyIfDefined(animProxy: ref<inkAnimProxy>) -> Void {
         if IsDefined(animProxy) {
             animProxy.Stop();
@@ -720,7 +741,7 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     private final func EvaluateBarPulse(currentValue: Float, previousValue: Float) -> Void {
-        if this.m_continuousPulseAtLowThreshold && currentValue <= this.m_continuousPulseThreshold {
+        if this.m_continuousPulseAtLowThresholdInCombat && currentValue <= this.m_continuousPulseThreshold && this.m_inDanger {
             this.SetPulse(true);
         } else if previousValue > 0.5 && currentValue <= 0.5 {
             this.SetPulse();
@@ -778,7 +799,8 @@ public class DFNeedsHUDBar extends inkCanvas {
                 this.m_barGroup.RegisterForDisplayRecheckAfterForceBright();
             }
         } else {
-            targetTransparency = this.m_currentValue > 0.85 ? 0.15 : 1.15 - this.m_currentValue;
+            let minOpacity: Float = DFSettings.Get().hudUIMinOpacity / 100.0;
+            targetTransparency = this.m_currentValue > 0.85 ? minOpacity : (1.0 + minOpacity) - this.m_currentValue;
         }
 
         this.m_fadeIn_anim = new inkAnimDef();

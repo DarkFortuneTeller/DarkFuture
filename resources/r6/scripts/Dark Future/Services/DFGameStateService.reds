@@ -37,7 +37,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 
     if IsSystemEnabledAndRunning(gameStateService) {
         let effectTags: array<CName> = evt.staticData.GameplayTags();
-        if ArrayContains(effectTags, n"InFury") {
+        if ArrayContains(effectTags, n"InFury") || gameStateService.IsWannabeEdgerunnerPsychosisEffect(evt.staticData.GetID()) {
             gameStateService.OnFuryStateChanged(true);
         }
 
@@ -55,8 +55,10 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 
     if IsSystemEnabledAndRunning(gameStateService) {
         let effectTags: array<CName> = evt.staticData.GameplayTags();
-        if ArrayContains(effectTags, n"InFury") {
-            gameStateService.OnFuryStateChanged(false);
+        if ArrayContains(effectTags, n"InFury") || gameStateService.IsWannabeEdgerunnerPsychosisEffect(evt.staticData.GetID()) {
+            if !gameStateService.PlayerHasAnyFuryEffect() {
+                gameStateService.OnFuryStateChanged(false);
+            }
         }
 
         if ArrayContains(effectTags, n"CyberspacePresence") {
@@ -128,11 +130,13 @@ public final class DFGameStateService extends DFSystem {
     private let gameplayTierChangeListener: ref<CallbackHandle>;
     private let replacerChangeListener: ref<CallbackHandle>;
     private let baseGameIntroMissionFactListener: Uint32;
+    private let baseGameQ101ShowerMissionFactListener: Uint32;
     private let phantomLibertyIntroFactListener: Uint32;
     private let baseGamePointOfNoReturnFactListener: Uint32;
 
     private let gameplayTier: GameplayTier = GameplayTier.Tier1_FullGameplay;
     private let baseGameIntroMissionDone: Bool = false;
+    private let baseGameQ101ShowerDone: Bool = false;
     private let phantomLibertyIntroDone: Bool = false;
     private let baseGamePointOfNoReturnDone: Bool = false;
     private let isReplacer: Bool = false;
@@ -167,6 +171,7 @@ public final class DFGameStateService extends DFSystem {
     private func DoPostSuspendActions() -> Void {
         this.gameplayTier = GameplayTier.Tier1_FullGameplay;
         this.baseGameIntroMissionDone = false;
+        this.baseGameQ101ShowerDone = false;
         this.phantomLibertyIntroDone = false;
         this.isReplacer = false;
         this.isInSleepCinematic = false;
@@ -176,6 +181,7 @@ public final class DFGameStateService extends DFSystem {
     private func DoPostResumeActions() -> Void {
         this.OnSceneTierChange(this.player.GetPlayerStateMachineBlackboard().GetInt(GetAllBlackboardDefs().PlayerStateMachine.SceneTier));
         this.OnBaseGameIntroMissionFactChanged(this.QuestsSystem.GetFact(n"q001_01_go_to_sleep_done"));
+        this.OnBaseGameQ101ShowerMissionFactChanged(this.QuestsSystem.GetFact(n"q101_enable_activities_flat"));
         this.OnPhantomLibertyIntroFactChanged(this.QuestsSystem.GetFact(n"q301_00_done"));
         this.OnReplacerChanged(this.player.IsReplacer());
         this.OnFuryStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury"), true);
@@ -200,6 +206,7 @@ public final class DFGameStateService extends DFSystem {
     private func RegisterListeners() -> Void {
         this.gameplayTierChangeListener = this.playerStateMachineBlackboard.RegisterListenerInt(this.playerSMDef.SceneTier, this, n"OnSceneTierChange", true);
         this.baseGameIntroMissionFactListener = this.QuestsSystem.RegisterListener(n"q001_01_go_to_sleep_done", this, n"OnBaseGameIntroMissionFactChanged");
+        this.baseGameQ101ShowerMissionFactListener = this.QuestsSystem.RegisterListener(n"q101_enable_activities_flat", this, n"OnBaseGameQ101ShowerMissionFactChanged");
         this.baseGamePointOfNoReturnFactListener = this.QuestsSystem.RegisterListener(n"q115_point_of_no_return", this, n"OnBaseGamePointOfNoReturnFactChanged");
         this.phantomLibertyIntroFactListener = this.QuestsSystem.RegisterListener(n"q301_00_done", this, n"OnPhantomLibertyIntroFactChanged");
     }
@@ -211,6 +218,9 @@ public final class DFGameStateService extends DFSystem {
         this.QuestsSystem.UnregisterListener(n"q001_01_go_to_sleep_done", this.baseGameIntroMissionFactListener);
         this.baseGameIntroMissionFactListener = 0u;
 
+        this.QuestsSystem.UnregisterListener(n"q101_enable_activities_flat", this.baseGameQ101ShowerMissionFactListener);
+        this.baseGameQ101ShowerMissionFactListener = 0u;
+
         this.QuestsSystem.UnregisterListener(n"q115_point_of_no_return", this.baseGamePointOfNoReturnFactListener);
         this.baseGamePointOfNoReturnFactListener = 0u;
 
@@ -220,6 +230,7 @@ public final class DFGameStateService extends DFSystem {
 
     private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
         this.OnBaseGameIntroMissionFactChanged(this.QuestsSystem.GetFact(n"q001_01_go_to_sleep_done"));
+        this.OnBaseGameQ101ShowerMissionFactChanged(this.QuestsSystem.GetFact(n"q101_enable_activities_flat"));
         this.OnPhantomLibertyIntroFactChanged(this.QuestsSystem.GetFact(n"q301_00_done"));
         this.OnReplacerChanged(this.player.IsReplacer());
     }
@@ -255,6 +266,11 @@ public final class DFGameStateService extends DFSystem {
     private final func OnBaseGameIntroMissionFactChanged(value: Int32) -> Void {
         DFLog(this.debugEnabled, this, "OnBaseGameIntroMissionFactChanged value = " + ToString(value));
         this.baseGameIntroMissionDone = value == 1 ? true : false;
+    }
+
+    private final func OnBaseGameQ101ShowerMissionFactChanged(value: Int32) -> Void {
+        DFLog(this.debugEnabled, this, "OnBaseGameQ101ShowerMissionFactChanged value = " + ToString(value));
+        this.baseGameQ101ShowerDone = value == 1 ? true : false;
     }
 
     private final func OnBaseGamePointOfNoReturnFactChanged(value: Int32) -> Void {
@@ -297,8 +313,8 @@ public final class DFGameStateService extends DFSystem {
             return GameState.Invalid;
         }
         
-        if !this.baseGameIntroMissionDone && !this.phantomLibertyIntroDone {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGameIntroMissionDone=" + ToString(this.baseGameIntroMissionDone) + ", this.phantomLibertyIntroDone=" + ToString(this.phantomLibertyIntroDone));
+        if !this.baseGameIntroMissionDone && !this.baseGameQ101ShowerDone && !this.phantomLibertyIntroDone {
+            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGameIntroMissionDone=" + ToString(this.baseGameIntroMissionDone) + ", this.baseGameQ101ShowerDone=" + ToString(this.baseGameQ101ShowerDone) + ", this.phantomLibertyIntroDone=" + ToString(this.phantomLibertyIntroDone));
             return GameState.Invalid;
         }
 
@@ -368,4 +384,27 @@ public final class DFGameStateService extends DFSystem {
             this.NotificationService.QueueNotification(oneTimeBarDisplay);
 		}
 	}
+
+    public final func PlayerHasAnyFuryEffect() -> Bool {
+        return StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury") || 
+                (this.Settings.compatibilityWannabeEdgerunner && 
+                    (
+                        StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.NewPsychosisEffectNormalFx") ||
+                        StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.NewPsychosisEffectLightFx")
+                    )
+                );
+    }
+
+    //
+	//	Wannabe Edgerunner
+	//
+    public final func IsWannabeEdgerunnerPsychosisEffect(id: TweakDBID) -> Bool {
+        if this.Settings.compatibilityWannabeEdgerunner {
+            if Equals(id, t"BaseStatusEffect.NewPsychosisEffectNormalFx") || Equals(id, t"BaseStatusEffect.NewPsychosisEffectLightFx") {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

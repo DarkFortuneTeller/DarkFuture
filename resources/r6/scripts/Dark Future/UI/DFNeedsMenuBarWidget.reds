@@ -23,7 +23,6 @@ public struct DFNeedsMenuBarSetupData {
     public let translationX: Float;
     public let translationY: Float;
     public let showEmptyBar: Bool;
-    
 }
 
 public class DFNeedsMenuBar extends inkCanvas {
@@ -33,10 +32,17 @@ public class DFNeedsMenuBar extends inkCanvas {
     private let m_height: Float;
 
     private let m_rootWidget: ref<inkCanvas>;
+    private let m_icon: ref<inkImage>;
+    private let m_labelPanel: ref<inkFlex>;
+    private let m_barLabel: ref<inkText>;
+    private let m_bg: ref<inkRectangle>;
+    private let m_border: ref<inkBorderConcrete>;
     private let m_fullBar: ref<inkRectangle>;
     private let m_emptyBar: ref<inkRectangle>;
     private let m_changeBar: ref<inkRectangle>;
     private let m_valueLabel: ref<inkText>;
+
+    private let m_originalValueLabelTintColor: HDRColor;
 
     private let m_originalValue: Float = 1.0;
     private let m_currentValue: Float = 1.0;
@@ -90,6 +96,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         icon.SetAtlasResource(this.m_setupData.iconPath);
         icon.SetTexturePart(this.m_setupData.iconName);
         icon.Reparent(horizPanel);
+        this.m_icon = icon;
 
         let vertPanel: ref<inkVerticalPanel> = new inkVerticalPanel();
         vertPanel.SetName(n"vertPanel");
@@ -102,9 +109,10 @@ public class DFNeedsMenuBar extends inkCanvas {
         let labelPanel: ref<inkFlex> = new inkFlex();
         labelPanel.SetName(n"labelPanel");
         labelPanel.SetAnchor(inkEAnchor.Fill);
-        labelPanel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
+        //labelPanel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
         labelPanel.SetSize(new Vector2(this.m_setupData.canvasWidth * 0.875, 32.0));
         labelPanel.Reparent(vertPanel);
+        this.m_labelPanel = labelPanel;
 
         let barLabel: ref<inkText> = new inkText();
         barLabel.SetName(n"barLabel");
@@ -117,6 +125,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         barLabel.SetHAlign(inkEHorizontalAlign.Left);
         barLabel.SetVAlign(inkEVerticalAlign.Bottom);
         barLabel.Reparent(labelPanel);
+        this.m_barLabel = barLabel;
 
         let valueLabel: ref<inkText> = new inkText();
         valueLabel.SetName(n"valueLabel");
@@ -152,6 +161,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         bg.SetSize(new Vector2(this.m_setupData.canvasWidth * 0.875, 10.0));
         bg.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.FaintPanelRed));
         bg.Reparent(wrapper);
+        this.m_bg = bg;
 
         let border: ref<inkBorderConcrete> = new inkBorderConcrete();
         border.SetName(n"border");
@@ -164,6 +174,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         border.SetThickness(2.0);
         border.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
         border.Reparent(wrapper);
+        this.m_border = border;
 
         let logic: ref<inkHorizontalPanel> = new inkHorizontalPanel();
         logic.SetName(n"logic");
@@ -243,7 +254,7 @@ public class DFNeedsMenuBar extends inkCanvas {
             this.m_changeBar.SetMargin(negativeMargin);
 
         } else {
-            this.m_valueLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
+            this.m_valueLabel.SetTintColor(this.m_originalValueLabelTintColor);
             this.m_fullBar.SetSize(new Vector2((this.m_width * this.m_previousValue) - 2.0, this.m_barContentHeight));
             this.m_changeBar.SetSize(new Vector2(0.0, this.m_barContentHeight));
         }
@@ -256,5 +267,33 @@ public class DFNeedsMenuBar extends inkCanvas {
 
     public final func GetFullSize() -> Vector2 {
         return new Vector2(this.m_width, this.m_height);
+    }
+
+    public final func UpdateAppearance(useProjectE3UI: Bool) {
+        let shear: Float = useProjectE3UI ? 0.0 : 0.5;
+
+        let iconColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.MildWhite) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
+        let barLabelColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.MildWhite) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
+
+        let tintColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.White) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
+        let faintTintColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.FaintWhite) : GetDarkFutureHDRColor(DFHDRColor.FaintPanelRed);
+        let mildTintColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.MildWhite) : GetDarkFutureHDRColor(DFHDRColor.MildRed);
+
+        this.m_icon.SetTintColor(iconColor);
+        this.m_barLabel.SetTintColor(barLabelColor);
+        this.m_valueLabel.SetTintColor(tintColor);
+        this.m_originalValueLabelTintColor = tintColor;
+        
+        this.m_bg.SetTintColor(faintTintColor);
+        this.m_bg.SetShear(new Vector2(shear, 0.0));
+
+        this.m_border.SetTintColor(tintColor);
+        this.m_border.SetShear(new Vector2(shear, 0.0));
+        
+        this.m_fullBar.SetTintColor(mildTintColor);
+        this.m_fullBar.SetShear(new Vector2(shear, 0.0));
+
+        this.m_emptyBar.SetShear(new Vector2(shear, 0.0));
+        this.m_changeBar.SetShear(new Vector2(shear, 0.0));
     }
 }

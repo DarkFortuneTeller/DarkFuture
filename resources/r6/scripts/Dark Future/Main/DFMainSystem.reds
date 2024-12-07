@@ -18,7 +18,9 @@ import DarkFuture.Services.{
 }
 import DarkFuture.Gameplay.{
     DFInteractionSystem,
+    DFVehicleSleepSystem,
     DFVehicleSummonSystem,
+    DFRandomEncounterSystem,
     DFStashCraftingSystem
 }
 import DarkFuture.Needs.{
@@ -75,11 +77,17 @@ public struct DFFutureHoursData {
     public let futureAddictionData: array<DFAddictionDatum>;
 }
 
+public enum DFTimeSkipType {
+    TimeSkip = 0,
+    FullSleep = 1,
+    LimitedSleep = 2
+}
+
 public struct DFTimeSkipData {
     public let targetNeedValues: DFNeedsDatum;
     public let targetAddictionValues: DFAddictionDatum;
     public let hoursSkipped: Int32;
-    public let wasSleeping: Bool;
+    public let timeSkipType: DFTimeSkipType;
 }
 
 @wrapMethod(RadialWheelController)
@@ -96,9 +104,9 @@ protected cb func OnLateInit(evt: ref<LateInit>) -> Bool {
 	return val;
 }
 
-@wrapMethod(PlayerPuppet)
-protected cb func OnDeath(evt: ref<gameDeathEvent>) -> Bool {
-	let val: Bool = wrappedMethod(evt);
+@wrapMethod(DeathMenuGameController)
+protected cb func OnInitialize() -> Bool {
+	let val: Bool = wrappedMethod();
 	
 	let DFMainSystem: ref<DFMainSystem> = DFMainSystem.Get();
 	DFMainSystem.DispatchPlayerDeathEvent();
@@ -271,9 +279,11 @@ public final class DFMainSystem extends ScriptableSystem {
         DFPlayerStateService.GetInstance(gameInstance).Init(this.player);
 
         // Gameplay Systems
+        DFVehicleSleepSystem.GetInstance(gameInstance).Init(this.player);
         DFVehicleSummonSystem.GetInstance(gameInstance).Init(this.player);
         DFInteractionSystem.GetInstance(gameInstance).Init(this.player);
         DFStashCraftingSystem.GetInstance(gameInstance).Init(this.player);
+        DFRandomEncounterSystem.GetInstance(gameInstance).Init(this.player);
 
         // Basic Needs
         DFHydrationSystem.GetInstance(gameInstance).Init(this.player);
@@ -317,9 +327,11 @@ public final class DFMainSystem extends ScriptableSystem {
         DFPlayerStateService.GetInstance(gameInstance).Resume();
 
         // Gameplay Systems
+        DFVehicleSleepSystem.GetInstance(gameInstance).Resume();
         DFVehicleSummonSystem.GetInstance(gameInstance).Resume();
         DFInteractionSystem.GetInstance(gameInstance).Resume();
         DFStashCraftingSystem.GetInstance(gameInstance).Resume();
+        DFRandomEncounterSystem.GetInstance(gameInstance).Resume();
 
         // Basic Needs
         DFHydrationSystem.GetInstance(gameInstance).Resume();
@@ -378,9 +390,11 @@ public final class DFMainSystem extends ScriptableSystem {
         DFHydrationSystem.GetInstance(gameInstance).Suspend();
         
         // Gameplay Systems
+        DFRandomEncounterSystem.GetInstance(gameInstance).Suspend();
         DFStashCraftingSystem.GetInstance(gameInstance).Suspend();
         DFInteractionSystem.GetInstance(gameInstance).Suspend();
         DFVehicleSummonSystem.GetInstance(gameInstance).Suspend();
+        DFVehicleSleepSystem.GetInstance(gameInstance).Suspend();
 
         // Services
         DFPlayerStateService.GetInstance(gameInstance).Suspend();

@@ -12,6 +12,7 @@ import DarkFuture.Main.{
 	DFNeedChangeDatum
 }
 import DarkFuture.Needs.DFNerveSystem
+import DarkFuture.Settings.*
 
 // Allow certain types of consumables (Black Lace, etc) to be used in combat.
 // Fix a base game bug that prevented Inhalers and Injectors from being swapped between in the Backpack Inventory (but not
@@ -138,27 +139,25 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 
 public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) -> DFNeedsDatum {
 	// Consumable Need Restoration Values
-	let HydrationTier1: Float = 5.0;
-	let HydrationTier2: Float = 10.0;
-	let HydrationTier3: Float = 15.0;
+	let Settings: ref<DFSettings> = DFSettings.Get();
 
-	let NutritionTier1: Float = 3.0;
-	let NutritionTier2: Float = 5.0;
-	let NutritionTier3: Float = 8.0;
-	let NutritionTier4: Float = 10.0;
-	let NutritionTier5: Float = 12.0;
-	let NutritionTier6: Float = 15.0;
-	let NutritionTier7: Float = 18.0;
+	let HydrationTier1: Float = Settings.hydrationTier1;  // Soda, convenience drinks
+	let HydrationTier2: Float = Settings.hydrationTier2;  // Water
+	let HydrationTier3: Float = Settings.hydrationTier3;  // Large water
+
+	let NutritionTier1: Float = Settings.nutritionTier1;  // Small convenience snacks
+	let NutritionTier2: Float = Settings.nutritionTier2;  // Protein bars, etc
+	let NutritionTier3: Float = Settings.nutritionTier3;  // Meals
+	let NutritionTier4: Float = Settings.nutritionTier4;  // Large Meals
 
 	let BoosterPenaltyTier1: Float = -15.0;
 	let BoosterPenaltyTier2: Float = -25.0;
 
-	let EnergyTier1: Float = 15.0;
-	let EnergyTier2: Float = 25.0;
-	let EnergyTier3: Float = 35.0;
-	let EnergyTier4: Float = 40.0;
+	let EnergyTier1: Float = Settings.energyTier1;
+	let EnergyTier2: Float = Settings.energyTier2;
+	let EnergyTier3: Float = Settings.energyTier3;
 
-	let CigarettesNerve: Float = 15.0;
+	let CigarettesNerve: Float = Settings.nerveCigarettes;
 
 	// When the Alcohol Status is applied, it restores 5 Nerve in order
 	// for [Drink] dialogue choices to restore Nerve outside of consuming
@@ -168,22 +167,25 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	// you've gotten the Alcohol status effect.) These Nerve changes occur in
 	// addition to the +5 change in order to reflect the effect magnitude 
 	// listed on the item.
-	let AlcoholNerveOnStatusEffectApply: Float = 5.0;
+	let AlcoholNerveOnStatusEffectApply: Float = Settings.nerveAlcoholTier1;
 
-	let AlcoholNerveTier1: Float = 0.0;  // 5
-	let AlcoholNerveTier2: Float = 1.0;  // 6
-	let AlcoholNerveTier3: Float = 3.0;  // 8
-	let AlcoholNerveTier4: Float = 5.0; // 10
+	let AlcoholNerveTier1: Float = 0.0;  // 6
+	let AlcoholNerveTier2: Float = Settings.nerveAlcoholTier2 - Settings.nerveAlcoholTier1;  // 8
+	let AlcoholNerveTier3: Float = Settings.nerveAlcoholTier3 - Settings.nerveAlcoholTier1; // 10
 
-	let NervePenaltyTier1: Float = -1.0;
-	let NervePenaltyTier2: Float = -2.0;
-	let NervePenaltyTier3: Float = -3.0;
+	// Nerve Penalties are always 40% of benefit on low-quality consumables.
+	let NervePenaltyDrinkTier1: Float = Cast<Float>(-1 * CeilF(Settings.hydrationTier1 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
+	let NervePenaltyFoodTier1: Float = Cast<Float>(-1 * CeilF(Settings.nutritionTier1 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
+	let NervePenaltyFoodTier2: Float = Cast<Float>(-1 * CeilF(Settings.nutritionTier2 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
+	let NervePenaltyFoodTier3: Float = Cast<Float>(-1 * CeilF(Settings.nutritionTier3 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
+
+	let NervePenaltyDeathTest: Float = -95.0;
 
 	let DrugNerveAmount: Float = 30.0;
 	let DrugEnergyPenaltyLow: Float = -15.0;
 	let DrugEnergyPenaltyMed: Float = -50.0;
 
-	let LowQualityConsumableNerveLossLimit: Float = 70.0;
+	let LowQualityConsumableNerveLossLimit: Float = Settings.nerveLowQualityConsumablePenaltyLimit;
 
 	let consumableBasicNeedsData: DFNeedsDatum;
 
@@ -221,12 +223,6 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 			consumableBasicNeedsData.nutrition.value = NutritionTier3;
 		} else if itemData.HasTag(n"DarkFutureConsumableNutritionTier4") {
 			consumableBasicNeedsData.nutrition.value = NutritionTier4;
-		} else if itemData.HasTag(n"DarkFutureConsumableNutritionTier5") {
-			consumableBasicNeedsData.nutrition.value = NutritionTier5;
-		} else if itemData.HasTag(n"DarkFutureConsumableNutritionTier6") {
-			consumableBasicNeedsData.nutrition.value = NutritionTier6;
-		} else if itemData.HasTag(n"DarkFutureConsumableNutritionTier7") {
-			consumableBasicNeedsData.nutrition.value = NutritionTier7;
 		}
 	}
 
@@ -246,8 +242,6 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 			consumableBasicNeedsData.energy.value = EnergyTier2;
 		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier3") {
 			consumableBasicNeedsData.energy.value = EnergyTier3;
-		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier4") {
-			consumableBasicNeedsData.energy.value = EnergyTier4;
 		}
 	}
 
@@ -265,20 +259,19 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 		} else if itemData.HasTag(n"DarkFutureConsumableAlcoholNerveTier3") {
 			consumableBasicNeedsData.nerve.value = AlcoholNerveTier3;
 			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
-		} else if itemData.HasTag(n"DarkFutureConsumableAlcoholNerveTier4") {
-			consumableBasicNeedsData.nerve.value = AlcoholNerveTier4;
-			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
 		}
 	}
 
 	// Nerve Penalty from lower-quality consumables
 	if itemData.HasTag(n"DarkFutureConsumableNervePenaltyOnConsume") {
-		if itemData.HasTag(n"DarkFutureConsumableNervePenaltyOnConsumeTier1") {
-			consumableBasicNeedsData.nerve.value = NervePenaltyTier1;
-		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyOnConsumeTier2") {
-			consumableBasicNeedsData.nerve.value = NervePenaltyTier2;
-		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyOnConsumeTier3") {
-			consumableBasicNeedsData.nerve.value = NervePenaltyTier3;
+		if itemData.HasTag(n"DarkFutureConsumableNervePenaltyDrinkOnConsumeTier1") {
+			consumableBasicNeedsData.nerve.value = NervePenaltyDrinkTier1;
+		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier1") {
+			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier1;
+		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier2") {
+			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier2;
+		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier3") {
+			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier3;
 		}
 		consumableBasicNeedsData.nerve.floor = LowQualityConsumableNerveLossLimit;
 	}
@@ -297,6 +290,11 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	// Sedation Drug
 	if itemData.HasTag(n"DarkFutureConsumableSedationDrug") {
 		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyLow;
+	}
+
+	// Nerve Death Test Item
+	if itemData.HasTag(n"DarkFutureConsumableNerveDeathTest") {
+		consumableBasicNeedsData.nerve.value = NervePenaltyDeathTest;
 	}
 
 	return consumableBasicNeedsData;

@@ -15,6 +15,7 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.DelayHelper.*
 import DarkFuture.Settings.*
+import DarkFuture.Utils.IsSleeping
 import DarkFuture.Utils.HoursToGameTimeSeconds
 import DarkFuture.Main.{
 	DFMainSystem,
@@ -23,7 +24,8 @@ import DarkFuture.Main.{
 	DFAddictionUpdateDatum,
 	DFFutureHoursData,
 	DFNeedChangeDatum,
-	DFTimeSkipData
+	DFTimeSkipData,
+	DFTimeSkipType
 }
 import DarkFuture.Services.{
 	DFGameStateService,
@@ -47,6 +49,34 @@ import DarkFuture.Addictions.{
 	DFNarcoticAddictionSystem
 }
 
+//	JournalNotificationQueue - Detect quest completion events.
+//
+@wrapMethod(JournalNotificationQueue)
+private final func PushQuestNotification(questEntry: wref<JournalQuest>, state: gameJournalEntryState) -> Void {
+	let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
+
+	let primaryKeyQuestTitle = ToString(GetLocalizedText(questEntry.GetTitle(journalManager)));
+	if Equals(state, gameJournalEntryState.Succeeded) {
+		if Equals(primaryKeyQuestTitle, ToString(GetLocalizedTextByKey(n"LizziesBDs-Main_Mod-Name"))) {
+			// Lizzie's Braindances - Completion of a braindance
+			DFNerveSystem.Get().QueueContextuallyDelayedNeedValueChange(100.0, true);
+		}
+	}
+
+	wrappedMethod(questEntry, state);
+}
+
+//	QuestTrackerGameController - Detect quest objective updates.
+//
+@wrapMethod(QuestTrackerGameController)
+protected cb func OnStateChanges(hash: Uint32, className: CName, notifyOption: JournalNotifyOption, changeType: JournalChangeType) -> Bool {
+	if Equals(className, n"gameJournalQuestObjective") {
+		DFInteractionSystem.Get().OnQuestObjectiveUpdate(hash);
+	}
+	
+	return wrappedMethod(hash, className, notifyOption, changeType);
+}
+
 public struct DFAddictionTimeSkipIterationStateDatum {
 	public let addictionAmount: Float;
 	public let addictionStage: Int32;
@@ -55,6 +85,13 @@ public struct DFAddictionTimeSkipIterationStateDatum {
 	public let withdrawalLevel: Int32;
 	public let withdrawalDuration: Float;
 	public let stackCount: Uint32;
+}
+
+public struct DFJournalEntryUpdate {
+	public let questID: String;
+	public let phaseID: String;
+	public let entryID: String;
+	public let state: gameJournalEntryState;
 }
 
 public class SmokingFromItemFXDelayCallbackStage1 extends DFDelayCallback {
@@ -188,6 +225,7 @@ public final class DFInteractionSystem extends DFSystem {
 	private let NutritionSystem: ref<DFNutritionSystem>;
 	private let EnergySystem: ref<DFEnergySystem>;
 	private let NerveSystem: ref<DFNerveSystem>;
+	private let VehicleSleepSystem: ref<DFVehicleSleepSystem>;
 	private let AlcoholAddictionSystem: ref<DFAlcoholAddictionSystem>;
 	private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
 	private let NarcoticAddictionSystem: ref<DFNarcoticAddictionSystem>;
@@ -205,9 +243,8 @@ public final class DFInteractionSystem extends DFSystem {
     private let clearLastAttemptedChoiceForFXCheckDelayInterval: Float = 10.0;
 
     // Location Memory from Prompts
-	private let q003_lastMeredithStoutPosition: Vector4;
 	private let mq006_lastRollercoasterPosition: Vector4;
-	private let sq017_lastKerryCoffeePosition: Vector4;
+	private let lastCoffeePosition: Vector4;
 
 	// Sleeping and Waiting
 	private let skippingTimeFromSleeping: Bool = false;
@@ -215,7 +252,6 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private let sleepingReduceMetabolismMult: Float = 0.4;
     
-
 	// FX
 	private let queuedSmokingFX: Bool = false;
 	private let smokingFXStage1DelayID: DelayID;
@@ -227,6 +263,41 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private let vomitFromInteractionChoiceStage2DelayID: DelayID;
 	private let vomitFromInteractionChoiceStage2DelayInterval: Float = 1.5;
+
+	// Quest-related Sleep Journal Entry Updates
+	private let journalEntryUpdate_Sleep_sq027: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Sleep_sq026: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Sleep_sq030: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Sleep_q302: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Sleep_sq029: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Sleep_sq021: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Sleep_q103a: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Sleep_q103b: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Romance_q003: DFJournalEntryUpdate;
+
+	// See: darkfuture/localization_interactions/*/onscreens/darkfuture_interactions_donotmodify.json
+	private const let locKey_Interaction_Sleep: CName = n"DarkFutureInteraction_mq000_01_apartment_Sleep";
+	private const let locKey_Interaction_TakeShower: CName = n"DarkFutureInteraction_mq000_01_apartment_TakeShower";
+	private const let locKey_Interaction_ExitRollercoaster: CName = n"DarkFutureInteraction_mq006_02_finale_ExitRollercoaster";
+	private const let locKey_Interaction_MQ014MonkFinishPromptA: CName = n"DarkFutureInteraction_mq014_01_hook_MonkFinishPromptA";
+	private const let locKey_Interaction_MQ014MonkFinishPromptB: CName = n"DarkFutureInteraction_mq014_03_second_MonkFinishPromptB";
+	private const let locKey_Interaction_MQ014MonkFinishPromptC: CName = n"DarkFutureInteraction_mq014_05_third_MonkFinishPromptC";
+	private const let locKey_Interaction_MQ014MonkFinishPromptD: CName = n"DarkFutureInteraction_mq014_07_fourth_MonkFinishPromptD";
+	private const let locKey_Interaction_Cuddle: CName = n"DarkFutureInteraction_mq055_01_Cuddle";
+	private const let locKey_Interaction_Kiss: CName = n"DarkFutureInteraction_mq055_01_Kiss";
+	private const let locKey_Interaction_Dance: CName = n"DarkFutureInteraction_mq300_safehouse_Dance";
+	private const let locKey_Interaction_EndMeditation: CName = n"DarkFutureInteraction_mq300_safehouse_EndMeditation";
+	public const let locKey_Interaction_Q003TakeInhaler: CName = n"DarkFutureInteraction_q003_03_deal_TakeInhaler";
+	private const let locKey_Interaction_Q003MeredithStoutPrompt: CName = n"DarkFutureInteraction_q003_08_stout_MeredithStoutPrompt";
+	private const let locKey_Interaction_Eat: CName = n"DarkFutureInteraction_q112_01_market_02_Eat";
+	private const let locKey_Interaction_Q303SitAndDrink: CName = n"DarkFutureInteraction_q303_04_SitAndDrink";
+	private const let locKey_Interaction_Q303PlayBraindance: CName = n"DarkFutureInteraction_q303_10_concert_PlayBraindance";
+	private const let locKey_Interaction_CoffeeDrink: CName = n"DarkFutureInteraction_sq017_06_capitan_caliente_Drink";
+	private const let locKey_Interaction_DLC6DrinkTea: CName = n"DarkFutureInteraction_dlc6_apart_cct_dtn_DrinkTea";
+	private const let locKey_Interaction_DLC6HitBall: CName = n"DarkFutureInteraction_dlc6_hey_gle_HitBall";
+	private const let locKey_Interaction_DLC6BurnIncense: CName = n"DarkFutureInteraction_dlc6_apart_wbr_jpn_BurnIncense";
+	private const let locKey_Interaction_Smoke: CName = n"DarkFutureInteraction_dlc6_apart_wbr_jpn_Smoke";
+	private const let locKey_Interaction_TakeDrag: CName = n"DarkFutureInteraction_dlc6_apart_wbr_jpn_TakeDrag";
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFInteractionSystem> {
 		let instance: ref<DFInteractionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Gameplay.DFInteractionSystem") as DFInteractionSystem;
@@ -240,9 +311,8 @@ public final class DFInteractionSystem extends DFSystem {
 	private final func DoPostSuspendActions() -> Void {
 		this.lastAttemptedChoiceCaption = "";
 		this.lastAttemptedChoiceIconName = n"";
-		this.q003_lastMeredithStoutPosition = new Vector4(0.0, 0.0, 0.0, 0.0);
 		this.mq006_lastRollercoasterPosition = new Vector4(0.0, 0.0, 0.0, 0.0);
-		this.sq017_lastKerryCoffeePosition = new Vector4(0.0, 0.0, 0.0, 0.0);
+		this.lastCoffeePosition = new Vector4(0.0, 0.0, 0.0, 0.0);
 		this.skippingTimeFromSleeping = false;
 		this.lastEnergyBeforeSleeping = 0.0;
 		this.queuedSmokingFX = false;
@@ -252,7 +322,19 @@ public final class DFInteractionSystem extends DFSystem {
 		this.debugEnabled = false;
 	}
 	private final func DoStopActions() -> Void {}
-	private final func SetupData() -> Void {}
+
+	private final func SetupData() -> Void {
+		this.journalEntryUpdate_Sleep_sq027 = new DFJournalEntryUpdate("sq027_01_basilisk_convoy", "03_ambush", "get_in_car", gameJournalEntryState.Active);
+		this.journalEntryUpdate_Sleep_sq026 = new DFJournalEntryUpdate("sq026_03_pizza", "01_pizza_night", "breakfast", gameJournalEntryState.Active);
+		this.journalEntryUpdate_Sleep_sq030 = new DFJournalEntryUpdate("sq030_judy_romance", "hut", "stuff1", gameJournalEntryState.Active);
+		this.journalEntryUpdate_Sleep_q302 = new DFJournalEntryUpdate("q302_reed", "04_squot", "follow_myers7", gameJournalEntryState.Active);
+		this.journalEntryUpdate_Sleep_sq029 = new DFJournalEntryUpdate("sq029_sobchak_romance", "breakfast", "talk_with_river", gameJournalEntryState.Active);
+		this.journalEntryUpdate_Sleep_sq021 = new DFJournalEntryUpdate("sq021_sick_dreams", "bbq", "sleep", gameJournalEntryState.Succeeded);
+		this.journalEntryUpdate_Sleep_q103a = new DFJournalEntryUpdate("q103_warhead", "roadhouse", "bed_upstairs", gameJournalEntryState.Succeeded);
+		this.journalEntryUpdate_Sleep_q103b = new DFJournalEntryUpdate("q103_warhead", "roadhouse", "bed_downstairs", gameJournalEntryState.Succeeded);
+		this.journalEntryUpdate_Romance_q003 = new DFJournalEntryUpdate("q003_stout", "stout", "02_enjoy_evening", gameJournalEntryState.Succeeded);
+	}
+
 	private final func RegisterAllRequiredDelayCallbacks() -> Void {}
 	public final func OnTimeSkipStart() -> Void {}
 	public final func OnTimeSkipCancelled() -> Void {}
@@ -281,6 +363,7 @@ public final class DFInteractionSystem extends DFSystem {
 		this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
 		this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
 		this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
+		this.VehicleSleepSystem = DFVehicleSleepSystem.GetInstance(gameInstance);
 		this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
 		this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
 		this.NarcoticAddictionSystem = DFNarcoticAddictionSystem.GetInstance(gameInstance);
@@ -327,50 +410,7 @@ public final class DFInteractionSystem extends DFSystem {
     //  Interaction Choices
     //
     private final func IsSleepChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		DFLog(this.debugEnabled, this, "choiceIconName: " + NameToString(choiceIconName));
-		if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSleep")) && Equals(choiceIconName, n"Wait") {
-			return true;
-		}
-
-		return false;
-	}
-
-    private final func IsFXAllowedChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeShower")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionLookInMirror")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSit")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStand")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTurnOnTV")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionLookOutside")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStopLooking")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStepAway")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSmoke")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeDrag")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionFlickAsh")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionPutOut")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStopPlaying")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionLean")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStraightenUp")) {
-			return true;
-		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDrinkAlcoholPartialString")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionOrderDrink")) {
-			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionStepAwayFromBar")) {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Sleep)) && Equals(choiceIconName, n"Wait") {
 			return true;
 		}
 
@@ -379,10 +419,10 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func IsNerveRegenInteractionChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
 		// Multiple Apartment / Location Interactions
-		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeShower")) {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_TakeShower)) {
 			return true;
 
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDance")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Dance)) {
 			return true;
 
 		}
@@ -394,31 +434,27 @@ public final class DFInteractionSystem extends DFSystem {
 		// Romantic Activities
 		if Equals(choiceIconName, n"Prostitute") {
 			return true;
-		
-		// Romance - q003 Meredith Stout Scene
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMeredithStoutPrompt")) && Vector4.DistanceSquared(this.q003_lastMeredithStoutPosition, this.player.GetWorldPosition()) < 10.0 {
-			return true;
 
 		// Rollercoaster
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionExitRollercoaster")) && Vector4.DistanceSquared(this.mq006_lastRollercoasterPosition, this.player.GetWorldPosition()) < 10.0 {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_ExitRollercoaster)) && Vector4.DistanceSquared(this.mq006_lastRollercoasterPosition, this.player.GetWorldPosition()) < 10.0 {
 			return true;
 
 		// Zen Master meditation sessions
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptA")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptA)) {
 			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptB")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptB)) {
 			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptC")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptC)) {
 			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionMonkFinishPromptD")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptD)) {
 			return true;
 
 		// Phantom Liberty: Kress Street Hideout Interactions
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionEndMeditation")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_EndMeditation)) {
 			return true;
 
 		// Phantom Liberty: Bootleg Shard (V's Apartment)
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionPlayBraindance")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Q303PlayBraindance)) {
 			return true;
 		}
 
@@ -426,19 +462,15 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     private final func IsSmallNerveRestorationChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionBurnIncense")) {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_DLC6BurnIncense)) {
 			return true;
-		} else if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionHitBall")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_DLC6HitBall)) {
 			return true;
-		} else if Equals(choiceIconName, n"PlayGuitar") && StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionPlayGuitarPartialString")) {
+		} else if Equals(choiceIconName, n"PlayGuitar") {
 			return true;
-		} else if Equals(choiceIconName, n"PlayGuitar") && StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionContinuePlayingGuitarPartialString")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Kiss)) {
 			return true;
-		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionKiss")) {
-			return true;
-		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionCuddle")) {
-			return true;
-		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionHug")) {
+		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Cuddle)) {
 			return true;
 		}
 
@@ -451,7 +483,7 @@ public final class DFInteractionSystem extends DFSystem {
 
     private final func IsDrinkTeaInCorpoPlazaChoice(choiceCaption: String) -> Bool {
 		// Corpo Plaza Apartment Interaction
-		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDrinkTea")) {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_DLC6DrinkTea)) {
 			return true;
 		}
 
@@ -460,15 +492,15 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func IsDrinkTeaWithMrHandsChoice(choiceCaption: String) -> Bool {
 		// Phantom Liberty: Mr. Hands scene in Heavy Hearts Club
-		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSitAndDrink")) {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Q303SitAndDrink)) {
 			return true;
 		}
 
 		return false;
 	}
 
-    private final func IsDrinkCoffeeWithKerryChoice(choiceCaption: String) -> Bool {
-		if Equals(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionDrink")) && Vector4.DistanceSquared(this.sq017_lastKerryCoffeePosition, this.player.GetWorldPosition()) < 10.0 {
+    private final func IsDrinkCoffeeInDialogChoice(choiceCaption: String) -> Bool {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_CoffeeDrink)) && Vector4.DistanceSquared(this.lastCoffeePosition, this.player.GetWorldPosition()) < 10.0 {
 			return true;
 		}
 
@@ -476,7 +508,7 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     private final func IsNutritionRestorationChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionEatPartialString")) {
+		if StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Eat)) {
 			return true;
 		}
 
@@ -612,9 +644,10 @@ public final class DFInteractionSystem extends DFSystem {
 		return addictionTimeSkipIterationStateData;
 	}
 
-	public final func GetCalculatedValuesForFutureHours() -> DFFutureHoursData {
-		let isSleeping: Bool = this.IsPlayerSleeping();
+	public final func GetCalculatedValuesForFutureHours(timeSkipType: DFTimeSkipType) -> DFFutureHoursData {
 		
+		let isSleeping: Bool = IsSleeping(timeSkipType);
+
 		// Need Variables
 		let calculatedBasicNeedsData: array<DFNeedsDatum>;
 		let calculatedHydrationAtHour: Float = this.HydrationSystem.GetNeedValue();
@@ -736,21 +769,22 @@ public final class DFInteractionSystem extends DFSystem {
 				//
 				// Energy
 				//
-				let energyChangeTemp: Float = this.EnergySystem.GetEnergyChangeWithRecoverLimit(calculatedEnergyAtHour, calculatedNerveAtHour, isSleeping);
-				calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + energyChangeTemp, 0.0, this.EnergySystem.GetNeedMax());
+				let energyChangeTemp: Float = this.EnergySystem.GetEnergyChangeWithRecoverLimit(calculatedEnergyAtHour, timeSkipType);
+				let energyMax: Float = this.EnergySystem.GetNeedMax();
+				calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + energyChangeTemp, 0.0, energyMax);
 				
 				//
 				// Nerve
 				//
-				
-				if isSleeping {
-					// When sleeping, if recovering Energy, Nerve also recovers if below the sleeping recovery max.
-					if (energyChangeTemp > 0.0 || calculatedEnergyAtHour == 100.0) && calculatedNerveAtHour < this.NerveSystem.nerveRecoverAmountSleepingMax {
+				if Equals(timeSkipType, DFTimeSkipType.FullSleep) {
+					// When sleeping, if getting full sleep, Nerve also recovers if below the sleeping recovery max.
+					if (energyChangeTemp > 0.0 || calculatedEnergyAtHour == energyMax) && calculatedNerveAtHour < this.NerveSystem.nerveRecoverAmountSleepingMax {
 						calculatedNerveAtHour += this.NerveSystem.nerveRecoverAmountSleeping;
 						if calculatedNerveAtHour > this.NerveSystem.nerveRecoverAmountSleepingMax {
 							calculatedNerveAtHour = this.NerveSystem.nerveRecoverAmountSleepingMax;
 						}
 					}
+
 				} else {
 					let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, this.HydrationSystem.GetNeedStageAtValue(calculatedHydrationAtHour), this.NutritionSystem.GetNeedStageAtValue(calculatedNutritionAtHour), this.EnergySystem.GetNeedStageAtValue(calculatedEnergyAtHour));
 					calculatedNerveAtHour += nerveChangeTemp;
@@ -877,16 +911,13 @@ public final class DFInteractionSystem extends DFSystem {
 		let hubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(value);
 		
 		for hub in hubs.choiceHubs {
-			DFLog(this.debugEnabled, this, "Hub Title: " + ToString(hub.title));
-			if Equals(hub.title, GetLocalizedTextByKey(n"DarkFutureInteractionStoutHubTitle")) {
-				// Used to catch a Romance activity event, combined with the caption prompt.
-				this.q003_lastMeredithStoutPosition = this.player.GetWorldPosition();
-			} else if Equals(hub.title, "LocKey#46442") {
+			DFLog(this.debugEnabled, this, "Hub Title: " + GetLocalizedText(hub.title));
+			if Equals(GetLocalizedText(hub.title), GetLocalizedTextByKey(n"Story-base-quest-minor_quests-mq006-scenes-mq006_02_finale-mq006_02_ch_rc_get_in_displayNameOverride")) {
 				// Pacifica Rollercoaster
 				this.mq006_lastRollercoasterPosition = this.player.GetWorldPosition();
-			} else if Equals(hub.title, "LocKey#37579") {
-				// "Rebel! Rebel!" Coffee with Kerry in Captain Caliente
-				this.sq017_lastKerryCoffeePosition = this.player.GetWorldPosition();
+			} else if Equals(GetLocalizedText(hub.title), GetLocalizedTextByKey(n"Story-base-quest-side_quests-sq030-scenes-sq030_11_morning-sq030_11_ch_drink_displayNameOverride")) {
+				// "Rebel! Rebel!" / "Pyramid Song" - Coffee with Kerry in Captain Caliente, coffee with Judy on the pier
+				this.lastCoffeePosition = this.player.GetWorldPosition();
 			}
 		}
 	}
@@ -923,10 +954,11 @@ public final class DFInteractionSystem extends DFSystem {
 			// Story moment - Ignore Nausea
 			this.DrankTeaFromChoice();
 
-		} else if this.IsDrinkCoffeeWithKerryChoice(choiceCaption) {
+		} else if this.IsDrinkCoffeeInDialogChoice(choiceCaption) {
+			// Story moment - Ignore Nausea
 			this.DrankCoffeeFromChoice();
 
-		} else if StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionSmoke")) || StrContains(choiceCaption, GetLocalizedTextByKey(n"DarkFutureInteractionTakeDrag")) {
+		} else if StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Smoke)) || StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_TakeDrag)) {
 			if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
 				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureSmoking");
 			}
@@ -939,7 +971,7 @@ public final class DFInteractionSystem extends DFSystem {
 			uiFlags.forceMomentaryUIDisplay = true;
 			uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
-			this.NerveSystem.ChangeNeedValue(15.0, uiFlags, true);
+			this.NerveSystem.ChangeNeedValue(this.Settings.nerveCigarettes, uiFlags, true);
 
 		} else if this.IsNerveRegenInteractionChoice(choiceCaption, choiceIconName) {
 			this.NerveSystem.SetNerveRegenTarget(100.0);
@@ -957,6 +989,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 		} else if this.IsNutritionRestorationChoice(choiceCaption, choiceIconName) {
 			this.NutritionSystem.QueueContextuallyDelayedNeedValueChange(20.0, true);
+
 		}
 	}
 
@@ -974,7 +1007,8 @@ public final class DFInteractionSystem extends DFSystem {
             this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, t"BaseStatusEffect.Sated");
 
 			// Treat the Energy restoration from the coffee machine like consuming normal coffee items.
-            this.EnergySystem.ChangeEnergyFromItems(12.0, 12.0, true);
+			let energyToRestore: Float = this.Settings.energyTier1;
+            this.EnergySystem.ChangeEnergyFromItems(energyToRestore, energyToRestore, true);
 		}
 	}
 
@@ -997,9 +1031,6 @@ public final class DFInteractionSystem extends DFSystem {
 			// If so, don't suppress VFX and SFX.
 			if NotEquals(this.lastAttemptedChoiceCaption, "") {
 				if this.IsSleepChoice(this.lastAttemptedChoiceCaption, this.lastAttemptedChoiceIconName) {
-					return true;
-
-				} else if this.IsFXAllowedChoice(this.lastAttemptedChoiceCaption, this.lastAttemptedChoiceIconName) {
 					return true;
 
 				} else if this.IsNerveRegenInteractionChoice(this.lastAttemptedChoiceCaption, this.lastAttemptedChoiceIconName) {
@@ -1081,11 +1112,7 @@ public final class DFInteractionSystem extends DFSystem {
 			// Vomit from Interaction Choice: Fade to black, mini-map shake, vomit VO
 
 			let vomitNotification: DFNotification;
-			if Equals(this.player.GetResolvedGenderName(), n"Female") {
-				vomitNotification.sfx = new DFAudioCue(n"cmn_generic_female_vomit", 0);
-			} else {
-				vomitNotification.sfx = new DFAudioCue(n"cmn_generic_male_vomit", 0);
-			}
+			vomitNotification.sfx = new DFAudioCue(n"sq032_sc_04_v_pukes", 0);
 			vomitNotification.vfx = new DFVisualEffect(n"blink_slow", null);
 			this.NotificationService.QueueNotification(vomitNotification);
 
@@ -1103,6 +1130,91 @@ public final class DFInteractionSystem extends DFSystem {
 		let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
 		evt.soundName = n"w_melee_gore_blood_splat_small";
 		this.player.QueueEvent(evt);
+	}
+
+	public final func OnQuestObjectiveUpdate(hash: Uint32) -> Void {
+		let sleptDuringQuest: Bool = false;
+		let romanceDuringQuest: Bool = false;
+
+		let gameInstance = GetGameInstance();
+		let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(gameInstance);
+
+		let entry: wref<JournalEntry> = journalManager.GetEntry(hash);
+		if IsDefined(entry) {
+			let questPhase: wref<JournalQuestPhase> = journalManager.GetParentEntry(entry) as JournalQuestPhase;
+			if IsDefined(questPhase) {
+				let quest: wref<JournalQuest> = journalManager.GetParentEntry(questPhase) as JournalQuest;
+				if IsDefined(quest) {
+					let state: gameJournalEntryState = journalManager.GetEntryState(entry);
+					// Check against Quest Objectives we care about.
+					let journalEntryUpdate: DFJournalEntryUpdate;
+					journalEntryUpdate.questID = quest.GetId();
+					journalEntryUpdate.phaseID = questPhase.GetId();
+					journalEntryUpdate.entryID = entry.GetId();
+					journalEntryUpdate.state = state;
+
+					DFLog(this.debugEnabled, this, "questID: " + journalEntryUpdate.questID + ", phaseID: " + journalEntryUpdate.phaseID + ", entryID: " + journalEntryUpdate.entryID + ", state: " + ToString(journalEntryUpdate.state));
+
+					if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq027) {
+						// Panam: With A Little Help From My Friends - Waking up after sleeping under stars
+						sleptDuringQuest = true;
+
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq026) {
+						// Judy: Talkin' Bout A Revolution - Waking up after crashing on Judy's couch
+						sleptDuringQuest = true;
+
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq030) {
+						// Judy: Pyramid Song - Waking up after sleeping in the cottage
+						sleptDuringQuest = true;
+
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_q302) {
+						// Phantom Liberty: Lucretia My Reflection - Waking up after sleeping on the mattress in the safehouse
+						sleptDuringQuest = true;
+
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq029) {
+						// River: Following the River - Waking up after spending the night at River's
+						sleptDuringQuest = true;
+
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq021) {
+						// River: The Hunt - Waking up after sleeping at Joss' place
+						sleptDuringQuest = true;
+					
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_q103a) {
+						// Panam: Ghost Town - Slept in upstairs room of Sunset Motel
+						sleptDuringQuest = true;
+
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_q103b) {
+						// Panam: Ghost Town - Slept in downstairs room of Sunset Motel
+						sleptDuringQuest = true;
+
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Romance_q003) {
+						// Stout: Venus in Furs - Spent the evening with Meredith Stout
+						romanceDuringQuest = true;
+					}
+				}
+			}
+		}
+
+		if sleptDuringQuest {
+			this.SimulateSleepFromQuest();
+		} else if romanceDuringQuest {
+			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
+		}
+	}
+
+	private final func JournalEntryUpdateEquals(journalUpdateA: DFJournalEntryUpdate, journalUpdateB: DFJournalEntryUpdate) -> Bool {
+		if Equals(journalUpdateA.questID, journalUpdateB.questID) && 
+		   Equals(journalUpdateA.phaseID, journalUpdateB.phaseID) && 
+		   Equals(journalUpdateA.entryID, journalUpdateB.entryID) && 
+		   Equals(journalUpdateA.state, journalUpdateB.state) {
+			return true;
+		}
+		return false;
+	}
+
+	public final func SimulateSleepFromQuest() -> Void {
+		this.EnergySystem.PerformQuestSleep();
+		this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
 	}
 
     //

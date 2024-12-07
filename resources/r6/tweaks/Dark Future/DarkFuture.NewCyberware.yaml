@@ -312,7 +312,7 @@ DarkFutureItem.EndorphinRegulatorLegendaryPlusPlus:
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus
@@ -407,7 +407,7 @@ DarkFutureItem.EndorphinRegulatorLegendaryPlus:
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus
@@ -502,7 +502,7 @@ DarkFutureItem.EndorphinRegulatorLegendary:
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary
@@ -597,7 +597,7 @@ DarkFutureItem.EndorphinRegulatorEpicPlus:
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus
@@ -692,7 +692,7 @@ DarkFutureItem.EndorphinRegulatorEpic:
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic
@@ -1263,13 +1263,13 @@ DarkFutureItem.SynLungsLegendaryPlusPlus:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: LocKey#3676
+  displayName: l"Gameplay-Cyberware-DisplayName-IronLungs"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlusPlus
@@ -1358,13 +1358,13 @@ DarkFutureItem.SynLungsLegendaryPlus:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: LocKey#3676
+  displayName: l"Gameplay-Cyberware-DisplayName-IronLungs"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.SynLungsOnEquip_DashBonus_LegendaryPlus
@@ -1453,13 +1453,13 @@ DarkFutureItem.SynLungsLegendary:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: LocKey#3676
+  displayName: l"Gameplay-Cyberware-DisplayName-IronLungs"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.SynLungsOnEquip_DashBonus_Legendary
@@ -1548,13 +1548,13 @@ DarkFutureItem.SynLungsEpicPlus:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: LocKey#3676
+  displayName: l"Gameplay-Cyberware-DisplayName-IronLungs"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.SynLungsOnEquip_DashBonus_EpicPlus
@@ -1643,13 +1643,13 @@ DarkFutureItem.SynLungsEpic:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: LocKey#3676
+  displayName: l"Gameplay-Cyberware-DisplayName-IronLungs"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.SynLungsOnEquip_DashBonus_Epic
@@ -1738,13 +1738,13 @@ DarkFutureItem.SynLungsRarePlus:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: LocKey#3676
+  displayName: l"Gameplay-Cyberware-DisplayName-IronLungs"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.SynLungsOnEquip_DashBonus_RarePlus
@@ -1833,13 +1833,13 @@ DarkFutureItem.SynLungsRare:
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: LocKey#3676
+  displayName: l"Gameplay-Cyberware-DisplayName-IronLungs"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions:
     - GameplayRestriction.VehicleCombatNoInterruptions
   hairSkinnedMeshComponents: []
-  localizedDescription: LocKey#3683
+  localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
     - DarkFutureItem.SynLungsOnEquip_DashBonus_Rare

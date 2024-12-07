@@ -128,7 +128,7 @@ public abstract class DFSystem extends ScriptableSystem {
     }
 
     public func OnPlayerDeath() -> Void {
-		this.Stop();
+        this.Stop();
 	}
 
     private func GetRequiredSystems() -> Void {

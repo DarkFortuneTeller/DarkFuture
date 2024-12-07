@@ -324,7 +324,7 @@ public final class DFNotificationService extends DFSystem {
         /*
             How the notification queue is processed:
 
-            First, Go through each queued notification:
+            First, go through each queued notification:
                 Find the highest-priority audio cue. Select randomly for ties. Store the winner.
                 Find any VFX and store in an array. These can play simultaneously.
                 Find any UI display notifications and store in an array. These can play simultaneously.

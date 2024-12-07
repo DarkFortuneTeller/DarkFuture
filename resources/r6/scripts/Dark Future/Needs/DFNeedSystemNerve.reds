@@ -128,6 +128,20 @@ public class PlayerDeathCallback extends DFDelayCallback {
 	}
 }
 
+public class PostPlayerDeathCallback extends DFDelayCallback {
+	public static func Create() -> ref<DFDelayCallback> {
+		return new PostPlayerDeathCallback();
+	}
+
+	public func InvalidateDelayID() -> Void {
+		DFNerveSystem.Get().postPlayerDeathDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+		DFNerveSystem.Get().OnPostPlayerDeathCallback();
+	}
+}
+
 public class NerveRegenCallback extends DFDelayCallback {
 	public static func Create() -> ref<DFDelayCallback> {
 		return new NerveRegenCallback();
@@ -187,10 +201,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
 	private let NarcoticAddictionSystem: ref<DFNarcoticAddictionSystem>;
 
-	private let baseAlcoholNerveValueChangeAmount: Float = 5.0;
 	private let nerveAmountOnVehicleKnockdown: Float = 2.0;
 	private let nerveLossInDanger: Float = 0.25;
-	private let nerveLossInWithdrawal: Float = 0.5;
 	private let nerveRegenAmountRapid: Float = 1.0;
 	private let nerveRegenAmountSlow: Float = 0.05;
 	private let criticalNerveRegenTarget: Float = 10.0;
@@ -198,6 +210,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let extremelyCriticalNerveFXThreshold: Float = 5.0;
 	private let playingCriticalNerveFX: Bool = false;
 	private let nauseaNeedStageThreshold: Int32 = 4;
+	private let insomniaNeedStageThreshold: Int32 = 3;
 	private let nerveRecoverAmountSleeping: Float = 0.083333334;
 	private let nerveRecoverAmountSleepingMax: Float = 100.0;
 	
@@ -214,6 +227,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let nerveBreathingDangerTransitionDelayID: DelayID;
 	private let nerveRegenDelayID: DelayID;
 	private let playerDeathDelayID: DelayID;
+	private let postPlayerDeathDelayID: DelayID;
 
 	private let updateMode: DFNerveSystemUpdateMode = DFNerveSystemUpdateMode.Time;
 
@@ -222,6 +236,9 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let nerveBreathingDangerTransitionDelayInterval: Float = 10.0;
 	private let nerveRegenDelayInterval: Float = 0.25;
 	private let playerDeathDelayInterval: Float = 2.0;
+	private let postPlayerDeathDelayInterval: Float = 8.0;
+
+	private let inDeathState: Bool = false;
 
 	private let lastDangerState: DFPlayerDangerState;
 
@@ -343,54 +360,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		this.UnregisterNerveBreathingDangerTransitionCallback();
 		this.UnregisterNerveRegenCallback();
 		this.UnregisterPlayerDeathCallback();
-	}
-
-
-	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
-		super.OnSettingChangedSpecific(changedSettings);
-
-		if ArrayContains(changedSettings, "nerveWeaponSwayEnabled") {
-			if this.Settings.nerveWeaponSwayEnabled {
-				TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NervePenalty_02.packages",
-					[
-						t"DarkFutureStatusEffect.NervePenalty_02_StatsPackage",
-						t"DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackage",
-						t"DarkFutureStatusEffect.NervePenalty_02_SwayPackage"
-					]);
-				TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NervePenalty_03.packages",
-					[
-						t"DarkFutureStatusEffect.NervePenalty_03_StatsPackage",
-						t"DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackage",
-						t"DarkFutureStatusEffect.NervePenalty_03_SwayPackage"
-					]);
-				TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NervePenalty_04.packages",
-					[
-						t"DarkFutureStatusEffect.NervePenalty_04_StatsPackage",
-						t"DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackage",
-						t"DarkFutureStatusEffect.NervePenalty_04_SwayPackage"
-					]);
-			} else {
-				TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NervePenalty_02.packages",
-					[
-						t"DarkFutureStatusEffect.NervePenalty_02_StatsPackage",
-						t"DarkFutureStatusEffect.NervePenalty_02_WeaponHandlingPackage"
-					]);
-				TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NervePenalty_03.packages",
-					[
-						t"DarkFutureStatusEffect.NervePenalty_03_StatsPackage",
-						t"DarkFutureStatusEffect.NervePenalty_03_WeaponHandlingPackage"
-					]);
-				TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NervePenalty_04.packages",
-					[
-						t"DarkFutureStatusEffect.NervePenalty_04_StatsPackage",
-						t"DarkFutureStatusEffect.NervePenalty_04_WeaponHandlingPackage"
-					]);
-			}
-
-			TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NervePenalty_02");
-			TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NervePenalty_03");
-			TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NervePenalty_04");
-		}
 	}
 
     //
@@ -741,7 +710,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		uiFlags.forceMomentaryUIDisplay = true;
 		uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
-		this.ChangeNeedValue(this.baseAlcoholNerveValueChangeAmount, uiFlags, false, this.GetNerveLimitAfterAlcoholUse());
+		this.ChangeNeedValue(this.Settings.nerveAlcoholTier1, uiFlags, false, this.GetNerveLimitAfterAlcoholUse());
 	}
 
 	public final func CheckFuryNerveOnKill(evt: ref<gameDeathEvent>) -> Void {
@@ -803,10 +772,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			// Deplete
 			// (Points to Lose based on Needs Factor) / Hours in Day / Updates per Hour
 			return (((Int32ToFloat(needsFactorPerDay) * 5.0) / 24.0) / 12.0) * -1.0;
-		} else {
-			// Recover
-			// Amount to recover per Day / Hours in Day / Updates per Hour
-			return (((20.0) / 24.0) / 12.0);
 		}
 
 		// Not depleting.
@@ -823,20 +788,20 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
     public final func GetNerveChangeFromDanger() -> Float {
+		let baseNerveLossInDanger: Float;
+		let nerveLossBonusMult: Float = 1.0;
+
+		if this.lastDangerState.InCombat {
+			baseNerveLossInDanger = (this.nerveLossInDanger * (this.Settings.nerveLossRateInCombatPct / 100.0)) * -1.0;
+			nerveLossBonusMult -= this.GetSedationNerveLossBonusMult();
+
+		} else if this.lastDangerState.BeingRevealed {
+			baseNerveLossInDanger = (this.nerveLossInDanger * (this.Settings.nerveLossRateWhenTracedPct / 100.0)) * -1.0;
+			nerveLossBonusMult -= this.GetMemoryBoosterTraceNerveLossBonusMult();
+
+		}
+
 		if this.lastDangerState.InCombat || this.lastDangerState.BeingRevealed {
-			let baseNerveLossInDanger: Float = (this.nerveLossInDanger * (this.Settings.nerveLossRateInDangerPct / 100.0)) * -1.0;
-			let nerveLossBonusMult: Float = 1.0;
-
-			// Add combat bonuses.
-			if this.lastDangerState.InCombat {
-				nerveLossBonusMult -= this.GetSedationNerveLossBonusMult();
-			}
-
-			// Add hacking bonuses.
-			if this.lastDangerState.BeingRevealed {
-				nerveLossBonusMult -= this.GetMemoryBoosterTraceNerveLossBonusMult();
-			}
-			
 			let totalNerveLossBonusMult: Float = MaxF(nerveLossBonusMult, 0.0);
 			let totalNerveLoss: Float = baseNerveLossInDanger * totalNerveLossBonusMult;
 			DFLog(this.debugEnabled, this, "GetNerveChangeFromDanger() totalNerveLossBonusMult:" + ToString(totalNerveLossBonusMult) + ", totalNerveLoss:" + ToString(totalNerveLoss));
@@ -1091,6 +1056,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func CheckForCriticalNerve() -> Void {
+		if this.inDeathState { return; }
+
 		let currentNerve: Float = this.GetNeedValue();
 		
 		if this.GameStateService.IsValidGameState("CheckForCriticalNerve") {
@@ -1165,6 +1132,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private final func QueuePlayerDeath() -> Void {
 		// :(
 		
+		this.inDeathState = true;
 		this.PlayCriticalNerveEffects();
 		this.TryToTransitionNerveBreathingEffects();
 		this.PlayerStateService.StopOutOfBreathSFX();
@@ -1232,6 +1200,22 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	public final func OnPlayerDeathCallback() -> Void {
 		// This kills the player.
 		StatusEffectHelper.ApplyStatusEffect(this.player, t"BaseStatusEffect.HeartAttack");
+
+		// Register for post-death recovery. (Santa Muerte Compatibility)
+		this.RegisterPostPlayerDeathCallback();
+	}
+
+	public final func OnPostPlayerDeathCallback() -> Void {
+		StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.HeartAttack");
+		this.inDeathState = false;
+		this.TryToTransitionNerveBreathingEffects();
+		
+		// Restore a modest amount of Nerve.
+		let uiFlags: DFNeedChangeUIFlags;
+		uiFlags.forceMomentaryUIDisplay = true;
+		if this.GetNeedValue() < this.cyberwareSecondHeartNerveRestoreAmount {
+			this.ChangeNeedValue(this.cyberwareSecondHeartNerveRestoreAmount - this.GetNeedValue(), uiFlags);
+		}
 	}
 
 	public final func OnUpdateFromNerveRegen() -> Void {
@@ -1278,7 +1262,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	public final func UpdateWeaponShake() -> Void {
 		let hasFocusActive: Bool = StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.FocusedCoolPerkSE");
 		let hasNervesOfTungstenSteel: Bool = PlayerDevelopmentSystem.GetData(this.player).IsNewPerkBoughtAnyLevel(gamedataNewPerkType.Cool_Master_Perk_1);
-		let ignoreWeaponShake: Bool = hasFocusActive && hasNervesOfTungstenSteel;
+		let ignoreWeaponShake: Bool = !this.Settings.nerveWeaponSwayEnabled || (hasFocusActive && hasNervesOfTungstenSteel);
 		
 		if this.player.m_isAiming && !ignoreWeaponShake {
 			let needStage: Int32 = this.GetNeedStage();
@@ -1313,6 +1297,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 	private final func RegisterPlayerDeathCallback() -> Void {
 		RegisterDFDelayCallback(this.DelaySystem, PlayerDeathCallback.Create(), this.playerDeathDelayID, this.playerDeathDelayInterval);
+	}
+
+	private final func RegisterPostPlayerDeathCallback() -> Void {
+		RegisterDFDelayCallback(this.DelaySystem, PostPlayerDeathCallback.Create(), this.postPlayerDeathDelayID, this.postPlayerDeathDelayInterval);
 	}
 
 	//
