@@ -351,6 +351,25 @@ private final func CreateTimeskipAllowedReasonWidget(parent: ref<inkCompoundWidg
 @addMethod(TimeskipGameController)
 private final func UpdateUI() -> Void {
 	if !this.GameStateService.IsValidGameState("UpdateUI", true, true) { return; }
+	let timeskipAllowedReasonKey: CName = n"";
+
+	// If the player is too anxious to sleep now, ignore future values and bail out early.
+	if IsSleeping(this.timeSkipType) && this.NerveSystem.GetNeedStage() >= this.NerveSystem.insomniaNeedStageThreshold {
+		this.timeskipAllowed = false;
+		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveNoRecovery";
+
+		this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), 100.0);
+		this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), 100.0);
+		this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue(), 100.0);
+
+		let nerveMax: Float = this.NerveSystem.GetNeedMax();
+		this.nerveBar.SetUpdatedValue(this.NerveSystem.GetNeedValue(), nerveMax);
+		this.UpdateNerveBarLimit(nerveMax);
+
+		this.UpdateConfirmButton(this.timeskipAllowed);
+		this.RefreshTimeskipAllowedReasonWidget(this.timeskipAllowed, timeskipAllowedReasonKey);
+		return;
+	}
 
 	let index: Int32 = this.m_hoursToSkip - 1;
 
@@ -358,9 +377,6 @@ private final func UpdateUI() -> Void {
 	let nutrition: Float = this.calculatedFutureValues.futureNeedsData[index].nutrition.value;
 	let energy: Float = this.calculatedFutureValues.futureNeedsData[index].energy.value;
 	let nerve: Float = this.calculatedFutureValues.futureNeedsData[index].nerve.value;
-	let nerveStageAtValue: Int32 = this.NerveSystem.GetNeedStageAtValue(nerve);
-
-	let timeskipAllowedReasonKey: CName = n"";
 
 	this.hydrationBar.SetUpdatedValue(hydration, 100.0);
 	this.nutritionBar.SetUpdatedValue(nutrition, 100.0);
@@ -370,10 +386,7 @@ private final func UpdateUI() -> Void {
 	this.nerveBar.SetUpdatedValue(nerve, nerveMax);
 	this.UpdateNerveBarLimit(nerveMax);
 
-	if IsSleeping(this.timeSkipType) && nerveStageAtValue >= this.NerveSystem.insomniaNeedStageThreshold {
-		this.timeskipAllowed = false;
-		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveNoRecovery";
-	} else if nerve <= 1.0 {
+	if nerve <= 1.0 {
 		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonFatal";
 	} else if Equals(this.timeSkipType, DFTimeSkipType.LimitedSleep) {

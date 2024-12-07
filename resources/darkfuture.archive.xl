@@ -3,22 +3,22 @@ factories:
 
 localization:
   onscreens:
-    en-us: darkfuture\localization\en-us\onscreens\darkfuture.json
-    ar-ar: darkfuture\localization\ar-ar\onscreens\darkfuture.json
-    cz-cz: darkfuture\localization\cz-cz\onscreens\darkfuture.json
-    de-de: darkfuture\localization\de-de\onscreens\darkfuture.json
-    es-es: darkfuture\localization\es-es\onscreens\darkfuture.json
-    es-mx: darkfuture\localization\es-mx\onscreens\darkfuture.json
-    fr-fr: darkfuture\localization\fr-fr\onscreens\darkfuture.json
-    hu-hu: darkfuture\localization\hu-hu\onscreens\darkfuture.json
-    it-it: darkfuture\localization\it-it\onscreens\darkfuture.json
-    jp-jp: darkfuture\localization\jp-jp\onscreens\darkfuture.json
-    kr-kr: darkfuture\localization\kr-kr\onscreens\darkfuture.json
-    pl-pl: darkfuture\localization\pl-pl\onscreens\darkfuture.json
-    pt-br: darkfuture\localization\pt-br\onscreens\darkfuture.json
-    ru-ru: darkfuture\localization\ru-ru\onscreens\darkfuture.json
-    th-th: darkfuture\localization\th-th\onscreens\darkfuture.json
-    tr-tr: darkfuture\localization\tr-tr\onscreens\darkfuture.json
-    ua-ua: darkfuture\localization\ua-ua\onscreens\darkfuture.json
-    zh-cn: darkfuture\localization\zh-cn\onscreens\darkfuture.json
-    zh-tw: darkfuture\localization\zh-tw\onscreens\darkfuture.json
+    en-us: darkfuture\localization_interactions\en-us\onscreens\darkfuture_interactions_donotmodify.json
+    ar-ar: darkfuture\localization_interactions\ar-ar\onscreens\darkfuture_interactions_donotmodify.json
+    cz-cz: darkfuture\localization_interactions\cz-cz\onscreens\darkfuture_interactions_donotmodify.json
+    de-de: darkfuture\localization_interactions\de-de\onscreens\darkfuture_interactions_donotmodify.json
+    es-es: darkfuture\localization_interactions\es-es\onscreens\darkfuture_interactions_donotmodify.json
+    es-mx: darkfuture\localization_interactions\es-mx\onscreens\darkfuture_interactions_donotmodify.json
+    fr-fr: darkfuture\localization_interactions\fr-fr\onscreens\darkfuture_interactions_donotmodify.json
+    hu-hu: darkfuture\localization_interactions\hu-hu\onscreens\darkfuture_interactions_donotmodify.json
+    it-it: darkfuture\localization_interactions\it-it\onscreens\darkfuture_interactions_donotmodify.json
+    jp-jp: darkfuture\localization_interactions\jp-jp\onscreens\darkfuture_interactions_donotmodify.json
+    kr-kr: darkfuture\localization_interactions\kr-kr\onscreens\darkfuture_interactions_donotmodify.json
+    pl-pl: darkfuture\localization_interactions\pl-pl\onscreens\darkfuture_interactions_donotmodify.json
+    pt-br: darkfuture\localization_interactions\pt-br\onscreens\darkfuture_interactions_donotmodify.json
+    ru-ru: darkfuture\localization_interactions\ru-ru\onscreens\darkfuture_interactions_donotmodify.json
+    th-th: darkfuture\localization_interactions\th-th\onscreens\darkfuture_interactions_donotmodify.json
+    tr-tr: darkfuture\localization_interactions\tr-tr\onscreens\darkfuture_interactions_donotmodify.json
+    ua-ua: darkfuture\localization_interactions\ua-ua\onscreens\darkfuture_interactions_donotmodify.json
+    zh-cn: darkfuture\localization_interactions\zh-cn\onscreens\darkfuture_interactions_donotmodify.json
+    zh-tw: darkfuture\localization_interactions\zh-tw\onscreens\darkfuture_interactions_donotmodify.json
