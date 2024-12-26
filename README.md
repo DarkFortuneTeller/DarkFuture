@@ -6,17 +6,17 @@ Please see the [Dark Future Wiki](https://wiki.darkfuture2077.com).
 
 ## Getting Started
 ### Requirements
-Cyberpunk 2077 2.13. The mod is Phantom Liberty-aware but the expansion is not required.
+Cyberpunk 2077 2.2+. The mod is Phantom Liberty-aware but the expansion is not required.
 
 [Redscript](https://www.nexusmods.com/cyberpunk2077/mods/1511) 0.5.27+
 
-[Red4Ext](https://www.nexusmods.com/cyberpunk2077/mods/2380) 1.25.1+
+[Red4Ext](https://www.nexusmods.com/cyberpunk2077/mods/2380) 1.26.1+
 
-[ArchiveXL](https://www.nexusmods.com/cyberpunk2077/mods/4198) 1.16.9+
+[ArchiveXL](https://www.nexusmods.com/cyberpunk2077/mods/4198) 1.18.0+
 
-[TweakXL](https://www.nexusmods.com/cyberpunk2077/mods/4197) 1.10.5+
+[TweakXL](https://www.nexusmods.com/cyberpunk2077/mods/4197) 1.10.6+
 
-[Codeware](https://www.nexusmods.com/cyberpunk2077/mods/7780) 1.12.7+
+[Codeware](https://www.nexusmods.com/cyberpunk2077/mods/7780) 1.13.0+
 
 [Mod Settings](https://www.nexusmods.com/cyberpunk2077/mods/4885) 0.2.8+
 
