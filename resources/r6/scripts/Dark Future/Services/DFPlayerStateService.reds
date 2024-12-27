@@ -286,10 +286,26 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 	return wrappedMethod(evt);
 }
 
+//
+//  Stamina Costs
+//
 @wrapMethod(SprintEvents)
 protected func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+    // Interrupt the player's sprinting when Stamina runs out when Hydration is stage 2 or higher, or when impacted by the Smoking status effect.
+	// Use caution; called roughly every frame while sprinting.
+
 	wrappedMethod(timeDelta, stateContext, scriptInterface);
-	DFPlayerStateService.Get().ProcessSprintUpdate(stateContext, scriptInterface);
+    let staminaEmpty: Bool = GameInstance.GetStatPoolsSystem(scriptInterface.GetGame()).GetStatPoolValue(Cast<StatsObjectID>(scriptInterface.executionOwner.GetEntityID()), gamedataStatPoolType.Stamina, true) <= 0.0;
+    if staminaEmpty {
+        let player: wref<PlayerPuppet> = scriptInterface.owner as PlayerPuppet;
+        if IsDefined(player) {
+            if StatusEffectSystem.ObjectHasStatusEffectWithTag(player, n"DarkFutureShouldInterruptSprintOnEmptyStamina") {
+                stateContext.SetTemporaryBoolParameter(n"InterruptSprint", true, true);
+                stateContext.SetConditionBoolParameter(n"SprintToggled", false, true);
+                stateContext.SetConditionBoolParameter(n"SprintHoldCanStartWithoutNewInput", false, true);
+            }
+        }
+    }
 }
 
 class DFPlayerStateServiceEventListeners extends DFSystemEventListener {
@@ -519,6 +535,7 @@ public final class DFPlayerStateService extends DFSystem {
 
             // Used by DataTerms
             FastTravelSystem.AddFastTravelLock(n"DarkFuture", gameInstance);
+
             TweakDBManager.SetFlat(t"WorldMap.FastTravelFilterGroup.filterName", n"DarkFutureUILabelMapFilterFastTravel");
             TweakDBManager.UpdateRecord(t"WorldMap.FastTravelFilterGroup");
         } else {
@@ -527,6 +544,7 @@ public final class DFPlayerStateService extends DFSystem {
 
             // Used by DataTerms
             FastTravelSystem.RemoveFastTravelLock(n"DarkFuture", gameInstance);
+
             TweakDBManager.SetFlat(t"WorldMap.FastTravelFilterGroup.filterName", n"UI-Menus-WorldMap-Filter-FastTravel");
             TweakDBManager.UpdateRecord(t"WorldMap.FastTravelFilterGroup");
         }
@@ -550,26 +568,6 @@ public final class DFPlayerStateService extends DFSystem {
         let inDanger: Bool = this.GetInDangerFromState(this.GetPlayerDangerState());
         return inDanger;
     }
-
-    //
-    //  Stamina Costs
-    //
-    public final func ProcessSprintUpdate(const stateContext: ref<StateContext>, const scriptInterface: ref<StateGameScriptInterface>) -> Void {
-		// Interrupt the player's sprinting when Stamina runs out when Hydration is stage 2 or higher, or when impacted by the Smoking status effect.
-		// Use caution; called roughly every frame while sprinting.
-
-        let hasSmokingStatus: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking");
-        let hasLowHydrationAndSystemRunning: Bool = (this.GameStateService.IsValidGameState("DFPlayerStateService:ProcessSprintUpdate") && this.HydrationSystem.GetNeedStage() >= 2);
-        let staminaEmpty: Bool = this.StatPoolsSystem.GetStatPoolValue(Cast<StatsObjectID>(scriptInterface.executionOwner.GetEntityID()), gamedataStatPoolType.Stamina, true) <= 0.0;
-		
-        let shouldInterruptSprint: Bool = (hasSmokingStatus || hasLowHydrationAndSystemRunning) && staminaEmpty;
-	
-		if shouldInterruptSprint {
-			stateContext.SetTemporaryBoolParameter(n"InterruptSprint", true, true);
-    		stateContext.SetConditionBoolParameter(n"SprintToggled", false, true);
-    		stateContext.SetConditionBoolParameter(n"SprintHoldCanStartWithoutNewInput", false, true);
-		}
-	}
 
     private final func UpdateStaminaCosts() {
 		DFLog(this.debugEnabled, this, "UpdateStaminaCosts");

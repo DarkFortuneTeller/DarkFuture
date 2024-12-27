@@ -222,7 +222,7 @@ public func FilterItem(item: ref<IScriptable>) -> Bool {
 		} else if Equals(this.m_itemFilterType, ItemFilterCategory.Grenades) {
 			return itemRecord.TagsContains(n"ChargedConsumable");
 		} else if Equals(this.m_itemFilterType, ItemFilterCategory.RangedWeapons) && settings.ammoWeightEnabled {
-			return itemRecord.TagsContains(n"Ammo");
+			return itemRecord.TagsContains(n"RangedWeapon") || itemRecord.TagsContains(n"Ammo");
 		}
 	}
 

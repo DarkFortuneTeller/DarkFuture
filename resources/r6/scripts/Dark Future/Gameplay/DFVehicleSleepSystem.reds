@@ -41,6 +41,32 @@ public enum EnhancedVehicleSystemCompatPowerBehaviorPassenger {
 	SameAsDriver = 1
 }
 
+//
+//	Input Event Registration
+//
+@addField(PlayerPuppet)
+private let m_DarkFutureInputListener: ref<DarkFutureInputListener>;
+
+@wrapMethod(PlayerPuppet)
+protected cb func OnDetach() -> Bool {
+    let r: Bool = wrappedMethod();
+
+    this.UnregisterInputListener(this.m_DarkFutureInputListener);
+    this.m_DarkFutureInputListener = null;
+
+	return r;
+}
+
+public class DarkFutureInputListener {
+	protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
+		if Equals(ListenerAction.GetName(action), n"DFVehicleSleepAction") && Equals(ListenerAction.GetType(action), gameinputActionType.BUTTON_HOLD_COMPLETE) {
+			DFVehicleSleepSystem.Get().SleepInVehicle();
+		}
+
+		return true;
+	}
+}
+
 @addField(InputContextTransitionEvents)
 private let m_oldSleepInVehicleAllowedState: Bool = false;
 
@@ -124,12 +150,17 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {		
-		let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
-		DFVSS.SetPreventionStrategyPreCheckRequestsOnMount();
-		DFVSS.RegisterVehicleSleepActionListener();
+		this.HandleDarkFutureVehicleMounted();
 	}
 
 	return r;
+}
+
+@addMethod(VehicleObject)
+private final func HandleDarkFutureVehicleMounted() -> Void {
+	let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
+	DFVSS.SetPreventionStrategyPreCheckRequestsOnMount();
+	DFVSS.RegisterVehicleSleepActionListener();
 }
 
 @wrapMethod(VehicleObject)
@@ -183,17 +214,6 @@ protected final const func ShowVehiclePassengerInputHints(stateContext: ref<Stat
 	this.DarkFutureEvaluateVehicleSleepInputHint(VehicleSleepSystem.ShouldShowSleepInVehicleInputHint(), stateContext, scriptInterface, n"VehiclePassenger");
   
   	wrappedMethod(stateContext, scriptInterface);
-}
-
-@wrapMethod(PlayerPuppet)
-protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
-	let r = wrappedMethod(action, consumer);
-
-	if Equals(ListenerAction.GetName(action), n"DFVehicleSleepAction") && Equals(ListenerAction.GetType(action), gameinputActionType.BUTTON_HOLD_COMPLETE) {
-		DFVehicleSleepSystem.Get().SleepInVehicle();
-	}
-
-	return r;
 }
 
 @wrapMethod(VehicleEventsTransition)
@@ -471,7 +491,16 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 	private func RegisterListeners() -> Void {}
 	private func RegisterAllRequiredDelayCallbacks() -> Void {}
-	private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
+	
+	private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+		let vehicleObj: wref<VehicleObject>;
+		VehicleComponent.GetVehicle(GetGameInstance(), attachedPlayer, vehicleObj);
+		if IsDefined(vehicleObj) {
+			// The player loaded a save game or started Dark Future while mounted to a vehicle.
+			vehicleObj.HandleDarkFutureVehicleMounted();
+		}
+	}
+	
 	private func UnregisterListeners() -> Void {}
 	private func UnregisterAllDelayCallbacks() -> Void {}
 	public func OnTimeSkipStart() -> Void {}
@@ -505,11 +534,13 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	}
 
 	public final func RegisterVehicleSleepActionListener() -> Void {
-		this.player.RegisterInputListener(this, n"DFVehicleSleepAction");
+		this.player.m_DarkFutureInputListener = new DarkFutureInputListener();
+    	this.player.RegisterInputListener(this.player.m_DarkFutureInputListener);
 	}
 
 	public final func UnregisterVehicleSleepActionListener() -> Void {
 		this.player.UnregisterInputListener(this, n"DFVehicleSleepAction");
+		this.player.m_DarkFutureInputListener = null;
 	}
 
 	private func GetTutorialTitleKey() -> CName {

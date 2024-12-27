@@ -112,6 +112,7 @@ DarkFutureStatusEffect.Smoking:
     - DarkFutureSmokingFromItem
     - DarkFutureAddictionPrimaryEffect
     - DarkFutureAddictionPrimaryEffectNicotine
+    - DarkFutureShouldInterruptSprintOnEmptyStamina
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.CigarettePackage
@@ -140,6 +141,7 @@ DarkFutureStatusEffect.SmokingFromChoice:
     - DarkFutureSmokingFromChoice
     - DarkFutureAddictionPrimaryEffect
     - DarkFutureAddictionPrimaryEffectNicotine
+    - DarkFutureShouldInterruptSprintOnEmptyStamina
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.CigarettePackage

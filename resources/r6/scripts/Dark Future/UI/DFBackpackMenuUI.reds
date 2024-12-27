@@ -193,7 +193,11 @@ protected cb func OnItemFilterClick(evt: ref<inkPointerEvent>) -> Bool {
 	if this.GameStateService.IsValidGameState("OnItemFilterClick") {
 		if evt.IsAction(n"click") {
 			let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
-			if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) {
+			
+			// More Inventory Filters Compatibility
+			let moreInventoryFiltersFoodFilterID: Int32 = 24;
+
+			if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) || Equals(EnumInt(filter), moreInventoryFiltersFoodFilterID) {
 				this.SetBarClusterFadeIn();
 				this.UpdateAllBarsAppearance();
 			} else {
@@ -216,7 +220,11 @@ protected cb func OnFilterButtonSpawned(widget: ref<inkWidget>, callbackData: re
 
 	if this.GameStateService.IsValidGameState("OnFilterButtonSpawned") {
 		let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
-		if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) {
+
+		// More Inventory Filters Compatibility
+		let moreInventoryFiltersFoodFilterID: Int32 = 24;
+
+		if Equals(filter, ItemFilterCategory.Consumables) || Equals(filter, ItemFilterCategory.AllItems) || Equals(EnumInt(filter), moreInventoryFiltersFoodFilterID) {
 			this.SetBarClusterFadeIn();
 			this.UpdateAllBarsAppearance();
 		} else {

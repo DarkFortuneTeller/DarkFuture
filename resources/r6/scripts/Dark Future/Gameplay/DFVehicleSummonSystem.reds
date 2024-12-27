@@ -55,13 +55,13 @@ protected func Select(previous: ref<inkVirtualCompoundItemController>, next: ref
             repairText.SetText(GetLocalizedTextByKey(n"Story-base-gameplay-gui-widgets-vehicle_control-vehicles_manager-repairing"));
 
             if summonCredits < vehicleSummonSystem.GetMaxSummonCredits() {
-                titleText.SetText("CALL VEHICLE // CREDITS: " + ToString(vehicleSummonSystem.GetRemainingSummonCredits()) + " // NEXT CREDIT IN: " + vehicleSummonSystem.GetSummonCooldownRemainingTimeString());
+                titleText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTotalCredits") + ToString(vehicleSummonSystem.GetRemainingSummonCredits()) + GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpNextCreditTime") + vehicleSummonSystem.GetSummonCooldownRemainingTimeString());
             } else {
-                titleText.SetText("CALL VEHICLE // CREDITS: " + ToString(vehicleSummonSystem.GetRemainingSummonCredits()));
+                titleText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTotalCredits") + ToString(vehicleSummonSystem.GetRemainingSummonCredits()));
             }
         } else {
-            titleText.SetText("SUMMON LIMIT REACHED // NEXT CREDIT IN: " + vehicleSummonSystem.GetSummonCooldownRemainingTimeString());
-            repairText.SetText("UNAVAILABLE");
+            titleText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpLimitReached") + vehicleSummonSystem.GetSummonCooldownRemainingTimeString());
+            repairText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpUnavailable"));
             inkWidgetRef.SetOpacity(this.m_vehicleIconContainer, 0.08);
             inkWidgetRef.SetVisible(this.m_repairOverlay, true);
             inkWidgetRef.SetVisible(this.m_confirmButton, false);
@@ -184,6 +184,18 @@ public final func SummonVehicle(force: Bool) -> Void {
     }
 }
 
+// Cameras and Turrets - Hide Widget
+//
+@wrapMethod(TakeOverControlSystem)
+public final static func CreateInputHint(context: GameInstance, isVisible: Bool) -> Void {
+	wrappedMethod(context, isVisible);
+
+	let VehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+	if IsSystemEnabledAndRunning(VehicleSummonSystem) {
+		VehicleSummonSystem.OnTakeControlOfCameraUpdate(isVisible);
+	}
+}
+
 // HotkeysWidgetController
 //
 @wrapMethod(HotkeysWidgetController)
@@ -193,6 +205,7 @@ protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
     
     // Create a quantity widget for the Call Vehicle HUD Widget
     let counterCanvas: ref<inkCanvas> = new inkCanvas();
+    counterCanvas.SetVisible(false);    // Initialize to being invisible.
     counterCanvas.SetName(n"counterCanvas");
     counterCanvas.SetAnchor(inkEAnchor.TopLeft);
     counterCanvas.SetHAlign(inkEHorizontalAlign.Center);
@@ -252,6 +265,8 @@ protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
     vehicleSummonSystem.SetHotkeySummonCreditBackground(counterBg);
     vehicleSummonSystem.SetHotkeySummonCreditLabel(label);
     vehicleSummonSystem.RegisterForVehicleSummonCreditChangeDelayCallback();
+
+    vehicleSummonSystem.UpdateWidgetVisibility();
 }
 
 // CarHotkeyController
@@ -328,6 +343,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
     private let creditsMax: Int32;
     private let summonCreditCooldownDurationGameTimeSeconds: Float;
     private let lastSummonCreditLabelCount: Int32;
+    private let UIBlockedDueToCameraControl: Bool = false;
 
     private let summonCreditCooldownDelayID: DelayID;
     private let summonCreditCooldownDelayIntervalGameTimeSeconds: Float = 300.0;
@@ -374,11 +390,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {	
-        if IsSystemEnabledAndRunning(this) {
-            if IsDefined(this.hotkeySummonCreditCanvas) {
-                this.hotkeySummonCreditCanvas.SetVisible(true);
-            }
-        }
+        this.UpdateWidgetVisibility();
     }
 
     private final func GetSystemToggleSettingValue() -> Bool {
@@ -430,28 +442,35 @@ public final class DFVehicleSummonSystem extends DFSystem {
         this.lastSummonCreditLabelCount = 0;
         this.creditsMax = 0;
         this.summonCreditCooldownDurationGameTimeSeconds = 0;
-        if IsDefined(this.hotkeySummonCreditCanvas) {
-            this.hotkeySummonCreditCanvas.SetVisible(false);
-        }
+        this.UpdateWidgetVisibility();
     }
 
     private final func DoPostResumeActions() -> Void {
         this.SetupData();
-        if IsSystemEnabledAndRunning(this) {
-            if IsDefined(this.hotkeySummonCreditCanvas) {
-                this.hotkeySummonCreditCanvas.SetVisible(true);
-            }
-        }
+        this.UpdateWidgetVisibility();
     }
 
     private final func DoStopActions() -> Void {
         this.lastSummonedVehicle = null;
     }
 
-
     //
     //  System-Specific Methods
     //
+    public final func OnTakeControlOfCameraUpdate(hasControl: Bool) -> Void {
+		// Player took or released control of a camera, turret, or the Sniper's Nest.
+		this.UIBlockedDueToCameraControl = hasControl;
+		this.UpdateWidgetVisibility();
+	}
+
+    public final func UpdateWidgetVisibility() -> Void {
+        if IsSystemEnabledAndRunning(this) && IsDefined(this.hotkeySummonCreditCanvas) && !this.UIBlockedDueToCameraControl {
+            this.hotkeySummonCreditCanvas.SetVisible(true);
+        } else {
+            this.hotkeySummonCreditCanvas.SetVisible(false);
+        }
+    }
+
     public final func SetHotkeySummonCreditCanvas(widget: ref<inkCanvas>) -> Void {
         this.hotkeySummonCreditCanvas = widget;
     }
@@ -614,16 +633,16 @@ public final class DFVehicleSummonSystem extends DFSystem {
             let minutes: Int32 = FloorF((this.remainingCooldownTime % 3600.0) / 60.0);
 
             if hours > 0 && minutes > 0 {
-                return ToString(hours) + "H " + ToString(minutes) + "M";
+                return ToString(hours) + GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTimeHourAbbreviation") + " " + ToString(minutes) + GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTimeMinuteAbbreviation");
             } else if hours > 0 {
-                return ToString(hours) + "H";
+                return ToString(hours) + GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTimeHourAbbreviation");
             } else if minutes > 0 {
-                return ToString(minutes) + "M";
+                return ToString(minutes) + GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTimeMinuteAbbreviation");
             } else {
-                return "<1M";
+                return GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTimeLessThanOneMinuteAbbreviation");
             }
         } else {
-            return "<1M";
+            return GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTimeLessThanOneMinuteAbbreviation");
         }
     }
 

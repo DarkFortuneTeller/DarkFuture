@@ -49,6 +49,23 @@ import DarkFuture.Addictions.{
 	DFNarcoticAddictionSystem
 }
 
+//  Edgerunner's Mansion Compatibility - Detect shower interactions.
+//
+@wrapMethod(ArcadeMachine)
+protected cb func OnTakeControl(ri: EntityResolveComponentsInterface) -> Bool {
+	// The shower device entity in the Edgerunner's Mansion is
+	// a device of type Arcade Machine with a showerWorkspot component.
+
+	let r: Bool = wrappedMethod(ri);
+
+	let showerWorkspot: wref<IComponent> = this.FindComponentByName(n"showerWorkspot");
+	if IsDefined(showerWorkspot) {
+		DFNerveSystem.Get().SetNerveRegenTarget(100.0);
+	}
+
+	return r;
+}
+
 //	JournalNotificationQueue - Detect quest completion events.
 //
 @wrapMethod(JournalNotificationQueue)
@@ -247,7 +264,7 @@ public final class DFInteractionSystem extends DFSystem {
 	private let lastCoffeePosition: Vector4;
 
 	// Sleeping and Waiting
-	private let skippingTimeFromSleeping: Bool = false;
+	private let skippingTimeFromHubMenu: Bool = false;
 	private let lastEnergyBeforeSleeping: Float = 0.0;
 
 	private let sleepingReduceMetabolismMult: Float = 0.4;
@@ -276,8 +293,8 @@ public final class DFInteractionSystem extends DFSystem {
 	private let journalEntryUpdate_Romance_q003: DFJournalEntryUpdate;
 
 	// See: darkfuture/localization_interactions/*/onscreens/darkfuture_interactions_donotmodify.json
-	private const let locKey_Interaction_Sleep: CName = n"DarkFutureInteraction_mq000_01_apartment_Sleep";
-	private const let locKey_Interaction_TakeShower: CName = n"DarkFutureInteraction_mq000_01_apartment_TakeShower";
+	private const let locKey_Interaction_Sleep_BaseGame: CName = n"DarkFutureInteraction_mq000_01_apartment_Sleep";
+	private const let locKey_Interaction_Sleep_KressStreet: CName = n"DarkFutureInteraction_mq300_safehouse_Sleep";
 	private const let locKey_Interaction_ExitRollercoaster: CName = n"DarkFutureInteraction_mq006_02_finale_ExitRollercoaster";
 	private const let locKey_Interaction_MQ014MonkFinishPromptA: CName = n"DarkFutureInteraction_mq014_01_hook_MonkFinishPromptA";
 	private const let locKey_Interaction_MQ014MonkFinishPromptB: CName = n"DarkFutureInteraction_mq014_03_second_MonkFinishPromptB";
@@ -313,7 +330,7 @@ public final class DFInteractionSystem extends DFSystem {
 		this.lastAttemptedChoiceIconName = n"";
 		this.mq006_lastRollercoasterPosition = new Vector4(0.0, 0.0, 0.0, 0.0);
 		this.lastCoffeePosition = new Vector4(0.0, 0.0, 0.0, 0.0);
-		this.skippingTimeFromSleeping = false;
+		this.skippingTimeFromHubMenu = false;
 		this.lastEnergyBeforeSleeping = 0.0;
 		this.queuedSmokingFX = false;
 	}
@@ -410,7 +427,7 @@ public final class DFInteractionSystem extends DFSystem {
     //  Interaction Choices
     //
     private final func IsSleepChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Sleep)) && Equals(choiceIconName, n"Wait") {
+		if (Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Sleep_BaseGame)) || Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Sleep_KressStreet))) && Equals(choiceIconName, n"Wait") {
 			return true;
 		}
 
@@ -419,7 +436,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func IsNerveRegenInteractionChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
 		// Multiple Apartment / Location Interactions
-		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_TakeShower)) {
+		if Equals(choiceIconName, n"Shower") {
 			return true;
 
 		} else if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Dance)) {
@@ -518,18 +535,16 @@ public final class DFInteractionSystem extends DFSystem {
 	//
 	//	Sleeping and Waiting
 	//
-	public final func SetSkippingTimeFromSleeping(value: Bool) -> Void {
-		this.skippingTimeFromSleeping = value;
+	public final func SetSkippingTimeFromHubMenu(value: Bool) -> Void {
+		this.skippingTimeFromHubMenu = value;
 	}
 
 	public final func IsPlayerSleeping() -> Bool {
-		if this.skippingTimeFromSleeping {
-			DFLog(this.debugEnabled, this, "Player is sleeping.");
+		if !this.skippingTimeFromHubMenu && !this.IsImmersiveTimeskipActive() {
 			return true;
-		} else {
-			DFLog(this.debugEnabled, this, "Player is skipping time.");
-			return false;
 		}
+
+		return false;
 	}
 
 	public final func CalculateAddictionWithdrawalStateFromTimeSkip(
@@ -1014,7 +1029,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func SleepChoiceSelected() -> Void {
 		if this.GameStateService.IsValidGameState("SleepChoiceSelected", true) {
-			this.SetSkippingTimeFromSleeping(true);
+			// Used to suppress VFX and notifications until the player gets up.
 			this.GameStateService.SetInSleepCinematic(true);
 		}
 	}
@@ -1257,5 +1272,19 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private final func UnregisterVomitFromInteractionChoiceStage2Callback() {
 		UnregisterDFDelayCallback(this.DelaySystem, this.vomitFromInteractionChoiceStage2DelayID);
+	}
+
+	//
+	//  Immersive Timeskip Detection
+	//
+
+	@if(ModuleExists("ImmersiveTimeskip.Hotkey"))
+	private final func IsImmersiveTimeskipActive() -> Bool {
+		return this.player.itsTimeskipActive;
+	}
+
+	@if(!ModuleExists("ImmersiveTimeskip.Hotkey"))
+	private final func IsImmersiveTimeskipActive() -> Bool {
+		return false;
 	}
 }

@@ -97,6 +97,17 @@ private let timeskipAllowedReasonLabel: wref<inkText>;
 //
 //	Base Game Methods
 //
+//  HubTimeSkipController - Time Skip Button Press
+//
+@wrapMethod(HubTimeSkipController)
+protected cb func OnTimeSkipButtonPressed(e: ref<inkPointerEvent>) -> Bool {
+	if e.IsAction(n"click") {
+		DFInteractionSystem.GetInstance(GetGameInstance()).SetSkippingTimeFromHubMenu(true);
+	}
+	
+	return wrappedMethod(e);
+}
+
 
 //	TimeskipGameController - Initialization
 //
@@ -217,7 +228,7 @@ protected cb func OnCloseAfterCanceling(proxy: ref<inkAnimProxy>) -> Bool {
 protected cb func OnUninitialize() -> Bool {
 	if this.Settings.mainSystemEnabled {
 		this.GameStateService.SetInSleepCinematic(false);
-		this.InteractionSystem.SetSkippingTimeFromSleeping(false);
+		this.InteractionSystem.SetSkippingTimeFromHubMenu(false);
 	}
 	
 	return wrappedMethod();
@@ -405,10 +416,7 @@ private final func GetTimeskipType(nerveStage: Int32) -> DFTimeSkipType {
 	let sleepingInBed: Bool = this.InteractionSystem.IsPlayerSleeping();
 	let sleepingInVehicle: Bool = this.VehicleSleepSystem.GetSleepingInVehicle();
 
-	if sleepingInBed {
-		return DFTimeSkipType.FullSleep;
-
-	} else if sleepingInVehicle {
+	if sleepingInVehicle {
 		let inBadlands: Bool = IsPlayerInBadlands(this.GameStateService.player);
 		
 		if (inBadlands && Equals(this.Settings.vehicleSleepQualityBadlands, DFSleepQualitySetting.Limited)) {
@@ -420,6 +428,9 @@ private final func GetTimeskipType(nerveStage: Int32) -> DFTimeSkipType {
 		} else {
 			return DFTimeSkipType.FullSleep;
 		}
+	
+	} else if sleepingInBed {
+		return DFTimeSkipType.FullSleep;
 
 	} else {
 		return DFTimeSkipType.TimeSkip;

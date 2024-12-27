@@ -37,7 +37,10 @@ import DarkFuture.Addictions.{
 import DarkFuture.Afflictions.{
     DFInjuryAfflictionSystem
 }
-import DarkFuture.UI.DFHUDSystem
+import DarkFuture.UI.{
+    DFHUDSystem,
+    DFRevisedBackpackUISystem
+}
 
 public struct DFNeedChangeDatum {
 	public let value: Float;
@@ -306,6 +309,7 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // UI
         DFHUDSystem.GetInstance(gameInstance).Init(this.player);
+        DFRevisedBackpackUISystem.GetInstance(gameInstance).Init(this.player);
 
         // Reconcile settings changes
         DFSettings.GetInstance(gameInstance).ReconcileSettings();
@@ -354,6 +358,7 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // UI
         DFHUDSystem.GetInstance(gameInstance).Resume();
+        DFRevisedBackpackUISystem.GetInstance(gameInstance).Resume();
 
         // Lifecycle Hook - Done
         this.DispatchLifecycleResumeDoneEvent();
@@ -368,6 +373,7 @@ public final class DFMainSystem extends ScriptableSystem {
         this.DispatchLifecycleSuspendEvent();
 
         // UI
+        DFRevisedBackpackUISystem.GetInstance(gameInstance).Suspend();
         DFHUDSystem.GetInstance(gameInstance).Suspend();
 
         // Afflictions
