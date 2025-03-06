@@ -6,7 +6,7 @@ Please see the [Dark Future Wiki](https://wiki.darkfuture2077.com).
 
 ## Getting Started
 ### Requirements
-Cyberpunk 2077 2.2+. The mod is Phantom Liberty-aware but the expansion is not required.
+Cyberpunk 2077 2.21+. The mod is Phantom Liberty-aware but the expansion is not required.
 
 [Redscript](https://www.nexusmods.com/cyberpunk2077/mods/1511) 0.5.27+
 
