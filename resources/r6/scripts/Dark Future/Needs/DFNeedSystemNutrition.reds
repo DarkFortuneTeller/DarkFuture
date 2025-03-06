@@ -115,7 +115,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.nutrition.value - this.GetNeedValue());
 	}
 
-	private final func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
+	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.nutrition.value != 0.0 {

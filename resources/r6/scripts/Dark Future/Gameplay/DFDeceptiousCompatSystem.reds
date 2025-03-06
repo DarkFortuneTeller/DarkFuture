@@ -130,7 +130,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
             } else {
                 let foodTDBID: TweakDBID = GetFoodRecordFromIdleAnywhereFactValue(value);
                 if NotEquals(foodTDBID, t"") {
-                    let foodRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(foodTDBID);
+                    let foodRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(foodTDBID);
                     if IsDefined(foodRecord) {
                         this.MainSystem.DispatchItemConsumedEvent(foodRecord);
 
@@ -155,7 +155,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
             } else {
                 let drinkTDBID: TweakDBID = GetDrinkRecordFromIdleAnywhereFactValue(value);
                 if NotEquals(drinkTDBID, t"") {
-                    let drinkRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(drinkTDBID);
+                    let drinkRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(drinkTDBID);
                     if IsDefined(drinkRecord) {
                         this.MainSystem.DispatchItemConsumedEvent(drinkRecord);
 
@@ -177,7 +177,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
         if Equals(this.IAAlcoholFactLastValue, -1) && value >= 0 { // -1 == Ready, >= 0 == Alcohol Consumed
             let alcoholTDBID: TweakDBID = GetAlcoholRecordFromIdleAnywhereFactValue(value);
             if NotEquals(alcoholTDBID, t"") {
-                let alcoholRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(alcoholTDBID);
+                let alcoholRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(alcoholTDBID);
                 if IsDefined(alcoholRecord) {
                     this.MainSystem.DispatchItemConsumedEvent(alcoholRecord);
 
@@ -220,7 +220,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 
     private final func ConsumeCigarette(tdbid: TweakDBID) {
         this.TransactionSystem.RemoveItemByTDBID(this.player, tdbid, 1);
-        let cigaretteRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(tdbid);
+        let cigaretteRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(tdbid);
         if IsDefined(cigaretteRecord) {
             if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
 				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureSmoking");

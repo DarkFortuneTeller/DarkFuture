@@ -114,7 +114,7 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 	if actionUsed {
 		let actionType: CName = TweakDBInterface.GetObjectActionRecord(actionID).ActionName();
 		if Equals(actionType, n"Consume") || Equals(actionType, n"Eat") || Equals(actionType, n"Drink") {
-			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetConsumableItemRecord(itemData.GetID().GetTDBID()));
+			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID()));
 		}
 	}
 
@@ -130,14 +130,14 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 	if actionUsed {
 		let actionType: CName = TweakDBInterface.GetObjectActionRecord(actionID).ActionName();
 		if Equals(actionType, n"Consume") || Equals(actionType, n"Eat") || Equals(actionType, n"Drink") {
-			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetConsumableItemRecord(itemData.GetID().GetTDBID()));
+			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID()));
 		}
 	}
 
 	return actionUsed;
 }
 
-public final static func GetConsumableNeedsData(itemRecord: wref<ConsumableItem_Record>) -> DFNeedsDatum {
+public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -> DFNeedsDatum {
 	// Consumable Need Restoration Values
 	let Settings: ref<DFSettings> = DFSettings.Get();
 

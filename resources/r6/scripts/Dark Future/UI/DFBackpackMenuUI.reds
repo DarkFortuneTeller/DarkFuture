@@ -127,7 +127,7 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 			let itemData: wref<gameItemData> = evt.uiInventoryItem.GetItemData();
 
 			if itemData.HasTag(n"Consumable") {
-				let itemRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(itemData.GetID().GetTDBID());
+				let itemRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID());
 				let needsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 				// Show the increase in Hydration and Nutrition if player's Nerve is not too low.

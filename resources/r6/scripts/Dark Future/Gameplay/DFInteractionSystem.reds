@@ -1173,7 +1173,7 @@ public final class DFInteractionSystem extends DFSystem {
 				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
 
 				// Use Vargas Black Label as an example item when calculating the max override.
-				let itemRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(t"DarkFutureItem.CigarettePackC");
+				let itemRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(t"DarkFutureItem.CigarettePackC");
 				this.MainSystem.DispatchItemConsumedEvent(itemRecord);
 			}
 		} else {

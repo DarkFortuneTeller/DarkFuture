@@ -127,7 +127,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		this.ClearStimulant();
 	}
 
-	private final func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
+	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.energy.value != 0.0 {

@@ -383,7 +383,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		}
 	}
 
-	private final func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
+	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.nerve.value != 0.0 {
@@ -399,7 +399,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		}
 	}
 
-	public final func GetNerveLimitAfterItemUse(itemRecord: wref<ConsumableItem_Record>) -> Float {
+	public final func GetNerveLimitAfterItemUse(itemRecord: wref<Item_Record>) -> Float {
 		let updatedNerveMax: Float = 100.0;
 
 		if IsDefined(itemRecord) {

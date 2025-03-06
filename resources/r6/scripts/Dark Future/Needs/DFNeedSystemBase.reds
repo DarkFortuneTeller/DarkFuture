@@ -417,7 +417,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.LogMissingOverrideError("OnTimeSkipFinishedActual");
 	}
 
-	private func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
+	private func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
 		this.LogMissingOverrideError("OnItemConsumedActual");
 	}
 
@@ -487,7 +487,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.RegisterUpdateCallback();
 	}
 
-	public func OnItemConsumed(itemRecord: wref<ConsumableItem_Record>) -> Void {
+	public func OnItemConsumed(itemRecord: wref<Item_Record>) -> Void {
 		if RunGuard(this) { return; }
 		DFLog(this, "OnItemConsumed");
 

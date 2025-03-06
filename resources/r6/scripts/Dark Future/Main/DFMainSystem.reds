@@ -162,13 +162,13 @@ public class MainSystemTimeSkipFinishedEvent extends CallbackSystemEvent {
 }
 
 public class MainSystemItemConsumedEvent extends CallbackSystemEvent {
-    private let data: wref<ConsumableItem_Record>;
+    private let data: wref<Item_Record>;
 
-    public func GetData() -> wref<ConsumableItem_Record> {
+    public func GetData() -> wref<Item_Record> {
         return this.data;
     }
 
-    static func Create(data: wref<ConsumableItem_Record>) -> ref<MainSystemItemConsumedEvent> {
+    static func Create(data: wref<Item_Record>) -> ref<MainSystemItemConsumedEvent> {
         let event = new MainSystemItemConsumedEvent();
         event.data = data;
         return event;
@@ -542,7 +542,7 @@ public final class DFMainSystem extends ScriptableSystem {
         GameInstance.GetCallbackSystem().DispatchEvent(MainSystemTimeSkipFinishedEvent.Create(data));
     }
 
-    public final func DispatchItemConsumedEvent(itemRecord: wref<ConsumableItem_Record>) -> Void {
+    public final func DispatchItemConsumedEvent(itemRecord: wref<Item_Record>) -> Void {
         GameInstance.GetCallbackSystem().DispatchEvent(MainSystemItemConsumedEvent.Create(itemRecord));
     }
 
