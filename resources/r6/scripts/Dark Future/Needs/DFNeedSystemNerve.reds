@@ -40,7 +40,8 @@ import DarkFuture.Services.{
 }
 import DarkFuture.UI.{
 	DFHUDSystem,
-	DFHUDBarType
+	DFHUDBarType,
+	DFNeedsHUDBar
 }
 import DarkFuture.Settings.DFSettings
 
@@ -61,7 +62,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 		if Equals(effectID, t"BaseStatusEffect.VehicleKnockdown") {
 			nerveSystem.OnVehicleKnockdown();
 
-		} else if DFGameStateService.Get().IsValidGameState("OnStatusEffectRemoved") && Equals(effectID, t"BaseStatusEffect.FocusedCoolPerkSE") {
+		} else if DFGameStateService.Get().IsValidGameState(this) && Equals(effectID, t"BaseStatusEffect.FocusedCoolPerkSE") {
 			nerveSystem.UpdateWeaponShake();
 
 		} else if Equals(effectID, t"HousingStatusEffect.Refreshed") {
@@ -82,7 +83,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 
 	if IsSystemEnabledAndRunning(nerveSystem) {
 		let effectID: TweakDBID = evt.staticData.GetID();
-		if DFGameStateService.Get().IsValidGameState("OnStatusEffectRemoved") && Equals(effectID, t"BaseStatusEffect.FocusedCoolPerkSE") {
+		if DFGameStateService.Get().IsValidGameState(this) && Equals(effectID, t"BaseStatusEffect.FocusedCoolPerkSE") {
 			nerveSystem.UpdateWeaponShake();
 		}
     }
@@ -324,7 +325,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 	public final func OnTimeSkipStart() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipStart");
+		DFLog(this, "OnTimeSkipStart");
 
 		this.SetUpdateMode(DFNerveSystemUpdateMode.Suspended);
 		this.UnregisterAllNeedFXCallbacks();
@@ -332,22 +333,22 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 	public final func OnTimeSkipCancelled() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipCancelled");
+		DFLog(this, "OnTimeSkipCancelled");
 
 		this.AutoSetUpdateMode();
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:OnTimeSkipCancelled", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
 		}
 	}
 
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipFinished");
+		DFLog(this, "OnTimeSkipFinished");
 
 		this.AutoSetUpdateMode();
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:OnTimeSkipFinished", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			this.OnTimeSkipFinishedActual(data);
 			this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
 		}
@@ -366,12 +367,12 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	//  Required Overrides
 	//
     private final func OnUpdateActual() -> Void {
-		DFLog(this.debugEnabled, this, "OnUpdateActual");
+		DFLog(this, "OnUpdateActual");
 		this.ChangeNeedValue(this.GetNerveChangeFromTimeInProvidedState(this.GetNeedValue(), this.HydrationSystem.GetNeedStage(), this.NutritionSystem.GetNeedStage(), this.EnergySystem.GetNeedStage()));
 	}
 
 	private final func OnTimeSkipFinishedActual(data: DFTimeSkipData) -> Void {
-		DFLog(this.debugEnabled, this, "OnTimeSkipFinishedActual");
+		DFLog(this, "OnTimeSkipFinishedActual");
 
 		let currentValue: Float = this.GetNeedValue();
 
@@ -382,37 +383,38 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		}
 	}
 
-	private final func OnItemConsumedActual(itemData: wref<gameItemData>) {
-		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemData);
+	private final func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
+		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.nerve.value != 0.0 {
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
-			uiFlags.instantUIChange = true;
+			uiFlags.instantUIChange = false;
 			uiFlags.forceBright = true;
-			let isNicotine: Bool = itemData.HasTag(n"DarkFutureConsumableAddictiveNicotine");
+			uiFlags.momentaryDisplayIgnoresSceneTier = true;
+			let isNicotine: Bool = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveNicotine");
 			
 			let clampedValue: Float = this.GetClampedNeedChangeFromData(consumableNeedsData.nerve);
-			this.ChangeNeedValue(clampedValue, uiFlags, isNicotine, this.GetNerveLimitAfterItemUse(itemData));
+			this.ChangeNeedValue(clampedValue, uiFlags, isNicotine, this.GetNerveLimitAfterItemUse(itemRecord));
 		}
 	}
 
-	public final func GetNerveLimitAfterItemUse(itemData: wref<gameItemData>) -> Float {
+	public final func GetNerveLimitAfterItemUse(itemRecord: wref<ConsumableItem_Record>) -> Float {
 		let updatedNerveMax: Float = 100.0;
 
-		if IsDefined(itemData) {
+		if IsDefined(itemRecord) {
 			// If currently affected by Addiction Treatment, the max is always 100.0.
 			let addictionTreatmentDuration: Float = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds();
 			if addictionTreatmentDuration > 0.0 {
 				return 100.0;
 			}
 
-			if itemData.HasTag(n"DarkFutureConsumableAddictionTreatmentDrug") {
+			if itemRecord.TagsContains(n"DarkFutureConsumableAddictionTreatmentDrug") {
 				return 100.0;
 			}
 
 			let alcoholWithdrawalLevel: Int32 = this.AlcoholAddictionSystem.GetWithdrawalLevel();
-			if itemData.HasTag(n"DarkFutureConsumableAddictiveAlcohol") {
+			if itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcohol") {
 				let alcoholStatus: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.player, t"BaseStatusEffect.Drunk");
 				let newAlcoholStackCount: Uint32;
 				if IsDefined(alcoholStatus) {
@@ -425,8 +427,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 					alcoholWithdrawalLevel = 0;
 				}
 			}
-			let nicotineWithdrawalLevel: Int32 = itemData.HasTag(n"DarkFutureConsumableAddictiveNicotine") ? 0 : this.NicotineAddictionSystem.GetWithdrawalLevel();
-			let narcoticWithdrawalLevel: Int32 = itemData.HasTag(n"DarkFutureConsumableAddictiveNarcotic") ? 0 : this.NarcoticAddictionSystem.GetWithdrawalLevel();
+			let nicotineWithdrawalLevel: Int32 = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveNicotine") ? 0 : this.NicotineAddictionSystem.GetWithdrawalLevel();
+			let narcoticWithdrawalLevel: Int32 = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveNarcotic") ? 0 : this.NarcoticAddictionSystem.GetWithdrawalLevel();
 
 			let alcoholLimits: array<Float> = this.AlcoholAddictionSystem.GetAddictionNerveLimits();
 			let nicotineLimits: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveLimits();
@@ -500,7 +502,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
-		DFLog(this.debugEnabled, this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
+		DFLog(this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
         
 		let notification: DFNotification;
 
@@ -584,9 +586,9 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 	public final func CheckIfBonusEffectsValid() -> Void {
         if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "CheckIfBonusEffectsValid");
+		DFLog(this, "CheckIfBonusEffectsValid");
 
-		if this.GameStateService.IsValidGameState("CheckIfBonusEffectsValid", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"HousingStatusEffect.Refreshed") {
 				if this.GetNeedStage() > 0 {
 					StatusEffectHelper.RemoveStatusEffect(this.player, t"HousingStatusEffect.Refreshed");
@@ -642,7 +644,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	//
 	public final func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt suppressRecoveryNotification: Bool, opt maxOverride: Float) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "ChangeNeedValue: amount = " + ToString(amount) + ", uiFlags = " + ToString(uiFlags));
+		DFLog(this, "ChangeNeedValue: amount = " + ToString(amount) + ", uiFlags = " + ToString(uiFlags));
 
 		let needMax: Float = maxOverride > 0.0 ? maxOverride : this.GetCalculatedNeedMax();
 		this.needValue = ClampF(this.needValue + amount, 0.0, needMax);
@@ -651,7 +653,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 		let stage: Int32 = this.GetNeedStage();
 		if NotEquals(stage, this.lastNeedStage) {
-			DFLog(this.debugEnabled, this, "ChangeNeedValue: Last Need stage (" + ToString(this.lastNeedStage) + ") != current stage (" + ToString(stage) + "). Refreshing status effects and FX.");
+			DFLog(this, "ChangeNeedValue: Last Need stage (" + ToString(this.lastNeedStage) + ") != current stage (" + ToString(stage) + "). Refreshing status effects and FX.");
 			this.RefreshNeedStatusEffects();
 			this.UpdateNeedFX(suppressRecoveryNotification);
 		}
@@ -667,7 +669,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		this.lastNeedStage = stage;
 
 		this.DispatchNeedValueChangedEvent(this.needValue);
-		DFLog(this.debugEnabled, this, "ChangeNeedValue: New needValue = " + ToString(this.needValue));
+		DFLog(this, "ChangeNeedValue: New needValue = " + ToString(this.needValue));
 	}
 
     //
@@ -676,32 +678,32 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	public final func SetUpdateMode(mode: DFNerveSystemUpdateMode) -> Void {
 		if RunGuard(this) { return; }
 		
-		DFLog(this.debugEnabled, this, "---- SetUpdateMode ----");
+		DFLog(this, "---- SetUpdateMode ----");
 		this.updateMode = mode;
 
 		if Equals(mode, DFNerveSystemUpdateMode.Time) {
-			DFLog(this.debugEnabled, this, "     Setting mode: Time");
+			DFLog(this, "     Setting mode: Time");
 			this.RegisterUpdateCallback();
 		} else {
 			this.UnregisterUpdateCallback();
 		}
 		
 		if Equals(mode, DFNerveSystemUpdateMode.Danger) {
-			DFLog(this.debugEnabled, this, "     Setting mode: Danger");
+			DFLog(this, "     Setting mode: Danger");
 			this.RegisterDangerUpdateCallback();
 		} else {
 			this.UnregisterDangerUpdateCallback();
 		}
 
 		if Equals(mode, DFNerveSystemUpdateMode.Regen) {
-			DFLog(this.debugEnabled, this, "     Setting mode: Regen");
+			DFLog(this, "     Setting mode: Regen");
 			this.RegisterNerveRegenCallback();
 		} else {
 			this.UnregisterNerveRegenCallback();
 		}
 
 		if Equals(mode, DFNerveSystemUpdateMode.Suspended) {
-			DFLog(this.debugEnabled, this, "     Setting mode: Suspended");
+			DFLog(this, "     Setting mode: Suspended");
 		}
 	}
 
@@ -727,28 +729,30 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	public final func AutoSetUpdateMode() -> Void {
 		if RunGuard(this) { return; }
 
-		DFLog(this.debugEnabled, this, "---- AutoSetUpdateMode ----");
+		DFLog(this, "---- AutoSetUpdateMode ----");
 		let inDanger: Bool = this.PlayerStateService.GetInDanger();
 		let regenTarget: Float = this.GetNerveRegenTarget();
 		let regen: Bool = this.GetNeedValue() < regenTarget && (Equals(regenTarget, this.GetNeedMax()) || (this.HydrationSystem.GetNeedStage() < 4 && this.NutritionSystem.GetNeedStage() < 4 && this.EnergySystem.GetNeedStage() < 4));
 
-		DFLog(this.debugEnabled, this, "inDanger: " + ToString(inDanger));
-		DFLog(this.debugEnabled, this, "regenTarget: " + ToString(regenTarget));
-		DFLog(this.debugEnabled, this, "regen: " + ToString(regen));
+		DFLog(this, "inDanger: " + ToString(inDanger));
+		DFLog(this, "regenTarget: " + ToString(regenTarget));
+		DFLog(this, "regen: " + ToString(regen));
 
 		if inDanger {
-			DFLog(this.debugEnabled, this, "     Setting mode: Danger");
+			DFLog(this, "     Setting mode: Danger");
 			this.SetUpdateMode(DFNerveSystemUpdateMode.Danger);
 
 		} else if regen {
-			DFLog(this.debugEnabled, this, "     Setting mode: Regen");
-			DFLog(this.debugEnabled, this, "     Setting mode: Target: " + regenTarget);
+			DFLog(this, "     Setting mode: Regen");
+			DFLog(this, "     Setting mode: Target: " + regenTarget);
 			this.SetUpdateMode(DFNerveSystemUpdateMode.Regen);
 
 		} else {
-			DFLog(this.debugEnabled, this, "     Setting mode: Time");
+			DFLog(this, "     Setting mode: Time");
 			this.SetUpdateMode(DFNerveSystemUpdateMode.Time);
 		}
+
+		DFHUDSystem.Get().nerveBar.SetInDanger(inDanger);
 	}
 
 	public final func GetNerveChangeFromTimeInProvidedState(nerveValue: Float, hydrationStage: Int32, nutritionStage: Int32, energyStage: Int32) -> Float {
@@ -804,7 +808,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		if this.lastDangerState.InCombat || this.lastDangerState.BeingRevealed {
 			let totalNerveLossBonusMult: Float = MaxF(nerveLossBonusMult, 0.0);
 			let totalNerveLoss: Float = baseNerveLossInDanger * totalNerveLossBonusMult;
-			DFLog(this.debugEnabled, this, "GetNerveChangeFromDanger() totalNerveLossBonusMult:" + ToString(totalNerveLossBonusMult) + ", totalNerveLoss:" + ToString(totalNerveLoss));
+			DFLog(this, "GetNerveChangeFromDanger() totalNerveLossBonusMult:" + ToString(totalNerveLossBonusMult) + ", totalNerveLoss:" + ToString(totalNerveLoss));
 
 			return totalNerveLoss;
 		
@@ -902,11 +906,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		if RunGuard(this, true) { return; }
 
 		let inDanger: Bool = this.PlayerStateService.GetInDangerFromState(dangerState);
-		DFLog(this.debugEnabled, this, "OnDangerStateChanged dangerState = " + ToString(dangerState));
+		DFLog(this, "OnDangerStateChanged dangerState = " + ToString(dangerState));
 
         if inDanger {
-            DFLog(this.debugEnabled, this, "Starting danger updates");
-			this.SetUpdateMode(DFNerveSystemUpdateMode.Danger);
+            DFLog(this, "Starting danger updates");
 
 			// Don't immediately transition if exiting combat but still in high-anxiety situation
 			if !dangerState.InCombat && this.lastDangerState.InCombat {
@@ -916,13 +919,11 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			}
 			
         } else {
-            DFLog(this.debugEnabled, this, "Stopping danger updates");
-			this.AutoSetUpdateMode();
 			this.RegisterNerveBreathingDangerTransitionCallback();
         }
 
+		this.AutoSetUpdateMode();
 		this.HUDSystem.RefreshHUDUIVisibility();
-
         this.lastDangerState = dangerState;
     }
 
@@ -964,36 +965,36 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		let needValue: Float = this.GetNeedValue();
 		let inDanger: Bool = this.PlayerStateService.GetInDangerFromState(this.lastDangerState);
 
-		DFLog(this.debugEnabled, this, "TryToTransitionNerveBreathingEffects needStage = " + ToString(needStage) + ", inDanger = " + ToString(inDanger));
+		DFLog(this, "TryToTransitionNerveBreathingEffects needStage = " + ToString(needStage) + ", inDanger = " + ToString(inDanger));
 		
 		if needStage < 3 {
 			if this.currentNerveBreathingFXStage != 0 {
-				DFLog(this.debugEnabled, this, "TryToTransitionNerveBreathingEffects: Stopping breathing FX (Nerve Stage < 3)");
+				DFLog(this, "TryToTransitionNerveBreathingEffects: Stopping breathing FX (Nerve Stage < 3)");
 				this.StopNerveBreathingEffects();
 			}
 		} else { // needStage >= 3
-			DFLog(this.debugEnabled, this, "TryToTransitionNerveBreathingEffects this.player.m_isAiming = " + ToString(this.player.m_isAiming));
+			DFLog(this, "TryToTransitionNerveBreathingEffects this.player.m_isAiming = " + ToString(this.player.m_isAiming));
 			if inDanger || this.player.m_isAiming || (needValue <= this.criticalNerveFXThreshold && needValue > 0.0) {
 				if this.lastDangerState.InCombat || needValue <= this.extremelyCriticalNerveFXThreshold {
 					if this.currentNerveBreathingFXStage != 2 {
-						DFLog(this.debugEnabled, this, "TryToTransitionNerveBreathingEffects: Starting high breathing FX (Nerve Stage >= 3, inDanger = true)");
+						DFLog(this, "TryToTransitionNerveBreathingEffects: Starting high breathing FX (Nerve Stage >= 3, inDanger = true)");
 						this.TransitionToNerveHighBreathingEffect();
 					}
 				} else {
 					if this.currentNerveBreathingFXStage != 1 {
-						DFLog(this.debugEnabled, this, "TryToTransitionNerveBreathingEffects: Starting low breathing FX (Nerve Stage >= 3, inDanger = true)");
+						DFLog(this, "TryToTransitionNerveBreathingEffects: Starting low breathing FX (Nerve Stage >= 3, inDanger = true)");
 						this.TransitionToNerveLowBreathingEffect();
 					}
 				}
 			} else {
 				if this.currentNerveBreathingFXStage == 2 && needValue > 0.0 {
-					DFLog(this.debugEnabled, this, "TryToTransitionNerveBreathingEffects: Starting low breathing FX (Nerve Stage >= 3, inDanger = false)");
+					DFLog(this, "TryToTransitionNerveBreathingEffects: Starting low breathing FX (Nerve Stage >= 3, inDanger = false)");
 					this.TransitionToNerveLowBreathingEffect();
 
 					// Register for another update to try to decay all the way down
 					this.RegisterNerveBreathingDangerTransitionCallback();
 				} else if this.currentNerveBreathingFXStage != 0 {
-					DFLog(this.debugEnabled, this, "TryToTransitionNerveBreathingEffects: Stopping breathing FX (Nerve Stage >= 3, inDanger = false)");
+					DFLog(this, "TryToTransitionNerveBreathingEffects: Stopping breathing FX (Nerve Stage >= 3, inDanger = false)");
 					this.StopNerveBreathingEffects();
 				}
 			}
@@ -1060,8 +1061,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 		let currentNerve: Float = this.GetNeedValue();
 		
-		if this.GameStateService.IsValidGameState("CheckForCriticalNerve") {
-			if currentNerve <= 0.0 {
+		if this.GameStateService.IsValidGameState(this) {
+			if currentNerve <= 0.0 && this.Settings.nerveLossIsFatal {
 				if this.CyberwareService.GetHasSecondHeart() && !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.SecondHeartCooldown") {
 					// Is the player's max Nerve greater than 0, does the player have a Second Heart, and is it not on a cooldown?
 
@@ -1071,14 +1072,14 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 					StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SecondHeartNerveRestore");
 
-				} else if this.Settings.nerveLossIsFatal {
+				} else {
 					// Kill the player.
 					this.QueuePlayerDeath();
 				}
 			}
 		}
 
-		if this.GameStateService.IsValidGameState("CheckForCriticalNerve", true, true) {
+		if this.GameStateService.IsValidGameState(this, true, true) {
 			if currentNerve > 0.0 {
 				if currentNerve <= this.criticalNerveFXThreshold {
 					this.PlayCriticalNerveEffects();
@@ -1108,7 +1109,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func QueueCriticalNerveWarningNotification() -> Void {
-		if this.GameStateService.IsValidGameState("QueueCriticalNerveWarningNotification", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			let message: DFMessage;
 			message.key = n"DarkFutureCriticalNerveHighNotification";
 			message.type = SimpleMessageType.Negative;
@@ -1119,7 +1120,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func QueueExtremelyCriticalNerveWarningNotification() -> Void {
-		if this.GameStateService.IsValidGameState("QueueExtremelyCriticalNerveWarningNotification", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			let message: DFMessage;
 			message.key = n"DarkFutureCriticalNerveLowNotification";
 			message.type = SimpleMessageType.Negative;
@@ -1191,7 +1192,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	public final func OnUpperBodyStateChange() -> Void {
-		if this.GameStateService.IsValidGameState("OnUpperBodyStateChange", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			this.TryToTransitionNerveBreathingEffects();
 			this.UpdateWeaponShake();
 		}
@@ -1238,17 +1239,16 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	public final func OnUpdateFromDanger() -> Void {
-		if this.GameStateService.IsValidGameState("OnUpdateFromDanger") {
+		if this.GameStateService.IsValidGameState(this) {
 			this.ChangeNeedValue(this.GetNerveChangeFromDanger());
-
-			// Registration managed by calls to SetUpdateMode() / AutoSetUpdateMode()
-			this.RegisterDangerUpdateCallback();
 		}
+
+		this.AutoSetUpdateMode();
 	}
 
 	public final func OnVehicleKnockdown() -> Void {
-		if this.GameStateService.IsValidGameState("OnVehicleKnockdown") {
-			DFLog(this.debugEnabled, this, "OnVehicleKnockdown");
+		if this.GameStateService.IsValidGameState(this) {
+			DFLog(this, "OnVehicleKnockdown");
 
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;

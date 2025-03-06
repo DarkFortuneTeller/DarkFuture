@@ -21,7 +21,8 @@ import DarkFuture.Gameplay.{
     DFVehicleSleepSystem,
     DFVehicleSummonSystem,
     DFRandomEncounterSystem,
-    DFStashCraftingSystem
+    DFStashCraftingSystem,
+    DFDeceptiousCompatSystem
 }
 import DarkFuture.Needs.{
     DFHydrationSystem,
@@ -117,6 +118,17 @@ protected cb func OnInitialize() -> Bool {
 	return val;
 }
 
+@wrapMethod(PlayerDevelopmentData)
+private final const func ModifyProficiencyLevel(proficiencyIndex: Int32, isDebug: Bool, opt levelIncrease: Int32) -> Void {
+    wrappedMethod(proficiencyIndex, isDebug, levelIncrease);
+
+    let strengthSkillIndex: Int32 = this.GetProficiencyIndexByType(gamedataProficiencyType.StrengthSkill);
+    if Equals(strengthSkillIndex, proficiencyIndex) {
+        DFLogNoSystem(true, this, "ModifyProficiencyLevel: Updating Strength Skill Proficiency Carry Weight bonus.");
+        DFMainSystem.Get().UpdateStrengthSkillBonuses();
+    }
+}
+
 public class MainSystemPlayerDeathEvent extends CallbackSystemEvent {
     static func Create() -> ref<MainSystemPlayerDeathEvent> {
         return new MainSystemPlayerDeathEvent();
@@ -150,13 +162,13 @@ public class MainSystemTimeSkipFinishedEvent extends CallbackSystemEvent {
 }
 
 public class MainSystemItemConsumedEvent extends CallbackSystemEvent {
-    private let data: wref<gameItemData>;
+    private let data: wref<ConsumableItem_Record>;
 
-    public func GetData() -> wref<gameItemData> {
+    public func GetData() -> wref<ConsumableItem_Record> {
         return this.data;
     }
 
-    static func Create(data: wref<gameItemData>) -> ref<MainSystemItemConsumedEvent> {
+    static func Create(data: wref<ConsumableItem_Record>) -> ref<MainSystemItemConsumedEvent> {
         let event = new MainSystemItemConsumedEvent();
         event.data = data;
         return event;
@@ -214,7 +226,7 @@ class DFMainSystemEventListeners extends ScriptableService {
 }
 
 public final class DFMainSystem extends ScriptableSystem {
-    private let debugEnabled: Bool = false;
+    private let debugEnabled: Bool = true;
 
     private let player: ref<PlayerPuppet>;
 
@@ -237,13 +249,13 @@ public final class DFMainSystem extends ScriptableSystem {
     //  Startup and Shutdown
     //
     private func OnAttach() -> Void {
-        DFLog(this.debugEnabled, this, "OnAttach");
+        DFLogNoSystem(this.debugEnabled, this, "OnAttach");
         this.playerAttachedCallbackID = GameInstance.GetPlayerSystem(GetGameInstance()).RegisterPlayerPuppetAttachedCallback(this, n"PlayerAttachedCallback");
     }
 
     private final func PlayerAttachedCallback(playerPuppet: ref<GameObject>) -> Void {
 		if IsDefined(playerPuppet) {
-            DFLog(this.debugEnabled, this, "PlayerAttachedCallback playerPuppet TweakDBID: " + TDBID.ToStringDEBUG((playerPuppet as PlayerPuppet).GetRecord().GetID()));
+            DFLogNoSystem(this.debugEnabled, this, "PlayerAttachedCallback playerPuppet TweakDBID: " + TDBID.ToStringDEBUG((playerPuppet as PlayerPuppet).GetRecord().GetID()));
             this.player = playerPuppet as PlayerPuppet;
 
             // Player Replacer / Act 2 Handling - If Late Init is already Done, start all systems.
@@ -265,10 +277,10 @@ public final class DFMainSystem extends ScriptableSystem {
     private final func StartAll() -> Void {
         let gameInstance = GetGameInstance();
         if !IsDefined(this.player) {
-            DFLog(true, this, "ERROR: PLAYER NOT DEFINED ON DFMainSystem:StartAll()", DFLogLevel.Error);
+            DFLogNoSystem(true, this, "ERROR: PLAYER NOT DEFINED ON DFMainSystem:StartAll()", DFLogLevel.Error);
             return;
         }
-        DFLog(this.debugEnabled, this, "!!!!! DFMainSystem:StartAll !!!!!");
+        DFLogNoSystem(this.debugEnabled, this, "!!!!! DFMainSystem:StartAll !!!!!");
 
         // Settings
         DFSettings.GetInstance(gameInstance).Init(this.player);
@@ -311,6 +323,9 @@ public final class DFMainSystem extends ScriptableSystem {
         DFHUDSystem.GetInstance(gameInstance).Init(this.player);
         DFRevisedBackpackUISystem.GetInstance(gameInstance).Init(this.player);
 
+        // Compatibility
+        DFDeceptiousCompatSystem.GetInstance(gameInstance).Init(this.player);
+
         // Reconcile settings changes
         DFSettings.GetInstance(gameInstance).ReconcileSettings();
 
@@ -319,7 +334,7 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     private final func ResumeAll() -> Void {
-        DFLog(this.debugEnabled, this, "!!!!! DFMainSystem:ResumeAll !!!!!");
+        DFLogNoSystem(this.debugEnabled, this, "!!!!! DFMainSystem:ResumeAll !!!!!");
         let gameInstance = GetGameInstance();
 
         // Lifecycle Hook - Start
@@ -360,17 +375,23 @@ public final class DFMainSystem extends ScriptableSystem {
         DFHUDSystem.GetInstance(gameInstance).Resume();
         DFRevisedBackpackUISystem.GetInstance(gameInstance).Resume();
 
+        // Compatibility
+        DFDeceptiousCompatSystem.GetInstance(gameInstance).Resume();
+
         // Lifecycle Hook - Done
         this.DispatchLifecycleResumeDoneEvent();
     }
 
     private final func SuspendAll() -> Void {
-        DFLog(this.debugEnabled, this, "!!!!! DFMainSystem:SuspendAll !!!!!");
+        DFLogNoSystem(this.debugEnabled, this, "!!!!! DFMainSystem:SuspendAll !!!!!");
 
         let gameInstance = GetGameInstance();
 
         // Lifecycle Hook - Start
         this.DispatchLifecycleSuspendEvent();
+
+        // Compatibility
+        DFDeceptiousCompatSystem.GetInstance(gameInstance).Suspend();
 
         // UI
         DFRevisedBackpackUISystem.GetInstance(gameInstance).Suspend();
@@ -437,10 +458,13 @@ public final class DFMainSystem extends ScriptableSystem {
             } else {
                 StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityHalf");
             }
+
 		} else {
             StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");
             StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity");
         }
+
+        this.UpdateStrengthSkillBonuses();
     }
 
     public final func OnSettingChanged(changedSettings: array<String>) -> Void {
@@ -459,8 +483,50 @@ public final class DFMainSystem extends ScriptableSystem {
         }
     }
 
+    public final func UpdateStrengthSkillBonuses() -> Void {
+        let developmentData: ref<PlayerDevelopmentData> = PlayerDevelopmentSystem.GetInstance(this.player).GetDevelopmentData(this.player);
+        let newLevel: Int32 = developmentData.GetProficiencyLevel(gamedataProficiencyType.StrengthSkill);
+        StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureStrengthSkillCarryWeightPenalty");
+        DFLogNoSystem(this.debugEnabled, this, "    Solo Skill: " + ToString(newLevel));
+
+        let strengthSkillLevel5NewBonus: Int32;
+        let strengthSkillLevel25NewBonus: Int32;
+
+        let reducedCarryWeightSettingValue: DFReducedCarryWeightAmount = DFSettings.Get().reducedCarryWeight;
+        if Equals(reducedCarryWeightSettingValue, DFReducedCarryWeightAmount.Full) {
+            strengthSkillLevel5NewBonus = 20;
+            strengthSkillLevel25NewBonus = 30;
+            if newLevel >= 25 {
+                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StrengthSkillPenaltyFull25");
+
+            } else if newLevel >= 5 {
+                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StrengthSkillPenaltyFull5");
+            }
+
+        } else if Equals(reducedCarryWeightSettingValue, DFReducedCarryWeightAmount.Half) {
+            strengthSkillLevel5NewBonus = 25;
+            strengthSkillLevel25NewBonus = 50;
+            if newLevel >= 25 {
+                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StrengthSkillPenaltyHalf25");
+
+            } else if newLevel >= 5 {
+                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StrengthSkillPenaltyHalf5");
+            }
+        
+        } else if Equals(reducedCarryWeightSettingValue, DFReducedCarryWeightAmount.Off) {
+            strengthSkillLevel5NewBonus = 50;
+            strengthSkillLevel25NewBonus = 100;
+        }
+
+        // Update the descriptions in the Skill Proficiencies UI
+        TweakDBManager.SetFlat(t"Proficiencies.StrengthSkill_inline1.intValues", [strengthSkillLevel5NewBonus]);
+        TweakDBManager.SetFlat(t"Proficiencies.StrengthSkill_inline7.intValues", [strengthSkillLevel25NewBonus]);
+        TweakDBManager.UpdateRecord(t"Proficiencies.StrengthSkill_inline1");
+        TweakDBManager.UpdateRecord(t"Proficiencies.StrengthSkill_inline7");
+    }
+
     public final func DispatchPlayerDeathEvent() -> Void {
-        DFLog(this.debugEnabled, this, "!!!!! DFMainSystem:DispatchPlayerDeathEvent !!!!!");
+        DFLogNoSystem(this.debugEnabled, this, "!!!!! DFMainSystem:DispatchPlayerDeathEvent !!!!!");
         GameInstance.GetCallbackSystem().DispatchEvent(MainSystemPlayerDeathEvent.Create());
     }
 
@@ -476,8 +542,8 @@ public final class DFMainSystem extends ScriptableSystem {
         GameInstance.GetCallbackSystem().DispatchEvent(MainSystemTimeSkipFinishedEvent.Create(data));
     }
 
-    public final func DispatchItemConsumedEvent(data: wref<gameItemData>) -> Void {
-        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemItemConsumedEvent.Create(data));
+    public final func DispatchItemConsumedEvent(itemRecord: wref<ConsumableItem_Record>) -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemItemConsumedEvent.Create(itemRecord));
     }
 
     //

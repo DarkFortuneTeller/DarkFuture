@@ -124,10 +124,13 @@ public final class DFGameStateService extends DFSystem {
     private let QuestsSystem: ref<QuestsSystem>;
     private let NotificationService: ref<DFNotificationService>;
 
+    private let UISystemBlackboard: ref<IBlackboard>;
+    private let UISystemDef: ref<UI_SystemDef>;
     private let playerStateMachineBlackboard: ref<IBlackboard>;
     private let playerSMDef: ref<PlayerStateMachineDef>;
 
     private let gameplayTierChangeListener: ref<CallbackHandle>;
+    private let menuUpdateListener: ref<CallbackHandle>;
     private let replacerChangeListener: ref<CallbackHandle>;
     private let baseGameIntroMissionFactListener: Uint32;
     private let baseGameQ101ShowerMissionFactListener: Uint32;
@@ -139,6 +142,7 @@ public final class DFGameStateService extends DFSystem {
     private let baseGameQ101ShowerDone: Bool = false;
     private let phantomLibertyIntroDone: Bool = false;
     private let baseGamePointOfNoReturnDone: Bool = false;
+    private let isInMenu: Bool = false;
     private let isReplacer: Bool = false;
     private let isInSleepCinematic: Bool = false;
     private let isInFury: Bool = false;
@@ -165,7 +169,7 @@ public final class DFGameStateService extends DFSystem {
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = false;
+        this.debugEnabled = true;
     }
 
     private func DoPostSuspendActions() -> Void {
@@ -199,12 +203,16 @@ public final class DFGameStateService extends DFSystem {
     }
 
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {
-        this.playerStateMachineBlackboard = this.BlackboardSystem.GetLocalInstanced(attachedPlayer.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
-        this.playerSMDef = GetAllBlackboardDefs().PlayerStateMachine;
+        let allBlackboards: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
+        this.playerStateMachineBlackboard = this.BlackboardSystem.GetLocalInstanced(attachedPlayer.GetEntityID(), allBlackboards.PlayerStateMachine);
+        this.UISystemBlackboard = this.BlackboardSystem.Get(allBlackboards.UI_System);
+        this.playerSMDef = allBlackboards.PlayerStateMachine;
+        this.UISystemDef = allBlackboards.UI_System;
     }
 
     private func RegisterListeners() -> Void {
         this.gameplayTierChangeListener = this.playerStateMachineBlackboard.RegisterListenerInt(this.playerSMDef.SceneTier, this, n"OnSceneTierChange", true);
+        this.menuUpdateListener = this.UISystemBlackboard.RegisterListenerBool(this.UISystemDef.IsInMenu, this, n"OnMenuUpdate");
         this.baseGameIntroMissionFactListener = this.QuestsSystem.RegisterListener(n"q001_01_go_to_sleep_done", this, n"OnBaseGameIntroMissionFactChanged");
         this.baseGameQ101ShowerMissionFactListener = this.QuestsSystem.RegisterListener(n"q101_enable_activities_flat", this, n"OnBaseGameQ101ShowerMissionFactChanged");
         this.baseGamePointOfNoReturnFactListener = this.QuestsSystem.RegisterListener(n"q115_point_of_no_return", this, n"OnBaseGamePointOfNoReturnFactChanged");
@@ -253,9 +261,9 @@ public final class DFGameStateService extends DFSystem {
     }
 
     protected cb func OnSceneTierChange(value: Int32) -> Void {
-        DFLog(this.debugEnabled, this, "+++++++++++++++");
-        DFLog(this.debugEnabled, this, "+++++++++++++++ OnSceneTierChange value = " + ToString(value));
-        DFLog(this.debugEnabled, this, "+++++++++++++++");
+        DFLog(this, "+++++++++++++++");
+        DFLog(this, "+++++++++++++++ OnSceneTierChange value = " + ToString(value));
+        DFLog(this, "+++++++++++++++");
 
         if NotEquals(IntEnum<GameplayTier>(value), GameplayTier.Undefined) {
             this.gameplayTier = IntEnum<GameplayTier>(value);
@@ -263,33 +271,37 @@ public final class DFGameStateService extends DFSystem {
         }
     }
 
+    protected cb func OnMenuUpdate(value: Bool) -> Void {
+        this.isInMenu = value;
+    }
+
     private final func OnBaseGameIntroMissionFactChanged(value: Int32) -> Void {
-        DFLog(this.debugEnabled, this, "OnBaseGameIntroMissionFactChanged value = " + ToString(value));
+        DFLog(this, "OnBaseGameIntroMissionFactChanged value = " + ToString(value));
         this.baseGameIntroMissionDone = value == 1 ? true : false;
     }
 
     private final func OnBaseGameQ101ShowerMissionFactChanged(value: Int32) -> Void {
-        DFLog(this.debugEnabled, this, "OnBaseGameQ101ShowerMissionFactChanged value = " + ToString(value));
+        DFLog(this, "OnBaseGameQ101ShowerMissionFactChanged value = " + ToString(value));
         this.baseGameQ101ShowerDone = value == 1 ? true : false;
     }
 
     private final func OnBaseGamePointOfNoReturnFactChanged(value: Int32) -> Void {
-        DFLog(this.debugEnabled, this, "OnBaseGamePointOfNoReturnFactChanged value = " + ToString(value));
+        DFLog(this, "OnBaseGamePointOfNoReturnFactChanged value = " + ToString(value));
         this.baseGamePointOfNoReturnDone = value == 1 ? true : false;
     }
 
     private final func OnPhantomLibertyIntroFactChanged(value: Int32) -> Void {
-        DFLog(this.debugEnabled, this, "OnPhantomLibertyIntroFactChanged value = " + ToString(value));
+        DFLog(this, "OnPhantomLibertyIntroFactChanged value = " + ToString(value));
         this.phantomLibertyIntroDone = value == 1 ? true : false;
     }
 
     private final func OnReplacerChanged(value: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "OnReplacerChange value = " + ToString(value));
+        DFLog(this, "OnReplacerChange value = " + ToString(value));
         this.isReplacer = value;
     }
 
     private final func OnFuryStateChanged(value: Bool, opt noEvent: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "OnFuryStateChanged value = " + ToString(value));
+        DFLog(this, "OnFuryStateChanged value = " + ToString(value));
         this.isInFury = value;
 
         if !noEvent {
@@ -298,53 +310,54 @@ public final class DFGameStateService extends DFSystem {
     }
 
     private final func OnCyberspaceStateChanged(value: Bool, opt noEvent: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "OnCyberspaceStateChanged value = " + ToString(value));
+        DFLog(this, "OnCyberspaceStateChanged value = " + ToString(value));
         this.isInCyberspace = value;
 
         if !noEvent {
             GameInstance.GetCallbackSystem().DispatchEvent(DFGameStateServiceCyberspaceChangedEvent.Create(value));
         }
-        
     }
 
-    public final func GetGameState(callerName: String, opt ignoreTemporarilyInvalid: Bool, opt ignoreSleepCinematic: Bool) -> GameState {
+    public final func GetGameState(caller: ref<IScriptable>, opt ignoreTemporarilyInvalid: Bool, opt ignoreSleepCinematic: Bool) -> GameState {
+        let callerName: String = NameToString(caller.GetClassName());
+
         if !this.Settings.mainSystemEnabled {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.Settings.mainSystemEnabled=" + ToString(this.Settings.mainSystemEnabled));
+            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.Settings.mainSystemEnabled=" + ToString(this.Settings.mainSystemEnabled));
             return GameState.Invalid;
         }
         
         if !this.baseGameIntroMissionDone && !this.baseGameQ101ShowerDone && !this.phantomLibertyIntroDone {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGameIntroMissionDone=" + ToString(this.baseGameIntroMissionDone) + ", this.baseGameQ101ShowerDone=" + ToString(this.baseGameQ101ShowerDone) + ", this.phantomLibertyIntroDone=" + ToString(this.phantomLibertyIntroDone));
+            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGameIntroMissionDone=" + ToString(this.baseGameIntroMissionDone) + ", this.baseGameQ101ShowerDone=" + ToString(this.baseGameQ101ShowerDone) + ", this.phantomLibertyIntroDone=" + ToString(this.phantomLibertyIntroDone));
             return GameState.Invalid;
         }
 
         if this.baseGamePointOfNoReturnDone {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGamePointOfNoReturnDone=" + ToString(this.baseGamePointOfNoReturnDone));
+            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGamePointOfNoReturnDone=" + ToString(this.baseGamePointOfNoReturnDone));
             return GameState.Invalid;
         }
 
         if this.isReplacer {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.isReplacer=" + ToString(this.isReplacer));
+            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.isReplacer=" + ToString(this.isReplacer));
             return GameState.Invalid;
         }
 
         if this.isInCyberspace {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.isInCyberspace=" + ToString(this.isInCyberspace));
+            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.isInCyberspace=" + ToString(this.isInCyberspace));
             return GameState.Invalid;
         }
 
         if !ignoreSleepCinematic && this.isInSleepCinematic {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Invalid for caller " + callerName + ": this.isInSleepCinematic=" + ToString(this.isInSleepCinematic));
+            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.isInSleepCinematic=" + ToString(this.isInSleepCinematic));
             return GameState.Invalid;
         }
 
         if !ignoreTemporarilyInvalid && this.isInFury {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Temporarily Invalid for caller " + callerName + ": this.isInFury=" + ToString(this.isInFury));
+            DFLog(this, "GetGameState() returned Temporarily Invalid for caller " + callerName + ": this.isInFury=" + ToString(this.isInFury));
             return GameState.TemporarilyInvalid;
         }
 
         if !ignoreTemporarilyInvalid && !Equals(this.gameplayTier, GameplayTier.Tier1_FullGameplay) && !Equals(this.gameplayTier, GameplayTier.Tier2_StagedGameplay) {
-            DFLog(this.debugEnabled, this, "GetGameState() returned Temporarily Invalid for caller " + callerName + ": this.gameplayTier=" + ToString(this.gameplayTier));
+            DFLog(this, "GetGameState() returned Temporarily Invalid for caller " + callerName + ": this.gameplayTier=" + ToString(this.gameplayTier));
             return GameState.TemporarilyInvalid;
         }
 
@@ -352,8 +365,8 @@ public final class DFGameStateService extends DFSystem {
         return GameState.Valid;
     }
 
-    public final func IsValidGameState(callerName: String, opt ignoreTemporarilyInvalid: Bool, opt ignoreSleepCinematic: Bool) -> Bool {
-        return Equals(this.GetGameState(callerName, ignoreTemporarilyInvalid, ignoreSleepCinematic), GameState.Valid);
+    public final func IsValidGameState(caller: ref<IScriptable>, opt ignoreTemporarilyInvalid: Bool, opt ignoreSleepCinematic: Bool) -> Bool {
+        return Equals(this.GetGameState(caller, ignoreTemporarilyInvalid, ignoreSleepCinematic), GameState.Valid);
     }
 
     private func GetActivationTitleKey() -> CName {
@@ -393,6 +406,10 @@ public final class DFGameStateService extends DFSystem {
                         StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.NewPsychosisEffectLightFx")
                     )
                 );
+    }
+
+    public final func IsInAnyMenu() -> Bool {
+        return this.isInMenu;
     }
 
     //

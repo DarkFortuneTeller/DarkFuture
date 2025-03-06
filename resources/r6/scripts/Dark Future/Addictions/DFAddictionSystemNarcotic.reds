@@ -314,7 +314,7 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
     }
 
     private final func QueueAddictionNotification(stage: Int32) -> Void {
-		if this.GameStateService.IsValidGameState("QueueNarcoticAddictionNotification", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			let messageKey: CName;
 			let messageType: SimpleMessageType;
 			switch stage {
@@ -373,7 +373,7 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 					}
 				}
 				
-				DFLog(this.debugEnabled, this, "nerveChangeFromNarcoticsQueue = " + ToString(this.nerveChangeFromNarcoticsQueue));
+				DFLog(this, "nerveChangeFromNarcoticsQueue = " + ToString(this.nerveChangeFromNarcoticsQueue));
 
 				// Add a stack of the Nerve Change Offset effect.
 				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.NerveChangeOffset");
@@ -405,7 +405,7 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 		if RunGuard(this) { return; }
 
         if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectNarcotic") {
-			DFLog(this.debugEnabled, this, "ProcessNarcoticPrimaryEffectRemoved");
+			DFLog(this, "ProcessNarcoticPrimaryEffectRemoved");
 			// Does the player have the Narcotic Addiction Primary Effect? If not, the primary effect expired, and we should try to start
 			// a backoff effect if the player is currently addicted.
 
@@ -432,16 +432,16 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 
     public final func ProcessNarcoticsNerveChangeOffsetEffectRemoved() -> Void {
 		if ArraySize(this.nerveChangeFromNarcoticsQueue) > 0 {
-            DFLog(this.debugEnabled, this, "ProcessNarcoticsNerveChangeOffsetEffectRemoved Queue Before: " + ToString(this.nerveChangeFromNarcoticsQueue));
+            DFLog(this, "ProcessNarcoticsNerveChangeOffsetEffectRemoved Queue Before: " + ToString(this.nerveChangeFromNarcoticsQueue));
 			let nerveChangeRange: DFNarcoticsNerveChangeRange = ArrayPop(this.nerveChangeFromNarcoticsQueue);
-            DFLog(this.debugEnabled, this, "ProcessNarcoticsNerveChangeOffsetEffectRemoved Queue After: " + ToString(this.nerveChangeFromNarcoticsQueue));
+            DFLog(this, "ProcessNarcoticsNerveChangeOffsetEffectRemoved Queue After: " + ToString(this.nerveChangeFromNarcoticsQueue));
 			let nerveChange: Float = RandRangeF(nerveChangeRange.min, nerveChangeRange.max);
-			DFLog(this.debugEnabled, this, "Random nerveChange = " + ToString(nerveChange));
+			DFLog(this, "Random nerveChange = " + ToString(nerveChange));
 
 			if nerveChange < 0.0 {
 				let bonusMult: Float = this.CyberwareService.GetNerveLossFromNarcoticsBonusMult();
 				nerveChange *= bonusMult;
-				DFLog(this.debugEnabled, this, "Endorphin Regulator bonus: " + ToString(bonusMult) + ", final value: " + ToString(nerveChange));
+				DFLog(this, "Endorphin Regulator bonus: " + ToString(bonusMult) + ", final value: " + ToString(nerveChange));
 			} else {
 				if this.Settings.narcoticsSFXEnabled {
 					let notification: DFNotification;

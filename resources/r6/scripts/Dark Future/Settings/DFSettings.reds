@@ -81,7 +81,7 @@ public class DFSettings extends ScriptableSystem {
 	}
 
 	public final func OnSessionStart(evt: ref<GameSessionEvent>) {
-		DFLog(this.debugEnabled, this, "OnSessionStart - Injecting TweakDB updates.");
+		DFLogNoSystem(this.debugEnabled, this, "OnSessionStart - Injecting TweakDB updates.");
 		
 		// Ammo Changes
 		//
@@ -349,7 +349,7 @@ public class DFSettings extends ScriptableSystem {
 	}
 
 	public func Init(attachedPlayer: ref<PlayerPuppet>) -> Void {
-		DFLog(this.debugEnabled, this, "Ready!");
+		DFLogNoSystem(this.debugEnabled, this, "Ready!");
 
 		RegisterDFSettingsListener(this);
     }
@@ -363,7 +363,7 @@ public class DFSettings extends ScriptableSystem {
 	}
 
 	public final func ReconcileSettings() -> Void {
-		DFLog(this.debugEnabled, this, "Beginning Settings Reconciliation...");
+		DFLogNoSystem(this.debugEnabled, this, "Beginning Settings Reconciliation...");
 		let changedSettings: array<String>;
 
 		if NotEquals(this._mainSystemEnabled, this.mainSystemEnabled) {
@@ -733,14 +733,14 @@ public class DFSettings extends ScriptableSystem {
 		}
 		
 		if ArraySize(changedSettings) > 0 {
-			DFLog(this.debugEnabled, this, "        ...the following settings have changed: " + ToString(changedSettings));
+			DFLogNoSystem(this.debugEnabled, this, "        ...the following settings have changed: " + ToString(changedSettings));
 			GameInstance.GetCallbackSystem().DispatchEvent(SettingChangedEvent.Create(changedSettings));
 		}
 
-		DFLog(this.debugEnabled, this, "        ...updating ammo crafting recipe availability...");
+		DFLogNoSystem(this.debugEnabled, this, "        ...updating ammo crafting recipe availability...");
 		this.ToggleAmmoCrafting(this.ammoCraftingEnabled);
 
-		DFLog(this.debugEnabled, this, "        ...done!");
+		DFLogNoSystem(this.debugEnabled, this, "        ...done!");
 	}
 
 	// -------------------------------------------------------------------------
@@ -1021,7 +1021,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "0.5")
 	@runtimeProperty("ModSettings.min", "0.5")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let injuryHealthLossAccumulationRate: Float = 5.0;
+	public let injuryHealthLossAccumulationRateRev2: Float = 10.0;
 
 	// -------------------------------------------------------------------------
 	// Survival - Alcohol Addiction
@@ -1763,39 +1763,6 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.min", "0.0")
 	@runtimeProperty("ModSettings.max", "2160.0")
 	public let hudUIPosY: Float = 240.0;
-
-	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
-	@runtimeProperty("ModSettings.category.order", "110")
-	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBackpackUIScale")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingBackpackUIScaleDesc")
-	@runtimeProperty("ModSettings.step", "0.01")
-	@runtimeProperty("ModSettings.min", "0.1")
-	@runtimeProperty("ModSettings.max", "4.0")
-	public let backpackUIScale: Float = 1.0;
-
-	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
-	@runtimeProperty("ModSettings.category.order", "110")
-	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBackpackUIPosX")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingBackpackUIPosXDesc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.0")
-	@runtimeProperty("ModSettings.max", "3840.0")
-	public let backpackUIPosX: Float = 675.0;
-
-	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
-	@runtimeProperty("ModSettings.category.order", "110")
-	@runtimeProperty("ModSettings.dependency", "interfaceAdvancedSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBackpackUIPosY")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingBackpackUIPosYDesc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.0")
-	@runtimeProperty("ModSettings.max", "2160.0")
-	public let backpackUIPosY: Float = 425.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")

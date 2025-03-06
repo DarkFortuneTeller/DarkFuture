@@ -8,32 +8,46 @@ DarkFutureStatusEffectTypes.Injury:
   enumComment: ''
   enumName: Injury
 
+DarkFutureStatusEffect.Injury_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.25
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.Injury_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.25
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
 DarkFutureStatusEffect.Injury_StatsPackageModifier_InhalerBaseHealing:
   $type: gamedataConstantStatModifier_Record
-  value: -0.2
+  value: -0.15
   modifierType: AdditiveMultiplier
   statType: BaseStats.InhalerBaseHealing
 
 DarkFutureStatusEffect.Injury_StatsPackageModifier_InjectorBaseHealing:
   $type: gamedataConstantStatModifier_Record
-  value: -0.2
+  value: -0.15
   modifierType: AdditiveMultiplier
   statType: BaseStats.InjectorBaseHealing
 
 DarkFutureStatusEffect.Injury_StatsPackageModifier_InjectorBaseOverTheTimeHealing:
   $type: gamedataConstantStatModifier_Record
-  value: -0.2
+  value: -0.15
   modifierType: AdditiveMultiplier
   statType: BaseStats.InjectorBaseOverTheTimeHealing
 
 DarkFutureStatusEffect.Injury_StatsPackage:
   $type: gamedataGameplayLogicPackage_Record
-  stackable: False
+  stackable: True
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats:
+    - DarkFutureStatusEffect.Injury_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.Injury_StatsPackageModifier_HealthInCombatRegenRate
     - DarkFutureStatusEffect.Injury_StatsPackageModifier_InhalerBaseHealing
     - DarkFutureStatusEffect.Injury_StatsPackageModifier_InjectorBaseHealing
     - DarkFutureStatusEffect.Injury_StatsPackageModifier_InjectorBaseOverTheTimeHealing
@@ -47,7 +61,8 @@ DarkFutureStatusEffect.Injury_UIData:
   priority: -11
   floatValues: []
   intValues:
-    - -20
+    - -15
+    - -25
     - 4
   nameValues: []
   stats: []

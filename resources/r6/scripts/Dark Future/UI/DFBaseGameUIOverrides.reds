@@ -280,12 +280,8 @@ private final func GetFilteredBuffList(value: Variant) -> array<BuffInfo> {
 	for buff in buffDataList {
 		let buffTags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buff.buffID).GameplayTags();
 		
-		if buff.timeRemaining <= 0.0 && !ArrayContains(buffTags, n"DarkFutureInfiniteDurationEffect") {
-			// Filter out buffs that are infinite duration, but don't have the infinite duration Dark Future tag.
-		
-		} else if hideDFPersistentStatusIcons && ArrayContains(buffTags, n"DarkFutureCanHideOnBuffBar") {
+		if hideDFPersistentStatusIcons && ArrayContains(buffTags, n"DarkFutureCanHideOnBuffBar") {
 			// Filter out buffs that should be hidden on the buff bar regardless based on Dark Future settings.
-
 		} else {
 			ArrayPush(filteredBuffDataList, buff);
 		}

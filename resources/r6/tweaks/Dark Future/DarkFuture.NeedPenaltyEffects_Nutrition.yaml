@@ -47,18 +47,6 @@ DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_MaxHealth:
   modifierType: Multiplier
   statType: BaseStats.Health
 
-DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthOutOfCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.75
-  modifierType: Multiplier
-  statType: BaseStats.HealthOutOfCombatRegenRate
-
-DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthInCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.75
-  modifierType: Multiplier
-  statType: BaseStats.HealthInCombatRegenRate
-
 DarkFutureStatusEffect.NutritionPenalty_01_StatsPackage:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
@@ -68,8 +56,6 @@ DarkFutureStatusEffect.NutritionPenalty_01_StatsPackage:
   statPools: []
   stats:
     - DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_MaxHealth
-    - DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthOutOfCombatRegenRate
-    - DarkFutureStatusEffect.NutritionPenalty_01_StatsPackageModifier_HealthInCombatRegenRate
 
 DarkFutureStatusEffect.NutritionPenalty_01_UIData:
   $type: gamedataStatusEffectUIData_Record
@@ -80,7 +66,6 @@ DarkFutureStatusEffect.NutritionPenalty_01_UIData:
   priority: -3
   floatValues: []
   intValues:
-    - -10
     - -10
   nameValues: []
   stats: []
@@ -124,18 +109,6 @@ DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_MaxHealth:
   modifierType: Multiplier
   statType: BaseStats.Health
 
-DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthOutOfCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.75
-  modifierType: Multiplier
-  statType: BaseStats.HealthOutOfCombatRegenRate
-
-DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthInCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.75
-  modifierType: Multiplier
-  statType: BaseStats.HealthInCombatRegenRate
-
 DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_AttackSpeed:
   $type: gamedataConstantStatModifier_Record
   value: 0.80
@@ -173,8 +146,6 @@ DarkFutureStatusEffect.NutritionPenalty_02_StatsPackage:
   statPools: []
   stats:
     - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_MaxHealth
-    - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthOutOfCombatRegenRate
-    - DarkFutureStatusEffect.NutritionPenalty_02_StatsPackageModifier_HealthInCombatRegenRate
 
 DarkFutureStatusEffect.NutritionPenalty_02_UIData:
   $type: gamedataStatusEffectUIData_Record
@@ -186,7 +157,6 @@ DarkFutureStatusEffect.NutritionPenalty_02_UIData:
   floatValues: []
   intValues:
     - -20
-    - -25
     - -20
   nameValues: []
   stats: []
@@ -230,18 +200,6 @@ DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_MaxHealth:
   modifierType: Multiplier
   statType: BaseStats.Health
 
-DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthOutOfCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.50
-  modifierType: Multiplier
-  statType: BaseStats.HealthOutOfCombatRegenRate
-
-DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthInCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.50
-  modifierType: Multiplier
-  statType: BaseStats.HealthInCombatRegenRate
-
 DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_AttackSpeed:
   $type: gamedataConstantStatModifier_Record
   value: 0.70
@@ -279,8 +237,6 @@ DarkFutureStatusEffect.NutritionPenalty_03_StatsPackage:
   statPools: []
   stats:
     - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_MaxHealth
-    - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthOutOfCombatRegenRate
-    - DarkFutureStatusEffect.NutritionPenalty_03_StatsPackageModifier_HealthInCombatRegenRate
 
 DarkFutureStatusEffect.NutritionPenalty_03_UIData:
   $type: gamedataStatusEffectUIData_Record
@@ -292,7 +248,6 @@ DarkFutureStatusEffect.NutritionPenalty_03_UIData:
   floatValues: []
   intValues:
     - -30
-    - -50
     - -30
   nameValues: []
   stats: []
@@ -336,18 +291,6 @@ DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_MaxHealth:
   modifierType: Multiplier
   statType: BaseStats.Health
 
-DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthOutOfCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.25
-  modifierType: Multiplier
-  statType: BaseStats.HealthOutOfCombatRegenRate
-
-DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthInCombatRegenRate:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.25
-  modifierType: Multiplier
-  statType: BaseStats.HealthInCombatRegenRate
-
 DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_AttackSpeed:
   $type: gamedataConstantStatModifier_Record
   value: 0.60
@@ -385,8 +328,6 @@ DarkFutureStatusEffect.NutritionPenalty_04_StatsPackage:
   statPools: []
   stats:
     - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_MaxHealth
-    - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthOutOfCombatRegenRate
-    - DarkFutureStatusEffect.NutritionPenalty_04_StatsPackageModifier_HealthInCombatRegenRate
 
 DarkFutureStatusEffect.NutritionPenalty_04_UIData:
   $type: gamedataStatusEffectUIData_Record
@@ -398,7 +339,6 @@ DarkFutureStatusEffect.NutritionPenalty_04_UIData:
   floatValues: []
   intValues:
     - -40
-    - -75
     - -40
   nameValues: []
   stats: []

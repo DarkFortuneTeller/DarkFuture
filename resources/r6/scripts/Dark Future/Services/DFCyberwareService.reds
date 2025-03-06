@@ -205,11 +205,11 @@ public final class DFCyberwareService extends DFSystem {
 
 		this.NicotineAddictionSystem.SetNicotineAddictionBackoffDurations();
 
-		DFLog(this.debugEnabled, this, "UpdateCyberwareBonuses Result:");
-		DFLog(this.debugEnabled, this, "    cyberwareNerveLossFromNarcoticsBonusMult = " + ToString(this.cyberwareNerveLossFromNarcoticsBonusMult));
-		DFLog(this.debugEnabled, this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
-		DFLog(this.debugEnabled, this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
-		DFLog(this.debugEnabled, this, "    cyberwareAlcoholNumbedRequiredStacksOverride = " + ToString(this.cyberwareAlcoholNumbedRequiredStacksOverride));
+		DFLog(this, "UpdateCyberwareBonuses Result:");
+		DFLog(this, "    cyberwareNerveLossFromNarcoticsBonusMult = " + ToString(this.cyberwareNerveLossFromNarcoticsBonusMult));
+		DFLog(this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
+		DFLog(this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
+		DFLog(this, "    cyberwareAlcoholNumbedRequiredStacksOverride = " + ToString(this.cyberwareAlcoholNumbedRequiredStacksOverride));
 	}
 
     public final func GetHasSecondHeart() -> Bool {

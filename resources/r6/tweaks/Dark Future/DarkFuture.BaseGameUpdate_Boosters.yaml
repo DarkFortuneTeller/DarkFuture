@@ -107,6 +107,7 @@ Items.HealthBooster.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
 Items.HealthBooster.quality: Quality.Uncommon
 Items.HealthBooster.OnEquip:
   - !prepend-once DarkFutureItem.InjuryCureDrugOnEquip
+
 BaseStatusEffect.HealthBooster_inline2.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
 
 #

@@ -252,7 +252,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
     }
 
     private final func QueueAddictionNotification(stage: Int32) -> Void {
-		if this.GameStateService.IsValidGameState("QueueAlcoholAddictionNotification", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			let messageKey: CName;
 			let messageType: SimpleMessageType;
 			switch stage {
@@ -319,7 +319,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 				let addictionMinStacksPerStage: array<Uint32> = this.GetAddictionMinStacksPerStage();
 				let addictionMinStackCount: Uint32 = addictionMinStacksPerStage[this.GetAddictionStage()];
 
-				DFLog(this.debugEnabled, this, "Alcohol: Current Stack Count " + ToString(alcoholStackCount) + ", Min Stack Count " + ToString(addictionMinStackCount));
+				DFLog(this, "Alcohol: Current Stack Count " + ToString(alcoholStackCount) + ", Min Stack Count " + ToString(addictionMinStackCount));
 				if alcoholStackCount >= addictionMinStackCount {
 					if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"AddictionWithdrawalAlcohol") {
 						StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"AddictionWithdrawalAlcohol");
@@ -341,7 +341,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 		if RunGuard(this) { return; }
 
 		if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectAlcohol") {
-			DFLog(this.debugEnabled, this, "ProcessAlcoholPrimaryEffectRemoved");
+			DFLog(this, "ProcessAlcoholPrimaryEffectRemoved");
 			// Does the player have the Alcohol Addiction Primary Effect? If not, the primary effect expired, and we should try to start
 			// a backoff effect if the player is currently addicted.
 

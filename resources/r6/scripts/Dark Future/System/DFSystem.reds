@@ -40,7 +40,7 @@ public abstract class DFSystemEventListener extends ScriptableService {
 	// Required Overrides
 	//
 	private func GetSystemInstance() -> wref<DFSystem> {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+		DFLogNoSystem(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
 		return null;
 	}
 
@@ -88,7 +88,7 @@ public abstract class DFSystem extends ScriptableSystem {
 
     private func DoInitActions(attachedPlayer: ref<PlayerPuppet>) -> Void {
         this.SetupDebugLogging();
-		DFLog(this.debugEnabled, this, "Init");
+		DFLog(this, "Init");
 
         this.GetRequiredSystems();
 		this.GetSystems();
@@ -98,11 +98,11 @@ public abstract class DFSystem extends ScriptableSystem {
         this.RegisterAllRequiredDelayCallbacks();
 
         this.state = DFSystemState.Running;
-        DFLog(this.debugEnabled, this, "INIT - Current State: " + ToString(this.state));
+        DFLog(this, "INIT - Current State: " + ToString(this.state));
     }
 
     public func Suspend() -> Void {
-        DFLog(this.debugEnabled, this, "SUSPEND - Current State: " + ToString(this.state));
+        DFLog(this, "SUSPEND - Current State: " + ToString(this.state));
         if Equals(this.state, DFSystemState.Running) {
             this.state = DFSystemState.Suspended;
             this.UnregisterAllDelayCallbacks();
@@ -111,7 +111,7 @@ public abstract class DFSystem extends ScriptableSystem {
     }
 
     public func Resume() -> Void {
-        DFLog(this.debugEnabled, this, "RESUME - Current State: " + ToString(this.state));
+        DFLog(this, "RESUME - Current State: " + ToString(this.state));
         if Equals(this.state, DFSystemState.Suspended) {
             this.state = DFSystemState.Running;
             this.RegisterAllRequiredDelayCallbacks();
@@ -233,8 +233,12 @@ public abstract class DFSystem extends ScriptableSystem {
     //
 	//	Logging
 	//
+    public final func IsDebugEnabled() -> Bool {
+        return this.debugEnabled;
+    }
+
 	private final func LogMissingOverrideError(funcName: String) -> Void {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
+		DFLog(this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
 	}
 }
 

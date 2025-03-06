@@ -33,8 +33,13 @@ import DarkFuture.Settings.DFSettings
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
     let effectID: TweakDBID = evt.staticData.GetID();
-	if Equals(effectID, t"BaseStatusEffect.Sated") {
+	let mainSystemEnabled: Bool = DFSettings.Get().mainSystemEnabled;
+	if Equals(effectID, t"DarkFutureStatusEffect.Sated") && mainSystemEnabled {
         DFHydrationSystem.Get().RegisterBonusEffectCheckCallback();
+	} else if Equals(effectID, t"BaseStatusEffect.Sated") && !mainSystemEnabled {
+		// The base game Hydrated effect was applied while Dark Future was disabled - Apply the
+		// Dark Future variant instead.
+		StatusEffectHelper.ApplyStatusEffect(this, t"DarkFutureStatusEffect.Sated");
 	}
 
 	return wrappedMethod(evt);
@@ -100,24 +105,25 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	//  Required Overrides
 	//
 	private final func OnUpdateActual() -> Void {
-		DFLog(this.debugEnabled, this, "OnUpdateActual");
+		DFLog(this, "OnUpdateActual");
 		this.ChangeNeedValue(this.GetHydrationChange());
 	}
 
 	private final func OnTimeSkipFinishedActual(data: DFTimeSkipData) -> Void {
-		DFLog(this.debugEnabled, this, "OnTimeSkipFinishedActual");
+		DFLog(this, "OnTimeSkipFinishedActual");
 
 		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.hydration.value - this.GetNeedValue());
 	}
 
-	private final func OnItemConsumedActual(itemData: wref<gameItemData>) {
-		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemData);
+	private final func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
+		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.hydration.value != 0.0 {
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
 			uiFlags.instantUIChange = true;
 			uiFlags.forceBright = true;
+			uiFlags.momentaryDisplayIgnoresSceneTier = true;
 			this.ChangeNeedValue(this.GetClampedNeedChangeFromData(consumableNeedsData.hydration), uiFlags);
 		}
 	}
@@ -131,7 +137,7 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	}
 
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
-		DFLog(this.debugEnabled, this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
+		DFLog(this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
 		
 		let notification: DFNotification;
 		if stage >= 3 {
@@ -175,12 +181,12 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 
 	public final func CheckIfBonusEffectsValid() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "CheckIfBonusEffectsValid");
+		DFLog(this, "CheckIfBonusEffectsValid");
 
-		if this.GameStateService.IsValidGameState("CheckIfBonusEffectsValid", true) {
-			if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.Sated") {
+		if this.GameStateService.IsValidGameState(this, true) {
+			if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Sated") {
 				if this.GetNeedStage() > 0 {
-					StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.Sated");
+					StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Sated");
 				}
 			}
 		}

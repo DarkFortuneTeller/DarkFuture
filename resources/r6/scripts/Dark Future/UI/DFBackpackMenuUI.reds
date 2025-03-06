@@ -127,7 +127,8 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 			let itemData: wref<gameItemData> = evt.uiInventoryItem.GetItemData();
 
 			if itemData.HasTag(n"Consumable") {
-				let needsData: DFNeedsDatum = GetConsumableNeedsData(itemData);
+				let itemRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(itemData.GetID().GetTDBID());
+				let needsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 				// Show the increase in Hydration and Nutrition if player's Nerve is not too low.
 				if this.NerveSystem.GetHasNausea() {
@@ -150,7 +151,7 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 				this.energyBar.SetUpdatedValue(updatedEnergyValue, this.EnergySystem.GetNeedMax());
 				
 				// Handle Addiction Withdrawal and Alcohol
-				let nerveMax: Float = this.NerveSystem.GetNerveLimitAfterItemUse(itemData);
+				let nerveMax: Float = this.NerveSystem.GetNerveLimitAfterItemUse(itemRecord);
 				let nerveValue: Float = this.NerveSystem.GetNeedValue();
 				let potentialNewValue: Float = nerveValue + (needsData.nerve.value + needsData.nerve.valueOnStatusEffectApply);
 
@@ -190,7 +191,7 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 protected cb func OnItemFilterClick(evt: ref<inkPointerEvent>) -> Bool {
 	let val: Bool = wrappedMethod(evt);
 
-	if this.GameStateService.IsValidGameState("OnItemFilterClick") {
+	if this.GameStateService.IsValidGameState(this) {
 		if evt.IsAction(n"click") {
 			let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
 			
@@ -218,7 +219,7 @@ protected cb func OnItemFilterClick(evt: ref<inkPointerEvent>) -> Bool {
 protected cb func OnFilterButtonSpawned(widget: ref<inkWidget>, callbackData: ref<BackpackFilterButtonSpawnedCallbackData>) -> Bool {
 	let val: Bool = wrappedMethod(widget, callbackData);
 
-	if this.GameStateService.IsValidGameState("OnFilterButtonSpawned") {
+	if this.GameStateService.IsValidGameState(this) {
 		let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
 
 		// More Inventory Filters Compatibility
@@ -268,8 +269,8 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 	this.barCluster.SetName(n"NeedsBarCluster");
 	this.barCluster.SetAnchor(inkEAnchor.TopCenter);
 	this.barCluster.SetAnchorPoint(new Vector2(0.5, 0.5));
-	this.barCluster.SetScale(new Vector2(this.Settings.backpackUIScale, this.Settings.backpackUIScale));
-	this.barCluster.SetTranslation(new Vector2(this.Settings.backpackUIPosX, this.Settings.backpackUIPosY));
+	this.barCluster.SetScale(new Vector2(1.0, 1.0));
+	this.barCluster.SetTranslation(new Vector2(0.0, 240.0));
 	this.barCluster.Reparent(parent, 12);
 
 	let rowOne: ref<inkHorizontalPanel> = new inkHorizontalPanel();
@@ -281,15 +282,6 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 	rowOne.SetAnchorPoint(new Vector2(0.5, 0.5));
 	rowOne.SetMargin(new inkMargin(0.0, 0.0, 0.0, 36.0));
 	rowOne.Reparent(this.barCluster);
-
-	let rowTwo: ref<inkHorizontalPanel> = new inkHorizontalPanel();
-	rowTwo.SetName(n"NeedsBarClusterRowTwo");
-	rowTwo.SetSize(new Vector2(100.0, 60.0));
-	rowTwo.SetVAlign(inkEVerticalAlign.Center);
-	rowTwo.SetAnchor(inkEAnchor.Fill);
-	rowTwo.SetAnchorPoint(new Vector2(0.5, 0.5));
-	rowTwo.SetMargin(new inkMargin(0.0, 0.0, 0.0, 30.0));
-	rowTwo.Reparent(this.barCluster);
 
 	let nerveIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 	let nerveIconName: CName = n"illegal";
@@ -309,17 +301,17 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 	this.nerveBar = new DFNeedsMenuBar();
 	this.nerveBar.Init(barSetupData);
 
-	barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false);
-	this.energyBar = new DFNeedsMenuBar();
-	this.energyBar.Init(barSetupData);
-
-	barSetupData = new DFNeedsMenuBarSetupData(rowTwo, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false);
+	barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false);
 	this.hydrationBar = new DFNeedsMenuBar();
 	this.hydrationBar.Init(barSetupData);
 	
-	barSetupData = new DFNeedsMenuBarSetupData(rowTwo, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 0.0, 0.0, 0.0, false);
+	barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false);
 	this.nutritionBar = new DFNeedsMenuBar();
-	this.nutritionBar.Init(barSetupData);	
+	this.nutritionBar.Init(barSetupData);
+
+	barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false);
+	this.energyBar = new DFNeedsMenuBar();
+	this.energyBar.Init(barSetupData);
 }
 
 @addMethod(BackpackMainGameController)

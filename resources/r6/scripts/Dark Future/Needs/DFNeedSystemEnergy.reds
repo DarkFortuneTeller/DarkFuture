@@ -127,11 +127,11 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		this.ClearStimulant();
 	}
 
-	private final func OnItemConsumedActual(itemData: wref<gameItemData>) {
-		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemData);
+	private final func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
+		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.energy.value != 0.0 {
-			this.ChangeEnergyFromItems(this.GetClampedNeedChangeFromData(consumableNeedsData.energy), consumableNeedsData.energy.value);
+			this.ChangeEnergyFromItems(this.GetClampedNeedChangeFromData(consumableNeedsData.energy), consumableNeedsData.energy.value, false);
 		}
 	}
 
@@ -144,7 +144,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
-		DFLog(this.debugEnabled, this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
+		DFLog(this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
         
 		let notification: DFNotification;
 
@@ -197,9 +197,9 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	public final func CheckIfBonusEffectsValid() -> Void {
         if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "CheckIfBonusEffectsValid");
+		DFLog(this, "CheckIfBonusEffectsValid");
 
-		if this.GameStateService.IsValidGameState("CheckIfBonusEffectsValid", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"HousingStatusEffect.Rested") {
 				if this.GetNeedStage() > 0 {
 					StatusEffectHelper.RemoveStatusEffect(this.player, t"HousingStatusEffect.Rested");
@@ -257,6 +257,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 				uiFlags.forceMomentaryUIDisplay = true;
 				uiFlags.instantUIChange = true;
 				uiFlags.forceBright = true;
+				uiFlags.momentaryDisplayIgnoresSceneTier = true;
 				this.ChangeNeedValue(energyAmount, uiFlags);
 			}
 		}
@@ -321,7 +322,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func RefreshStimulantEffect() -> Void {
-		let validGameState: Bool = this.GameStateService.IsValidGameState("RefreshStimulantEffect");
+		let validGameState: Bool = this.GameStateService.IsValidGameState(this);
 		StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.StimulantEffect");
 
 		if validGameState && this.stimulantStacks > 0u {

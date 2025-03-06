@@ -116,7 +116,7 @@ public class DFNeedsMenuBar extends inkCanvas {
 
         let barLabel: ref<inkText> = new inkText();
         barLabel.SetName(n"barLabel");
-        barLabel.SetMargin(new inkMargin(0.0, 0.0, 0.0, 3.0));
+        barLabel.SetMargin(new inkMargin(2.0, 0.0, 0.0, 3.0));
         barLabel.SetFontFamily("base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily");
 	    barLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
         barLabel.SetLetterCase(textLetterCase.UpperCase);

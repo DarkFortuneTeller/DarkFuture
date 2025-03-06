@@ -48,7 +48,7 @@ public abstract class DFAddictionSystemEventListener extends DFSystemEventListen
 	// Required Overrides
 	//
     private func GetSystemInstance() -> wref<DFAddictionSystemBase> {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+		DFLogNoSystem(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
 		return null;
 	}
 
@@ -169,9 +169,9 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     // all other Addictions.
 	public func OnUpdate(gameTimeSecondsToReduce: Float) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnUpdate");
+		DFLog(this, "OnUpdate");
 
-		if this.GameStateService.IsValidGameState("DFAddictionSystemBase:OnUpdate") {
+		if this.GameStateService.IsValidGameState(this) {
 			this.ReduceAddictionFromTime(gameTimeSecondsToReduce);
             this.ReduceWithdrawalDuration(gameTimeSecondsToReduce);
             this.ReduceBackoffDuration(gameTimeSecondsToReduce);
@@ -180,35 +180,35 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
     public func OnAddictionTreatmentEffectAppliedOrRemoved() -> Void {
         if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnAddictionTreatmentEffectAppliedOrRemoved");
+		DFLog(this, "OnAddictionTreatmentEffectAppliedOrRemoved");
 
         this.ReevaluateSystem();
     }
 
     public func OnSceneTierChanged(value: GameplayTier) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnSceneTierChanged value = " + ToString(value));
+		DFLog(this, "OnSceneTierChanged value = " + ToString(value));
 
 		this.ReevaluateSystem();
 	}
 
     public func OnFuryStateChanged(value: Bool) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnFuryStateChanged value = " + ToString(value));
+		DFLog(this, "OnFuryStateChanged value = " + ToString(value));
 
 		this.ReevaluateSystem();
 	}
 
     public func OnCyberspaceChanged(value: Bool) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnCyberspaceChanged value = " + ToString(value));
+		DFLog(this, "OnCyberspaceChanged value = " + ToString(value));
 
 		this.ReevaluateSystem();
 	}
 
     public func AddictionTreatmentDurationUpdateFromTimeSkipFinished(addictionData: DFAddictionDatum) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "AddictionTreatmentDurationUpdateFromTimeSkipFinished");
+		DFLog(this, "AddictionTreatmentDurationUpdateFromTimeSkipFinished");
 
         let updateDatum: DFAddictionUpdateDatum = this.GetSpecificAddictionUpdateData(addictionData);
         this.SetAddictionAmount(updateDatum.addictionAmount);
@@ -219,7 +219,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
         this.ReevaluateSystem();
 
-		if this.GameStateService.IsValidGameState("DFAddictionSystemBase:AddictionTreatmentDurationUpdateFromTimeSkipFinished", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
             if NotEquals(this.lastWithdrawalLevel, this.GetWithdrawalLevel()) {
                 this.PlayWithdrawalAdvanceSFX();
             }
@@ -462,14 +462,14 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		let addictionAmountLossPerUpdate = this.GetAddictionAmountLossPerDay() / updatesPerDay;
         this.ModAddictionAmount(-addictionAmountLossPerUpdate);
 
-		DFLog(this.debugEnabled, this, "ReduceAddictionFromTime currentAddictionAmount = " + ToString(this.currentAddictionAmount));
+		DFLog(this, "ReduceAddictionFromTime currentAddictionAmount = " + ToString(this.currentAddictionAmount));
 	}
 
 	private final func ReduceWithdrawalDuration(gameTimeSecondsToReduce: Float) -> Void {
 		if this.GetRemainingWithdrawalDurationInGameTimeSeconds() > 0.0 {
             let remainingDuration: Float = this.ModRemainingWithdrawalDurationInGameTimeSeconds(-gameTimeSecondsToReduce);
 			
-			DFLog(this.debugEnabled, this, "remainingWithdrawalDurationInGameTimeSeconds = " + ToString(remainingDuration));
+			DFLog(this, "remainingWithdrawalDurationInGameTimeSeconds = " + ToString(remainingDuration));
 
             if remainingDuration == 0.0 {
                 this.AdvanceWithdrawal();
@@ -481,7 +481,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		if this.GetRemainingBackoffDurationInGameTimeSeconds() > 0.0 {
 			let remainingDuration: Float = this.ModRemainingBackoffDurationInGameTimeSeconds(-gameTimeSecondsToReduce);
 
-			DFLog(this.debugEnabled, this, "remainingBackoffDurationInGameTimeSeconds = " + ToString(remainingDuration));
+			DFLog(this, "remainingBackoffDurationInGameTimeSeconds = " + ToString(remainingDuration));
 
 			if remainingDuration == 0.0 {
 				this.AdvanceWithdrawal();
@@ -496,12 +496,12 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		if currentAddictionStage < this.GetAddictionMaxStage() {
 			// Roll to check for addiction advancement.
 			let progressionAttempt: Float = RandRangeF(0.0, 100.0);
-			DFLog(this.debugEnabled, this, "TryToAdvanceAddiction progressionAttempt = " + ToString(progressionAttempt));
+			DFLog(this, "TryToAdvanceAddiction progressionAttempt = " + ToString(progressionAttempt));
 
 			if progressionAttempt <= this.GetAddictionProgressionChance() {
 				let currentAddictionAmount: Float = this.ModAddictionAmount(addictionAmountOnUse);
 
-				DFLog(this.debugEnabled, this, "TryToAdvanceAddiction Advancing addiction! Addiction amount now: " + ToString(currentAddictionAmount));
+				DFLog(this, "TryToAdvanceAddiction Advancing addiction! Addiction amount now: " + ToString(currentAddictionAmount));
 				let addictionStageAdvanceAmounts: array<Float> = this.GetAddictionStageAdvanceAmounts();
                 if currentAddictionAmount >= addictionStageAdvanceAmounts[currentAddictionStage] {
 					this.SetAddictionAmount(0.0);
@@ -520,16 +520,16 @@ public abstract class DFAddictionSystemBase extends DFSystem {
                         this.NotificationService.QueueTutorial(tutorial);
                     }
 
-					DFLog(this.debugEnabled, this, "TryToAdvanceAddiction Player addiction has advanced to stage " + ToString(currentAddictionStage) + "!");
+					DFLog(this, "TryToAdvanceAddiction Player addiction has advanced to stage " + ToString(currentAddictionStage) + "!");
 				}
 			}
 		} else {
-			DFLog(this.debugEnabled, this, "TryToAdvanceAddiction Player already at max addiction stage.");
+			DFLog(this, "TryToAdvanceAddiction Player already at max addiction stage.");
 		}
 	}
 
     private final func AdvanceWithdrawal() -> Void {
-		DFLog(this.debugEnabled, this, "AdvanceWithdrawal");
+		DFLog(this, "AdvanceWithdrawal");
 
         let withdrawalLevel: Int32 = this.GetWithdrawalLevel();
 		if withdrawalLevel < this.currentAddictionStage {
@@ -561,7 +561,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     private final func RefreshAddictionStatusEffects() -> Void {
 		let currentAddictionStage: Int32 = this.GetAddictionStage();
 		let currentWithdrawalLevel: Int32 = this.GetWithdrawalLevel();
-		let validGameState: Bool = this.GameStateService.IsValidGameState("RefreshAddictionStatusEffects");
+		let validGameState: Bool = this.GameStateService.IsValidGameState(this);
 
 		StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetWithdrawalStatusEffectTag());
 
@@ -616,7 +616,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 	}
 
     private final func StartBackoffDuration() -> Void {
-		DFLog(this.debugEnabled, this, "StartBackoffDuration");
+		DFLog(this, "StartBackoffDuration");
 		let currentAddictionStage: Int32 = this.GetAddictionStage();
 		if currentAddictionStage > 0 {
             let backoffDurations: array<Float> = this.GetAddictionBackoffDurationsInRealTimeMinutesByStage();
@@ -644,6 +644,6 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 	//	Logging
 	//
 	private final func LogMissingOverrideError(funcName: String) -> Void {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
+		DFLog(this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
 	}
 }

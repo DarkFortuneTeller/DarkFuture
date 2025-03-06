@@ -26,15 +26,15 @@ Vendors.BlackMarketMedicStore_inline6.quantity: *BlackMarketBoosterQuantity
 # Sell Mr. Whitey at Kiosk Vendors.
 DarkFutureVendors.MrWhiteyQuantityChance:
   $type: gamedataRandomStatModifier_Record
-  max: 6.5
-  min: 3.0
+  max: 12.5
+  min: 6.0
   useControlledRandom: False
   modifierType: Additive
   statType: BaseStats.Quantity
 
 DarkFutureVendors.MrWhiteyRareQuantityChance:
   $type: gamedataRandomStatModifier_Record
-  max: 4.5
+  max: 6.5
   min: 0.0
   useControlledRandom: False
   modifierType: Additive
@@ -68,14 +68,24 @@ DarkFutureVendors.MrWhiteyRareC:
   quantity:
     - DarkFutureVendors.MrWhiteyRareQuantityChance
 
-Vendors.Kiosk.itemStock:
+Vendors.Kiosk.itemStock: &MrWhiteyItemStock
   - !append-once DarkFutureVendors.MrWhitey
   - !append-once DarkFutureVendors.MrWhiteyRareA
   - !append-once DarkFutureVendors.MrWhiteyRareB
   - !append-once DarkFutureVendors.MrWhiteyRareC
 
-Vendors.Kiosk_EP1.itemStock:
-  - !append-once DarkFutureVendors.MrWhitey
-  - !append-once DarkFutureVendors.MrWhiteyRareA
-  - !append-once DarkFutureVendors.MrWhiteyRareB
-  - !append-once DarkFutureVendors.MrWhiteyRareC
+Vendors.Kiosk_EP1.itemStock: *MrWhiteyItemStock
+Vendors.bls_ina_se1_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.bls_ina_se1_junkshop_02.itemStock: *MrWhiteyItemStock
+Vendors.bls_ina_se5_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.cz_con_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.hey_gle_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.hey_rey_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.hey_spr_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.Junkshop_HUB.itemStock: *MrWhiteyItemStock
+Vendors.Junkshop.itemStock: *MrWhiteyItemStock
+Vendors.Tech_Junk_EP1.itemStock: *MrWhiteyItemStock
+Vendors.Tech_Junk.itemStock: *MrWhiteyItemStock
+Vendors.wat_kab_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.wbr_jpn_junkshop_01.itemStock: *MrWhiteyItemStock
+Vendors.wbr_jpn_junkshop_03.itemStock: *MrWhiteyItemStock

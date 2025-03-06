@@ -271,7 +271,7 @@ private final func SetOriginalValuesInUI() -> Void {
 @addMethod(TimeskipGameController)
 private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void {
 	this.barCluster = new inkVerticalPanel();
-	this.barCluster.SetVisible(this.GameStateService.IsValidGameState("CreateNeedsBarCluster", true, true));
+	this.barCluster.SetVisible(this.GameStateService.IsValidGameState(this, true, true));
 	this.barCluster.SetName(n"NeedsBarCluster");
 	this.barCluster.SetAnchor(inkEAnchor.TopCenter);
 	this.barCluster.SetAnchorPoint(new Vector2(0.5, 0.5));
@@ -331,7 +331,7 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 @addMethod(TimeskipGameController)
 private final func CreateTimeskipAllowedReasonWidget(parent: ref<inkCompoundWidget>) -> Void {
 	let reasonWidget: ref<inkVerticalPanel> = new inkVerticalPanel();
-	reasonWidget.SetVisible(this.GameStateService.IsValidGameState("CreateTimeskipAllowedReasonWidget", true, true));
+	reasonWidget.SetVisible(this.GameStateService.IsValidGameState(this, true, true));
 	reasonWidget.SetName(n"ReasonWidget");
 	reasonWidget.SetFitToContent(true);
 	reasonWidget.SetSize(new Vector2(150.0, 32.0));
@@ -361,7 +361,7 @@ private final func CreateTimeskipAllowedReasonWidget(parent: ref<inkCompoundWidg
 
 @addMethod(TimeskipGameController)
 private final func UpdateUI() -> Void {
-	if !this.GameStateService.IsValidGameState("UpdateUI", true, true) { return; }
+	if !this.GameStateService.IsValidGameState(this, true, true) { return; }
 	let timeskipAllowedReasonKey: CName = n"";
 
 	// If the player is too anxious to sleep now, ignore future values and bail out early.

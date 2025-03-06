@@ -269,7 +269,7 @@ public final class DFNotificationService extends DFSystem {
 	}
 
     private final func QueueNotification(notification: DFNotification) -> Void {
-		DFLog(this.debugEnabled, this, "QueueNotification sfx = " + ToString(notification.sfx) + ", vfx = " + ToString(notification.vfx) + ", ui = " + ToString(notification.ui) + ", callback = " + ToString(notification.callback) + ", allowPlaybackInCombat = " + ToString(notification.allowPlaybackInCombat));
+		DFLog(this, "QueueNotification sfx = " + ToString(notification.sfx) + ", vfx = " + ToString(notification.vfx) + ", ui = " + ToString(notification.ui) + ", callback = " + ToString(notification.callback) + ", allowPlaybackInCombat = " + ToString(notification.allowPlaybackInCombat));
 		
 		if notification.allowPlaybackInCombat && this.player.IsInCombat() {
 			ArrayPush(this.inCombatNotificationQueue, notification);
@@ -282,7 +282,7 @@ public final class DFNotificationService extends DFSystem {
 
 	public final func OnProcessOutOfCombatNotificationQueue() -> Void {
 		if ArraySize(this.outOfCombatNotificationQueue) > 0 {
-			let gs: GameState = this.GameStateService.GetGameState("DFNotificationSystem:OnProcessOutOfCombatNotificationQueue");
+			let gs: GameState = this.GameStateService.GetGameState(this);
 			let inCombat: Bool = this.player.IsInCombat();
 
 			if Equals(gs, GameState.Valid) {
@@ -304,7 +304,7 @@ public final class DFNotificationService extends DFSystem {
 
 	public final func OnProcessInCombatNotificationQueue() -> Void {
 		if ArraySize(this.inCombatNotificationQueue) > 0 {
-			let gs: GameState = this.GameStateService.GetGameState("DFNotificationSystem:OnProcessInCombatNotificationQueue");
+			let gs: GameState = this.GameStateService.GetGameState(this);
 
 			if Equals(gs, GameState.Valid) {
 				this.ProcessNotificationQueue(this.inCombatNotificationQueue);
@@ -320,7 +320,7 @@ public final class DFNotificationService extends DFSystem {
 	}
 
     private final func ProcessNotificationQueue(notificationQueue: script_ref<array<DFNotification>>) -> Void {
-		DFLog(this.debugEnabled, this, "ProcessNotificationQueue notificationQueue: " + ToString(notificationQueue));
+		DFLog(this, "ProcessNotificationQueue notificationQueue: " + ToString(notificationQueue));
         /*
             How the notification queue is processed:
 
@@ -349,12 +349,12 @@ public final class DFNotificationService extends DFSystem {
 				} else if notification.sfx.priority == sfxToPlay.priority {
 					if IsCoinFlipSuccessful() {
 						sfxToPlay = notification.sfx;
-						DFLog(this.debugEnabled, this, "QueueAudioCue picking new audio at random or equal priority");
+						DFLog(this, "QueueAudioCue picking new audio at random or equal priority");
 					} else {
-						DFLog(this.debugEnabled, this, "QueueAudioCue ignoring new audio cue (priorities were equal and random chance failed)");
+						DFLog(this, "QueueAudioCue ignoring new audio cue (priorities were equal and random chance failed)");
 					}
 				} else {
-					DFLog(this.debugEnabled, this, "QueueAudioCue ignoring new audio cue (priority was less than current queued audio)");
+					DFLog(this, "QueueAudioCue ignoring new audio cue (priority was less than current queued audio)");
 				}
 			}
 
@@ -379,7 +379,7 @@ public final class DFNotificationService extends DFSystem {
     }
 
 	private final func PlayNotificationPlaybackSet(nps: DFNotificationPlaybackSet) -> Void {
-		DFLog(this.debugEnabled, this, "PlayNotificationPlaybackSet nps: " + ToString(nps));
+		DFLog(this, "PlayNotificationPlaybackSet nps: " + ToString(nps));
 
 		// Play the audio cue.
         if NotEquals(nps.sfxToPlay.audio, n"") {
@@ -456,7 +456,7 @@ public final class DFNotificationService extends DFSystem {
 
     public final func OnDisplayNextMessage() -> Void {
         if ArraySize(this.messageQueue) > 0 {
-			let gs: GameState = this.GameStateService.GetGameState("DFNotificationSystem:OnDisplayNextMessage");
+			let gs: GameState = this.GameStateService.GetGameState(this);
 
 			if Equals(gs, GameState.Valid) {
 				let message: DFMessage = ArrayPop(this.messageQueue);
@@ -498,7 +498,7 @@ public final class DFNotificationService extends DFSystem {
 
     public final func OnDisplayNextTutorial() -> Void {
         if ArraySize(this.tutorialQueue) > 0 {
-			if this.GameStateService.IsValidGameState("OnDisplayNextTutorial") && !this.player.IsInCombat() {
+			if this.GameStateService.IsValidGameState(this) && !this.player.IsInCombat() {
 				let tutorial: DFTutorial = ArrayPop(this.tutorialQueue);
 				
 				let blackboardDef: ref<IBlackboard> = this.BlackboardSystem.Get(GetAllBlackboardDefs().UIGameData);

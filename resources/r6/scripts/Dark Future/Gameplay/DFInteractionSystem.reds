@@ -15,8 +15,11 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.DelayHelper.*
 import DarkFuture.Settings.*
-import DarkFuture.Utils.IsSleeping
-import DarkFuture.Utils.HoursToGameTimeSeconds
+import DarkFuture.Utils.{
+	RunGuard,
+	IsSleeping,
+	HoursToGameTimeSeconds
+}
 import DarkFuture.Main.{
 	DFMainSystem,
 	DFNeedsDatum,
@@ -64,23 +67,6 @@ protected cb func OnTakeControl(ri: EntityResolveComponentsInterface) -> Bool {
 	}
 
 	return r;
-}
-
-//	JournalNotificationQueue - Detect quest completion events.
-//
-@wrapMethod(JournalNotificationQueue)
-private final func PushQuestNotification(questEntry: wref<JournalQuest>, state: gameJournalEntryState) -> Void {
-	let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
-
-	let primaryKeyQuestTitle = ToString(GetLocalizedText(questEntry.GetTitle(journalManager)));
-	if Equals(state, gameJournalEntryState.Succeeded) {
-		if Equals(primaryKeyQuestTitle, ToString(GetLocalizedTextByKey(n"LizziesBDs-Main_Mod-Name"))) {
-			// Lizzie's Braindances - Completion of a braindance
-			DFNerveSystem.Get().QueueContextuallyDelayedNeedValueChange(100.0, true);
-		}
-	}
-
-	wrappedMethod(questEntry, state);
 }
 
 //	QuestTrackerGameController - Detect quest objective updates.
@@ -201,6 +187,24 @@ public class DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback exten
 	}
 }
 
+public class SmokingInteractionCheckCallback extends DFDelayCallback {
+	public let InteractionSystem: wref<DFInteractionSystem>;
+
+	public static func Create(interactionSystem: wref<DFInteractionSystem>) -> ref<DFDelayCallback> {
+		let self: ref<SmokingInteractionCheckCallback> = new SmokingInteractionCheckCallback();
+		self.InteractionSystem = interactionSystem;
+		return self;
+	}
+
+	public func InvalidateDelayID() -> Void {
+		this.InteractionSystem.smokingInteractionCheckDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+		this.InteractionSystem.OnSmokingInteractionCheck();
+	}
+}
+
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
 	let interactionSystem: ref<DFInteractionSystem> = DFInteractionSystem.Get();
@@ -269,14 +273,18 @@ public final class DFInteractionSystem extends DFSystem {
 
 	private let sleepingReduceMetabolismMult: Float = 0.4;
     
-	// FX
+	// Smoking
 	private let queuedSmokingFX: Bool = false;
 	private let smokingFXStage1DelayID: DelayID;
 	private let smokingFXStage2DelayID: DelayID;
 	private let smokingFXStage3DelayID: DelayID;
+	private let smokingInteractionCheckDelayID: DelayID;
 	private let smokingFXStage1DelayInterval: Float = 0.01;
 	private let smokingFXStage2DelayInterval: Float = 0.75;
 	private let smokingFXStage3DelayInterval: Float = 2.5;
+	private let smokingInteractionCheckDelayInterval: Float = 1.0;
+	private let smokingInteractionCheckQueued: Bool = false;
+	
 
 	private let vomitFromInteractionChoiceStage2DelayID: DelayID;
 	private let vomitFromInteractionChoiceStage2DelayInterval: Float = 1.5;
@@ -291,6 +299,7 @@ public final class DFInteractionSystem extends DFSystem {
 	private let journalEntryUpdate_Sleep_q103a: DFJournalEntryUpdate;
 	private let journalEntryUpdate_Sleep_q103b: DFJournalEntryUpdate;
 	private let journalEntryUpdate_Romance_q003: DFJournalEntryUpdate;
+	private let journalEntryUpdate_LizziesBDs: DFJournalEntryUpdate;
 
 	// See: darkfuture/localization_interactions/*/onscreens/darkfuture_interactions_donotmodify.json
 	private const let locKey_Interaction_Sleep_BaseGame: CName = n"DarkFutureInteraction_mq000_01_apartment_Sleep";
@@ -336,7 +345,7 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 	private final func DoPostResumeActions() -> Void {}
 	private final func SetupDebugLogging() -> Void {
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 	private final func DoStopActions() -> Void {}
 
@@ -350,6 +359,7 @@ public final class DFInteractionSystem extends DFSystem {
 		this.journalEntryUpdate_Sleep_q103a = new DFJournalEntryUpdate("q103_warhead", "roadhouse", "bed_upstairs", gameJournalEntryState.Succeeded);
 		this.journalEntryUpdate_Sleep_q103b = new DFJournalEntryUpdate("q103_warhead", "roadhouse", "bed_downstairs", gameJournalEntryState.Succeeded);
 		this.journalEntryUpdate_Romance_q003 = new DFJournalEntryUpdate("q003_stout", "stout", "02_enjoy_evening", gameJournalEntryState.Succeeded);
+		this.journalEntryUpdate_LizziesBDs = new DFJournalEntryUpdate("main_quest", "select_bd", "watch_bd", gameJournalEntryState.Succeeded);
 	}
 
 	private final func RegisterAllRequiredDelayCallbacks() -> Void {}
@@ -395,6 +405,7 @@ public final class DFInteractionSystem extends DFSystem {
 		this.UnregisterClearLastAttemptedChoiceForFXCheckCallback();
 		this.UnregisterAllSmokingFXCallbacks();
 		this.UnregisterVomitFromInteractionChoiceStage2Callback();
+		this.UnregisterForSmokingInteractionCheck();
 	}
 
     private final func RegisterListeners() -> Void {
@@ -635,17 +646,17 @@ public final class DFInteractionSystem extends DFSystem {
 			}
 		}
 
-		DFLog(this.debugEnabled, this, "=====================================================================================");
+		DFLog(this, "=====================================================================================");
 
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " AddictionAmount; " + ToString(addictionAmount));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " AddictionStage: " + ToString(addictionStage));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " PrimaryEffectDuration: " + ToString(primaryEffectDuration));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " BackoffDuration: " + ToString(backoffDuration));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " WithdrawalDuration: " + ToString(withdrawalDuration));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " WithdrawalLevel: " + ToString(withdrawalLevel));
-		DFLog(this.debugEnabled, this, "Predictive " + logName + " StackCount: " + ToString(stackCount));
+		DFLog(this, "Predictive " + logName + " AddictionAmount; " + ToString(addictionAmount));
+		DFLog(this, "Predictive " + logName + " AddictionStage: " + ToString(addictionStage));
+		DFLog(this, "Predictive " + logName + " PrimaryEffectDuration: " + ToString(primaryEffectDuration));
+		DFLog(this, "Predictive " + logName + " BackoffDuration: " + ToString(backoffDuration));
+		DFLog(this, "Predictive " + logName + " WithdrawalDuration: " + ToString(withdrawalDuration));
+		DFLog(this, "Predictive " + logName + " WithdrawalLevel: " + ToString(withdrawalLevel));
+		DFLog(this, "Predictive " + logName + " StackCount: " + ToString(stackCount));
 
-		DFLog(this.debugEnabled, this, "=====================================================================================");
+		DFLog(this, "=====================================================================================");
 
 		let addictionTimeSkipIterationStateData: DFAddictionTimeSkipIterationStateDatum;
 		addictionTimeSkipIterationStateData.addictionAmount = addictionAmount;
@@ -923,10 +934,12 @@ public final class DFInteractionSystem extends DFSystem {
     //  Logic
     //
 	public final func OnChoiceHub(value: Variant) {
+		if RunGuard(this) { return; }
+
 		let hubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(value);
 		
 		for hub in hubs.choiceHubs {
-			DFLog(this.debugEnabled, this, "Hub Title: " + GetLocalizedText(hub.title));
+			DFLog(this, "Hub Title: " + GetLocalizedText(hub.title));
 			if Equals(GetLocalizedText(hub.title), GetLocalizedTextByKey(n"Story-base-quest-minor_quests-mq006-scenes-mq006_02_finale-mq006_02_ch_rc_get_in_displayNameOverride")) {
 				// Pacifica Rollercoaster
 				this.mq006_lastRollercoasterPosition = this.player.GetWorldPosition();
@@ -938,6 +951,8 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     public final func OnLastAttemptedChoice(value: Variant) -> Void {
+		if RunGuard(this) { return; }
+
 		let choiceData: InteractionAttemptedChoice = FromVariant<InteractionAttemptedChoice>(value);
 		let choiceCaption: String = choiceData.choice.caption;
 		let choiceCaptionParts: array<ref<InteractionChoiceCaptionPart>> = choiceData.choice.captionParts.parts;
@@ -974,19 +989,8 @@ public final class DFInteractionSystem extends DFSystem {
 			this.DrankCoffeeFromChoice();
 
 		} else if StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Smoke)) || StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_TakeDrag)) {
-			if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
-				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureSmoking");
-			}
-			
-			// Smoking status effect variant to suppress additional unneeded FX
-			StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
-
-			// We want the Nerve bar to provide immediate feedback, so directly change Nerve now instead of a queued change
-			let uiFlags: DFNeedChangeUIFlags;
-			uiFlags.forceMomentaryUIDisplay = true;
-			uiFlags.momentaryDisplayIgnoresSceneTier = true;
-
-			this.NerveSystem.ChangeNeedValue(this.Settings.nerveCigarettes, uiFlags, true);
+			this.SetSmokingInteractionCheckQueued(true);
+			this.RegisterForSmokingInteractionCheck();
 
 		} else if this.IsNerveRegenInteractionChoice(choiceCaption, choiceIconName) {
 			this.NerveSystem.SetNerveRegenTarget(100.0);
@@ -1003,14 +1007,14 @@ public final class DFInteractionSystem extends DFSystem {
 			this.NerveSystem.ChangeNeedValue(20.0, uiFlags, true);
 
 		} else if this.IsNutritionRestorationChoice(choiceCaption, choiceIconName) {
-			this.NutritionSystem.QueueContextuallyDelayedNeedValueChange(20.0, true);
+			this.NutritionSystem.QueueContextuallyDelayedNeedValueChange(20.0, true, t"DarkFutureStatusEffect.WellFed");
 
 		}
 	}
 
     public final func DrankCoffeeFromChoice() -> Void {
-		DFLog(this.debugEnabled, this, "DrankCoffeeFromChoice");
-		if this.GameStateService.IsValidGameState("DrankCoffeeFromChoice", true) {
+		DFLog(this, "DrankCoffeeFromChoice");
+		if this.GameStateService.IsValidGameState(this, true) {
 			// Remove the Energized effect. It's no longer used in Dark Future due to being
 			// functionally identical to Hydrated.
 			if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"HousingStatusEffect.Energized") {
@@ -1019,7 +1023,7 @@ public final class DFInteractionSystem extends DFSystem {
 			
 			// Since the player can repeatedly activate the coffee machine to obtain max Hydration,
 			// just grant all of it on the first use. Also apply the Hydrated effect, like coffee items.
-            this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, t"BaseStatusEffect.Sated");
+            this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, t"DarkFutureStatusEffect.Sated");
 
 			// Treat the Energy restoration from the coffee machine like consuming normal coffee items.
 			let energyToRestore: Float = this.Settings.energyTier1;
@@ -1028,20 +1032,20 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
 	private final func SleepChoiceSelected() -> Void {
-		if this.GameStateService.IsValidGameState("SleepChoiceSelected", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			// Used to suppress VFX and notifications until the player gets up.
 			this.GameStateService.SetInSleepCinematic(true);
 		}
 	}
 
     private final func DrankTeaFromChoice() -> Void {
-		if this.GameStateService.IsValidGameState("DrankTeaFromChoice", true) {
-			this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
+		if this.GameStateService.IsValidGameState(this, true) {
+			this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, t"DarkFutureStatusEffect.Sated");
 		}
 	}
 
     public final func ShouldAllowFX() -> Bool {
-		if this.GameStateService.IsValidGameState("ShouldAllowFX", true, true) {
+		if this.GameStateService.IsValidGameState(this, true, true) {
 			// Check if the last choice prompt we selected was part of an allowed workspot (sleeping, showering, etc)
 			// If so, don't suppress VFX and SFX.
 			if NotEquals(this.lastAttemptedChoiceCaption, "") {
@@ -1066,7 +1070,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 				return false;
 			} else {
-				return this.GameStateService.IsValidGameState("ShouldAllowFX", false, true);
+				return this.GameStateService.IsValidGameState(this, false, true);
 			}
 		} else {
 			return false;
@@ -1147,7 +1151,39 @@ public final class DFInteractionSystem extends DFSystem {
 		this.player.QueueEvent(evt);
 	}
 
+	//
+	// Misc
+	//
+	public final func SetSmokingInteractionCheckQueued(queued: Bool) -> Void {
+		this.smokingInteractionCheckQueued = queued;
+	}
+
+	public final func OnSmokingInteractionCheck() {
+		// Separates world interactions from Idle Anywhere animation.
+		if this.GameStateService.IsValidGameState(this) {
+			if this.smokingInteractionCheckQueued {
+				// This was queued by a base game world interaction. If this were from Idle Anywhere,
+				// the queued check would have been cancelled before the game state became valid.
+				this.SetSmokingInteractionCheckQueued(false);
+				if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
+					StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureSmoking");
+				}
+				
+				// Smoking status effect variant to suppress additional unneeded FX
+				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
+
+				// Use Vargas Black Label as an example item when calculating the max override.
+				let itemRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(t"DarkFutureItem.CigarettePackC");
+				this.MainSystem.DispatchItemConsumedEvent(itemRecord);
+			}
+		} else {
+			this.RegisterForSmokingInteractionCheck();
+		}
+	}
+
 	public final func OnQuestObjectiveUpdate(hash: Uint32) -> Void {
+		if RunGuard(this) { return; }
+
 		let sleptDuringQuest: Bool = false;
 		let romanceDuringQuest: Bool = false;
 
@@ -1168,7 +1204,7 @@ public final class DFInteractionSystem extends DFSystem {
 					journalEntryUpdate.entryID = entry.GetId();
 					journalEntryUpdate.state = state;
 
-					DFLog(this.debugEnabled, this, "questID: " + journalEntryUpdate.questID + ", phaseID: " + journalEntryUpdate.phaseID + ", entryID: " + journalEntryUpdate.entryID + ", state: " + ToString(journalEntryUpdate.state));
+					DFLog(this, "questID: " + journalEntryUpdate.questID + ", phaseID: " + journalEntryUpdate.phaseID + ", entryID: " + journalEntryUpdate.entryID + ", state: " + ToString(journalEntryUpdate.state));
 
 					if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq027) {
 						// Panam: With A Little Help From My Friends - Waking up after sleeping under stars
@@ -1204,6 +1240,10 @@ public final class DFInteractionSystem extends DFSystem {
 
 					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Romance_q003) {
 						// Stout: Venus in Furs - Spent the evening with Meredith Stout
+						romanceDuringQuest = true;
+					
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_LizziesBDs) {
+						// Lizzie's Braindances - Finished a BD of any type
 						romanceDuringQuest = true;
 					}
 				}
@@ -1255,6 +1295,12 @@ public final class DFInteractionSystem extends DFSystem {
 		RegisterDFDelayCallback(this.DelaySystem, VomitFromInteractionChoiceStage2Callback.Create(this), this.vomitFromInteractionChoiceStage2DelayID, this.vomitFromInteractionChoiceStage2DelayInterval);
 	}
 
+	private final func RegisterForSmokingInteractionCheck() -> Void {
+		if this.smokingInteractionCheckQueued {
+			RegisterDFDelayCallback(this.DelaySystem, SmokingInteractionCheckCallback.Create(this), this.smokingInteractionCheckDelayID, this.smokingInteractionCheckDelayInterval);
+		}
+	}
+
 	//
 	//	Unregistration
 	//
@@ -1270,8 +1316,12 @@ public final class DFInteractionSystem extends DFSystem {
 		UnregisterDFDelayCallback(this.DelaySystem, this.smokingFXStage3DelayID);
 	}
 
-	private final func UnregisterVomitFromInteractionChoiceStage2Callback() {
+	private final func UnregisterVomitFromInteractionChoiceStage2Callback() -> Void {
 		UnregisterDFDelayCallback(this.DelaySystem, this.vomitFromInteractionChoiceStage2DelayID);
+	}
+
+	private final func UnregisterForSmokingInteractionCheck() -> Void {
+		UnregisterDFDelayCallback(this.DelaySystem, this.smokingInteractionCheckDelayID);
 	}
 
 	//

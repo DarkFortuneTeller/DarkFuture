@@ -114,7 +114,7 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 	if actionUsed {
 		let actionType: CName = TweakDBInterface.GetObjectActionRecord(actionID).ActionName();
 		if Equals(actionType, n"Consume") || Equals(actionType, n"Eat") || Equals(actionType, n"Drink") {
-			DFMainSystem.Get().DispatchItemConsumedEvent(itemData);
+			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetConsumableItemRecord(itemData.GetID().GetTDBID()));
 		}
 	}
 
@@ -130,14 +130,14 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 	if actionUsed {
 		let actionType: CName = TweakDBInterface.GetObjectActionRecord(actionID).ActionName();
 		if Equals(actionType, n"Consume") || Equals(actionType, n"Eat") || Equals(actionType, n"Drink") {
-			DFMainSystem.Get().DispatchItemConsumedEvent(itemData);
+			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetConsumableItemRecord(itemData.GetID().GetTDBID()));
 		}
 	}
 
 	return actionUsed;
 }
 
-public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) -> DFNeedsDatum {
+public final static func GetConsumableNeedsData(itemRecord: wref<ConsumableItem_Record>) -> DFNeedsDatum {
 	// Consumable Need Restoration Values
 	let Settings: ref<DFSettings> = DFSettings.Get();
 
@@ -203,99 +203,579 @@ public final static func GetConsumableNeedsData(itemData: wref<gameItemData>) ->
 	consumableBasicNeedsData.nerve.floor = 0.0;
 	
 	// Hydration
-	if itemData.HasTag(n"DarkFutureConsumableHydration") {
-		if itemData.HasTag(n"DarkFutureConsumableHydrationTier1") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableHydration") {
+		if itemRecord.TagsContains(n"DarkFutureConsumableHydrationTier1") {
 			consumableBasicNeedsData.hydration.value = HydrationTier1;
-		} else if itemData.HasTag(n"DarkFutureConsumableHydrationTier2") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableHydrationTier2") {
 			consumableBasicNeedsData.hydration.value = HydrationTier2;
-		} else if itemData.HasTag(n"DarkFutureConsumableHydrationTier3") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableHydrationTier3") {
 			consumableBasicNeedsData.hydration.value = HydrationTier3;
 		}
 	}
 
 	// Nutrition
-	if itemData.HasTag(n"DarkFutureConsumableNutrition") {
-		if itemData.HasTag(n"DarkFutureConsumableNutritionTier1") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableNutrition") {
+		if itemRecord.TagsContains(n"DarkFutureConsumableNutritionTier1") {
 			consumableBasicNeedsData.nutrition.value = NutritionTier1;
-		} else if itemData.HasTag(n"DarkFutureConsumableNutritionTier2") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableNutritionTier2") {
 			consumableBasicNeedsData.nutrition.value = NutritionTier2;
-		} else if itemData.HasTag(n"DarkFutureConsumableNutritionTier3") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableNutritionTier3") {
 			consumableBasicNeedsData.nutrition.value = NutritionTier3;
-		} else if itemData.HasTag(n"DarkFutureConsumableNutritionTier4") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableNutritionTier4") {
 			consumableBasicNeedsData.nutrition.value = NutritionTier4;
 		}
 	}
 
-	if itemData.HasTag(n"DarkFutureConsumableBoosterNutritionCost") {
-		if itemData.HasTag(n"DarkFutureConsumableBoosterNutritionCostTier1") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableBoosterNutritionCost") {
+		if itemRecord.TagsContains(n"DarkFutureConsumableBoosterNutritionCostTier1") {
 			consumableBasicNeedsData.nutrition.value = BoosterPenaltyTier1;
-		} else if itemData.HasTag(n"DarkFutureConsumableBoosterNutritionCostTier2") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableBoosterNutritionCostTier2") {
 			consumableBasicNeedsData.nutrition.value = BoosterPenaltyTier2;
 		}
 	}
 
 	// Energy
-	if itemData.HasTag(n"DarkFutureConsumableEnergy") {
-		if itemData.HasTag(n"DarkFutureConsumableEnergyTier1") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableEnergy") {
+		if itemRecord.TagsContains(n"DarkFutureConsumableEnergyTier1") {
 			consumableBasicNeedsData.energy.value = EnergyTier1;
-		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier2") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergyTier2") {
 			consumableBasicNeedsData.energy.value = EnergyTier2;
-		} else if itemData.HasTag(n"DarkFutureConsumableEnergyTier3") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergyTier3") {
 			consumableBasicNeedsData.energy.value = EnergyTier3;
 		}
 	}
 
 	// Nerve
-	if itemData.HasTag(n"DarkFutureConsumableNerve") {
-		if itemData.HasTag(n"DarkFutureConsumableCigarettesNerve") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableNerve") {
+		if itemRecord.TagsContains(n"DarkFutureConsumableCigarettesNerve") {
 			consumableBasicNeedsData.nerve.value = CigarettesNerve;
 		
-		} else if itemData.HasTag(n"DarkFutureConsumableAlcoholNerveTier1") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier1") {
 			consumableBasicNeedsData.nerve.value = AlcoholNerveTier1;
 			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
-		} else if itemData.HasTag(n"DarkFutureConsumableAlcoholNerveTier2") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier2") {
 			consumableBasicNeedsData.nerve.value = AlcoholNerveTier2;
 			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
-		} else if itemData.HasTag(n"DarkFutureConsumableAlcoholNerveTier3") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier3") {
 			consumableBasicNeedsData.nerve.value = AlcoholNerveTier3;
 			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
 		}
 	}
 
 	// Nerve Penalty from lower-quality consumables
-	if itemData.HasTag(n"DarkFutureConsumableNervePenaltyOnConsume") {
-		if itemData.HasTag(n"DarkFutureConsumableNervePenaltyDrinkOnConsumeTier1") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyOnConsume") {
+		if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyDrinkOnConsumeTier1") {
 			consumableBasicNeedsData.nerve.value = NervePenaltyDrinkTier1;
-		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier1") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier1") {
 			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier1;
-		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier2") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier2") {
 			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier2;
-		} else if itemData.HasTag(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier3") {
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier3") {
 			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier3;
 		}
 		consumableBasicNeedsData.nerve.floor = LowQualityConsumableNerveLossLimit;
 	}
 
 	// Nerve Restore Drug
-	if itemData.HasTag(n"DarkFutureConsumableNerveRestoreDrug") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableNerveRestoreDrug") {
 		consumableBasicNeedsData.nerve.value = DrugNerveAmount;
 		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyMed;
 	}
 
 	// Addiction Treatment Drug
-	if itemData.HasTag(n"DarkFutureConsumableAddictionTreatmentDrug") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableAddictionTreatmentDrug") {
 		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyMed;
 	}
 
 	// Sedation Drug
-	if itemData.HasTag(n"DarkFutureConsumableSedationDrug") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableSedationDrug") {
 		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyLow;
 	}
 
 	// Nerve Death Test Item
-	if itemData.HasTag(n"DarkFutureConsumableNerveDeathTest") {
+	if itemRecord.TagsContains(n"DarkFutureConsumableNerveDeathTest") {
 		consumableBasicNeedsData.nerve.value = NervePenaltyDeathTest;
 	}
 
 	return consumableBasicNeedsData;
+}
+
+private final static func GetFoodRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+	switch value {
+		case 0:
+			return t"Items.LowQualityFood";
+			break;
+		case 1:
+			return t"Items.LowQualityFood1";
+			break;
+		case 2:
+			return t"Items.LowQualityFood2";
+			break;
+		case 3:
+			return t"Items.LowQualityFood3";
+			break;
+		case 4:
+			return t"Items.LowQualityFood4";
+			break;
+		case 5:
+			return t"Items.LowQualityFood5";
+			break;
+		//case 6: (Mr. Whitey)
+		//    return t"Items.LowQualityFood6";
+		//    break;
+		case 7:
+			return t"Items.LowQualityFood7";
+			break;
+		case 8:
+			return t"Items.LowQualityFood8";
+			break;
+		case 9:
+			return t"Items.LowQualityFood9";
+			break;
+		case 10:
+			return t"Items.LowQualityFood10";
+			break;
+		case 11:
+			return t"Items.LowQualityFood11";
+			break;
+		case 12:
+			return t"Items.LowQualityFood12";
+			break;
+		case 13:
+			return t"Items.LowQualityFood13";
+			break;
+		case 14:
+			return t"Items.LowQualityFood14";
+			break;
+		case 15:
+			return t"Items.LowQualityFood15";
+			break;
+		case 16:
+			return t"Items.LowQualityFood16";
+			break;
+		case 17:
+			return t"Items.LowQualityFood17";
+			break;
+		case 18:
+			return t"Items.LowQualityFood18";
+			break;
+		case 19:
+			return t"Items.LowQualityFood19";
+			break;
+		case 20:
+			return t"Items.LowQualityFood20";
+			break;
+		case 21:
+			return t"Items.LowQualityFood21";
+			break;
+		case 22:
+			return t"Items.LowQualityFood22";
+			break;
+		case 23:
+			return t"Items.LowQualityFood23";
+			break;
+		case 24:
+			return t"Items.LowQualityFood24";
+			break;
+		case 25:
+			return t"Items.LowQualityFood25";
+			break;
+		case 26:
+			return t"Items.LowQualityFood26";
+			break;
+		case 27:
+			return t"Items.LowQualityFood27";
+			break;
+		case 28:
+			return t"Items.LowQualityFood28";
+			break;
+		case 29:
+			return t"Items.MediumQualityFood";
+			break;
+		case 30:
+			return t"Items.MediumQualityFood1";
+			break;
+		case 31:
+			return t"Items.MediumQualityFood2";
+			break;
+		case 32:
+			return t"Items.MediumQualityFood3";
+			break;
+		case 33:
+			return t"Items.MediumQualityFood4";
+			break;
+		case 34:
+			return t"Items.MediumQualityFood5";
+			break;
+		case 35:
+			return t"Items.MediumQualityFood6";
+			break;
+		case 36:
+			return t"Items.MediumQualityFood7";
+			break;
+		case 37:
+			return t"Items.MediumQualityFood8";
+			break;
+		case 38:
+			return t"Items.MediumQualityFood9";
+			break;
+		case 39:
+			return t"Items.MediumQualityFood10";
+			break;
+		//case 40: (Mr. Whitey)
+		//    return t"Items.MediumQualityFood11";
+		//    break;
+		case 41:
+			return t"Items.MediumQualityFood12";
+			break;
+		case 42:
+			return t"Items.MediumQualityFood13";
+			break;
+		//case 43: (Mr. Whitey)
+		//    return t"Items.MediumQualityFood14";
+		//    break;
+		//case 44: (Mr. Whitey)
+		//    return t"Items.MediumQualityFood15";
+		//    break;
+		case 45:
+			return t"Items.MediumQualityFood16";
+			break;
+		case 46:
+			return t"Items.MediumQualityFood17";
+			break;
+		case 47:
+			return t"Items.MediumQualityFood18";
+			break;
+		case 48:
+			return t"Items.MediumQualityFood19";
+			break;
+		case 49:
+			return t"Items.MediumQualityFood20";
+			break;
+		case 50:
+			return t"Items.GoodQualityFood";
+			break;
+		case 51:
+			return t"Items.GoodQualityFood1";
+			break;
+		case 52:
+			return t"Items.GoodQualityFood2";
+			break;
+		case 53:
+			return t"Items.GoodQualityFood3";
+			break;
+		case 54:
+			return t"Items.GoodQualityFood4";
+			break;
+		case 55:
+			return t"Items.GoodQualityFood5";
+			break;
+		case 56:
+			return t"Items.GoodQualityFood6";
+			break;
+		case 57:
+			return t"Items.GoodQualityFood7";
+			break;
+		case 58:
+			return t"Items.GoodQualityFood8";
+			break;
+		case 59:
+			return t"Items.GoodQualityFood9";
+			break;
+		case 60:
+			return t"Items.GoodQualityFood10";
+			break;
+		case 61:
+			return t"Items.GoodQualityFood11";
+			break;
+		case 62:
+			return t"Items.GoodQualityFood12";
+			break;
+		case 63:
+			return t"Items.GoodQualityFood13";
+			break;
+		case 64:
+			return t"Items.NomadsFood1";
+			break;
+		case 65:
+			return t"Items.NomadsFood2";
+			break;
+		case 66:
+			return t"Items.HawtDawgKabanos";
+			break;
+		case 67:
+			return t"Items.HawtDawgClassic";
+			break;
+		case 68:
+			return t"Items.HawtDawgCheese";
+			break;
+		case 69:
+			return t"Items.HawtDawgChilli";
+			break;
+		default:
+			return t"";
+			break;
+	}
+}
+
+private final static func GetDrinkRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+	switch value {
+		case 0:
+			return t"Items.LowQualityDrink";
+			break;
+		case 1:
+			return t"Items.LowQualityDrink1";
+			break;
+		case 2:
+			return t"Items.LowQualityDrink2";
+			break;
+		case 3:
+			return t"Items.LowQualityDrink3";
+			break;
+		case 4:
+			return t"Items.LowQualityDrink4";
+			break;
+		case 5:
+			return t"Items.LowQualityDrink5";
+			break;
+		case 6:
+			return t"Items.LowQualityDrink6";
+			break;
+		case 7:
+			return t"Items.LowQualityDrink7";
+			break;
+		case 8:
+			return t"Items.LowQualityDrink8";
+			break;
+		case 9:
+			return t"Items.LowQualityDrink9";
+			break;
+		case 10:
+			return t"Items.LowQualityDrink10";
+			break;
+		case 11:
+			return t"Items.LowQualityDrink11";
+			break;
+		case 12:
+			return t"Items.LowQualityDrink12";
+			break;
+		case 13:
+			return t"Items.LowQualityDrink13";
+			break;
+		case 14:
+			return t"Items.MediumQualityDrink";
+			break;
+		case 15:
+			return t"Items.MediumQualityDrink1";
+			break;
+		case 16:
+			return t"Items.MediumQualityDrink2";
+			break;
+		case 17:
+			return t"Items.MediumQualityDrink3";
+			break;
+		case 18:
+			return t"Items.MediumQualityDrink4";
+			break;
+		case 19:
+			return t"Items.MediumQualityDrink5";
+			break;
+		case 20:
+			return t"Items.MediumQualityDrink6";
+			break;
+		case 21:
+			return t"Items.MediumQualityDrink7";
+			break;
+		case 22:
+			return t"Items.MediumQualityDrink8";
+			break;
+		case 23:
+			return t"Items.MediumQualityDrink9";
+			break;
+		case 24:
+			return t"Items.MediumQualityDrink10";
+			break;
+		case 25:
+			return t"Items.MediumQualityDrink11";
+			break;
+		case 26:
+			return t"Items.MediumQualityDrink12";
+			break;
+		case 27:
+			return t"Items.MediumQualityDrink13";
+			break;
+		case 28:
+			return t"Items.MediumQualityDrink14";
+			break;
+		case 29:
+			return t"Items.GoodQualityDrink";
+			break;
+		case 30:
+			return t"Items.GoodQualityDrink1";
+			break;
+		case 31:
+			return t"Items.GoodQualityDrink2";
+			break;
+		case 32:
+			return t"Items.GoodQualityDrink3";
+			break;
+		case 33:
+			return t"Items.GoodQualityDrink4";
+			break;
+		case 34:
+			return t"Items.GoodQualityDrink5";
+			break;
+		case 35:
+			return t"Items.GoodQualityDrink6";
+			break;
+		case 36:
+			return t"Items.GoodQualityDrink7";
+			break;
+		case 37:
+			return t"Items.GoodQualityDrink8";
+			break;
+		case 38:
+			return t"Items.GoodQualityDrink9";
+			break;
+		case 39:
+			return t"Items.GoodQualityDrink10";
+			break;
+		case 40:
+			return t"Items.GoodQualityDrink11";
+			break;
+		case 41:
+			return t"Items.NomadsDrink1";
+			break;
+		case 42:
+			return t"Items.NomadsDrink2";
+			break;
+		default:
+			return t"";
+			break;
+	}
+}
+
+private final static func GetAlcoholRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+	switch value {
+		case 0:
+			return t"Items.LowQualityAlcohol";
+			break;
+		case 1:
+			return t"Items.LowQualityAlcohol1";
+			break;
+		case 2:
+			return t"Items.LowQualityAlcohol2";
+			break;
+		case 3:
+			return t"Items.LowQualityAlcohol3";
+			break;
+		case 4:
+			return t"Items.LowQualityAlcohol4";
+			break;
+		case 5:
+			return t"Items.LowQualityAlcohol5";
+			break;
+		case 6:
+			return t"Items.LowQualityAlcohol6";
+			break;
+		case 7:
+			return t"Items.LowQualityAlcohol7";
+			break;
+		case 8:
+			return t"Items.LowQualityAlcohol8";
+			break;
+		case 9:
+			return t"Items.LowQualityAlcohol9";
+			break;
+		case 10:
+			return t"Items.MediumQualityAlcohol";
+			break;
+		case 11:
+			return t"Items.MediumQualityAlcohol1";
+			break;
+		case 12:
+			return t"Items.MediumQualityAlcohol2";
+			break;
+		case 13:
+			return t"Items.MediumQualityAlcohol3";
+			break;
+		case 14:
+			return t"Items.MediumQualityAlcohol4";
+			break;
+		case 15:
+			return t"Items.MediumQualityAlcohol5";
+			break;
+		case 16:
+			return t"Items.MediumQualityAlcohol6";
+			break;
+		case 17:
+			return t"Items.MediumQualityAlcohol7";
+			break;
+		case 18:
+			return t"Items.GoodQualityAlcohol";
+			break;
+		case 19:
+			return t"Items.GoodQualityAlcohol1";
+			break;
+		case 20:
+			return t"Items.GoodQualityAlcohol2";
+			break;
+		case 21:
+			return t"Items.GoodQualityAlcohol3";
+			break;
+		case 22:
+			return t"Items.GoodQualityAlcohol4";
+			break;
+		case 23:
+			return t"Items.GoodQualityAlcohol5";
+			break;
+		case 24:
+			return t"Items.GoodQualityAlcohol6";
+			break;
+		case 25:
+			return t"Items.TopQualityAlcohol";
+			break;
+		case 26:
+			return t"Items.TopQualityAlcohol1";
+			break;
+		case 27:
+			return t"Items.TopQualityAlcohol2";
+			break;
+		case 28:
+			return t"Items.TopQualityAlcohol3";
+			break;
+		case 29:
+			return t"Items.TopQualityAlcohol4";
+			break;
+		case 30:
+			return t"Items.TopQualityAlcohol5";
+			break;
+		case 31:
+			return t"Items.TopQualityAlcohol6";
+			break;
+		case 32:
+			return t"Items.TopQualityAlcohol7";
+			break;
+		case 33:
+			return t"Items.TopQualityAlcohol8";
+			break;
+		case 34:
+			return t"Items.TopQualityAlcohol9";
+			break;
+		case 35:
+			return t"Items.TopQualityAlcohol10";
+			break;
+		case 36:
+			return t"Items.ExquisiteQualityAlcohol";
+			break;
+		case 37:
+			return t"Items.NomadsAlcohol1";
+			break;
+		case 38:
+			return t"Items.NomadsAlcohol2";
+			break;
+		default:
+			return t"";
+			break;
+	}
 }

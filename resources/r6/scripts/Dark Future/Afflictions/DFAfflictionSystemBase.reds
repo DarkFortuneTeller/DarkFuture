@@ -37,7 +37,7 @@ public abstract class DFAfflictionSystemEventListener extends DFSystemEventListe
 	// Required Overrides
 	//
 	private func GetSystemInstance() -> wref<DFAfflictionSystemBase> {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+		DFLogNoSystem(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
 		return null;
 	}
 
@@ -148,28 +148,28 @@ public abstract class DFAfflictionSystemBase extends DFSystem {
 	//
 	public func OnSceneTierChanged(value: GameplayTier) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnSceneTierChanged value = " + ToString(value));
+		DFLog(this, "OnSceneTierChanged value = " + ToString(value));
 
         this.RefreshAfflictionStatusEffects();
 	}
 
 	public func OnFuryStateChanged(value: Bool) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnFuryStateChanged value = " + ToString(value));
+		DFLog(this, "OnFuryStateChanged value = " + ToString(value));
 
         this.RefreshAfflictionStatusEffects();
 	}
 
     public func OnCyberspaceChanged(value: Bool) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnCyberspaceChanged value = " + ToString(value));
+		DFLog(this, "OnCyberspaceChanged value = " + ToString(value));
 
 		this.RefreshAfflictionStatusEffects();
 	}
 
     public func OnStatusEffectApplied(effectID: TweakDBID, effectTags: array<CName>) -> Void {
         if RunGuard(this, true) { return; }
-        if !this.GameStateService.IsValidGameState("OnStatusEffectApplied", true) { return; }
+        if !this.GameStateService.IsValidGameState(this, true) { return; }
 
         // Check Cure effects
         if Equals(effectID, this.cureEffect) {
@@ -206,7 +206,7 @@ public abstract class DFAfflictionSystemBase extends DFSystem {
 
     public func ApplyAfflictionStack() -> Void {
         if RunGuard(this) { return; }
-        if !this.GameStateService.IsValidGameState("ApplyAfflictionStack") { return; }
+        if !this.GameStateService.IsValidGameState(this) { return; }
 
         if this.GetAfflictionStacks() < this.GetMaxAfflictionStacks() {
             this.IncrementAfflictionStacks(1u);
@@ -222,7 +222,7 @@ public abstract class DFAfflictionSystemBase extends DFSystem {
         afflictionData.stackCount = this.GetAfflictionStacks();
         let afflictionEffect: TweakDBID = this.GetAfflictionEffect();
 
-        if this.GameStateService.IsValidGameState("RefreshAfflictionStatusEffects") {
+        if this.GameStateService.IsValidGameState(this) {
             let internalStackCount: Uint32 = afflictionData.stackCount;
             if internalStackCount == 0u {
                 // The player should not have any stacks of the effect applied.
@@ -249,7 +249,7 @@ public abstract class DFAfflictionSystemBase extends DFSystem {
     }
 
     public func CureAffliction() -> Void {
-        this.SetAfflictionStacks(0u);
+        this.SetAfflictionStacks(this.GetAfflictionStacks() - 1u);
         this.RefreshAfflictionStatusEffects();
     }
 
@@ -257,6 +257,6 @@ public abstract class DFAfflictionSystemBase extends DFSystem {
 	//	Logging
 	//
 	private final func LogMissingOverrideError(funcName: String) -> Void {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
+		DFLog(this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
 	}
 }

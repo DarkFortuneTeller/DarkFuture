@@ -4,7 +4,7 @@
 //
 // - Injury Affliction system.
 // - Injury occurs after taking enough cumulative damage.
-// - Cured by First Aid Kit (was Health Booster).
+// - Cured by Trauma Kit (was Health Booster).
 //
 
 module DarkFuture.Afflictions
@@ -87,7 +87,7 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
 	public func OnDamageReceivedEvent(evt: ref<gameDamageReceivedEvent>) -> Void {
         if RunGuard(this) { return; }
 
-        if this.GameStateService.IsValidGameState("OnDamageReceived") {
+        if this.GameStateService.IsValidGameState(this) {
             // Get the percentage of Health lost
             let healthLost: Float = evt.totalDamageReceived;
             let totalHealth: Float = GameInstance.GetStatPoolsSystem(GetGameInstance()).GetStatPoolMaxPointValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatPoolType.Health);
@@ -130,9 +130,9 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
     //
     public final func AccumulateHealthLoss(percent: Float) -> Void {
         if this.GetAfflictionStacks() < this.GetMaxAfflictionStacks() && percent > 0.0 {
-            let lossPct: Float = this.Settings.injuryHealthLossAccumulationRate / 100.0;
+            let lossPct: Float = this.Settings.injuryHealthLossAccumulationRateRev2 / 100.0;
             this.accumulatedHealthPctLoss += (percent * lossPct);
-            DFLog(this.debugEnabled, this, "&&&&&&&&&& AccumulateHealthLoss: " + ToString(this.accumulatedHealthPctLoss));
+            DFLog(this, "&&&&&&&&&& AccumulateHealthLoss: " + ToString(this.accumulatedHealthPctLoss));
 
             if this.accumulatedHealthPctLoss >= 1.0 {
                 this.accumulatedHealthPctLoss = 0.0;
@@ -142,13 +142,29 @@ public class DFInjuryAfflictionSystem extends DFAfflictionSystemBase {
     }
 
     public func CureAffliction() -> Void {
-        if this.GetAfflictionStacks() > 0u {
+        let notificationTitle: String;
+        let displayNotification: Bool = false;
+
+        let afflictionStacksBefore: Uint32 = this.GetAfflictionStacks();
+        super.CureAffliction();
+        let afflictionStacksAfter: Uint32 = this.GetAfflictionStacks();
+
+        if afflictionStacksBefore > 0u && afflictionStacksAfter == 0u {
+            notificationTitle = GetLocalizedTextByKey(n"DarkFutureInjuryAllCuredNotification");
+            displayNotification = true;
+        } else if afflictionStacksBefore > 0u && afflictionStacksAfter > 0u {
+            notificationTitle = GetLocalizedTextByKey(n"DarkFutureInjuryCuredNotification");
+            displayNotification = true;
+        }
+
+        if displayNotification {
             let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
-            notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureInjuryCuredNotification");
+            notificationEvent.m_title = notificationTitle;
+            notificationEvent.m_overrideCurrentNotification = true;
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
         }
 
-        super.CureAffliction();
+        
     }
 }

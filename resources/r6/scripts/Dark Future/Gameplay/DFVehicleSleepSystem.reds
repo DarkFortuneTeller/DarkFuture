@@ -185,7 +185,10 @@ protected cb func OnVehicleFinishedMountingEvent(evt: ref<VehicleFinishedMountin
 
 	let mountChild: wref<GameObject> = evt.character;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {
-		DFVehicleSleepSystem.Get().TryToShowTutorial();
+		let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
+		if Equals(DFVSS.CanPlayerSleepInVehicle(true), DFCanPlayerSleepInVehicleResult.Yes) {
+			DFVSS.TryToShowTutorial();
+		}
 	}
 	
 	return r;
@@ -612,7 +615,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 		return !blockSleepInVehicleInputHint;
 	}
 
-	public final func CanPlayerSleepInVehicle() -> DFCanPlayerSleepInVehicleResult {
+	public final func CanPlayerSleepInVehicle(opt genericOnly: Bool) -> DFCanPlayerSleepInVehicleResult {
 		// Vehicle Sleeping specific variant of CanPlayerTimeSkip(), with stronger typing.
 		
 		// If Dark Future is not running or this feature is disabled, bail out early.
@@ -669,9 +672,9 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
 		if blockSleepInVehicleGenericReason {
 			return DFCanPlayerSleepInVehicleResult.No_Generic;
-		} else if blockSleepInVehicleInRoadReason {
+		} else if !genericOnly && blockSleepInVehicleInRoadReason {
 			return DFCanPlayerSleepInVehicleResult.No_InRoad;
-		} else if blockSleepInVehicleMovingReason {
+		} else if !genericOnly && blockSleepInVehicleMovingReason {
 			return DFCanPlayerSleepInVehicleResult.No_Moving;
 		}
 		

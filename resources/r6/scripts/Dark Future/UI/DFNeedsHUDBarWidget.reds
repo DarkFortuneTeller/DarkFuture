@@ -156,9 +156,9 @@ public class DFNeedsHUDBarGroup {
     }
 
     public final func EvaluateAllBarVisibility(forceMomentaryDisplay: Bool, opt fromParentUpdate: Bool, opt momentaryDisplayIgnoresSceneTier: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "EvaluateAllBarVisibility forceMomentaryDisplay: " + ToString(forceMomentaryDisplay));
+        DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility forceMomentaryDisplay: " + ToString(forceMomentaryDisplay));
         if this.displayManagedByParentGroup {
-            DFLog(this.debugEnabled, this, "EvaluateAllBarVisibility managed by parent group, returning.");
+            DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility managed by parent group, returning.");
             return;
         }
 
@@ -179,7 +179,7 @@ public class DFNeedsHUDBarGroup {
 
         // If Dark Future Updates aren't currently allowed, or if menus are blocking display, bail out.
         // SetAllDisplayContinuous() or SetAllDisplayMomentary() must be called in order for the bar to remain visible. If neither qualify, we hide them.
-        if this.GameStateService.IsValidGameState("EvaluateAllBarVisibility", true) && !this.HUDSystem.HUDUIBlockedDueToMenuOpen && !this.HUDSystem.HUDUIBlockedDueToCameraControl {
+        if this.GameStateService.IsValidGameState(this, true) && !this.HUDSystem.HUDUIBlockedDueToMenuOpen && !this.HUDSystem.HUDUIBlockedDueToCameraControl {
             if this.ShouldDisplayContinuously(lowestValueInGroup, currentSceneTier) {
                 this.SetAllDisplayContinuous(lowestValueInGroup);
 
@@ -211,7 +211,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func ShouldDisplayContinuously(lowestValueInGroup: Float, currentSceneTier: GameplayTier) -> Bool {
-        DFLog(this.debugEnabled, this, "ShouldDisplayContinuously lowestValueInGroup " + ToString(lowestValueInGroup) + ", currentSceneTier " + ToString(currentSceneTier));
+        DFLogNoSystem(this.debugEnabled, this, "ShouldDisplayContinuously lowestValueInGroup " + ToString(lowestValueInGroup) + ", currentSceneTier " + ToString(currentSceneTier));
 
         if Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) {
             if this.alwaysVisibleInDanger {
@@ -223,11 +223,11 @@ public class DFNeedsHUDBarGroup {
                 }
             } else {
                 if this.PlayerStateService.GetInDanger() {
-                    DFLog(this.debugEnabled, this, "alwaysVisibleInDanger false GetInDanger true");
+                    DFLogNoSystem(this.debugEnabled, this, "alwaysVisibleInDanger false GetInDanger true");
                     return false;
                 }
                 if lowestValueInGroup <= (this.Settings.needHUDUIAlwaysOnThreshold / 100.0) {
-                    DFLog(this.debugEnabled, this, "alwaysVisibleInDanger false lowestValueInGroup <= always on threshold");
+                    DFLogNoSystem(this.debugEnabled, this, "alwaysVisibleInDanger false lowestValueInGroup <= always on threshold");
                     return true;
                 }
             }
@@ -248,7 +248,7 @@ public class DFNeedsHUDBarGroup {
                     return true;
                 
                 } else if AbsF(bar.m_previousValue - bar.m_currentValue) > 0.01 {
-                    DFLog(this.debugEnabled, this, "ShouldDisplayMomentarily change > 0.01");
+                    DFLogNoSystem(this.debugEnabled, this, "ShouldDisplayMomentarily change > 0.01");
                     return true;
                 }
             }
@@ -258,7 +258,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func SetAllDisplayContinuous(lowestValueInGroup: Float) -> Void {
-        DFLog(this.debugEnabled, this, "SetAllDisplayContinuous lowestValueInGroup: " + ToString(lowestValueInGroup));
+        DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayContinuous lowestValueInGroup: " + ToString(lowestValueInGroup));
         for bar in this.needsBars {
             bar.SetFadeIn(false);
         }
@@ -274,7 +274,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func SetAllDisplayMomentary(lowestValueInGroup: Float) -> Void {
-        DFLog(this.debugEnabled, this, "SetAllDisplayMomentary lowestValueInGroup: " + ToString(lowestValueInGroup));
+        DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayMomentary lowestValueInGroup: " + ToString(lowestValueInGroup));
         for bar in this.needsBars {
             bar.SetFadeIn(false);
         }
@@ -300,7 +300,7 @@ public class DFNeedsHUDBarGroup {
             }
         }
 
-        DFLog(this.debugEnabled, this, "SetAllFadeOut");
+        DFLogNoSystem(this.debugEnabled, this, "SetAllFadeOut");
         for bar in this.needsBars {
             bar.SetFadeOut();
         }
@@ -311,7 +311,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     public final func SetDisplayManagedByParent(managedByParentGroup: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "SetDisplayManagedByParent managedByParentGroup: " + ToString(managedByParentGroup));
+        DFLogNoSystem(this.debugEnabled, this, "SetDisplayManagedByParent managedByParentGroup: " + ToString(managedByParentGroup));
         this.displayManagedByParentGroup = managedByParentGroup;
 
         if !managedByParentGroup {
@@ -341,7 +341,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     public final func OnDisplayRecheckAfterForceBright() -> Void {
-        DFLog(this.debugEnabled, this, "OnDisplayRecheckAfterForceBright");
+        DFLogNoSystem(this.debugEnabled, this, "OnDisplayRecheckAfterForceBright");
         for bar in this.needsBars {
             bar.SetForceBright(false);
         }
@@ -355,7 +355,7 @@ public class DFNeedsHUDBarGroup {
         if this.displayManagedByParentGroup && IsDefined(this.needsBarGroupParent) {
             // Between registering for this callback and now, we became managed by a parent group. This can cause the bar's opacity to "stick" to a bright value
             // for longer than intended, because EvaluateAllBarVisibility() will early exit as we no longer manage our own display. Try again on the group parent.
-            DFLog(this.debugEnabled, this, "FAILSAFE: OnDisplayRecheckAfterForceBright called back to a Needs Bar Group that is managed by a parent! Calling the parent's implementation instead.");
+            DFLogNoSystem(this.debugEnabled, this, "FAILSAFE: OnDisplayRecheckAfterForceBright called back to a Needs Bar Group that is managed by a parent! Calling the parent's implementation instead.");
             this.needsBarGroupParent.EvaluateAllBarVisibility(true);
         } else {
             this.EvaluateAllBarVisibility(true);
@@ -363,7 +363,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     public final func OnFadeOutStart(fromParent: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "OnFadeOutStart fromParent: " + ToString(fromParent));
+        DFLogNoSystem(this.debugEnabled, this, "OnFadeOutStart fromParent: " + ToString(fromParent));
         if fromParent && this.displayManagedByParentGroup {
             // If initiated from a parent, break the relationship and decide for ourselves whether we should
             // still be displayed or not. Flagged as from parent update to skip erroneous momentary display (causes double-length display).
@@ -732,7 +732,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         negativeMargin.left = fullBarSize.X;
         this.m_changeNegativeBar.SetMargin(negativeMargin);
 
-        DFLog(this.debugEnabled, this, "SetProgress m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
+        DFLogNoSystem(this.debugEnabled, this, "SetProgress m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
         this.EvaluateBarGroupVisibility(forceMomentaryDisplay, momentaryDisplayIgnoresSceneTier);
     }
 
@@ -784,7 +784,7 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     private final func SetFadeIn(fromParent: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "SetFadeIn name: " + ToString(this.m_setupData.widgetName) + " m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
+        DFLogNoSystem(this.debugEnabled, this, "SetFadeIn name: " + ToString(this.m_setupData.widgetName) + " m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
         if IsDefined(this.m_barGroup) && this.m_barGroup.displayManagedByParentGroup && !fromParent {
             return;
         }
@@ -793,7 +793,7 @@ public class DFNeedsHUDBar extends inkCanvas {
 
         let targetTransparency: Float;
         if this.m_shouldForceBrightOnNextFadeIn {
-            DFLog(this.debugEnabled, this, "SetFadeIn: Instant or Force Bright, show bright and recheck");
+            DFLogNoSystem(this.debugEnabled, this, "SetFadeIn: Instant or Force Bright, show bright and recheck");
             targetTransparency = 0.8;
             if IsDefined(this.m_barGroup) {
                 this.m_barGroup.RegisterForDisplayRecheckAfterForceBright();

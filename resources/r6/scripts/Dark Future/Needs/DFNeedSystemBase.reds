@@ -234,7 +234,7 @@ public abstract class DFNeedSystemEventListener extends DFSystemEventListener {
 	// Required Overrides
 	//
 	private func GetSystemInstance() -> wref<DFNeedSystemBase> {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+		DFLogNoSystem(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
 		return null;
 	}
 
@@ -371,7 +371,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 	public func OnTimeSkipStart() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipStart");
+		DFLog(this, "OnTimeSkipStart");
 
 		this.UnregisterUpdateCallback();
 		this.UnregisterAllNeedFXCallbacks();
@@ -379,22 +379,22 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 	public func OnTimeSkipCancelled() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipCancelled");
+		DFLog(this, "OnTimeSkipCancelled");
 
 		this.RegisterUpdateCallback();
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:OnTimeSkipCancelled", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
 		}
 	}
 
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipFinished");
+		DFLog(this, "OnTimeSkipFinished");
 
 		this.RegisterUpdateCallback();
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:OnTimeSkipFinished", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			this.OnTimeSkipFinishedActual(data);
 			this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
 		}
@@ -417,7 +417,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.LogMissingOverrideError("OnTimeSkipFinishedActual");
 	}
 
-	private func OnItemConsumedActual(itemData: wref<gameItemData>) -> Void {
+	private func OnItemConsumedActual(itemRecord: wref<ConsumableItem_Record>) -> Void {
 		this.LogMissingOverrideError("OnItemConsumedActual");
 	}
 
@@ -478,36 +478,36 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	//
 	public func OnUpdate() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnUpdate");
+		DFLog(this, "OnUpdate");
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:OnUpdate") {
+		if this.GameStateService.IsValidGameState(this) && !this.GameStateService.IsInAnyMenu() {
 			this.OnUpdateActual();
 		}
 
 		this.RegisterUpdateCallback();
 	}
 
-	public func OnItemConsumed(itemData: wref<gameItemData>) -> Void {
+	public func OnItemConsumed(itemRecord: wref<ConsumableItem_Record>) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnItemConsumed");
+		DFLog(this, "OnItemConsumed");
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:OnItemConsumed") {
+		if this.GameStateService.IsValidGameState(this, true) {
 			if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Weakened") {
-				DFLog(this.debugEnabled, this, "OnItemConsumed - Ignoring consumable (currently Weakened)");
+				DFLog(this, "OnItemConsumed - Ignoring consumable (currently Weakened)");
 				return;
 			}
 
-			this.OnItemConsumedActual(itemData);
+			this.OnItemConsumedActual(itemRecord);
 		}
 	}
 
 	public func OnSceneTierChanged(value: GameplayTier) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnSceneTierChanged value = " + ToString(value));
+		DFLog(this, "OnSceneTierChanged value = " + ToString(value));
 
 		this.ReevaluateSystem();
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:OnSceneTierChanged") {
+		if this.GameStateService.IsValidGameState(this) {
 			this.ReapplyFX();
 		} else {
 			// This might be a scene tier that allows FX; check in a few seconds.
@@ -517,7 +517,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 	public func OnFuryStateChanged(value: Bool) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnFuryStateChanged value = " + ToString(value));
+		DFLog(this, "OnFuryStateChanged value = " + ToString(value));
 
 		this.ReevaluateSystem();
 
@@ -530,7 +530,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 	public func OnCyberspaceChanged(value: Bool) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnCyberspaceChanged value = " + ToString(value));
+		DFLog(this, "OnCyberspaceChanged value = " + ToString(value));
 
 		this.ReevaluateSystem();
 
@@ -555,7 +555,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
     public func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt suppressRecoveryNotification: Bool, opt maxOverride: Float) -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "ChangeNeedValue: amount = " + ToString(amount) + ", uiFlags = " + ToString(uiFlags) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
+		DFLog(this, "ChangeNeedValue: amount = " + ToString(amount) + ", uiFlags = " + ToString(uiFlags) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
 		
 		let needMax: Float = this.GetNeedMax();
 		this.needMax = needMax;
@@ -564,7 +564,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 		let stage: Int32 = this.GetNeedStage();
 		if NotEquals(stage, this.lastNeedStage) {
-			DFLog(this.debugEnabled, this, "ChangeNeedValue: Last Need stage (" + ToString(this.lastNeedStage) + ") != current stage (" + ToString(stage) + "). Refreshing status effects and FX.");
+			DFLog(this, "ChangeNeedValue: Last Need stage (" + ToString(this.lastNeedStage) + ") != current stage (" + ToString(stage) + "). Refreshing status effects and FX.");
 			this.RefreshNeedStatusEffects();
 			this.UpdateNeedFX();
 		}
@@ -579,7 +579,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.lastNeedStage = stage;
 
 		this.DispatchNeedValueChangedEvent(this.needValue);
-		DFLog(this.debugEnabled, this, "ChangeNeedValue: New needValue = " + ToString(this.needValue));
+		DFLog(this, "ChangeNeedValue: New needValue = " + ToString(this.needValue));
 	}
 
     public final func GetNeedStage() -> Int32 {
@@ -635,7 +635,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     public final func QueueContextuallyDelayedNeedValueChange(value: Float, opt forceMomentaryUIDisplay: Bool, opt effectToApplyAfterValueChange: TweakDBID) -> Void {
 		if RunGuard(this) { return; }
 
-		DFLog(this.debugEnabled, this, "QueueContextuallyDelayedNeedValueChange value: " + ToString(value));
+		DFLog(this, "QueueContextuallyDelayedNeedValueChange value: " + ToString(value));
 		
 		let queuedNeedValueChange: DFQueuedNeedValueChange = new DFQueuedNeedValueChange(value, forceMomentaryUIDisplay, effectToApplyAfterValueChange);
 		ArrayPush(this.queuedContextuallyDelayedNeedValueChange, queuedNeedValueChange);
@@ -645,9 +645,9 @@ public abstract class DFNeedSystemBase extends DFSystem {
     public final func TryToApplyContextuallyDelayedNeedValueChange() -> Void {
 		if RunGuard(this) { return; }
 
-		DFLog(this.debugEnabled, this, "TryToApplyContextuallyDelayedNeedValueChange");
+		DFLog(this, "TryToApplyContextuallyDelayedNeedValueChange");
 		
-		let gs: GameState = this.GameStateService.GetGameState("DFNeedSystemBase:TryToApplyContextuallyDelayedNeedValueChange");
+		let gs: GameState = this.GameStateService.GetGameState(this);
 
 		if Equals(gs, GameState.Valid) && !this.player.IsInCombat() {
 			while ArraySize(this.queuedContextuallyDelayedNeedValueChange) > 0 {
@@ -659,9 +659,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 				this.ChangeNeedValue(queuedChange.value, uiFlags);
 
 				if NotEquals(queuedChange.effectToApplyAfterValueChange, t"") {
-					if !StatusEffectSystem.ObjectHasStatusEffect(this.player, queuedChange.effectToApplyAfterValueChange) {
-						StatusEffectHelper.ApplyStatusEffect(this.player, queuedChange.effectToApplyAfterValueChange);
-					}
+					StatusEffectHelper.ApplyStatusEffect(this.player, queuedChange.effectToApplyAfterValueChange);
 				}
 			}
 			this.ResetContextuallyDelayedNeedValueChange();
@@ -699,7 +697,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 			i += 1;
 		}
 
-		DFLog(true, this, "GetNeedStageImpl didn't resolve the current need value (" + ToString(needValue) + ") to a stage! This is a defect and should be addressed!", DFLogLevel.Error);
+		DFLog(this, "GetNeedStageImpl didn't resolve the current need value (" + ToString(needValue) + ") to a stage! This is a defect and should be addressed!", DFLogLevel.Error);
 		return 0;
 	}
 
@@ -709,7 +707,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	}
 
     private func RefreshNeedStatusEffects() -> Void {
-		DFLog(this.debugEnabled, this, "RefreshNeedStatusEffects -- Removing all Status Effects and re-applying");
+		DFLog(this, "RefreshNeedStatusEffects -- Removing all Status Effects and re-applying");
 
 		// Remove the status effects associated with this Need.
 		StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetNeedStageStatusEffectTag());
@@ -717,8 +715,8 @@ public abstract class DFNeedSystemBase extends DFSystem {
         let currentValue: Float = this.needValue;
         let currentStage: Int32 = this.GetNeedStageAtValue(currentValue);
 
-        if currentStage > 0 && this.GameStateService.IsValidGameState("DFNeedSystemBase:RefreshNeedStatusEffects") {
-            DFLog(this.debugEnabled, this, "        Applying status effect " + TDBID.ToStringDEBUG(this.needStageStatusEffects[currentStage - 1]));
+        if currentStage > 0 && this.GameStateService.IsValidGameState(this) {
+            DFLog(this, "        Applying status effect " + TDBID.ToStringDEBUG(this.needStageStatusEffects[currentStage - 1]));
 			StatusEffectHelper.ApplyStatusEffect(this.player, this.needStageStatusEffects[currentStage - 1]);
         }
     }
@@ -735,7 +733,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		update.forceBright = forceBright;
 		update.momentaryDisplayIgnoresSceneTier = momentaryDisplayIgnoresSceneTier;
 
-		DFLog(this.debugEnabled, this, "UpdateNeedHUDUI newValue: " + ToString(update.newValue) + ", forceMomentaryDisplay: " + ToString(update.forceMomentaryDisplay) + ", instant: " + ToString(update.instant) + ", forceBright: " + ToString(update.forceBright));
+		DFLog(this, "UpdateNeedHUDUI newValue: " + ToString(update.newValue) + ", forceMomentaryDisplay: " + ToString(update.forceMomentaryDisplay) + ", instant: " + ToString(update.instant) + ", forceBright: " + ToString(update.forceBright));
 
 		GameInstance.GetCallbackSystem().DispatchEvent(UpdateHUDUIEvent.Create(update));
     }
@@ -767,7 +765,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	}
 
     private func UpdateNeedFX(opt suppressRecoveryNotification: Bool) -> Void {
-		DFLog(this.debugEnabled, this, "UpdateNeedFX");
+		DFLog(this, "UpdateNeedFX");
 
 		let currentStage = this.GetNeedStage();
 		
@@ -781,7 +779,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     private final func UpdateInsufficientNeedRepeatFXCallback(stageToCheck: Int32) -> Void {
 		if RunGuard(this) { return; }
 		
-		DFLog(this.debugEnabled, this, "UpdateInsufficientNeedRepeatFXCallback stageToCheck = " + ToString(stageToCheck));
+		DFLog(this, "UpdateInsufficientNeedRepeatFXCallback stageToCheck = " + ToString(stageToCheck));
 
 		this.UnregisterInsufficientNeedRepeatFXCallback();
 
@@ -793,16 +791,16 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	}
 
     private final func ResetContextuallyDelayedNeedValueChange() -> Void {
-		DFLog(this.debugEnabled, this, "ResetContextuallyDelayedNeedValueChange");
+		DFLog(this, "ResetContextuallyDelayedNeedValueChange");
 
 		ArrayClear(this.queuedContextuallyDelayedNeedValueChange);
 	}
 
     private final func QueueSevereNeedMessage() -> Void {
-		DFLog(this.debugEnabled, this, "QueueSevereNeedMessage");
+		DFLog(this, "QueueSevereNeedMessage");
 		if !this.Settings.needMessagesEnabled { return; }
 
-		if this.GameStateService.IsValidGameState("DFNeedSystemBase:QueueSevereNeedMessage", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			let message: DFMessage;
 			message.key = this.GetSevereNeedMessageKey();
 			message.type = SimpleMessageType.Negative;
@@ -854,7 +852,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	}
 
     private final func UnregisterAllNeedFXCallbacks() -> Void {
-		DFLog(this.debugEnabled, this, "UnregisterAllNeedFXCallbacks");
+		DFLog(this, "UnregisterAllNeedFXCallbacks");
 
 		this.UnregisterNeedStageChangeFXStartCallback();
 		this.UnregisterInsufficientNeedRepeatFXCallback();
@@ -883,7 +881,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     //  Callback Handlers
     //
     public final func OnNeedStageChangeFXStart(needStage: Int32, suppressRecoveryNotification: Bool) -> Void {
-		DFLog(this.debugEnabled, this, "OnNeedStageChangeFXStart");
+		DFLog(this, "OnNeedStageChangeFXStart");
 
 		this.QueueNeedStageNotification(needStage, suppressRecoveryNotification);
 		this.UpdateInsufficientNeedRepeatFXCallback(needStage);
@@ -894,7 +892,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     }
 
     public final func OnInsufficientNeedRepeatFX() -> Void {
-		DFLog(this.debugEnabled, this, "OnInsufficientNeedRepeatFX");
+		DFLog(this, "OnInsufficientNeedRepeatFX");
 		let needStage: Int32 = this.GetNeedStage();
 
 		if this.Settings.needNegativeEffectsRepeatEnabled {
@@ -908,7 +906,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	//	Logging
 	//
 	private final func LogMissingOverrideError(funcName: String) -> Void {
-		DFLog(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
+		DFLog(this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
 	}
 
 	//

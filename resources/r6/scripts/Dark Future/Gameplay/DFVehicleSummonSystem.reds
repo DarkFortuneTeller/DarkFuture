@@ -151,7 +151,7 @@ public final func SetActiveVehicle(vehicleData: PlayerVehicle) -> Void {
 public final func SummonVehicle(force: Bool) -> Void {
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
     
-    if IsSystemEnabledAndRunning(vehicleSummonSystem) && DFGameStateService.Get().IsValidGameState("SummonVehicle") {
+    if IsSystemEnabledAndRunning(vehicleSummonSystem) && DFGameStateService.Get().IsValidGameState(this) {
         let canSummonVehicle: Bool = force || !GameInstance.GetVehicleSystem(GetGameInstance()).IsActivePlayerVehicleOnCooldown(this.GetActiveVehicleType());
         if !canSummonVehicle {
             return;
@@ -524,13 +524,13 @@ public final class DFVehicleSummonSystem extends DFSystem {
                 this.remainingCooldownTime = this.summonCreditCooldownDurationGameTimeSeconds;
             }
         }
-        DFLog(this.debugEnabled, this, "UseSummonCredit() remainingSummonCredits = " + ToString(this.remainingSummonCredits));
+        DFLog(this, "UseSummonCredit() remainingSummonCredits = " + ToString(this.remainingSummonCredits));
     }
 
     private final func GrantSummonCredit() -> Void {
         this.remainingSummonCredits = Clamp(this.remainingSummonCredits + 1, 0, this.creditsMax);
         this.RegisterForVehicleSummonCreditChangeDelayCallback();
-        DFLog(this.debugEnabled, this, "GrantSummonCredit() remainingSummonCredits = " + ToString(this.remainingSummonCredits));
+        DFLog(this, "GrantSummonCredit() remainingSummonCredits = " + ToString(this.remainingSummonCredits));
     }
 
     private final func PlaySummonCreditRestoreEffects() {
@@ -569,7 +569,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func OnSummonCooldownCallback() -> Void {
-        if this.GameStateService.IsValidGameState("OnSummonCooldownCallback") {
+        if this.GameStateService.IsValidGameState(this) {
             this.remainingCooldownTime -= this.summonCreditCooldownDelayIntervalGameTimeSeconds;
             if this.remainingCooldownTime <= 0.0 {
                 this.remainingCooldownTime = 0.0;
@@ -580,7 +580,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
             }
         }
         this.RegisterForSummonCooldown();
-        DFLog(this.debugEnabled, this, "OnSummonCooldownCallback() remainingSummonCredits = " + ToString(this.remainingSummonCredits) + ", remainingCooldownTime = " + ToString(this.remainingCooldownTime));
+        DFLog(this, "OnSummonCooldownCallback() remainingSummonCredits = " + ToString(this.remainingSummonCredits) + ", remainingCooldownTime = " + ToString(this.remainingCooldownTime));
     }
 
     public final func OnVehicleSummonCreditChangeDelayCallback() -> Void {
@@ -595,14 +595,14 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
     public final func OnTimeSkipStart() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipStart");
+		DFLog(this, "OnTimeSkipStart");
 
 		this.UnregisterForSummonCooldown();
 	}
 
 	public final func OnTimeSkipCancelled() -> Void {
 		if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipStart");
+		DFLog(this, "OnTimeSkipStart");
 
 		this.RegisterForSummonCooldown();
 	}
@@ -624,7 +624,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
         this.RegisterForSummonCooldown();
         
-        DFLog(this.debugEnabled, this, "OnTimeSkip() hoursSkipped = " + ToString(data.hoursSkipped) + " remainingSummonCredits = " + ToString(this.remainingSummonCredits) + ", remainingCooldownTime = " + ToString(this.remainingCooldownTime));
+        DFLog(this, "OnTimeSkip() hoursSkipped = " + ToString(data.hoursSkipped) + " remainingSummonCredits = " + ToString(this.remainingSummonCredits) + ", remainingCooldownTime = " + ToString(this.remainingCooldownTime));
     }
 
     public final func GetSummonCooldownRemainingTimeString() -> String {
@@ -647,7 +647,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func SetCarHotkeyController(controller: ref<CarHotkeyController>) -> Void {
-        DFLog(this.debugEnabled, this, "SetCarHotkeyController " + ToString(controller));
+        DFLog(this, "SetCarHotkeyController " + ToString(controller));
         this.chkController = controller;
     }
 

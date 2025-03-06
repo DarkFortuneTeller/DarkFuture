@@ -114,7 +114,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     //  Revised Backpack Custom Event Handlers
     //
     public final func OnRevisedBackpackOpened(opened: Bool) -> Void {
-        DFLog(this.debugEnabled, this, "RevisedBackpack: OnRevisedBackpackOpened, opened: " + ToString(opened));
+        DFLog(this, "RevisedBackpack: OnRevisedBackpackOpened, opened: " + ToString(opened));
         if opened {
             let inkSystem: ref<inkSystem> = GameInstance.GetInkSystem();
             let inkHUD: ref<inkCompoundWidget> = inkSystem.GetLayer(n"inkMenuLayer").GetVirtualWindow();
@@ -143,11 +143,12 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     public final func OnRevisedBackpackItemHoverOver(itemData: ref<gameItemData>) -> Void {
-        DFLog(this.debugEnabled, this, "RevisedBackpack: OnRevisedBackpackItemHoverOver, itemData: " + ToString(itemData));
+        DFLog(this, "RevisedBackpack: OnRevisedBackpackItemHoverOver, itemData: " + ToString(itemData));
         if this.Settings.mainSystemEnabled && !StatusEffectSystem.ObjectHasStatusEffect(this.HydrationSystem.player, t"DarkFutureStatusEffect.Weakened") {
             if IsDefined(itemData) {
                 if itemData.HasTag(n"Consumable") {
-                    let needsData: DFNeedsDatum = GetConsumableNeedsData(itemData);
+                    let itemRecord: wref<ConsumableItem_Record> = TweakDBInterface.GetConsumableItemRecord(itemData.GetID().GetTDBID());
+                    let needsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
                     // Show the increase in Hydration and Nutrition if player's Nerve is not too low.
                     if this.NerveSystem.GetHasNausea() {
@@ -170,7 +171,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                     this.energyBar.SetUpdatedValue(updatedEnergyValue, this.EnergySystem.GetNeedMax());
                     
                     // Handle Addiction Withdrawal and Alcohol
-                    let nerveMax: Float = this.NerveSystem.GetNerveLimitAfterItemUse(itemData);
+                    let nerveMax: Float = this.NerveSystem.GetNerveLimitAfterItemUse(itemRecord);
                     let nerveValue: Float = this.NerveSystem.GetNeedValue();
                     let potentialNewValue: Float = nerveValue + (needsData.nerve.value + needsData.nerve.valueOnStatusEffectApply);
 
@@ -202,7 +203,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     public final func OnRevisedBackpackItemHoverOut() -> Void {
-        DFLog(this.debugEnabled, this, "RevisedBackpack: OnRevisedBackpackItemHoverOut");
+        DFLog(this, "RevisedBackpack: OnRevisedBackpackItemHoverOut");
         if this.Settings.mainSystemEnabled {
             this.hydrationBar.SetOriginalValue(this.HydrationSystem.GetNeedValue());
             this.nutritionBar.SetOriginalValue(this.NutritionSystem.GetNeedValue());
@@ -219,8 +220,8 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     public final func OnRevisedRevisedBackpackCategorySelectedEvent(categoryId: Int32) -> Void {
-        DFLog(this.debugEnabled, this, "RevisedBackpack: OnRevisedRevisedBackpackCategorySelectedEvent, categoryId: " + ToString(categoryId));
-        if this.GameStateService.IsValidGameState("OnItemFilterClick") {
+        DFLog(this, "RevisedBackpack: OnRevisedRevisedBackpackCategorySelectedEvent, categoryId: " + ToString(categoryId));
+        if this.GameStateService.IsValidGameState(this) {
             // 10 = All Items, 50 = Consumables
             if Equals(categoryId, 10) || Equals(categoryId, 50) {
                 this.SetBarClusterFadeIn();

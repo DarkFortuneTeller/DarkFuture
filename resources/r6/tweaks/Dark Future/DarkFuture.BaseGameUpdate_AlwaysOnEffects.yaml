@@ -160,3 +160,166 @@ DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityHalf:
     - DarkFutureStatusEffect.AlwaysOnCarryCapacity_StatsPackageHalf
   SFX: []
   VFX: []
+
+# Strength Skill Penalties
+
+DarkFutureStatusEffectTypes.StrengthSkillCarryCapacityPenalty:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: DarkFutureStrengthSkillCarryCapacityPenalty
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull5StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: -30
+  modifierType: Additive
+  statType: BaseStats.CarryCapacity
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull5StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull5StatModifier
+
+DarkFutureStatusEffect.StrengthSkillPenaltyFull5:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.StrengthSkillCarryCapacityPenalty
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - DarkFutureStrengthSkillCarryWeightPenalty
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull5StatsPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull25StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: -100
+  modifierType: Additive
+  statType: BaseStats.CarryCapacity
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull25StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull25StatModifier
+
+DarkFutureStatusEffect.StrengthSkillPenaltyFull25:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.StrengthSkillCarryCapacityPenalty
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - DarkFutureStrengthSkillCarryWeightPenalty
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyFull25StatsPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf5StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: -25
+  modifierType: Additive
+  statType: BaseStats.CarryCapacity
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf5StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf5StatModifier
+
+DarkFutureStatusEffect.StrengthSkillPenaltyHalf5:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.StrengthSkillCarryCapacityPenalty
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - DarkFutureStrengthSkillCarryWeightPenalty
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf5StatsPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf25StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: -75
+  modifierType: Additive
+  statType: BaseStats.CarryCapacity
+
+DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf25StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf25StatModifier
+
+DarkFutureStatusEffect.StrengthSkillPenaltyHalf25:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.StrengthSkillCarryCapacityPenalty
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - DarkFutureStrengthSkillCarryWeightPenalty
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.StrengthSkillCarryCapacityPenaltyHalf25StatsPackage
+  SFX: []
+  VFX: []

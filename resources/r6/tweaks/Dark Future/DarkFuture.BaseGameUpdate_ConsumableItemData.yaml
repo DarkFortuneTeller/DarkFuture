@@ -250,6 +250,69 @@ DarkFutureStatusEffect.NarcoticsDuration:
   statModifiers:
     - DarkFutureStatusEffect.NarcoticsDuration_StatModifier
 
+# Bonus Effects
+#
+DarkFutureStatusEffect.BaseGameFoodDrinkBonus_UIData:
+  $type: gamedataStatusEffectUIData_Record
+
+BaseStatusEffect.WellFed:
+  duration: DarkFutureStatusEffect.NoDuration
+  uiData: BaseGameFoodDrinkBonus_UIData
+  packages: []
+
+BaseStatusEffect.Sated:
+  duration: DarkFutureStatusEffect.NoDuration
+  uiData: BaseGameFoodDrinkBonus_UIData
+  packages: []
+
+DarkFutureStatusEffect.WellFed:
+  $type: gamedataStatusEffect_Record
+  duration: Items.WellFedDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: RTDB.StatusEffect_inline0
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: BaseStatusEffectTypes.Misc
+  stopActiveSfxOnDeactivate: True
+  uiData: BaseStatusEffect.WellFed_inline4
+  debugTags: []
+  gameplayTags:
+    - Buff
+  immunityStats: []
+  packages:
+    - BaseStatusEffect.WellFed_inline0
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.Sated:
+  $type: gamedataStatusEffect_Record
+  duration: Items.SatedDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: RTDB.StatusEffect_inline0
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: BaseStatusEffectTypes.Misc
+  stopActiveSfxOnDeactivate: True
+  uiData: BaseStatusEffect.Sated_inline2
+  debugTags: []
+  gameplayTags:
+    - Buff
+  immunityStats: []
+  packages:
+    - BaseStatusEffect.Sated_inline0
+  SFX: []
+  VFX: []
+
 # Actions
 #
 DarkFutureStatusEffect.EatNoEffectAction:
@@ -282,6 +345,56 @@ DarkFutureStatusEffect.DrinkNoEffectAction:
   priority: 0
   activationTime: []
   completionEffects: []
+  costs: []
+  durationTime: []
+  instigatorActivePrereqs: []
+  instigatorPrereqs: []
+  interruptionPrereqs: []
+  rewards: []
+  startEffects: []
+  targetActivePrereqs: []
+  targetPrereqs: []
+
+DarkFutureStatusEffect.EatBonusEffectActionEffect:
+  $type: gamedataObjectActionEffect_Record
+  statusEffect: DarkFutureStatusEffect.WellFed
+
+DarkFutureStatusEffect.DrinkBonusEffectActionEffect:
+  $type: gamedataObjectActionEffect_Record
+  statusEffect: DarkFutureStatusEffect.Sated
+
+DarkFutureStatusEffect.EatBonusEffectAction:
+  $type: gamedataItemAction_Record
+  isDefaultLootChoice: False
+  removeAfterUse: True
+  actionName: Eat
+  hackCategory: HackCategory.NotAHack
+  objectActionType: ObjectActionType.Item
+  priority: 0
+  activationTime: []
+  completionEffects:
+    - DarkFutureStatusEffect.EatBonusEffectActionEffect
+  costs: []
+  durationTime: []
+  instigatorActivePrereqs: []
+  instigatorPrereqs: []
+  interruptionPrereqs: []
+  rewards: []
+  startEffects: []
+  targetActivePrereqs: []
+  targetPrereqs: []
+
+DarkFutureStatusEffect.DrinkBonusEffectAction:
+  $type: gamedataItemAction_Record
+  isDefaultLootChoice: False
+  removeAfterUse: True
+  actionName: Drink
+  hackCategory: HackCategory.NotAHack
+  objectActionType: ObjectActionType.Item
+  priority: 0
+  activationTime: []
+  completionEffects:
+    - DarkFutureStatusEffect.DrinkBonusEffectActionEffect
   costs: []
   durationTime: []
   instigatorActivePrereqs: []
@@ -1150,6 +1263,9 @@ Items.LowQualityDrink1: &RareCoffee
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.RareDrinks
   quality: Quality.Rare
+  objectActions:
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier1_OnEquip
     - DarkFutureStatusEffect.ConsumableEnergyTier1_OnEquip
@@ -1162,6 +1278,7 @@ Items.LowQualityDrink1: &RareCoffee
     - !append-once DarkFutureConsumableHydrationTier1
     - !append-once DarkFutureConsumableEnergy
     - !append-once DarkFutureConsumableEnergyTier1
+    - !append-once DarkFutureAppliesBonusEffect
 Items.LowQualityDrink11: *RareCoffee
 Items.LowQualityDrink12: *RareCoffee
 Items.LowQualityDrink13: *RareCoffee
@@ -1179,6 +1296,9 @@ Items.MediumQualityDrink10:
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.EpicDrinks
   quality: Quality.Epic
+  objectActions:
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier1_OnEquip
     - DarkFutureStatusEffect.ConsumableEnergyTier2_OnEquip
@@ -1191,6 +1311,7 @@ Items.MediumQualityDrink10:
     - !append-once DarkFutureConsumableHydrationTier1
     - !append-once DarkFutureConsumableEnergy
     - !append-once DarkFutureConsumableEnergyTier2
+    - !append-once DarkFutureAppliesBonusEffect
 
 # Matapang Decaf
 Items.LowQualityDrink2:
@@ -1205,6 +1326,9 @@ Items.LowQualityDrink2:
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.RareDrinks
   quality: Quality.Rare
+  objectActions:
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier1_OnEquip
     - DarkFutureStatusEffect.Hydrated_OnEquip
@@ -1213,6 +1337,7 @@ Items.LowQualityDrink2:
   tags:
     - !append-once DarkFutureConsumableHydration
     - !append-once DarkFutureConsumableHydrationTier1
+    - !append-once DarkFutureAppliesBonusEffect
 
 Items.LowQualityDrink3: &RareStrangeHealthDrinks
   buyPrice:
@@ -1226,6 +1351,9 @@ Items.LowQualityDrink3: &RareStrangeHealthDrinks
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.RareDrinks
   quality: Quality.Rare
+  objectActions:
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier1_OnEquip
     - DarkFutureStatusEffect.ConsumableNutritionTier1_OnEquip
@@ -1237,6 +1365,7 @@ Items.LowQualityDrink3: &RareStrangeHealthDrinks
     - !append-once DarkFutureConsumableHydrationTier1
     - !append-once DarkFutureConsumableNutrition
     - !append-once DarkFutureConsumableNutritionTier1
+    - !append-once DarkFutureAppliesBonusEffect
 Items.GoodQualityDrink11: *RareStrangeHealthDrinks
 Items.NomadsDrink2: *RareStrangeHealthDrinks
 Items.MediumQualityDrink14: *RareStrangeHealthDrinks
@@ -1260,6 +1389,9 @@ Items.MediumQualityDrink3: &EpicDrinks
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.EpicDrinks
   quality: Quality.Epic
+  objectActions:
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier2_OnEquip
     - DarkFutureStatusEffect.Hydrated_OnEquip
@@ -1268,6 +1400,7 @@ Items.MediumQualityDrink3: &EpicDrinks
   tags:
     - !append-once DarkFutureConsumableHydration
     - !append-once DarkFutureConsumableHydrationTier2
+    - !append-once DarkFutureAppliesBonusEffect
 Items.MediumQualityDrink4: *EpicDrinks
 Items.GoodQualityDrink5: *EpicDrinks
 Items.GoodQualityDrink6: *EpicDrinks
@@ -1293,6 +1426,9 @@ Items.NomadsDrink1:
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.NomadDrinks
   quality: Quality.Legendary
+  objectActions:
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier3_OnEquip
     - DarkFutureStatusEffect.Hydrated_OnEquip
@@ -1301,6 +1437,7 @@ Items.NomadsDrink1:
   tags:
     - !append-once DarkFutureConsumableHydration
     - !append-once DarkFutureConsumableHydrationTier3
+    - !append-once DarkFutureAppliesBonusEffect
 
 # Water
 Items.GoodQualityDrink10:
@@ -1315,7 +1452,7 @@ Items.GoodQualityDrink10:
     - DarkFuturePrice.UncommonDrinks
   quality: Quality.Legendary
   objectActions:
-    - DarkFutureStatusEffect.DrinkNoEffectAction
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
     - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier3_OnEquip
@@ -1326,6 +1463,7 @@ Items.GoodQualityDrink10:
   tags:
     - !append-once DarkFutureConsumableHydration
     - !append-once DarkFutureConsumableHydrationTier3
+    - !append-once DarkFutureAppliesBonusEffect
 
 Items.GoodQualityDrink1: &LegendaryDrinks
   buyPrice:
@@ -1339,6 +1477,9 @@ Items.GoodQualityDrink1: &LegendaryDrinks
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.LegendaryDrinks
   quality: Quality.Legendary
+  objectActions:
+    - DarkFutureStatusEffect.DrinkBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier3_OnEquip
     - DarkFutureStatusEffect.Hydrated_OnEquip
@@ -1347,6 +1488,7 @@ Items.GoodQualityDrink1: &LegendaryDrinks
   tags:
     - !append-once DarkFutureConsumableHydration
     - !append-once DarkFutureConsumableHydrationTier3
+    - !append-once DarkFutureAppliesBonusEffect
 Items.GoodQualityDrink8: *LegendaryDrinks
 Items.GoodQualityDrink9: *LegendaryDrinks
 
@@ -1545,6 +1687,9 @@ Items.GoodQualityFood10: &RareFood
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.RareFood
   quality: Quality.Rare
+  objectActions:
+    - DarkFutureStatusEffect.EatBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableNutritionTier3_OnEquip
     - DarkFutureStatusEffect.Nourishment_OnEquip
@@ -1553,6 +1698,7 @@ Items.GoodQualityFood10: &RareFood
   tags:
     - !append-once DarkFutureConsumableNutrition
     - !append-once DarkFutureConsumableNutritionTier3
+    - !append-once DarkFutureAppliesBonusEffect
 Items.GoodQualityFood11: *RareFood
 Items.GoodQualityFood12: *RareFood
 Items.GoodQualityFood13: *RareFood
@@ -1574,6 +1720,9 @@ Items.LowQualityFood3: &Hotdogs
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.RareFood
   quality: Quality.Rare
+  objectActions:
+    - DarkFutureStatusEffect.EatBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableNutritionTier2_OnEquip
     - DarkFutureStatusEffect.Nourishment_OnEquip
@@ -1582,6 +1731,7 @@ Items.LowQualityFood3: &Hotdogs
   tags:
     - !append-once DarkFutureConsumableNutrition
     - !append-once DarkFutureConsumableNutritionTier2
+    - !append-once DarkFutureAppliesBonusEffect
 Items.HawtDawgClassic: *Hotdogs
 Items.HawtDawgCheese: *Hotdogs
 Items.HawtDawgChilli: *Hotdogs
@@ -1598,6 +1748,9 @@ Items.NomadsFood1: &NomadFood
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.NomadFood
   quality: Quality.Rare
+  objectActions:
+    - DarkFutureStatusEffect.EatBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableNutritionTier2_OnEquip
     - DarkFutureStatusEffect.Nourishment_OnEquip
@@ -1606,6 +1759,7 @@ Items.NomadsFood1: &NomadFood
   tags:
     - !append-once DarkFutureConsumableNutrition
     - !append-once DarkFutureConsumableNutritionTier2
+    - !append-once DarkFutureAppliesBonusEffect
 Items.NomadsFood2: *NomadFood
 
 #
@@ -1625,6 +1779,9 @@ Items.GoodQualityFood2: &EpicFood
     - Price.SellPriceIntrinsicModMult
     - DarkFuturePrice.EpicFood
   quality: Quality.Epic
+  objectActions:
+    - DarkFutureStatusEffect.EatBonusEffectAction
+    - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableNutritionTier4_OnEquip
     - DarkFutureStatusEffect.Nourishment_OnEquip
@@ -1633,6 +1790,7 @@ Items.GoodQualityFood2: &EpicFood
   tags:
     - !append-once DarkFutureConsumableNutrition
     - !append-once DarkFutureConsumableNutritionTier4
+    - !append-once DarkFutureAppliesBonusEffect
 Items.GoodQualityFood9: *EpicFood
 Items.MediumQualityFood10: *EpicFood
 
@@ -1972,6 +2130,7 @@ Items.TopQualityAlcohol8: &LegendaryAlcohol
     - !append-once DarkFutureConsumableAlcoholNerveTier3
     - !append-once DarkFutureConsumableAddictive
     - !append-once DarkFutureConsumableAddictiveAlcohol
+    - !append-once DarkFutureConsumableLegendaryAlcoholBonus
 Items.TopQualityAlcohol9: *LegendaryAlcohol
 Items.TopQualityAlcohol10: *LegendaryAlcohol
 Items.KerryAlcohol1: *LegendaryAlcohol

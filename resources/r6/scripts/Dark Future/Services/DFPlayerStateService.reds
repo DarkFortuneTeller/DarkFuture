@@ -22,10 +22,6 @@ import DarkFuture.Main.{
     DFMainSystem,
     DFTimeSkipData
 }
-import DarkFuture.UI.{
-    DFHUDSystem,
-    DFNeedsHUDBar
-}
 import DarkFuture.Addictions.DFNicotineAddictionSystem
 import DarkFuture.Needs.DFHydrationSystem
 import DarkFuture.Needs.DFNerveSystem
@@ -289,23 +285,28 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 //
 //  Stamina Costs
 //
-@wrapMethod(SprintEvents)
-protected func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+@wrapMethod(StaminaListener)
+protected cb func OnStatPoolMinValueReached(value: Float) -> Bool {
     // Interrupt the player's sprinting when Stamina runs out when Hydration is stage 2 or higher, or when impacted by the Smoking status effect.
-	// Use caution; called roughly every frame while sprinting.
+    let r: Bool = wrappedMethod(value);
 
-	wrappedMethod(timeDelta, stateContext, scriptInterface);
-    let staminaEmpty: Bool = GameInstance.GetStatPoolsSystem(scriptInterface.GetGame()).GetStatPoolValue(Cast<StatsObjectID>(scriptInterface.executionOwner.GetEntityID()), gamedataStatPoolType.Stamina, true) <= 0.0;
-    if staminaEmpty {
-        let player: wref<PlayerPuppet> = scriptInterface.owner as PlayerPuppet;
-        if IsDefined(player) {
-            if StatusEffectSystem.ObjectHasStatusEffectWithTag(player, n"DarkFutureShouldInterruptSprintOnEmptyStamina") {
-                stateContext.SetTemporaryBoolParameter(n"InterruptSprint", true, true);
-                stateContext.SetConditionBoolParameter(n"SprintToggled", false, true);
-                stateContext.SetConditionBoolParameter(n"SprintHoldCanStartWithoutNewInput", false, true);
-            }
-        }
+    if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.m_player, n"DarkFutureShouldInterruptSprintOnEmptyStamina") {
+        this.DarkFutureSendPSMBoolParameter(n"InterruptSprint", true, gamestateMachineParameterAspect.Temporary);
+        this.DarkFutureSendPSMBoolParameter(n"SprintToggled", true, gamestateMachineParameterAspect.Conditional);
+        this.DarkFutureSendPSMBoolParameter(n"SprintHoldCanStartWithoutNewInput", true, gamestateMachineParameterAspect.Conditional);
+        this.DarkFutureSendPSMBoolParameter(n"OnInterruptSprintFail_BlockSprintStartOnce", true, gamestateMachineParameterAspect.Conditional);
     }
+
+    return r;
+}
+
+@addMethod(StaminaListener)
+protected final const func DarkFutureSendPSMBoolParameter(id: CName, value: Bool, aspect: gamestateMachineParameterAspect) -> Void {
+    let psmEvent: ref<PSMPostponedParameterBool> = new PSMPostponedParameterBool();
+    psmEvent.id = id;
+    psmEvent.value = value;
+    psmEvent.aspect = aspect;
+    this.m_player.QueueEvent(psmEvent);
 }
 
 class DFPlayerStateServiceEventListeners extends DFSystemEventListener {
@@ -347,7 +348,7 @@ public final class DFPlayerStateService extends DFSystem {
     private let addictionTreatmentDurationUpdateDelayID: DelayID;
     private let addictionTreatmentDurationUpdateIntervalInGameTimeSeconds: Float = 300.0;
 
-     // Low Hydration Stamina Costs
+    // Low Hydration Stamina Costs
 	private let playerHydrationPenalty02StaminaCostSprinting: Float = 0.035;
 	private let playerHydrationPenalty02StaminaCostJumping: Float = 2.0;
 	private let playerHydrationPenalty03StaminaCostSprinting: Float = 0.05;
@@ -464,23 +465,23 @@ public final class DFPlayerStateService extends DFSystem {
 
     public func OnTimeSkipStart() -> Void {
         if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipStart");
+		DFLog(this, "OnTimeSkipStart");
 
 		this.UnregisterAddictionTreatmentDurationUpdateCallback();
     }
     public func OnTimeSkipCancelled() -> Void {
         if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipCancelled");
+		DFLog(this, "OnTimeSkipCancelled");
 
 		this.RegisterAddictionTreatmentDurationUpdateCallback();
     }
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
         if RunGuard(this) { return; }
-		DFLog(this.debugEnabled, this, "OnTimeSkipFinished");
+		DFLog(this, "OnTimeSkipFinished");
 
 		this.RegisterAddictionTreatmentDurationUpdateCallback();
 
-		if this.GameStateService.IsValidGameState("DFAddictionSystemBase:OnTimeSkipFinished", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
             this.OnAddictionTreatmentDurationUpdateFromTimeSkip(data.targetAddictionValues);
 		}
     }
@@ -496,7 +497,7 @@ public final class DFPlayerStateService extends DFSystem {
     //
     public func OnSceneTierChanged(value: GameplayTier) -> Void {
 		if RunGuard(this, true) { return; }
-		DFLog(this.debugEnabled, this, "OnSceneTierChanged value = " + ToString(value));
+		DFLog(this, "OnSceneTierChanged value = " + ToString(value));
 
 		this.RefreshAddictionTreatmentEffect();
 	}
@@ -504,7 +505,7 @@ public final class DFPlayerStateService extends DFSystem {
     protected cb func OnLocomotionStateChanged(value: Int32) -> Void {
 		if RunGuard(this) { return; }
 		
-		if this.GameStateService.IsValidGameState("OnLocomotionStateChanged") {
+		if this.GameStateService.IsValidGameState(this) {
 			// 0 = Default, 2 = Sprinting, 7 = Dashing
 
 			this.lastLocomotionState = value;
@@ -552,7 +553,7 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final func GetPlayerDangerState() -> DFPlayerDangerState {
 		let dangerState: DFPlayerDangerState;
-        if this.GameStateService.IsValidGameState("GetPlayerDangerState", true) {
+        if this.GameStateService.IsValidGameState(this, true) {
             dangerState.InCombat = this.player.IsInCombat();
             dangerState.BeingRevealed = this.player.IsBeingRevealed();
         }
@@ -570,12 +571,12 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func UpdateStaminaCosts() {
-		DFLog(this.debugEnabled, this, "UpdateStaminaCosts");
+		DFLog(this, "UpdateStaminaCosts");
 
         let totalSprintCost: Float = 0.0;
         let totalJumpCost: Float = 0.0;
 
-        if !this.GameStateService.IsValidGameState("UpdateStaminaCosts") {
+        if !this.GameStateService.IsValidGameState(this) {
 			this.ClearStaminaCosts();
         }
 
@@ -587,7 +588,7 @@ public final class DFPlayerStateService extends DFSystem {
 		let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
         let hasStaminaBooster: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureStaminaBooster");
         
-		DFLog(this.debugEnabled, this, "    hydrationStage = " + ToString(hydrationStage));
+		DFLog(this, "    hydrationStage = " + ToString(hydrationStage));
 
 		if !hasStaminaBooster {
             if hydrationStage == 2 {
@@ -625,7 +626,7 @@ public final class DFPlayerStateService extends DFSystem {
     //  Breathing Effects
     //
     private final func TryToPlayOutOfBreathEffectsFromSprinting() -> Void {
-		if this.GameStateService.IsValidGameState("TryToPlayOutOfBreathEffects") {
+		if this.GameStateService.IsValidGameState(this) {
 			// Allow Nerve breathing FX to win over Out Of Breath FX.
 			if this.NerveSystem.currentNerveBreathingFXStage != 0 {
 				return;
@@ -643,7 +644,7 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
     private final func TryToPlayOutOfBreathEffectsFromHydrationNotification() -> Void {
-		if this.GameStateService.IsValidGameState("TryToPlayOutOfBreathEffects") {
+		if this.GameStateService.IsValidGameState(this) {
 			// Allow Nerve breathing FX to win over Out Of Breath FX.
 			if this.NerveSystem.currentNerveBreathingFXStage != 0 {
 				return;
@@ -655,7 +656,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func StartOutOfBreathBreathingEffects(reason: DFOutOfBreathReason) -> Void {
-		DFLog(this.debugEnabled, this, "StartOutOfBreathBreathingEffects reason = " + ToString(reason));
+		DFLog(this, "StartOutOfBreathBreathingEffects reason = " + ToString(reason));
 
 		if !this.playingOutOfBreathFX {
 			this.playingOutOfBreathFX = true;
@@ -679,7 +680,7 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
 	private final func StopOutOfBreathEffects() -> Void {
-		DFLog(this.debugEnabled, this, "StopOutOfBreathEffects");
+		DFLog(this, "StopOutOfBreathEffects");
 		
 		StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.BreathingHeavy");
 		this.playingOutOfBreathFX = false;
@@ -692,7 +693,7 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
 	private final func StopOutOfBreathSFX() -> Void {
-		DFLog(this.debugEnabled, this, "StopOutOfBreathSFX");
+		DFLog(this, "StopOutOfBreathSFX");
 
 		// Only used when other breathing SFX need to stop this early, otherwise stops on its own
 		let evt: ref<SoundStopEvent> = new SoundStopEvent();
@@ -702,14 +703,14 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final func OnOutOfBreathRecheckSprintingCallback() -> Void {
 		if this.lastLocomotionState == 2 { // Still sprinting!
-			DFLog(this.debugEnabled, this, "OnOutOfBreathRecheckSprintingCallback -- Still sprinting! Queuing breathing effect.");
+			DFLog(this, "OnOutOfBreathRecheckSprintingCallback -- Still sprinting! Queuing breathing effect.");
 			this.outOfBreathEffectQueued = true;
 		}
 	}
 
 	public final func OnOutOfBreathRecheckDefaultCallback() -> Void {
 		if this.lastLocomotionState == 0 { // Still default!
-			DFLog(this.debugEnabled, this, "OnOutOfBreathRecheckDefaultCallback -- Still default! Try to play breathing effect.");
+			DFLog(this, "OnOutOfBreathRecheckDefaultCallback -- Still default! Try to play breathing effect.");
 			this.outOfBreathEffectQueued = false;
 			this.TryToPlayOutOfBreathEffectsFromSprinting();
 		}
@@ -755,19 +756,22 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
     public final func OnAddictionTreatmentDurationUpdate(gameTimeSecondsToReduce: Float) -> Void {
-        if this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds > 0.0 {
-			this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds -= gameTimeSecondsToReduce;
+        if !this.GameStateService.IsInAnyMenu() {
+            if this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds > 0.0 {
+                this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds -= gameTimeSecondsToReduce;
 
-			if this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds <= 0.0 {
-				this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds = 0.0;
-				this.RefreshAddictionTreatmentEffect();
-                this.DispatchAddictionTreatmentEffectAppliedOrRemovedEvent();
-                this.NerveSystem.UpdateNerveWithdrawalLimit();
-			}
-            DFLog(this.debugEnabled, this, "remainingAddictionTreatmentEffectDurationInGameTimeSeconds = " + ToString(this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds));
-		}
+                if this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds <= 0.0 {
+                    this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds = 0.0;
+                    this.RefreshAddictionTreatmentEffect();
+                    this.DispatchAddictionTreatmentEffectAppliedOrRemovedEvent();
+                    this.NerveSystem.UpdateNerveWithdrawalLimit();
+                }
+                DFLog(this, "remainingAddictionTreatmentEffectDurationInGameTimeSeconds = " + ToString(this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds));
+            }
 
-        this.DispatchAddictionTreatmentDurationUpdateDoneEvent(gameTimeSecondsToReduce);
+            this.DispatchAddictionTreatmentDurationUpdateDoneEvent(gameTimeSecondsToReduce);
+        }
+        
         this.RegisterAddictionTreatmentDurationUpdateCallback();
     }
 
@@ -784,16 +788,16 @@ public final class DFPlayerStateService extends DFSystem {
             this.NerveSystem.UpdateNerveWithdrawalLimit();
         }
 
-        DFLog(this.debugEnabled, this, "remainingAddictionTreatmentEffectDurationInGameTimeSeconds = " + ToString(this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds));
+        DFLog(this, "remainingAddictionTreatmentEffectDurationInGameTimeSeconds = " + ToString(this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds));
         this.DispatchAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent(addictionData);
         this.RegisterAddictionTreatmentDurationUpdateCallback();
     }
 
     private func RefreshAddictionTreatmentEffect() -> Void {
-		DFLog(this.debugEnabled, this, "RefreshAddictionTreatmentEffect");
+		DFLog(this, "RefreshAddictionTreatmentEffect");
         let shouldApply: Bool = false;
 
-        if this.GameStateService.IsValidGameState("DFPlayerStateService:RefreshAddictionTreatmentEffect") {
+        if this.GameStateService.IsValidGameState(this) {
             if this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds > 0.0 {
                 if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
                     shouldApply = true;
@@ -885,12 +889,9 @@ public final func SetIsBeingRevealed(isBeingRevealed: Bool) -> Void {
 @addMethod(PlayerPuppet)
 public final func DFReportDangerStateChanged() -> Void {
     let gameInstance = GetGameInstance();
-    let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.GetInstance(gameInstance);
-    let dangerState = PlayerStateService.GetPlayerDangerState();
-    let inDanger: Bool = PlayerStateService.GetInDangerFromState(dangerState);
-
+    
+    let dangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
 	DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
-    DFHUDSystem.GetInstance(gameInstance).nerveBar.SetInDanger(inDanger);
 }
 
 //  GameObject - Let other systems know that a player OnDamageReceived event occurred. (Used by the Injury system.)

@@ -516,15 +516,56 @@ DarkFutureItem.CigarettePackC:
 #
 # Vendors
 #
+DarkFutureVendors.CigaretteQuantity:
+  $type: gamedataRandomStatModifier_Record
+  max: 16
+  min: 8
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
 DarkFutureVendors.CigarettePackC:
   $type: gamedataVendorItem_Record
   item: DarkFutureItem.CigarettePackC
   generationPrereqs: []
   quantity:
-    - Vendors.MediumQuantity
+    - DarkFutureVendors.CigaretteQuantity
+
+DarkFutureVendors.GenericJunkItem23:
+  $type: gamedataVendorItem_Record
+  item: Items.GenericJunkItem23
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.CigaretteQuantity
+
+DarkFutureVendors.GenericJunkItem24:
+  $type: gamedataVendorItem_Record
+  item: Items.GenericJunkItem24
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.CigaretteQuantity
 
 Vendors.Kiosk.itemStock:
   - !append-once DarkFutureVendors.CigarettePackC
 
 Vendors.Kiosk_EP1.itemStock:
   - !append-once DarkFutureVendors.CigarettePackC
+
+Vendors.bls_ina_se1_junkshop_01.itemStock: &CigaretteJunkShopItemStock
+  - !append-once DarkFutureVendors.GenericJunkItem23
+  - !append-once DarkFutureVendors.GenericJunkItem24
+  - !append-once DarkFutureVendors.CigarettePackC
+
+Vendors.bls_ina_se1_junkshop_02.itemStock: *CigaretteJunkShopItemStock
+Vendors.bls_ina_se5_junkshop_01.itemStock: *CigaretteJunkShopItemStock
+Vendors.cz_con_junkshop_01.itemStock: *CigaretteJunkShopItemStock
+Vendors.hey_gle_junkshop_01.itemStock: *CigaretteJunkShopItemStock
+Vendors.hey_rey_junkshop_01.itemStock: *CigaretteJunkShopItemStock
+Vendors.hey_spr_junkshop_01.itemStock: *CigaretteJunkShopItemStock
+Vendors.Junkshop_HUB.itemStock: *CigaretteJunkShopItemStock
+Vendors.Junkshop.itemStock: *CigaretteJunkShopItemStock
+Vendors.Tech_Junk_EP1.itemStock: *CigaretteJunkShopItemStock
+Vendors.Tech_Junk.itemStock: *CigaretteJunkShopItemStock
+Vendors.wat_kab_junkshop_01.itemStock: *CigaretteJunkShopItemStock
+Vendors.wbr_jpn_junkshop_01.itemStock: *CigaretteJunkShopItemStock
+Vendors.wbr_jpn_junkshop_03.itemStock: *CigaretteJunkShopItemStock

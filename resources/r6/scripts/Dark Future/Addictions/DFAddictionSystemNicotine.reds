@@ -255,7 +255,7 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
     }
 
     private final func QueueAddictionNotification(stage: Int32) -> Void {
-		if this.GameStateService.IsValidGameState("QueueNicotineAddictionNotification", true) {
+		if this.GameStateService.IsValidGameState(this, true) {
 			let messageKey: CName;
 			let messageType: SimpleMessageType;
 			switch stage {
@@ -316,7 +316,7 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 		if RunGuard(this) { return; }
 
         if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectNicotine") {
-			DFLog(this.debugEnabled, this, "ProcessNicotinePrimaryEffectRemoved");
+			DFLog(this, "ProcessNicotinePrimaryEffectRemoved");
 			// Does the player have the Nicotine Addiction Primary Effect? If not, the primary effect expired, and we should try to start
 			// a backoff effect if the player is currently addicted.
 

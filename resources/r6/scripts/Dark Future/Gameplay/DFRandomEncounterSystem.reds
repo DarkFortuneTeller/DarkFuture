@@ -131,7 +131,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
             let encounterChance: Float = this.GetRandomEncounterChanceForDistrict(hostileGangData);
 
             let randomChance = RandRangeF(0.0, 1.0);
-            DFLog(this.debugEnabled, this, "SetupRandomEncounterOnSleep roll: " + ToString(randomChance) + ", encounterChance: " + ToString(encounterChance));
+            DFLog(this, "SetupRandomEncounterOnSleep roll: " + ToString(randomChance) + ", encounterChance: " + ToString(encounterChance));
 
             if encounterChance >= randomChance {
                 this.selectedRandomEncounter = hostileGangData;
@@ -143,13 +143,13 @@ public final class DFRandomEncounterSystem extends DFSystem {
         let spawnedEncounter: Bool = false;
 
         if NotEquals(this.selectedRandomEncounter.gangName, n"") {
-            DFLog(this.debugEnabled, this, "Spawn encounter!");
+            DFLog(this, "Spawn encounter!");
 
             // Scavengers have a chance to spawn in all areas within the city, even if not rolled.
             if NotEquals(this.selectedRandomEncounter.gangName, n"Scavengers") && NotEquals(this.selectedRandomEncounter.gangName, n"Wraiths") {
                 let scavengerChance: Float = RandRangeF(0.0, 1.0);
                 if this.cityScavengerSpawnChance >= scavengerChance {
-                    DFLog(this.debugEnabled, this, "Randomly selected Scavengers instead of selected gang!");
+                    DFLog(this, "Randomly selected Scavengers instead of selected gang!");
                     this.selectedRandomEncounter.gangName = n"Scavengers";
                 }
             }
@@ -166,9 +166,9 @@ public final class DFRandomEncounterSystem extends DFSystem {
                 i += 1;
             }
 
-            DFLog(this.debugEnabled, this, "Selected puppets: ");
+            DFLog(this, "Selected puppets: ");
             for puppet in puppetsToSpawn {
-                DFLog(this.debugEnabled, this, "    " + TDBID.ToStringDEBUG(puppet));
+                DFLog(this, "    " + TDBID.ToStringDEBUG(puppet));
             }
 
             this.SpawnPuppets(puppetsToSpawn, true);
@@ -222,7 +222,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
                     // (This will be the only faction used in City Center.)
                     selectedGangData.gangName = n"Scavengers";
                 }
-                DFLog(this.debugEnabled, this, "Selected gang: " + NameToString(selectedGangData.gangName) + ", district: " + selectedGangData.districtName);
+                DFLog(this, "Selected gang: " + NameToString(selectedGangData.gangName) + ", district: " + selectedGangData.districtName);
             }
         }
 
@@ -258,12 +258,12 @@ public final class DFRandomEncounterSystem extends DFSystem {
 			// Select a gang from the list at random.
 			let randomIdx: Int32 = RandRange(0, ArraySize(districtHostileGangs) - 1);
 			selectedGangData.gangName = districtHostileGangs[randomIdx].EnumName();
-            DFLog(this.debugEnabled, this, "Selected gang: " + NameToString(selectedGangData.gangName) + ", district: " + selectedGangData.districtName);
+            DFLog(this, "Selected gang: " + NameToString(selectedGangData.gangName) + ", district: " + selectedGangData.districtName);
 
 		} else {
 			// We didn't find any hostile gangs in the current district. If there is
 			// a parent district, check that one.
-            DFLog(this.debugEnabled, this, "No gang found for district: " + selectedGangData.districtName);
+            DFLog(this, "No gang found for district: " + selectedGangData.districtName);
 
 			let parent = districtRecord.ParentDistrict();
 			if IsDefined(parent) {
@@ -302,11 +302,11 @@ public final class DFRandomEncounterSystem extends DFSystem {
                 break;
         }
 
-        DFLog(this.debugEnabled, this, "Did not find character list from factionName!");
+        DFLog(this, "Did not find character list from factionName!");
     }
 
     private final func GetFactionCharacterList_Animals() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Animals character list.");
+        DFLog(this, "Returning Animals character list.");
         return [
             t"Character.animals_bouncer1_melee1_baton_mb",
             t"Character.animals_bouncer1_ranged1_kenshin_mb",
@@ -323,7 +323,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Barghest() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Barghest character list.");
+        DFLog(this, "Returning Barghest character list.");
         return [
             t"Character.bou_kurtz_grunt1_ranged1_handgun_ma",
             t"Character.bou_kurtz_grunt1_ranged1_handgun_wa",
@@ -341,7 +341,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Maelstrom() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Maelstrom character list.");
+        DFLog(this, "Returning Maelstrom character list.");
         return [
             t"Character.maelstrom_grunt1_melee1_knife_ma",
             t"Character.maelstrom_grunt1_melee1_wrench_ma",
@@ -361,7 +361,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_SixthStreet() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Sixth Street character list.");
+        DFLog(this, "Returning Sixth Street character list.");
         return [
             t"Character.sixthstreet_hooligan_melee1_ironpipe_ma",
             t"Character.sixthstreet_hooligan_melee1_ironpipe_wa",
@@ -381,7 +381,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Scavengers() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Scavengers character list.");
+        DFLog(this, "Returning Scavengers character list.");
         return [
             t"Character.scavenger_grunt1_melee1_pipewrench_ma",
             t"Character.scavenger_grunt1_melee1_pipewrench_wa",
@@ -404,7 +404,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_TygerClaws() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Tyger Claws character list.");
+        DFLog(this, "Returning Tyger Claws character list.");
         return [
             t"Character.tyger_claws_biker1_melee1_baseball_ma",
             t"Character.tyger_claws_biker1_melee1_baseball_wa",
@@ -438,7 +438,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Valentinos() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Valentinos character list.");
+        DFLog(this, "Returning Valentinos character list.");
         return [
             t"Character.valentinos_grunt1_melee1_baseball_ma",
             t"Character.valentinos_grunt1_melee1_baseball_wa",
@@ -461,7 +461,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Wraiths() -> array<TweakDBID> {
-        DFLog(this.debugEnabled, this, "Returning Wraiths character list.");
+        DFLog(this, "Returning Wraiths character list.");
         return [
             t"Character.bls_se_wraiths_grunt1_melee1_ironpipe_wa",
             t"Character.bls_se_wraiths_grunt1_melee1_tireiron_ma",
@@ -561,7 +561,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
             }
         }
 
-        DFLog(this.debugEnabled, this, "ReserveSpawnSlot reservedSpawnSlots: " + ToString(reservedSpawnSlots));
+        DFLog(this, "ReserveSpawnSlot reservedSpawnSlots: " + ToString(reservedSpawnSlots));
         return assignedSlot;
     }
 }
