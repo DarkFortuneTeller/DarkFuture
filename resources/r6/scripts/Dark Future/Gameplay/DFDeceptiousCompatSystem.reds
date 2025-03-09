@@ -42,11 +42,14 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
     private let IAAlcoholFactListener: Uint32;
     private let IASmokeFactListener: Uint32;
     private let IFVEatDrinkFactListener: Uint32;
+    private let IBTDrinkFactListener: Uint32;
 
     private let IAEatFactLastValue: Int32 = 0;
     private let IADrinkFactLastValue: Int32 = 0;
     private let IAAlcoholFactLastValue: Int32 = 0;
     private let IASmokeFactLastValue: Int32 = 0;
+    private let IFVEatDrinkFactLastValue: Int32 = 0;
+    private let IBTDrinkFactLastValue: Int32 = 0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFDeceptiousCompatSystem> {
 		let instance: ref<DFDeceptiousCompatSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Gameplay.DFDeceptiousCompatSystem") as DFDeceptiousCompatSystem;
@@ -98,6 +101,9 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 
         // Immersive Food Vendors
         this.IFVEatDrinkFactListener = this.QuestsSystem.RegisterListener(n"dec_dark_foodvendor", this, n"OnIFVEatDrinkFactChanged");
+
+        // Immersive Bartenders
+        this.IBTDrinkFactListener = this.QuestsSystem.RegisterListener(n"dec_dark_bartender", this, n"OnIBTDrinkFactChanged");
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
@@ -118,6 +124,9 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 
         this.QuestsSystem.UnregisterListener(n"dec_dark_foodvendor", this.IFVEatDrinkFactListener);
         this.IFVEatDrinkFactListener = 0u;
+
+        this.QuestsSystem.UnregisterListener(n"dec_dark_bartender", this.IBTDrinkFactListener);
+        this.IBTDrinkFactListener = 0u;
     }
 
     private func UnregisterAllDelayCallbacks() -> Void {}
@@ -229,7 +238,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
         if RunGuard(this) { return; }
 
         DFLog(this, "OnIFVEatDrinkFactChanged: value = " + ToString(value));
-        if Equals(this.IAEatFactLastValue, -1) && value >= 1 { // -1 == Ready
+        if Equals(this.IFVEatDrinkFactLastValue, -1) && value >= 1 { // -1 == Ready
             if this.NerveSystem.GetHasNausea() {
                 this.InteractionSystem.QueueVomitFromInteractionChoice();
             } else {
@@ -259,7 +268,25 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
             }
         }
         
-        this.IAEatFactLastValue = value;
+        this.IFVEatDrinkFactLastValue = value;
+    }
+
+    private final func OnIBTDrinkFactChanged(value: Int32) -> Void {
+        if RunGuard(this) { return; }
+
+        DFLog(this, "OnIBTDrinkFactChanged: value = " + ToString(value));
+        if Equals(this.IBTDrinkFactLastValue, -1) && value == 4 { // -1 == Ready, 4 == Soda
+            if this.NerveSystem.GetHasNausea() {
+                this.InteractionSystem.QueueVomitFromInteractionChoice();
+            } else {
+                let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(t"Items.LowQualityDrink10"); // NiCola (Hydration Tier 1, applies Nerve penalty)
+                if IsDefined(consumableRecord) {
+                    this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true);
+                }
+            }
+        }
+        
+        this.IBTDrinkFactLastValue = value;
     }
 
     private final func ConsumeCigarette(tdbid: TweakDBID) {
