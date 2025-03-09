@@ -249,7 +249,7 @@ public abstract class DFNeedSystemEventListener extends DFSystemEventListener {
     }
 
 	private cb func OnMainSystemItemConsumedEvent(event: ref<MainSystemItemConsumedEvent>) {
-        this.GetSystemInstance().OnItemConsumed(event.GetData());
+        this.GetSystemInstance().OnItemConsumed(event.GetItemRecord(), event.GetAnimateUI());
     }
 
 	private cb func OnGameStateServiceSceneTierChangedEvent(event: ref<DFGameStateServiceSceneTierChangedEvent>) {
@@ -417,7 +417,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.LogMissingOverrideError("OnTimeSkipFinishedActual");
 	}
 
-	private func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
+	private func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
 		this.LogMissingOverrideError("OnItemConsumedActual");
 	}
 
@@ -487,7 +487,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.RegisterUpdateCallback();
 	}
 
-	public func OnItemConsumed(itemRecord: wref<Item_Record>) -> Void {
+	public func OnItemConsumed(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
 		if RunGuard(this) { return; }
 		DFLog(this, "OnItemConsumed");
 
@@ -497,7 +497,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 				return;
 			}
 
-			this.OnItemConsumedActual(itemRecord);
+			this.OnItemConsumedActual(itemRecord, animateUI);
 		}
 	}
 

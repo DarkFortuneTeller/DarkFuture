@@ -162,15 +162,21 @@ public class MainSystemTimeSkipFinishedEvent extends CallbackSystemEvent {
 }
 
 public class MainSystemItemConsumedEvent extends CallbackSystemEvent {
-    private let data: wref<Item_Record>;
+    private let itemRecord: wref<Item_Record>;
+    private let animateUI: Bool;
 
-    public func GetData() -> wref<Item_Record> {
-        return this.data;
+    public func GetItemRecord() -> wref<Item_Record> {
+        return this.itemRecord;
     }
 
-    static func Create(data: wref<Item_Record>) -> ref<MainSystemItemConsumedEvent> {
+    public func GetAnimateUI() -> Bool {
+        return this.animateUI;
+    }
+
+    static func Create(itemRecord: wref<Item_Record>, animateUI: Bool) -> ref<MainSystemItemConsumedEvent> {
         let event = new MainSystemItemConsumedEvent();
-        event.data = data;
+        event.itemRecord = itemRecord;
+        event.animateUI = animateUI;
         return event;
     }
 }
@@ -226,7 +232,7 @@ class DFMainSystemEventListeners extends ScriptableService {
 }
 
 public final class DFMainSystem extends ScriptableSystem {
-    private let debugEnabled: Bool = true;
+    private let debugEnabled: Bool = false;
 
     private let player: ref<PlayerPuppet>;
 
@@ -542,8 +548,8 @@ public final class DFMainSystem extends ScriptableSystem {
         GameInstance.GetCallbackSystem().DispatchEvent(MainSystemTimeSkipFinishedEvent.Create(data));
     }
 
-    public final func DispatchItemConsumedEvent(itemRecord: wref<Item_Record>) -> Void {
-        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemItemConsumedEvent.Create(itemRecord));
+    public final func DispatchItemConsumedEvent(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemItemConsumedEvent.Create(itemRecord, animateUI));
     }
 
     //

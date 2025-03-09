@@ -115,13 +115,13 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.hydration.value - this.GetNeedValue());
 	}
 
-	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
+	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.hydration.value != 0.0 {
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
-			uiFlags.instantUIChange = true;
+			uiFlags.instantUIChange = !animateUI;
 			uiFlags.forceBright = true;
 			uiFlags.momentaryDisplayIgnoresSceneTier = true;
 			this.ChangeNeedValue(this.GetClampedNeedChangeFromData(consumableNeedsData.hydration), uiFlags);

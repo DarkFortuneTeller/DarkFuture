@@ -127,11 +127,11 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		this.ClearStimulant();
 	}
 
-	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
+	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.energy.value != 0.0 {
-			this.ChangeEnergyFromItems(this.GetClampedNeedChangeFromData(consumableNeedsData.energy), consumableNeedsData.energy.value, false);
+			this.ChangeEnergyFromItems(this.GetClampedNeedChangeFromData(consumableNeedsData.energy), false, consumableNeedsData.energy.value, false);
 		}
 	}
 
@@ -227,7 +227,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
     //
 	//	RunGuard Protected Methods
 	//
-	public final func ChangeEnergyFromItems(energyAmount: Float, opt unclampedEnergyAmount: Float, opt contextuallyDelayed: Bool) -> Void {
+	public final func ChangeEnergyFromItems(energyAmount: Float, animateUI: Bool, opt unclampedEnergyAmount: Float, opt contextuallyDelayed: Bool) -> Void {
 		if RunGuard(this) { return; }
 
 		// The Stimulant effect prevents consumables from restoring Energy forever without sleeping.
@@ -255,7 +255,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 			} else {
 				let uiFlags: DFNeedChangeUIFlags;
 				uiFlags.forceMomentaryUIDisplay = true;
-				uiFlags.instantUIChange = true;
+				uiFlags.instantUIChange = !animateUI;
 				uiFlags.forceBright = true;
 				uiFlags.momentaryDisplayIgnoresSceneTier = true;
 				this.ChangeNeedValue(energyAmount, uiFlags);

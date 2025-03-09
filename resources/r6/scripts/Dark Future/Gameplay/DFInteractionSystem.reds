@@ -345,7 +345,7 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 	private final func DoPostResumeActions() -> Void {}
 	private final func SetupDebugLogging() -> Void {
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 	private final func DoStopActions() -> Void {}
 
@@ -536,7 +536,7 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
     private final func IsNutritionRestorationChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
-		if StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Eat)) {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Eat)) {
 			return true;
 		}
 
@@ -1027,7 +1027,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 			// Treat the Energy restoration from the coffee machine like consuming normal coffee items.
 			let energyToRestore: Float = this.Settings.energyTier1;
-            this.EnergySystem.ChangeEnergyFromItems(energyToRestore, energyToRestore, true);
+            this.EnergySystem.ChangeEnergyFromItems(energyToRestore, true, energyToRestore, true);
 		}
 	}
 
@@ -1174,7 +1174,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 				// Use Vargas Black Label as an example item when calculating the max override.
 				let itemRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(t"DarkFutureItem.CigarettePackC");
-				this.MainSystem.DispatchItemConsumedEvent(itemRecord);
+				this.MainSystem.DispatchItemConsumedEvent(itemRecord, true);
 			}
 		} else {
 			this.RegisterForSmokingInteractionCheck();

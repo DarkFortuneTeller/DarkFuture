@@ -383,13 +383,13 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		}
 	}
 
-	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>) -> Void {
+	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.nerve.value != 0.0 {
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
-			uiFlags.instantUIChange = false;
+			uiFlags.instantUIChange = !animateUI;
 			uiFlags.forceBright = true;
 			uiFlags.momentaryDisplayIgnoresSceneTier = true;
 			let isNicotine: Bool = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveNicotine");

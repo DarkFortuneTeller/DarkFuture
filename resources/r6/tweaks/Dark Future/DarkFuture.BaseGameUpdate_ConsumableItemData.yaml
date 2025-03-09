@@ -257,12 +257,12 @@ DarkFutureStatusEffect.BaseGameFoodDrinkBonus_UIData:
 
 BaseStatusEffect.WellFed:
   duration: DarkFutureStatusEffect.NoDuration
-  uiData: BaseGameFoodDrinkBonus_UIData
+  uiData: DarkFutureStatusEffect.BaseGameFoodDrinkBonus_UIData
   packages: []
 
 BaseStatusEffect.Sated:
   duration: DarkFutureStatusEffect.NoDuration
-  uiData: BaseGameFoodDrinkBonus_UIData
+  uiData: DarkFutureStatusEffect.BaseGameFoodDrinkBonus_UIData
   packages: []
 
 DarkFutureStatusEffect.WellFed:
@@ -271,7 +271,7 @@ DarkFutureStatusEffect.WellFed:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: RTDB.StatusEffect_inline0
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False
@@ -295,7 +295,7 @@ DarkFutureStatusEffect.Sated:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: RTDB.StatusEffect_inline0
+  maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
   removeOnStoryTier: False

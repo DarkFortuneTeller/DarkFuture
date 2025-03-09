@@ -114,7 +114,7 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 	if actionUsed {
 		let actionType: CName = TweakDBInterface.GetObjectActionRecord(actionID).ActionName();
 		if Equals(actionType, n"Consume") || Equals(actionType, n"Eat") || Equals(actionType, n"Drink") {
-			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID()));
+			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID()), false);
 		}
 	}
 
@@ -130,7 +130,7 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 	if actionUsed {
 		let actionType: CName = TweakDBInterface.GetObjectActionRecord(actionID).ActionName();
 		if Equals(actionType, n"Consume") || Equals(actionType, n"Eat") || Equals(actionType, n"Drink") {
-			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID()));
+			DFMainSystem.Get().DispatchItemConsumedEvent(TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID()), false);
 		}
 	}
 

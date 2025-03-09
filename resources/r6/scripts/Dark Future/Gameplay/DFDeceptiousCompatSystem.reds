@@ -41,6 +41,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
     private let IADrinkFactListener: Uint32;
     private let IAAlcoholFactListener: Uint32;
     private let IASmokeFactListener: Uint32;
+    private let IFVEatDrinkFactListener: Uint32;
 
     private let IAEatFactLastValue: Int32 = 0;
     private let IADrinkFactLastValue: Int32 = 0;
@@ -58,7 +59,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 
     // DFSystem Required Methods
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = true;
+        this.debugEnabled = false;
     }
 
     private func GetSystemToggleSettingValue() -> Bool {
@@ -94,6 +95,9 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
         this.IADrinkFactListener = this.QuestsSystem.RegisterListener(n"dec_dark_drink", this, n"OnIADrinkFactChanged");
         this.IAAlcoholFactListener = this.QuestsSystem.RegisterListener(n"dec_dark_alco", this, n"OnIAAlcoholFactChanged");
         this.IASmokeFactListener = this.QuestsSystem.RegisterListener(n"dec_dark_smoke", this, n"OnIASmokeFactChanged");
+
+        // Immersive Food Vendors
+        this.IFVEatDrinkFactListener = this.QuestsSystem.RegisterListener(n"dec_dark_foodvendor", this, n"OnIFVEatDrinkFactChanged");
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
@@ -111,6 +115,9 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 
         this.QuestsSystem.UnregisterListener(n"dec_dark_smoke", this.IASmokeFactListener);
         this.IASmokeFactListener = 0u;
+
+        this.QuestsSystem.UnregisterListener(n"dec_dark_foodvendor", this.IFVEatDrinkFactListener);
+        this.IFVEatDrinkFactListener = 0u;
     }
 
     private func UnregisterAllDelayCallbacks() -> Void {}
@@ -132,7 +139,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
                 if NotEquals(foodTDBID, t"") {
                     let foodRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(foodTDBID);
                     if IsDefined(foodRecord) {
-                        this.MainSystem.DispatchItemConsumedEvent(foodRecord);
+                        this.MainSystem.DispatchItemConsumedEvent(foodRecord, true);
 
                         if foodRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
                             StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.WellFed");
@@ -157,7 +164,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
                 if NotEquals(drinkTDBID, t"") {
                     let drinkRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(drinkTDBID);
                     if IsDefined(drinkRecord) {
-                        this.MainSystem.DispatchItemConsumedEvent(drinkRecord);
+                        this.MainSystem.DispatchItemConsumedEvent(drinkRecord, true);
 
                         if drinkRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
                             StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Sated");
@@ -179,7 +186,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
             if NotEquals(alcoholTDBID, t"") {
                 let alcoholRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(alcoholTDBID);
                 if IsDefined(alcoholRecord) {
-                    this.MainSystem.DispatchItemConsumedEvent(alcoholRecord);
+                    this.MainSystem.DispatchItemConsumedEvent(alcoholRecord, true);
 
                     // Grant Legendary Alcohol benefits.
                     if Equals(alcoholTDBID, t"Items.TopQualityAlcohol8") || Equals(alcoholTDBID, t"Items.TopQualityAlcohol9") || Equals(alcoholTDBID, t"Items.TopQualityAlcohol10") {
@@ -218,6 +225,43 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
         this.IASmokeFactLastValue = value;
     }
 
+    private final func OnIFVEatDrinkFactChanged(value: Int32) -> Void {
+        if RunGuard(this) { return; }
+
+        DFLog(this, "OnIFVEatDrinkFactChanged: value = " + ToString(value));
+        if Equals(this.IAEatFactLastValue, -1) && value >= 1 { // -1 == Ready
+            if this.NerveSystem.GetHasNausea() {
+                this.InteractionSystem.QueueVomitFromInteractionChoice();
+            } else {
+                let consumableTDBID: TweakDBID;
+                if value == 7 { // Beer (Not Handled Here)
+                    return;
+                } else if value == 1 || value == 2 || value == 3 || value == 4 { // Sandwich, Burger, Sushi, Fruit ($20-$35)
+                    consumableTDBID = t"Items.GoodQualityFood10"; // Locust Pepperoni Pizza (Nutrition Tier 3, applies bonus)
+                } else if value == 5 || value == 6 { // Pudding, Hot Dog ($10 - $15)
+                    consumableTDBID = t"Items.LowQualityFood3"; // Hawt Dawg (Nutrition Tier 2, applies bonus)
+                } else if value == 8 { // Soda ($15)
+                    consumableTDBID = t"Items.LowQualityDrink10"; // NiCola (Hydration Tier 1, applies Nerve penalty)
+                }
+
+                if NotEquals(consumableTDBID, t"") {
+                    let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(consumableTDBID);
+                    if IsDefined(consumableRecord) {
+                        this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true);
+
+                        if consumableRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
+                            if value >= 1 && value <= 6 {
+                                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.WellFed");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        this.IAEatFactLastValue = value;
+    }
+
     private final func ConsumeCigarette(tdbid: TweakDBID) {
         this.TransactionSystem.RemoveItemByTDBID(this.player, tdbid, 1);
         let cigaretteRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(tdbid);
@@ -229,7 +273,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 			// Smoking status effect variant to suppress additional unneeded FX
 			StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
 
-            this.MainSystem.DispatchItemConsumedEvent(cigaretteRecord);
+            this.MainSystem.DispatchItemConsumedEvent(cigaretteRecord, true);
         }
     }
 }
