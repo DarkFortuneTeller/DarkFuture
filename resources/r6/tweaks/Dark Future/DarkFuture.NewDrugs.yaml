@@ -991,9 +991,7 @@ DarkFutureStatusEffect.Stimulant_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionStimulant"
   localizedName: ''
-  intValues:
-    - -25
-    - 100
+  intValues: []
   nameValues: []
   stats: []
 

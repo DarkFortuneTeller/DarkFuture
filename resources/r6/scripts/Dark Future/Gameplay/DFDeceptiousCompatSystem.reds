@@ -62,7 +62,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 
     // DFSystem Required Methods
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = false;
+        this.debugEnabled = true;
     }
 
     private func GetSystemToggleSettingValue() -> Bool {

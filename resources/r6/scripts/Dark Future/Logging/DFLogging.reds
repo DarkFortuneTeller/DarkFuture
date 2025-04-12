@@ -42,13 +42,13 @@ public static func DFLog(class: ref<DFSystem>, message: String, opt level: DFLog
         
         switch level {
             case DFLogLevel.Warning:
-                //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
                 break;
             case DFLogLevel.Error:
-                //LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
                 break;
             default:
-                //LogChannel(n"DEBUG", "[DarkFuture]#INFO# class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                LogChannel(n"DEBUG", "[DarkFuture]#INFO# class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
                 break;
         }
     }

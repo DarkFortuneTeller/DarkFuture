@@ -545,13 +545,13 @@ DarkFutureStatusEffect.ConsumableNutritionTier4_UIData:
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.Stimulant_UIData:
+DarkFutureStatusEffect.CaffeineTempEnergy_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionStimulant"
   localizedName: ''
   intValues:
-    - -25
-    - 100
+    - 10
+    - 3
   nameValues: []
   stats: []
 
@@ -885,10 +885,10 @@ DarkFutureStatusEffect.ConsumableNutritionTier4_OnEquip:
   statPools: []
   stats: []
 
-DarkFutureStatusEffect.Stimulant_OnEquip:
+DarkFutureStatusEffect.CaffeineTempEnergy_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.Stimulant_UIData
+  UIData: DarkFutureStatusEffect.CaffeineTempEnergy_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -1268,9 +1268,7 @@ Items.LowQualityDrink1: &RareCoffee
     - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier1_OnEquip
-    - DarkFutureStatusEffect.ConsumableEnergyTier1_OnEquip
-    - DarkFutureStatusEffect.Hydrated_OnEquip
-    - DarkFutureStatusEffect.Stimulant_OnEquip
+    - DarkFutureStatusEffect.CaffeineTempEnergy_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.SmallDrinkWeight
   tags:
@@ -1278,10 +1276,10 @@ Items.LowQualityDrink1: &RareCoffee
     - !append-once DarkFutureConsumableHydrationTier1
     - !append-once DarkFutureConsumableEnergy
     - !append-once DarkFutureConsumableEnergyTier1
-    - !append-once DarkFutureAppliesBonusEffect
 Items.LowQualityDrink11: *RareCoffee
 Items.LowQualityDrink12: *RareCoffee
 Items.LowQualityDrink13: *RareCoffee
+Items.sq026_judy_coffee: *RareCoffee #TODO TEST
 
 # Soulhiker
 Items.MediumQualityDrink10:
@@ -1301,8 +1299,6 @@ Items.MediumQualityDrink10:
     - ItemAction.Drop
   OnEquip:
     - DarkFutureStatusEffect.ConsumableHydrationTier1_OnEquip
-    - DarkFutureStatusEffect.ConsumableEnergyTier2_OnEquip
-    - DarkFutureStatusEffect.Hydrated_OnEquip
     - DarkFutureStatusEffect.Stimulant_OnEquip
   statModifiers:
     - !append-once DarkFutureItem.SmallDrinkWeight

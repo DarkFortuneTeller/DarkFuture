@@ -340,6 +340,8 @@ public final class DFPlayerStateService extends DFSystem {
     private let GameStateService: ref<DFGameStateService>;
 
     private let PSMBlackboard: ref<IBlackboard>;
+    private let BlackboardDefs: ref<AllBlackboardDefinitions>;
+    private let HUDProgressBarBlackboard: ref<IBlackboard>;
     private let locomotionListener: ref<CallbackHandle>;
 
     private let playerInDanger: Bool = false;
@@ -385,19 +387,21 @@ public final class DFPlayerStateService extends DFSystem {
     //  DFSystem Required Methods
     //
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {
-        this.PSMBlackboard = this.BlackboardSystem.GetLocalInstanced(attachedPlayer.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
+        this.BlackboardDefs = GetAllBlackboardDefs();
+        this.PSMBlackboard = this.BlackboardSystem.GetLocalInstanced(attachedPlayer.GetEntityID(), this.BlackboardDefs.PlayerStateMachine);
+        this.HUDProgressBarBlackboard = this.BlackboardSystem.Get(this.BlackboardDefs.UI_HUDProgressBar);
     }
 
     private func SetupData() -> Void {}
     
     private func RegisterListeners() -> Void {
-        this.locomotionListener = this.PSMBlackboard.RegisterListenerInt(GetAllBlackboardDefs().PlayerStateMachine.Locomotion, this, n"OnLocomotionStateChanged");
+        this.locomotionListener = this.PSMBlackboard.RegisterListenerInt(this.BlackboardDefs.PlayerStateMachine.Locomotion, this, n"OnLocomotionStateChanged");
     }
     
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
     
     private func UnregisterListeners() -> Void {
-        this.PSMBlackboard.UnregisterListenerInt(GetAllBlackboardDefs().PlayerStateMachine.Locomotion, this.locomotionListener);
+        this.PSMBlackboard.UnregisterListenerInt(this.BlackboardDefs.PlayerStateMachine.Locomotion, this.locomotionListener);
 		this.locomotionListener = null;
     }
 
@@ -555,7 +559,13 @@ public final class DFPlayerStateService extends DFSystem {
 		let dangerState: DFPlayerDangerState;
         if this.GameStateService.IsValidGameState(this, true) {
             dangerState.InCombat = this.player.IsInCombat();
-            dangerState.BeingRevealed = this.player.IsBeingRevealed();
+            
+            // Bug Fix - Due to a base game bug, the player character can sometimes be stuck in this.player.IsBeingRevealed() == true.
+            // Instead, test if the Being Traced progress bar is on the screen.
+            let progressBarIsActive = this.HUDProgressBarBlackboard.GetBool(this.BlackboardDefs.UI_HUDProgressBar.Active);
+            let progressBarTypeIsReveal = Equals(FromVariant<SimpleMessageType>(this.HUDProgressBarBlackboard.GetVariant(this.BlackboardDefs.UI_HUDProgressBar.MessageType)), SimpleMessageType.Reveal);
+
+            dangerState.BeingRevealed = progressBarIsActive && progressBarTypeIsReveal;
         }
 
         return dangerState;
@@ -877,16 +887,24 @@ protected cb func OnCombatStateChanged(newState: Int32) -> Bool {
 	return result;
 }
 
-//  PlayerPuppet - Let the Nerve System and Bar know when the player is being traced by a Quickhack that was uploaded undetected. (Counts as being "In Danger".)
+@addMethod(PlayerPuppet)
+public final func DFReportDangerStateChanged() -> Void {
+    let gameInstance = GetGameInstance();
+    
+    let dangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
+	DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
+}
+
+//  HUDProgressBarController - Let the Nerve System and Bar know when the player is being traced by a Quickhack that was uploaded undetected. (Counts as being "In Danger".)
 //
-@wrapMethod(PlayerPuppet)
-public final func SetIsBeingRevealed(isBeingRevealed: Bool) -> Void {
-	wrappedMethod(isBeingRevealed);
+@wrapMethod(HUDProgressBarController)
+public final func UpdateProgressBarActive(active: Bool) -> Void {
+	wrappedMethod(active);
 
 	this.DFReportDangerStateChanged();
 }
 
-@addMethod(PlayerPuppet)
+@addMethod(HUDProgressBarController)
 public final func DFReportDangerStateChanged() -> Void {
     let gameInstance = GetGameInstance();
     
