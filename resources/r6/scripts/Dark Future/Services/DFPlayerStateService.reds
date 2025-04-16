@@ -22,7 +22,10 @@ import DarkFuture.Main.{
     DFMainSystem,
     DFTimeSkipData
 }
-import DarkFuture.Addictions.DFNicotineAddictionSystem
+import DarkFuture.Addictions.{
+    DFNicotineAddictionSystem,
+    DFNarcoticAddictionSystem
+}
 import DarkFuture.Needs.DFHydrationSystem
 import DarkFuture.Needs.DFNerveSystem
 
@@ -213,6 +216,7 @@ public final class DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificati
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
     let playerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
     let nicotineAddictionSystem: ref<DFNicotineAddictionSystem> = DFNicotineAddictionSystem.Get();
+    let narcoticAddictionSystem: ref<DFNarcoticAddictionSystem> = DFNarcoticAddictionSystem.Get();
     let effectID: TweakDBID = evt.staticData.GetID();
     let effectTags: array<CName> = evt.staticData.GameplayTags();
 
@@ -251,10 +255,14 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 
         // Update the effect duration based on installed cyberware.
 		nicotineAddictionSystem.UpdateActiveNicotineEffectDuration(effectID);
-        
-    } else if Equals(effectID, t"DarkFutureStatusEffect.GlitterStaminaMovement") {
-		playerStateService.ProcessGlitterConsumed();
+    }
 
+    if ArrayContains(effectTags, n"DarkFutureAddictionPrimaryEffectNarcotic") && !ArrayContains(effectTags, n"DarkFutureAddictionPrimaryEffectNarcoticNoDurationBuff") {
+        narcoticAddictionSystem.UpdateActiveNarcoticEffectDuration(effectID);
+    }
+        
+    if Equals(effectID, t"DarkFutureStatusEffect.GlitterStaminaMovement") {
+		playerStateService.ProcessGlitterConsumed();
 	}
 
 	return wrappedMethod(evt);
@@ -285,6 +293,9 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 //
 //  Stamina Costs
 //
+@addField(StaminaListener)
+private let DF_SprintBlocked: Bool = false;
+
 @wrapMethod(StaminaListener)
 protected cb func OnStatPoolMinValueReached(value: Float) -> Bool {
     // Interrupt the player's sprinting when Stamina runs out when Hydration is stage 2 or higher, or when impacted by the Smoking status effect.
@@ -292,12 +303,24 @@ protected cb func OnStatPoolMinValueReached(value: Float) -> Bool {
 
     if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.m_player, n"DarkFutureShouldInterruptSprintOnEmptyStamina") {
         this.DarkFutureSendPSMBoolParameter(n"InterruptSprint", true, gamestateMachineParameterAspect.Temporary);
-        this.DarkFutureSendPSMBoolParameter(n"SprintToggled", true, gamestateMachineParameterAspect.Conditional);
         this.DarkFutureSendPSMBoolParameter(n"SprintHoldCanStartWithoutNewInput", true, gamestateMachineParameterAspect.Conditional);
         this.DarkFutureSendPSMBoolParameter(n"OnInterruptSprintFail_BlockSprintStartOnce", true, gamestateMachineParameterAspect.Conditional);
+
+        this.DF_SprintBlocked = true;
+        StatusEffectHelper.ApplyStatusEffect(this.m_player, t"DarkFutureStatusEffect.BlockSprint");
     }
 
     return r;
+}
+
+@wrapMethod(StaminaListener)
+public func OnStatPoolValueChanged(oldValue: Float, newValue: Float, percToPoints: Float) -> Void {
+    wrappedMethod(oldValue, newValue, percToPoints);
+
+    if this.DF_SprintBlocked && oldValue == 0.0 && newValue > 0.0 {
+        this.DF_SprintBlocked = false;
+        StatusEffectHelper.RemoveStatusEffect(this.m_player, t"DarkFutureStatusEffect.BlockSprint");
+    }
 }
 
 @addMethod(StaminaListener)
@@ -473,12 +496,14 @@ public final class DFPlayerStateService extends DFSystem {
 
 		this.UnregisterAddictionTreatmentDurationUpdateCallback();
     }
+
     public func OnTimeSkipCancelled() -> Void {
         if RunGuard(this) { return; }
 		DFLog(this, "OnTimeSkipCancelled");
 
 		this.RegisterAddictionTreatmentDurationUpdateCallback();
     }
+
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
         if RunGuard(this) { return; }
 		DFLog(this, "OnTimeSkipFinished");

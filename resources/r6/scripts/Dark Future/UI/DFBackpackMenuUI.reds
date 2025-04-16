@@ -139,16 +139,13 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 					this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.NutritionSystem.GetNeedMax());
 				}
 
-				// If restoring, show the increase in Energy if player does not have too much Stimulant.
-				let energyToChange: Float = needsData.energy.value;
-				let updatedEnergyValue: Float = 0.0;
-				
-				if energyToChange > 0.0 {
-					energyToChange *= (1.0 - (this.EnergySystem.stimulantEnergyRestoreMultPerStack * Cast<Float>(this.EnergySystem.stimulantStacks)));
+				// Show the change in Energy if player meets the energy management effect criteria.
+				// If this item is coffee or an energy drink, and the player has nausea, don't show the energy improvement.
+				if this.NerveSystem.GetHasNausea() && needsData.hydration.value > 0.0 {
+					this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
+				} else {
+					this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue() + this.EnergySystem.GetItemEnergyChangePreviewAmount(itemRecord, needsData), this.HydrationSystem.GetNeedMax());
 				}
-
-				updatedEnergyValue = this.EnergySystem.GetNeedValue() + energyToChange;
-				this.energyBar.SetUpdatedValue(updatedEnergyValue, this.EnergySystem.GetNeedMax());
 				
 				// Handle Addiction Withdrawal and Alcohol
 				let nerveMax: Float = this.NerveSystem.GetNerveLimitAfterItemUse(itemRecord);
@@ -175,7 +172,12 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 					}
 				}
 
-				this.nerveBar.SetUpdatedValue(potentialNewValue, nerveMax);
+				// If this item's Nerve benefit only works outside of combat, don't show the benefit if in combat.
+				if itemRecord.TagsContains(n"DarkFutureConsumableNerveNoCombat") && this.HydrationSystem.player.IsInCombat() {
+					this.nerveBar.SetUpdatedValue(nerveValue, nerveMax);
+				} else {
+					this.nerveBar.SetUpdatedValue(potentialNewValue, nerveMax);
+				}
 				this.UpdateNerveBarLimit(nerveMax);
 			};
 		};

@@ -35,7 +35,7 @@ public final class DFCyberwareService extends DFSystem {
     private let cyberwareAlcoholNumbedRequiredStacksOverride: Uint32 = 0u;
     private let cyberwareNicotineEffectDurationOverride: Float = 0.0;
 	private let cyberwareNerveCostWhenHitBonusMult: Float = 1.0;
-	private let cyberwareNerveLossFromNarcoticsBonusMult: Float = 1.0;
+	private let cyberwareNarcoticsEffectDurationOverride: Float = 300.0;
 	private let cyberwareSecondHeartNerveRestoreAmount: Float = 30.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFCyberwareService> {
@@ -106,7 +106,7 @@ public final class DFCyberwareService extends DFSystem {
 		this.cyberwareHasSecondHeart = false;
 		this.cyberwareAlcoholNumbedRequiredStacksOverride = 0u;
 		this.cyberwareNicotineEffectDurationOverride = 0.0;
-		this.cyberwareNerveLossFromNarcoticsBonusMult = 1.0;
+		this.cyberwareNarcoticsEffectDurationOverride = 300.0;
 		this.cyberwareSecondHeartNerveRestoreAmount = 30.0;
 	}
 
@@ -134,7 +134,7 @@ public final class DFCyberwareService extends DFSystem {
 
     private final func UpdateCyberwareBonuses() -> Void {
 		// Reset data.
-		this.cyberwareNerveLossFromNarcoticsBonusMult = 1.0;
+		this.cyberwareNarcoticsEffectDurationOverride = 300.0;
         this.cyberwareAlcoholNumbedRequiredStacksOverride = 0u;
         this.cyberwareNicotineEffectDurationOverride = 0.0;
 		this.cyberwareHasSecondHeart = false;
@@ -174,23 +174,23 @@ public final class DFCyberwareService extends DFSystem {
 				} else if Equals(cyberwareType, n"EndorphinRegulator") {
 					switch quality {
 						case gamedataQuality.Epic:
-							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.40; // 60% bonus
+							this.cyberwareNarcoticsEffectDurationOverride = 360.0; // 20% bonus
 							this.cyberwareAlcoholNumbedRequiredStacksOverride = 3u;
 							break;
 						case gamedataQuality.EpicPlus:
-							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.30; // 70% bonus
+							this.cyberwareNarcoticsEffectDurationOverride = 420.0; // 40% bonus
 							this.cyberwareAlcoholNumbedRequiredStacksOverride = 3u;
 							break;
 						case gamedataQuality.Legendary:
-							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.20; // 80% bonus
+							this.cyberwareNarcoticsEffectDurationOverride = 480.0; // 60% bonus
 							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
 							break;
 						case gamedataQuality.LegendaryPlus:
-							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.10; // 90% bonus
+							this.cyberwareNarcoticsEffectDurationOverride = 540.0; // 80% bonus
 							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
 							break;
 						case gamedataQuality.LegendaryPlusPlus:
-							this.cyberwareNerveLossFromNarcoticsBonusMult = 0.0; // 100% bonus
+							this.cyberwareNarcoticsEffectDurationOverride = 600.0; // 100% bonus
 							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
 							break;
 					}
@@ -206,7 +206,7 @@ public final class DFCyberwareService extends DFSystem {
 		this.NicotineAddictionSystem.SetNicotineAddictionBackoffDurations();
 
 		DFLog(this, "UpdateCyberwareBonuses Result:");
-		DFLog(this, "    cyberwareNerveLossFromNarcoticsBonusMult = " + ToString(this.cyberwareNerveLossFromNarcoticsBonusMult));
+		DFLog(this, "    cyberwareNarcoticsEffectDurationOverride = " + ToString(this.cyberwareNarcoticsEffectDurationOverride));
 		DFLog(this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
 		DFLog(this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
 		DFLog(this, "    cyberwareAlcoholNumbedRequiredStacksOverride = " + ToString(this.cyberwareAlcoholNumbedRequiredStacksOverride));
@@ -220,8 +220,8 @@ public final class DFCyberwareService extends DFSystem {
         return this.cyberwareNicotineEffectDurationOverride;
     }
 	
-    public final func GetNerveLossFromNarcoticsBonusMult() -> Float {
-        return this.cyberwareNerveLossFromNarcoticsBonusMult;
+    public final func GetNarcoticsEffectDurationOverride() -> Float {
+        return this.cyberwareNarcoticsEffectDurationOverride;
     }
 
     public final func GetSecondHeartNerveRestoreAmount() -> Float {

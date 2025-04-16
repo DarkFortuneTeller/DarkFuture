@@ -84,6 +84,12 @@ public abstract class DFSystem extends ScriptableSystem {
         this.player = attachedPlayer;
 		this.DoInitActions(attachedPlayer);
         this.InitSpecific(attachedPlayer);
+        
+        // Now that all data has been set correctly, if this system should be
+        // toggled off, suspend it.
+        if Equals(this.GetSystemToggleSettingValue(), false) {
+            this.Suspend();
+        }
     }
 
     private func DoInitActions(attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -108,6 +114,7 @@ public abstract class DFSystem extends ScriptableSystem {
             this.UnregisterAllDelayCallbacks();
             this.DoPostSuspendActions();
         }
+        DFLog(this, "SUSPEND - Current State: " + ToString(this.state));
     }
 
     public func Resume() -> Void {
@@ -117,6 +124,7 @@ public abstract class DFSystem extends ScriptableSystem {
             this.RegisterAllRequiredDelayCallbacks();
             this.DoPostResumeActions();
         }
+        DFLog(this, "RESUME - Current State: " + ToString(this.state));
     }
 
     public func Stop() -> Void {
@@ -149,7 +157,6 @@ public abstract class DFSystem extends ScriptableSystem {
             }
         }
         
-
         this.OnSettingChangedSpecific(changedSettings);
     }
 

@@ -94,6 +94,11 @@ public struct DFTimeSkipData {
     public let timeSkipType: DFTimeSkipType;
 }
 
+public enum DFTempEnergyItemType {
+    Caffeine = 0,
+    Stimulant = 1
+}
+
 @wrapMethod(RadialWheelController)
 protected cb func OnLateInit(evt: ref<LateInit>) -> Bool {
 	let val: Bool = wrappedMethod(evt);

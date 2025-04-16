@@ -17,7 +17,8 @@ import DarkFuture.Utils.{
 }
 import DarkFuture.Main.{
 	DFAddictionDatum,
-	DFAddictionUpdateDatum
+	DFAddictionUpdateDatum,
+	DFTempEnergyItemType
 }
 import DarkFuture.Services.{
 	DFCyberwareService,
@@ -35,26 +36,6 @@ import DarkFuture.Needs.{
 }
 import DarkFuture.Gameplay.DFInteractionSystem
 import DarkFuture.Settings.DFSettings
-
-@wrapMethod(PlayerPuppet)
-protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
-	let narcoticSystem: ref<DFNarcoticAddictionSystem> = DFNarcoticAddictionSystem.Get();
-	let nerveSystem: ref<DFNerveSystem> = DFNerveSystem.Get();
-
-	if IsSystemEnabledAndRunning(nerveSystem) {
-		let effectTags: array<CName> = evt.staticData.GameplayTags();
-		if ArrayContains(effectTags, n"DarkFutureNerveChangeOffset") {
-			narcoticSystem.ProcessNarcoticsNerveChangeOffsetEffectRemoved();
-		}
-	}
-    
-	return wrappedMethod(evt);
-}
-
-public struct DFNarcoticsNerveChangeRange {
-	public let min: Float;
-	public let max: Float;
-}
 
 public class RemoveNarcoticFXCallback extends DFDelayCallback {
 	public static func Create() -> ref<DFDelayCallback> {
@@ -80,6 +61,8 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
     private let InteractionSystem: ref<DFInteractionSystem>;
     private let EnergySystem: ref<DFEnergySystem>;
 
+	private let narcoticDefaultEffectDuration: Float = 300.0;
+
     private let removeNarcoticFXDelayID: DelayID;
     private let removeNarcoticFXDelayInterval: Float = 60.0;
 
@@ -88,15 +71,6 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 	private let narcoticAddictionNerveLimits: array<Float>;
 	private let narcoticAddictionBackoffDurationsInRealTimeMinutesByStage: array<Float>;
 	private let narcoticAddictionWithdrawalDurationsInGameTimeSeconds: array<Float>;
-
-    // Narcotics Consumable Nerve Change
-	private let nerveChangeFromNarcoticsQueue: array<DFNarcoticsNerveChangeRange>;
-	private let nerveChangeFromNarcoticsMinTier1: Float = 20.0; // Apply sign at runtime
-	private let nerveChangeFromNarcoticsMaxTier1: Float = 20.0;
-	private let nerveChangeFromNarcoticsMinTier2: Float = 30.0; // Apply sign at runtime
-	private let nerveChangeFromNarcoticsMaxTier2: Float = 30.0;
-	private let nerveChangeFromNarcoticsMinTier3: Float = 50.0; // Apply sign at runtime
-	private let nerveChangeFromNarcoticsMaxTier3: Float = 50.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFNarcoticAddictionSystem> {
 		let instance: ref<DFNarcoticAddictionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Addictions.DFNarcoticAddictionSystem") as DFNarcoticAddictionSystem;
@@ -238,13 +212,16 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 	}
 
     private final func GetDefaultEffectDuration() -> Float {
-        // Not Used
-        return 0.0;
+        return this.narcoticDefaultEffectDuration;
     }
 
 	private final func GetEffectDuration() -> Float {
-        // Not Used
-        return 0.0;
+        let durationOverride: Float = this.CyberwareService.GetNarcoticsEffectDurationOverride();
+		if durationOverride > 0.0 {
+			return durationOverride;
+		} else {
+			return this.GetDefaultEffectDuration();
+		}
     }
 
 	private final func GetAddictionMaxStage() -> Int32 {
@@ -353,32 +330,6 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 
 	public final func OnAddictionPrimaryEffectApplied(effectID: TweakDBID, effectGameplayTags: array<CName>) -> Void {
         if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectNarcotic") {
-			if IsSystemEnabledAndRunning(this.NerveSystem) && ArrayContains(effectGameplayTags, n"DarkFutureConsumableNarcoticRandomNerveChange") {
-				let nerveChangeRange: DFNarcoticsNerveChangeRange;
-
-				if Equals(this.InteractionSystem.GetLastAttemptedChoiceCaption(), GetLocalizedTextByKey(this.InteractionSystem.locKey_Interaction_Q003TakeInhaler)) {
-					// q003 - Dum Dum inhaler scene
-					nerveChangeRange.min = 20.0;
-					nerveChangeRange.max = 20.0;
-					ArrayPush(this.nerveChangeFromNarcoticsQueue, nerveChangeRange);
-				} else {
-					if ArrayContains(effectGameplayTags, n"DarkFutureConsumableNarcoticRandomNerveChangeTier1") {
-						nerveChangeRange.min = -1.0 * this.Settings.nerveWeakNarcotics;
-						nerveChangeRange.max = this.Settings.nerveWeakNarcotics;
-						ArrayPush(this.nerveChangeFromNarcoticsQueue, nerveChangeRange);
-					} else if ArrayContains(effectGameplayTags, n"DarkFutureConsumableNarcoticRandomNerveChangeTier2") {
-						nerveChangeRange.min = -1.0 * this.Settings.nerveStrongNarcotics;
-						nerveChangeRange.max = this.Settings.nerveStrongNarcotics;
-						ArrayPush(this.nerveChangeFromNarcoticsQueue, nerveChangeRange);
-					}
-				}
-				
-				DFLog(this, "nerveChangeFromNarcoticsQueue = " + ToString(this.nerveChangeFromNarcoticsQueue));
-
-				// Add a stack of the Nerve Change Offset effect.
-				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.NerveChangeOffset");
-			}
-
 			// Addiction-Specific - Only continue if system running.
 			if RunGuard(this) { return; }
 
@@ -396,6 +347,19 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 				this.TryToAdvanceAddiction(this.GetAddictionAmountOnUseLow());
 			} else if ArrayContains(effectGameplayTags, n"DarkFutureAddictionNarcoticStrong") {
 				this.TryToAdvanceAddiction(this.GetAddictionAmountOnUseHigh());
+			}
+
+			if IsSystemEnabledAndRunning(this.NerveSystem) && ArrayContains(effectGameplayTags, n"DarkFutureAddictionNarcoticStrong") {
+				if Equals(this.InteractionSystem.GetLastAttemptedChoiceCaption(), GetLocalizedTextByKey(this.InteractionSystem.locKey_Interaction_Q003TakeInhaler)) {
+					this.EnergySystem.TryToApplyEnergizedStacks(3u, DFTempEnergyItemType.Stimulant, true, false);
+					
+					let uiFlags: DFNeedChangeUIFlags;
+					uiFlags.forceMomentaryUIDisplay = true;
+					uiFlags.instantUIChange = false;
+					uiFlags.forceBright = true;
+					uiFlags.momentaryDisplayIgnoresSceneTier = true;
+					this.NerveSystem.ChangeNeedValue(this.Settings.nerveStrongNarcoticsRev2, uiFlags);
+				}
 			}
 		}
     }
@@ -430,37 +394,9 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
         return this.Settings.narcoticAddictionAmountOnUseHigh;
     }
 
-    public final func ProcessNarcoticsNerveChangeOffsetEffectRemoved() -> Void {
-		if ArraySize(this.nerveChangeFromNarcoticsQueue) > 0 {
-            DFLog(this, "ProcessNarcoticsNerveChangeOffsetEffectRemoved Queue Before: " + ToString(this.nerveChangeFromNarcoticsQueue));
-			let nerveChangeRange: DFNarcoticsNerveChangeRange = ArrayPop(this.nerveChangeFromNarcoticsQueue);
-            DFLog(this, "ProcessNarcoticsNerveChangeOffsetEffectRemoved Queue After: " + ToString(this.nerveChangeFromNarcoticsQueue));
-			let nerveChange: Float = RandRangeF(nerveChangeRange.min, nerveChangeRange.max);
-			DFLog(this, "Random nerveChange = " + ToString(nerveChange));
-
-			if nerveChange < 0.0 {
-				let bonusMult: Float = this.CyberwareService.GetNerveLossFromNarcoticsBonusMult();
-				nerveChange *= bonusMult;
-				DFLog(this, "Endorphin Regulator bonus: " + ToString(bonusMult) + ", final value: " + ToString(nerveChange));
-			} else {
-				if this.Settings.narcoticsSFXEnabled {
-					let notification: DFNotification;
-					if Equals(this.player.GetResolvedGenderName(), n"Female") {
-						notification.sfx = new DFAudioCue(n"ono_v_laughs_soft", 10);
-					} else {
-						notification.sfx = new DFAudioCue(n"ono_v_laughs_hard", 10);
-					}
-					this.NotificationService.QueueNotification(notification);
-				}
-			}
-
-			this.StartNarcoticFX(nerveChange);
-			this.RegisterRemoveNarcoticFXInitialCallback();
-
-            let uiFlags: DFNeedChangeUIFlags;
-            uiFlags.forceMomentaryUIDisplay = true;
-
-			this.NerveSystem.ChangeNeedValue(nerveChange, uiFlags, true);
+	private final func UpdateActiveNarcoticEffectDuration(effectID: TweakDBID) -> Void {
+		if NotEquals(this.GetEffectDuration(), this.GetDefaultEffectDuration()) {
+			GameInstance.GetStatusEffectSystem(GetGameInstance()).SetStatusEffectRemainingDuration(this.player.GetEntityID(), effectID, this.GetEffectDuration());
 		}
 	}
 

@@ -153,11 +153,9 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 	let BoosterPenaltyTier1: Float = -15.0;
 	let BoosterPenaltyTier2: Float = -25.0;
 
-	let EnergyTier1: Float = Settings.energyTier1;
-	let EnergyTier2: Float = Settings.energyTier2;
-	let EnergyTier3: Float = Settings.energyTier3;
-
 	let CigarettesNerve: Float = Settings.nerveCigarettes;
+	let WeakNarcoticsNerve: Float = Settings.nerveWeakNarcoticsRev2;
+	let StrongNarcoticsNerve: Float = Settings.nerveStrongNarcoticsRev2;
 
 	// When the Alcohol Status is applied, it restores 5 Nerve in order
 	// for [Drink] dialogue choices to restore Nerve outside of consuming
@@ -183,7 +181,7 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 
 	let DrugNerveAmount: Float = 30.0;
 	let DrugEnergyPenaltyLow: Float = -15.0;
-	let DrugEnergyPenaltyMed: Float = -50.0;
+	let DrugEnergyPenaltyMed: Float = -40.0;
 
 	let LowQualityConsumableNerveLossLimit: Float = Settings.nerveLowQualityConsumablePenaltyLimit;
 
@@ -234,16 +232,8 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 		}
 	}
 
-	// Energy
-	if itemRecord.TagsContains(n"DarkFutureConsumableEnergy") {
-		if itemRecord.TagsContains(n"DarkFutureConsumableEnergyTier1") {
-			consumableBasicNeedsData.energy.value = EnergyTier1;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergyTier2") {
-			consumableBasicNeedsData.energy.value = EnergyTier2;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergyTier3") {
-			consumableBasicNeedsData.energy.value = EnergyTier3;
-		}
-	}
+	// Energy (Positive values)
+	// Handled in: DFEnergySystem TryToApplyEnergizedStacks()
 
 	// Nerve
 	if itemRecord.TagsContains(n"DarkFutureConsumableNerve") {
@@ -259,6 +249,11 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier3") {
 			consumableBasicNeedsData.nerve.value = AlcoholNerveTier3;
 			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
+		
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableWeakNarcoticsNerve") {
+			consumableBasicNeedsData.nerve.value = WeakNarcoticsNerve;
+		} else if itemRecord.TagsContains(n"DarkFutureConsumableStrongNarcoticsNerve") {
+			consumableBasicNeedsData.nerve.value = StrongNarcoticsNerve;
 		}
 	}
 

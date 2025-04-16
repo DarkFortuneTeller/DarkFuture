@@ -68,9 +68,6 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 		} else if Equals(effectID, t"HousingStatusEffect.Refreshed") {
         	nerveSystem.RegisterBonusEffectCheckCallback();
 
-		} else if Equals(effectID, t"DarkFutureStatusEffect.Sedation") || Equals(effectID, t"DarkFutureStatusEffect.Numbed") {
-			nerveSystem.DeduplicateSedationEffects(effectID);
-
 		}
 	}
     
@@ -216,7 +213,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let nerveRecoverAmountSleepingMax: Float = 100.0;
 	
 	private let nerveRestoreInFuryOnKill: Float = 1.0;
-	private let numbedNerveLossBonusMult: Float = 0.25;
 	private let sedatedNerveLossBonusMult: Float = 0.35;
     private let boosterMemoryTraceNerveLossBonusMult: Float = 0.25;
 	private let boosterMemoryBlackMarketTraceNerveLossBonusMult: Float = 0.35;
@@ -384,8 +380,11 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
-		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
+		if itemRecord.TagsContains(n"DarkFutureConsumableNerveNoCombat") && this.player.IsInCombat() {
+			return;
+		}
 
+		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 		if consumableNeedsData.nerve.value != 0.0 {
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
@@ -396,6 +395,17 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			
 			let clampedValue: Float = this.GetClampedNeedChangeFromData(consumableNeedsData.nerve);
 			this.ChangeNeedValue(clampedValue, uiFlags, isNicotine, this.GetNerveLimitAfterItemUse(itemRecord));
+
+			// If Nerve is increasing, and this is a narcotic, play a sound effect.
+			if clampedValue >= 1.0 && itemRecord.TagsContains(n"DarkFutureConsumableAddictiveNarcotic") && this.Settings.narcoticsSFXEnabled {
+				let notification: DFNotification;
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = new DFAudioCue(n"ono_v_laughs_soft", 10);
+				} else {
+					notification.sfx = new DFAudioCue(n"ono_v_laughs_hard", 10);
+				}
+				this.NotificationService.QueueNotification(notification);
+			}
 		}
 	}
 
@@ -782,15 +792,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		return 0.0;
 	}
 
-	public final func DeduplicateSedationEffects(effectID: TweakDBID) {
-		// Sedation should win over Numbed. If Sedation is applied, cancel Numbed. If Numbed is applied, remove it if Sedation already applied.
-		if Equals(effectID, t"DarkFutureStatusEffect.Sedation") {
-			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed");
-		} else if Equals(effectID, t"DarkFutureStatusEffect.Numbed") && StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Sedation") {
-			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed");
-		}
-	}
-
     public final func GetNerveChangeFromDanger() -> Float {
 		let baseNerveLossInDanger: Float;
 		let nerveLossBonusMult: Float = 1.0;
@@ -895,8 +896,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private final func GetSedationNerveLossBonusMult() -> Float {
 		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Sedation") {
 			return this.sedatedNerveLossBonusMult;
-		} else if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed") {
-			return this.numbedNerveLossBonusMult;
 		} else {
 			return 0.0;
 		}

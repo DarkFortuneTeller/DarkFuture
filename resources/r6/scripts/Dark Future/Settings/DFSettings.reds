@@ -31,6 +31,12 @@ public enum DFSleepQualitySetting {
 	Full = 1
 }
 
+public enum DFAmmoHandicapSetting {
+	DontModify = 0,
+	Disabled = 1,
+	Enabled = 2
+}
+
 //	ModSettings - Register if Mod Settings installed
 //
 @if(ModuleExists("ModSettingsModule")) 
@@ -111,7 +117,55 @@ public class DFSettings extends ScriptableSystem {
 
 		}
 
+		// Ammo - Handicap Drops
+		//
+		if Equals(this.ammoHandicapDrops, DFAmmoHandicapSetting.Enabled) {
+			TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapLimit", 120);
+			TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapMaxQty", 150);
+  			TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapMinQty", 90);
+
+			TweakDBManager.SetFlat(t"Ammo.HandicapRifleAmmoPreset.handicapLimit", 120);
+			TweakDBManager.SetFlat(t"Ammo.HandicapRifleAmmoPreset.handicapMaxQty", 150);
+  			TweakDBManager.SetFlat(t"Ammo.HandicapRifleAmmoPreset.handicapMinQty", 90);
+
+			TweakDBManager.SetFlat(t"Ammo.HandicapShotgunAmmoPreset.handicapLimit", 50);
+			TweakDBManager.SetFlat(t"Ammo.HandicapShotgunAmmoPreset.handicapMaxQty", 125);
+			TweakDBManager.SetFlat(t"Ammo.HandicapShotgunAmmoPreset.handicapMinQty", 75);
+
+			TweakDBManager.SetFlat(t"Ammo.HandicapSniperRifleAmmoPreset.handicapLimit", 40);
+			TweakDBManager.SetFlat(t"Ammo.HandicapSniperRifleAmmoPreset.handicapMaxQty", 80);
+			TweakDBManager.SetFlat(t"Ammo.HandicapSniperRifleAmmoPreset.handicapMinQty", 40);
+
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapHandgunAmmoPreset");
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapRifleAmmoPreset");
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapShotgunAmmoPreset");
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapSniperRifleAmmoPreset");
+			
+		} else if Equals(this.ammoHandicapDrops, DFAmmoHandicapSetting.Disabled) {
+			TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapLimit", 0);
+			TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapMaxQty", 0);
+  			TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapMinQty", 0);
+
+			TweakDBManager.SetFlat(t"Ammo.HandicapRifleAmmoPreset.handicapLimit", 0);
+			TweakDBManager.SetFlat(t"Ammo.HandicapRifleAmmoPreset.handicapMaxQty", 0);
+  			TweakDBManager.SetFlat(t"Ammo.HandicapRifleAmmoPreset.handicapMinQty", 0);
+
+			TweakDBManager.SetFlat(t"Ammo.HandicapShotgunAmmoPreset.handicapLimit", 0);
+			TweakDBManager.SetFlat(t"Ammo.HandicapShotgunAmmoPreset.handicapMaxQty", 0);
+			TweakDBManager.SetFlat(t"Ammo.HandicapShotgunAmmoPreset.handicapMinQty", 0);
+
+			TweakDBManager.SetFlat(t"Ammo.HandicapSniperRifleAmmoPreset.handicapLimit", 0);
+			TweakDBManager.SetFlat(t"Ammo.HandicapSniperRifleAmmoPreset.handicapMaxQty", 0);
+			TweakDBManager.SetFlat(t"Ammo.HandicapSniperRifleAmmoPreset.handicapMinQty", 0);
+
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapHandgunAmmoPreset");
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapRifleAmmoPreset");
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapShotgunAmmoPreset");
+			TweakDBManager.UpdateRecord(t"Ammo.HandicapSniperRifleAmmoPreset");
+		}
+
 		// Ammo - Price
+		//
 		TweakDBManager.SetFlat(t"DarkFutureItem.AmmoHandgunBuyPriceMultiplier.value", this.priceHandgunAmmo);
 		TweakDBManager.SetFlat(t"DarkFutureItem.AmmoRifleBuyPriceMultiplier.value", this.priceRifleAmmo);
 		TweakDBManager.SetFlat(t"DarkFutureItem.AmmoShotgunBuyPriceMultiplier.value", this.priceShotgunAmmo);
@@ -130,9 +184,10 @@ public class DFSettings extends ScriptableSystem {
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNutritionTier2_UIData.intValues", [Cast<Int32>(this.nutritionTier2)]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNutritionTier3_UIData.intValues", [Cast<Int32>(this.nutritionTier3)]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNutritionTier4_UIData.intValues", [Cast<Int32>(this.nutritionTier4)]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableEnergyTier1_UIData.intValues", [Cast<Int32>(this.energyTier1)]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableEnergyTier2_UIData.intValues", [Cast<Int32>(this.energyTier2)]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableEnergyTier3_UIData.intValues", [Cast<Int32>(this.energyTier3)]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.EnergizedCaffeine1Stack_UIData.intValues", [Cast<Int32>(this.energyPerEnergizedStack), 600, 3]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.EnergizedCaffeine2Stack_UIData.intValues", [2, Cast<Int32>(this.energyPerEnergizedStack), 600, 3]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.EnergizedStimulant2Stack_UIData.intValues", [2, Cast<Int32>(this.energyPerEnergizedStack), 600, 6]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.EnergizedStimulant3Stack_UIData.intValues", [3, Cast<Int32>(this.energyPerEnergizedStack), 600, 6]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_UIData.intValues", [Cast<Int32>(this.nerveAlcoholTier1)]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_UIData.intValues", [Cast<Int32>(this.nerveAlcoholTier2)]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_UIData.intValues", [Cast<Int32>(this.nerveAlcoholTier3)]);
@@ -141,8 +196,8 @@ public class DFSettings extends ScriptableSystem {
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier1_UIData.intValues", [-1 * CeilF(this.nutritionTier1 * this.GetLowQualityConsumablePenaltyFactorAsPercentage()), Cast<Int32>(this.nerveLowQualityConsumablePenaltyLimit)]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier2_UIData.intValues", [-1 * CeilF(this.nutritionTier2 * this.GetLowQualityConsumablePenaltyFactorAsPercentage()), Cast<Int32>(this.nerveLowQualityConsumablePenaltyLimit)]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.ConsumableNervePenaltyFoodTier3_UIData.intValues", [-1 * CeilF(this.nutritionTier3 * this.GetLowQualityConsumablePenaltyFactorAsPercentage()), Cast<Int32>(this.nerveLowQualityConsumablePenaltyLimit)]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.WeakNarcotic_NerveChange_UIData.intValues", [Cast<Int32>(this.nerveWeakNarcotics), -1 * Cast<Int32>(this.nerveWeakNarcotics), 1]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.StrongNarcotic_NerveChange_UIData.intValues", [Cast<Int32>(this.nerveStrongNarcotics), -1 * Cast<Int32>(this.nerveStrongNarcotics), 1]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.WeakNarcotic_NerveChange_UIData.intValues", [Cast<Int32>(this.nerveWeakNarcoticsRev2), -1 * Cast<Int32>(this.nerveWeakNarcoticsRev2), 1]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.StrongNarcotic_NerveChange_UIData.intValues", [Cast<Int32>(this.nerveStrongNarcoticsRev2), -1 * Cast<Int32>(this.nerveStrongNarcoticsRev2), 1]);
 
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableHydrationTier1_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableHydrationTier2_UIData");
@@ -151,9 +206,10 @@ public class DFSettings extends ScriptableSystem {
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNutritionTier2_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNutritionTier3_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNutritionTier4_UIData");
-		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableEnergyTier1_UIData");
-		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableEnergyTier2_UIData");
-		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableEnergyTier3_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.EnergizedCaffeine1Stack_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.EnergizedCaffeine2Stack_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.EnergizedStimulant2Stack_UIData");
+		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.EnergizedStimulant3Stack_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_UIData");
@@ -2135,29 +2191,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1.0")
 	@runtimeProperty("ModSettings.min", "1.0")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let energyTier1: Float = 15.0;
-
-	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
-	@runtimeProperty("ModSettings.category.order", "170")
-	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsEnergyTier2")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationEnergyDesc")
-	@runtimeProperty("ModSettings.step", "1.0")
-	@runtimeProperty("ModSettings.min", "1.0")
-	@runtimeProperty("ModSettings.max", "100.0")
-	public let energyTier2: Float = 25.0;
-
-	@runtimeProperty("ModSettings.mod", "Dark Future")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
-	@runtimeProperty("ModSettings.category.order", "170")
-	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsEnergyTier3")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationEnergyDesc")
-	@runtimeProperty("ModSettings.step", "1.0")
-	@runtimeProperty("ModSettings.min", "1.0")
-	@runtimeProperty("ModSettings.max", "100.0")
-	public let energyTier3: Float = 35.0;
+	public let energyPerEnergizedStack: Float = 10.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
@@ -2208,22 +2242,22 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.category.order", "170")
 	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveNarcoticsWeak")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveNarcoticsDesc")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveDesc")
 	@runtimeProperty("ModSettings.step", "1.0")
 	@runtimeProperty("ModSettings.min", "1.0")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let nerveWeakNarcotics: Float = 20.0;
+	public let nerveWeakNarcoticsRev2: Float = 10.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
 	@runtimeProperty("ModSettings.category.order", "170")
 	@runtimeProperty("ModSettings.dependency", "showConsumableRestorationSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsNerveNarcoticsPotent")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveNarcoticsDesc")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsRestorationNerveDesc")
 	@runtimeProperty("ModSettings.step", "1.0")
 	@runtimeProperty("ModSettings.min", "1.0")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let nerveStrongNarcotics: Float = 40.0;
+	public let nerveStrongNarcoticsRev2: Float = 20.0;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsConsumableRestoration")
@@ -2677,6 +2711,17 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsAmmoCrafting")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsAmmoCraftingDesc")
 	public let ammoCraftingEnabled: Bool = true;
+
+	@runtimeProperty("ModSettings.mod", "Dark Future")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")
+	@runtimeProperty("ModSettings.category.order", "190")
+	@runtimeProperty("ModSettings.dependency", "showAmmoSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingItemsAmmoHandicapDrops")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingItemsAmmoHandicapDropsDesc")
+	@runtimeProperty("ModSettings.displayValues.DontModify", "DarkFutureSettingItemsAmmoHandicapDropsDontModify")
+    @runtimeProperty("ModSettings.displayValues.Disabled", "DarkFutureSettingItemsAmmoHandicapDropsDisabled")
+	@runtimeProperty("ModSettings.displayValues.Enabled", "DarkFutureSettingItemsAmmoHandicapDropsEnabled")
+	public let ammoHandicapDrops: DFAmmoHandicapSetting = DFAmmoHandicapSetting.DontModify;
 
 	@runtimeProperty("ModSettings.mod", "Dark Future")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryItemsAmmo")

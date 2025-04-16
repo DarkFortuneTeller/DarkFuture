@@ -1,0 +1,62 @@
+# Common Records
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
+# Block Sprint
+DarkFutureStatusEffectTypes.BlockSprint:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: BlockSprint
+
+DarkFutureStatusEffect.BlockSprint_StatsPackageModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.0
+  modifierType: Multiplier
+  statType: BaseStats.CanSprint
+
+DarkFutureStatusEffect.BlockSprint_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.BlockSprint_StatsPackageModifier
+
+DarkFutureStatusEffect.BlockSprint:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: False
+  statusEffectType: DarkFutureStatusEffectTypes.BlockSprint
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - Debuff
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.BlockSprint_StatsPackage
+  SFX: []
+  VFX: []
+  canReapply: True

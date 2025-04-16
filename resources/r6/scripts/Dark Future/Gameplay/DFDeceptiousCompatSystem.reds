@@ -62,7 +62,7 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
 
     // DFSystem Required Methods
     private func SetupDebugLogging() -> Void {
-        this.debugEnabled = true;
+        this.debugEnabled = false;
     }
 
     private func GetSystemToggleSettingValue() -> Bool {
@@ -91,7 +91,16 @@ public final class DFDeceptiousCompatSystem extends DFSystem {
     }
     
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-    private func SetupData() -> Void {}
+    
+    private func SetupData() -> Void {
+        this.IAEatFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_food");
+        this.IADrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_drink");
+        this.IAAlcoholFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_alco");
+        this.IASmokeFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_smoke");
+        this.IFVEatDrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_foodvendor");
+        this.IBTDrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_bartender");
+    }
+    
     private func RegisterListeners() -> Void {
         // Idle Anywhere
         this.IAEatFactListener = this.QuestsSystem.RegisterListener(n"dec_dark_food", this, n"OnIAEatFactChanged");

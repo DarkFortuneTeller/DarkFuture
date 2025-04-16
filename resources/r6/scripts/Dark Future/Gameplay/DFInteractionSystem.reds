@@ -28,7 +28,8 @@ import DarkFuture.Main.{
 	DFFutureHoursData,
 	DFNeedChangeDatum,
 	DFTimeSkipData,
-	DFTimeSkipType
+	DFTimeSkipType,
+	DFTempEnergyItemType
 }
 import DarkFuture.Services.{
 	DFGameStateService,
@@ -682,6 +683,9 @@ public final class DFInteractionSystem extends DFSystem {
 		let calculatedNerveAtHour: Float = this.NerveSystem.GetNeedValue();
 		let calculatedNerveMaxAtHour: Float = this.NerveSystem.GetNeedMax();
 
+		// Energy Variables
+		let energyRestoredFromEnergized: Float = this.EnergySystem.GetTotalEnergyRestoredFromEnergized();
+
 		// Addiction Variables
 		let calculatedAddictionData: array<DFAddictionDatum>;
 
@@ -796,6 +800,11 @@ public final class DFInteractionSystem extends DFSystem {
 				// Energy
 				//
 				let energyChangeTemp: Float = this.EnergySystem.GetEnergyChangeWithRecoverLimit(calculatedEnergyAtHour, timeSkipType);
+
+				// Nuke any temporary Energy effects the player might have.
+				energyChangeTemp -= energyRestoredFromEnergized;
+				energyRestoredFromEnergized = 0.0;
+
 				let energyMax: Float = this.EnergySystem.GetNeedMax();
 				calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + energyChangeTemp, 0.0, energyMax);
 				
@@ -1022,12 +1031,11 @@ public final class DFInteractionSystem extends DFSystem {
 			}
 			
 			// Since the player can repeatedly activate the coffee machine to obtain max Hydration,
-			// just grant all of it on the first use. Also apply the Hydrated effect, like coffee items.
-            this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, t"DarkFutureStatusEffect.Sated");
+			// just grant all of it on the first use.
+            this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
 
 			// Treat the Energy restoration from the coffee machine like consuming normal coffee items.
-			let energyToRestore: Float = this.Settings.energyTier1;
-            this.EnergySystem.ChangeEnergyFromItems(energyToRestore, true, energyToRestore, true);
+            this.EnergySystem.TryToApplyEnergizedStacks(1u, DFTempEnergyItemType.Caffeine, true, true);
 		}
 	}
 
@@ -1253,6 +1261,7 @@ public final class DFInteractionSystem extends DFSystem {
 		if sleptDuringQuest {
 			this.SimulateSleepFromQuest();
 		} else if romanceDuringQuest {
+			this.EnergySystem.ClearEnergyManagementEffects();
 			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
 		}
 	}
@@ -1268,7 +1277,8 @@ public final class DFInteractionSystem extends DFSystem {
 	}
 
 	public final func SimulateSleepFromQuest() -> Void {
-		this.EnergySystem.PerformQuestSleep();
+		this.EnergySystem.ClearEnergyManagementEffects();
+		this.EnergySystem.QueueContextuallyDelayedNeedValueChange(100.0);
 		this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true);
 	}
 

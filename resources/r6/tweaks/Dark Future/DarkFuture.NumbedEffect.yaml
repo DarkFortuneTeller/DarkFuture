@@ -17,7 +17,7 @@ DarkFutureStatusEffect.Numbed_UIData:
   priority: -6
   floatValues: []
   intValues:
-    - -25
+    - 20
   nameValues: []
   stats: []
 
@@ -53,6 +53,22 @@ DarkFutureStatusEffect.NumbedDuration:
   statModifiers:
     - DarkFutureStatusEffect.NumbedDurationValue
 
+DarkFutureStatusEffect.Numbed_StatsPackageModifier_Armor:
+  $type: gamedataConstantStatModifier_Record
+  value: 20
+  modifierType: Additive
+  statType: BaseStats.Armor
+
+DarkFutureStatusEffect.Numbed_ArmorStatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.Numbed_StatsPackageModifier_Armor
+
 DarkFutureStatusEffect.Numbed:
   $type: gamedataStatusEffect_Record
   duration: DarkFutureStatusEffect.NumbedDuration
@@ -73,6 +89,7 @@ DarkFutureStatusEffect.Numbed:
     - Buff
     - DarkFutureNumbed
   immunityStats: []
-  packages: []
+  packages:
+    - DarkFutureStatusEffect.Numbed_ArmorStatsPackage
   SFX: []
   VFX: []
