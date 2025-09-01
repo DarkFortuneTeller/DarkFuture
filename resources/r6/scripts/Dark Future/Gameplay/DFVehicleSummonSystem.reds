@@ -22,6 +22,9 @@ import DarkFuture.Settings.{
 }
 import DarkFuture.Services.DFGameStateService
 
+@if(ModuleExists("VehiclePersistence.System"))
+import VehiclePersistence.System.PersistentVehicleSystem
+
 public enum DFSummonCreditWidgetAppearance {
     Default = 0,
     ProjectE3 = 1
@@ -76,6 +79,8 @@ protected func Activate() -> Void {
     if IsSystemEnabledAndRunning(vehicleSummonSystem) && vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
         return;
     } else {
+        // gibbon: move this assignment here because Improved Vehicle Persistence offloads player vehicles to a separate data store and deliberately avoids the "active vehicle" functionality of vehicle summons to achieve its effect
+        this.m_quickSlotsManager.activeVehicleJustSet = true;
         wrappedMethod();
     }
 }
@@ -137,7 +142,7 @@ protected cb func OnSummonStartedEvent(evt: ref<SummonStartedEvent>) -> Bool {
 // QuickSlotsManager
 //
 @addField(QuickSlotsManager)
-private let activeVehicleJustSet: Bool;
+public let activeVehicleJustSet: Bool;
 
 @wrapMethod(QuickSlotsManager)
 public final func SetActiveVehicle(vehicleData: PlayerVehicle) -> Void {
@@ -148,7 +153,7 @@ public final func SetActiveVehicle(vehicleData: PlayerVehicle) -> Void {
 }
 
 @wrapMethod(QuickSlotsManager)
-public final func SummonVehicle(force: Bool) -> Void {
+public final func SummonActiveVehicle(force: Bool) -> Void {
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
     
     if IsSystemEnabledAndRunning(vehicleSummonSystem) && DFGameStateService.Get().IsValidGameState(this) {
@@ -166,7 +171,7 @@ public final func SummonVehicle(force: Bool) -> Void {
             dpadAction.action = EHotkey.DPAD_RIGHT;
             dpadAction.state = EUIActionState.COMPLETED;
             dpadAction.successful = true;
-            GameInstance.GetVehicleSystem(GetGameInstance()).SpawnPlayerVehicle(this.GetActiveVehicleType());
+            GameInstance.GetVehicleSystem(GetGameInstance()).SpawnActivePlayerVehicle(this.GetActiveVehicleType());
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(dpadAction);
 
         } else {
@@ -181,6 +186,46 @@ public final func SummonVehicle(force: Bool) -> Void {
         }
     } else {
         wrappedMethod(force);
+    }
+}
+
+
+// gibbon: wrap the non active summon method so we can attempt to handle IVP system summons cleanly and consume vehicle credits
+@if(ModuleExists("VehiclePersistence.System"))
+@wrapMethod(QuickSlotsManager)
+public final func SummonVehicle(force: Bool, type: gamedataVehicleType, vehicle: TweakDBID, spawnOnlyOnValidRoad: Bool) -> Void {
+    let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+    let persistentVehicleSystem: ref<PersistentVehicleSystem> = GameInstance.GetScriptableSystemsContainer(GetGameInstance()).Get(n"VehiclePersistence.System.PersistentVehicleSystem") as PersistentVehicleSystem;
+    
+    if IsSystemEnabledAndRunning(vehicleSummonSystem) && DFGameStateService.Get().IsValidGameState(this) && persistentVehicleSystem.IsVehiclePersistent(vehicle) {
+        let dpadAction: ref<DPADActionPerformed>;
+        let canSummonVehicle: Bool = force || !GameInstance.GetVehicleSystem(this.m_Player.GetGame()).IsPlayerVehicleOnCooldown(type, vehicle);
+        if !canSummonVehicle {
+            return;
+        };
+
+        if vehicleSummonSystem.GetRemainingSummonCredits() > 0 && this.activeVehicleJustSet {
+            // We have summon credits, and we used the menu to select it; summon a vehicle.
+            vehicleSummonSystem.UseSummonCredit();
+            this.activeVehicleJustSet = false;
+            dpadAction = new DPADActionPerformed();
+            dpadAction.action = EHotkey.DPAD_RIGHT;
+            dpadAction.state = EUIActionState.COMPLETED;
+            dpadAction.successful = true;
+            GameInstance.GetVehicleSystem(this.m_Player.GetGame()).SpawnPlayerVehicle(type, vehicle, spawnOnlyOnValidRoad);
+            GameInstance.GetUISystem(this.m_Player.GetGame()).QueueEvent(dpadAction);
+        } else {
+            // We don't have summon credits, or we did not use the menu; if we have an active vehicle, ping it.
+            let lastSummonedVehicle: ref<VehicleComponent> = vehicleSummonSystem.GetLastSummonedVehicle();
+            if IsDefined(lastSummonedVehicle) && !lastSummonedVehicle.GetPS().GetIsDestroyed() {
+                // Simulate the "pinging" vehicle behavior of when tapping the summon button
+                // when near a vehicle, without actually summoning it. 
+                lastSummonedVehicle.CreateMappin();
+                lastSummonedVehicle.HonkAndFlash();
+            }
+        }
+    } else {
+        wrappedMethod(force, type, vehicle, spawnOnlyOnValidRoad);
     }
 }
 
