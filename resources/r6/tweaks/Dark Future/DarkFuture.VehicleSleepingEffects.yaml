@@ -17,6 +17,7 @@ DarkFutureGameplayRestriction.SleepInVehicle:
     - GameplayRestriction
     - NoWeaponWheel
     - VehicleBlockExit
+    - VehicleBlockRadioInput
     - VehicleBlockPocketRadio
     - NoPhone
     - NoInhalerOrInjector
@@ -54,6 +55,8 @@ DarkFutureGameplayRestriction.SleepInVehicleFPP:
     - VehicleScene
     - VehicleFPP
     - VehicleOnlyForward
+    - VehicleBlockRadioInput
+    - VehicleBlockPocketRadio
   immunityStats: []
   packages: []
   SFX: []

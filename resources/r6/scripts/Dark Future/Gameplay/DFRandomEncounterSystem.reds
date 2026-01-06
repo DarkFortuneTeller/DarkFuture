@@ -12,6 +12,7 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Settings.DFSettings
 import DarkFuture.Main.DFTimeSkipData
+import DarkFuture.Utils.DFRunGuard
 
 enum DFNPCSpawnSlot {
     Unassigned = 0,
@@ -53,38 +54,44 @@ public final class DFRandomEncounterSystem extends DFSystem {
     private let hostileGangs: array<CName>;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFRandomEncounterSystem> {
-		let instance: ref<DFRandomEncounterSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Gameplay.DFRandomEncounterSystem") as DFRandomEncounterSystem;
+        //DFProfile();
+		let instance: ref<DFRandomEncounterSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRandomEncounterSystem>()) as DFRandomEncounterSystem;
 		return instance;
 	}
 
 	public final static func Get() -> ref<DFRandomEncounterSystem> {
+        //DFProfile();
 		return DFRandomEncounterSystem.GetInstance(GetGameInstance());
 	}
 
     // DFSystem Required Methods
     private func SetupDebugLogging() -> Void {
+        //DFProfile();
         this.debugEnabled = false;
     }
 
-    private func GetSystemToggleSettingValue() -> Bool {
+    public func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
         return this.Settings.enableRandomEncountersWhenSleepingInVehicles;
     }
 
     private func GetSystemToggleSettingString() -> String {
+        //DFProfile();
         return "enableRandomEncountersWhenSleepingInVehicles";
     }
 
-    private func DoPostSuspendActions() -> Void {}
-    private func DoPostResumeActions() -> Void {}
-    private func DoStopActions() -> Void {}
+    public func DoPostSuspendActions() -> Void {}
+    public func DoPostResumeActions() -> Void {}
 
-    private func GetSystems() -> Void {
+    public func GetSystems() -> Void {
+        //DFProfile();
         this.DynamicEntitySystem = GameInstance.GetDynamicEntitySystem();
     }
 
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 
-    private func SetupData() -> Void {
+    public func SetupData() -> Void {
+        //DFProfile();
         this.hostileGangs = [
             n"Animals",
             n"Barghest",
@@ -98,13 +105,14 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private func RegisterListeners() -> Void {
+        //DFProfile();
         this.DynamicEntitySystem.RegisterListener(n"DarkFuture.SpawnedNPC", this, n"OnPuppetUpdate");
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
-    private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
+    public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
     private func UnregisterListeners() -> Void {}
-    private func UnregisterAllDelayCallbacks() -> Void {}
+    public func UnregisterAllDelayCallbacks() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
@@ -112,6 +120,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
 
     // System-Specific Methods
     private cb func OnPuppetUpdate(event: ref<DynamicEntityEvent>) {
+        //DFProfile();
 		let type = event.GetEventType();
 		let id = event.GetEntityID();
 
@@ -124,6 +133,9 @@ public final class DFRandomEncounterSystem extends DFSystem {
 	}
 
     public final func SetupRandomEncounterOnSleep() -> Void {
+        //DFProfile();
+        if DFRunGuard(this) { return; }
+
         let currentDistrictRecord: ref<District_Record> = this.player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord();
         if IsDefined(currentDistrictRecord) {
             let hostileGangData = this.GetHostileDistrictGang(currentDistrictRecord);
@@ -140,6 +152,8 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     public final func TryToSpawnRandomEncounterAroundPlayer() -> Bool {
+        //DFProfile();
+        if DFRunGuard(this) { return false; }
         let spawnedEncounter: Bool = false;
 
         if NotEquals(this.selectedRandomEncounter.gangName, n"") {
@@ -182,13 +196,15 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     public final func ClearRandomEncounter() -> Void {
-        this.selectedRandomEncounter = new DFGangData(n"", "");
+        //DFProfile();
+        this.selectedRandomEncounter = DFGangData(n"", "");
     }
 
     private final func GetRandomEncounterChanceForDistrict(gangData: DFGangData) -> Float {
+        //DFProfile();
         // Badlands
         if Equals(gangData.districtName, "Badlands") || Equals(gangData.districtName, "NorthBadlands") || Equals(gangData.districtName, "SouthBadlands") {
-            return this.Settings.randomEncounterChanceBadlands / 100.0;
+            return this.Settings.randomEncounterChanceBadlandsV2 / 100.0;
 
         // City Center
         } else if Equals(gangData.districtName, "CityCenter") {
@@ -206,6 +222,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetHostileDistrictGang(districtRecord: wref<District_Record>) -> DFGangData {
+        //DFProfile();
         let selectedGangData: DFGangData;
 
         if !StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoCombat") && IsDefined(districtRecord) {
@@ -230,6 +247,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
 	private final func GetHostileDistrictGangRecursive(districtRecord: wref<District_Record>) -> DFGangData {
+        //DFProfile();
 		// May return nothing if no hostile gang is found.
 		let selectedGangData: DFGangData;
 		
@@ -275,6 +293,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
 	}
 
     private final func GetCharacterListFromFactionName(factionName: CName) -> array<TweakDBID> {
+        //DFProfile();
         switch factionName {
             case n"Animals":
                 return this.GetFactionCharacterList_Animals();
@@ -306,6 +325,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Animals() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Animals character list.");
         return [
             t"Character.animals_bouncer1_melee1_baton_mb",
@@ -323,6 +343,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Barghest() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Barghest character list.");
         return [
             t"Character.bou_kurtz_grunt1_ranged1_handgun_ma",
@@ -341,6 +362,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Maelstrom() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Maelstrom character list.");
         return [
             t"Character.maelstrom_grunt1_melee1_knife_ma",
@@ -361,6 +383,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_SixthStreet() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Sixth Street character list.");
         return [
             t"Character.sixthstreet_hooligan_melee1_ironpipe_ma",
@@ -381,6 +404,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Scavengers() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Scavengers character list.");
         return [
             t"Character.scavenger_grunt1_melee1_pipewrench_ma",
@@ -404,6 +428,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_TygerClaws() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Tyger Claws character list.");
         return [
             t"Character.tyger_claws_biker1_melee1_baseball_ma",
@@ -438,6 +463,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Valentinos() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Valentinos character list.");
         return [
             t"Character.valentinos_grunt1_melee1_baseball_ma",
@@ -461,6 +487,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetFactionCharacterList_Wraiths() -> array<TweakDBID> {
+        //DFProfile();
         DFLog(this, "Returning Wraiths character list.");
         return [
             t"Character.bls_se_wraiths_grunt1_melee1_ironpipe_wa",
@@ -478,6 +505,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func SpawnPuppets(ids: array<TweakDBID>, spawnHostile: Bool) -> Void {
+        //DFProfile();
         let reservedSpawnSlots: array<DFNPCSpawnSlot>;
 
         for id in ids {
@@ -503,16 +531,19 @@ public final class DFRandomEncounterSystem extends DFSystem {
 	}
 
     private func GetDirection(angle: Float) -> Vector4 {
-		return Vector4.RotateAxis(this.player.GetWorldForward(), new Vector4(0, 0, 1, 0), angle / 180.0 * Pi());
+        //DFProfile();
+		return Vector4.RotateAxis(this.player.GetWorldForward(), Vector4(0, 0, 1, 0), angle / 180.0 * Pi());
 	}
 
 	private final func GetPositionBySpawnSlot(spawnSlot: DFNPCSpawnSlot) -> Vector4 {
+        //DFProfile();
 		let positionAwayFromPlayer: Vector4 = this.player.GetWorldPosition() + this.GetDirection(this.GetWorldAngleOffsetBySpawnSlot(spawnSlot)) * this.GetSpawnDistance();
 		let groundPosition = GameInstance.GetNavigationSystem(GetGameInstance()).GetNearestNavmeshPointBelowOnlyHumanNavmesh(positionAwayFromPlayer, 1.0, 5);
 		return groundPosition;
 	}
 
     private final func GetWorldAngleOffsetBySpawnSlot(spawnSlot: DFNPCSpawnSlot) -> Float {
+        //DFProfile();
         switch spawnSlot {
             case DFNPCSpawnSlot.Front:
                 return this.spawnAngleOffset_Front;
@@ -542,14 +573,17 @@ public final class DFRandomEncounterSystem extends DFSystem {
     }
 
     private final func GetSpawnDistance() -> Float {
+        //DFProfile();
         return this.spawnDistance;
     }
 
 	private final func GetNeutralOrientation() -> Quaternion {
+        //DFProfile();
 		return EulerAngles.ToQuat(Vector4.ToRotation(this.GetDirection(0.0)));
 	}
 
     private final func ReserveSpawnSlot(out reservedSpawnSlots: array<DFNPCSpawnSlot>) -> DFNPCSpawnSlot {
+        //DFProfile();
         // Choose a random spawn slot. Keep trying until a unique spawn slot has been found.
         let assignedSlot: DFNPCSpawnSlot;
 

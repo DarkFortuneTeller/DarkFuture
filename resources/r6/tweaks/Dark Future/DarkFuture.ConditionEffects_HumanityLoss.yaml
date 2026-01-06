@@ -1,0 +1,472 @@
+#
+#
+# Common Records
+#
+#
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
+DarkFutureStatusEffect.NoDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.1
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.NoDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NoDuration_StatModifier
+
+DarkFutureStatusEffectTypes.HumanityLoss:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: HumanityLoss
+
+UIIcon.DarkFutureHumanityLoss:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ico_condition_humanityloss
+  atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
+
+#
+#
+# HumanityLoss 01
+#
+#
+DarkFutureStatusEffect.HumanityLoss01_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureHumanityLoss01Desc"
+  displayName: l"DarkFutureHumanityLoss01Name"
+  fluffText: ''
+  iconPath: DarkFutureHumanityLoss
+  priority: -11
+  floatValues: []
+  intValues:
+    - 25
+    - 80
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.HumanityLoss01:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.HumanityLoss
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.HumanityLoss01_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionHumanityLoss
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# HumanityLoss 02
+#
+#
+DarkFutureStatusEffect.HumanityLoss02_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureHumanityLoss02Desc"
+  displayName: l"DarkFutureHumanityLoss02Name"
+  fluffText: ''
+  iconPath: DarkFutureHumanityLoss
+  priority: -11
+  floatValues: []
+  intValues:
+    - 50
+    - 60
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.HumanityLoss02:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.HumanityLoss
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.HumanityLoss02_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionHumanityLoss
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# HumanityLoss 03
+#
+#
+DarkFutureStatusEffect.HumanityLoss03_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureHumanityLoss03Desc"
+  displayName: l"DarkFutureHumanityLoss03Name"
+  fluffText: ''
+  iconPath: DarkFutureHumanityLoss
+  priority: -11
+  floatValues: []
+  intValues:
+    - 75
+    - 40
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.HumanityLoss03:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.HumanityLoss
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.HumanityLoss03_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionHumanityLoss
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# HumanityLoss 04
+#
+#
+DarkFutureStatusEffect.HumanityLoss04_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureHumanityLoss04Desc"
+  displayName: l"DarkFutureHumanityLoss04Name"
+  fluffText: ''
+  iconPath: DarkFutureHumanityLoss
+  priority: -11
+  floatValues: []
+  intValues:
+    - 100
+    - 20
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.HumanityLoss04:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.HumanityLoss
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.HumanityLoss04_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionHumanityLoss
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Cyberpsychosis
+#
+#
+DarkFutureStatusEffectTypes.Cyberpsychosis:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Cyberpsychosis
+
+DarkFutureStatusEffect.CyberpsychosisSlowTimeDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 2
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.CyberpsychosisSlowTimeDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.CyberpsychosisSlowTimeDuration_StatModifier
+
+DarkFutureStatusEffectTypes.CyberpsychosisSlowTime:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: CyberpsychosisSlowTime
+
+DarkFutureStatusEffectTypes.CyberpsychosisApplicationDone:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: CyberpsychosisApplicationDone
+
+DarkFutureStatusEffect.CyberpsychosisStacks_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 75
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.CyberpsychosisStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.CyberpsychosisStacks_StatModifier
+
+DarkFutureStatusEffect.Cyberpsychosis_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureCyberpsychosisDesc"
+  displayName: l"DarkFutureCyberpsychosisName"
+  fluffText: ''
+  iconPath: johnny_sickness_icon
+  priority: -11
+  floatValues: []
+  intValues:
+    - 1
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.CyberpsychosisSlowTimeEffector:
+  $type: gamedataEffector_Record
+  effectorClassName: SetTimeDilationEffector
+  prereqRecord: BaseStatusEffect.BerserkTimeDilationEffector_inline0
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  affectsPlayer: True
+  easeOutCurve: ReflexRecorderEaseOut
+  easeInCurve: MeleeHitEaseIn
+  reason: sandevistan
+  duration: 4.5
+  dilation: 0.25
+
+DarkFutureStatusEffect.CyberpsychosisSlowTimePackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.CyberpsychosisSlowTimeEffector
+  items: []
+  statPools: []
+  stats: []
+
+# Applied via script on Cyberpsychosis enter
+DarkFutureStatusEffect.CyberpsychosisSlowTime:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.CyberpsychosisSlowTimeDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: False
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.CyberpsychosisSlowTime
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags: []
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.CyberpsychosisSlowTimePackage
+  SFX: []
+  VFX: []
+
+DarkFutureStats.CyberpsychosisStacks:
+  $type: gamedataStat_Record
+  canBeForcedByQuests: False
+  decimalPlaces: 0
+  displayPercent: False
+  displayPlus: False
+  enumComment: Helper stat to track the number of stacks of Cyberpsychosis on the player
+  enumName: DarkFutureCyberpsychosisStacks
+  improvementRelation: ImprovementRelation.None
+  inMeters: False
+  inSeconds: False
+  inSpeed: False
+  localizedDescription: ''
+  localizedName: ''
+  localizedStatDisplay: ''
+  max: 75
+  min: 0
+  multiplyBy100InText: False
+  roundValue: False
+  flags:
+    - EquipOnPlayer
+  substats: []
+  themes: []
+
+BaseStats.DarkFutureCyberpsychosisStacks:
+  $type: Stat
+  enumName: DarkFutureCyberpsychosisStacks
+
+DarkFutureStatusEffect.CyberpsychosisStacksStatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.DarkFutureCyberpsychosisStacks
+
+DarkFutureStatusEffect.CyberpsychosisStacksStatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.CyberpsychosisStacksStatModifier
+
+DarkFutureStatusEffect.Cyberpsychosis:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.CyberpsychosisStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Cyberpsychosis
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Cyberpsychosis_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCyberpsychosis
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.CyberpsychosisStacksStatsPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.CyberpsychosisApplicationDone:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.NoDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: False
+  statusEffectType: DarkFutureStatusEffectTypes.CyberpsychosisApplicationDone
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags: []
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+DarkFuture.CyberpsychosisStackCountStatModifier:
+  $type: gamedataCombinedStatModifier_Record
+  opSymbol: '*'
+  refObject: Self
+  refStat: BaseStats.DarkFutureCyberpsychosisStacks
+  value: 0.005
+  modifierType: Additive
+  statType: BaseStats.EffectorChance
+
+# The effectorChance to append the new chances to.
+NewPerks.Tech_Master_Perk_3_inline12.effectorChance:
+  - !append-once DarkFuture.CyberpsychosisStackCountStatModifier
+
+
+#
+#
+# Humanity Loss Restoration Icon
+#
+#
+ChoiceCaptionParts.HumanityLossRestoreIcon:
+  $type: gamedataChoiceCaptionIconPart_Record
+  comment: ''
+  enumName: HumanityLossRestoreIcon
+  mappinVariant: Mappins.InvalidVariant
+  texturePartID: UIIcon.DarkFutureHumanityLoss
+  partType: ChoiceCaptionPartType.Icon
+
+DarkFuturePlayerBuilds.HumanityLoss:
+  $type: gamedataPlayerBuild_Record
+  captionIcon: ChoiceCaptionParts.HumanityLossRestoreIcon
+  enumComment: Build check for Humanity Loss
+  enumName: HumanityLoss
+  displayName: l"DarkFutureConditionHumanityLoss"
+  proficiencies: []

@@ -1,14 +1,33 @@
 # Drug Price Adjustment Settings
 DarkFuturePrice.Pharmaceuticals:
   $type: gamedataConstantStatModifier_Record
-  value: 1
+  value: 1.0
+  modifierType: Multiplier
+  statType: BaseStats.Price
+
+DarkFuturePrice.NerveRestoreDrug:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.0
   modifierType: Multiplier
   statType: BaseStats.Price
 
 # Black Market Drug Price Adjustment Settings
 DarkFuturePrice.IllegalDrugs:
   $type: gamedataConstantStatModifier_Record
-  value: 1
+  value: 1.0
+  modifierType: Multiplier
+  statType: BaseStats.Price
+
+# Endotrisine Price Adjustment Settings
+DarkFuturePrice.EndotrisineBase:
+  $type: gamedataConstantStatModifier_Record
+  value: 12500
+  modifierType: Additive
+  statType: BaseStats.Price
+
+DarkFuturePrice.EndotrisineMult:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.0
   modifierType: Multiplier
   statType: BaseStats.Price
 
@@ -38,9 +57,9 @@ DarkFutureStatusEffect.InhalerVFX:
   name: splinter_buff
   shouldReapply: False
 
-DarkFutureItem.SmallDrugWeight:
+DarkFutureWeight.SmallDrug:
   $type: gamedataConstantStatModifier_Record
-  value: 0.3
+  value: 0
   modifierType: Additive
   statType: BaseStats.Weight
 
@@ -62,56 +81,45 @@ DarkFutureStatusEffect.NoDuration:
 
 #
 #
-# Combat Nerve Loss Bonus Consumable
+# Humanity Loss Consumable
 #
 #
-DarkFutureConsumableBaseName.Sedation:
+DarkFutureConsumableBaseName.Endotrisine:
   $type: gamedataConsumableBaseName_Record
-  enumName: Sedation
+  enumName: Endotrisine
 
-DarkFutureStatusEffectTypes.Sedation:
+DarkFutureStatusEffectTypes.Endotrisine:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
-  enumName: Sedation
+  enumName: Endotrisine
+
+UIIcon.DarkFutureEndotrisineBuffIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: johnny_pills
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
 
 UIIcon.dark_future_endotrisine:
   $type: gamedataUIIcon_Record
   atlasPartName: endotrisine
-  atlasResourcePath: base\gameplay\gui\common\icons\items\darkfuture_customicons_items.inkatlas
+  atlasResourcePath: darkfuture\items\icons\darkfuture_customicons_items.inkatlas
 
-DarkFutureItem.SedationDrugDurationValue:
-  $type: gamedataConstantStatModifier_Record
-  value: 900
-  modifierType: Additive
-  statType: BaseStats.MaxDuration
-
-DarkFutureItem.SedationDrugDuration:
-  $type: gamedataStatModifierGroup_Record
-  drawBasedOnStatType: False
-  optimiseCombinedModifiers: False
-  saveBasedOnStatType: False
-  statModsLimit: -1
-  relatedModifierGroups: []
-  statModifiers:
-    - DarkFutureItem.SedationDrugDurationValue
-
-DarkFutureStatusEffect.Sedation_UIData:
+DarkFutureStatusEffect.Endotrisine_UIData:
   $type: gamedataStatusEffectUIData_Record
-  description: l"DarkFutureNumbedDesc"
-  displayName: l"DarkFutureNumbed02Name"
+  description: l"DarkFutureConsumableEndotrisineEffectDesc"
+  displayName: l"DarkFutureConsumableEndotrisineEffectName"
   fluffText: ''
-  iconPath: qh_brainmelt
-  priority: -9
+  iconPath: DarkFutureEndotrisineBuffIcon
+  priority: -7
   floatValues: []
   intValues:
-    - -35
+    - 100
+    - 24
   nameValues: []
   stats: []
 
-# Effect on item use only. Prevents unintended VFX application.
-DarkFutureStatusEffect.SedationInhaler:
+DarkFutureStatusEffect.Endotrisine:
   $type: gamedataStatusEffect_Record
-  duration: DarkFutureStatusEffect.NoDuration
+  duration: BaseStats.InfiniteDuration
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
@@ -121,51 +129,21 @@ DarkFutureStatusEffect.SedationInhaler:
   removeOnStoryTier: False
   replicated: False
   savable: True
-  statusEffectType: DarkFutureStatusEffectTypes.Sedation
+  statusEffectType: DarkFutureStatusEffectTypes.Endotrisine
   stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Endotrisine_UIData
   debugTags: []
   gameplayTags:
     - Buff
-    - DarkFutureSedationInhaler
-  immunityStats: []
-  packages: []
-  SFX: []
-  VFX:
-    - DarkFutureStatusEffect.InhalerVFX
-
-DarkFutureStatusEffect.Sedation:
-  $type: gamedataStatusEffect_Record
-  duration: DarkFutureItem.SedationDrugDuration
-  dynamicDuration: False
-  isAffectedByTimeDilationNPC: True
-  isAffectedByTimeDilationPlayer: True
-  maxStacks: DarkFutureStatusEffect.SingleStack
-  reapplyPackagesOnMaxStacks: False
-  removeAllStacksWhenDurationEnds: False
-  removeOnStoryTier: False
-  replicated: False
-  savable: True
-  statusEffectType: DarkFutureStatusEffectTypes.Sedation
-  stopActiveSfxOnDeactivate: True
-  uiData: DarkFutureStatusEffect.Sedation_UIData
-  debugTags: []
-  gameplayTags:
-    - Buff
-    - DarkFutureSedationBuff
+    - DarkFutureEndotrisineBuff
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
   VFX: []
 
-DarkFutureItem.SedationDrugOnEquipCompletionEffect:
-  $type: gamedataObjectActionEffect_Record
-  statusEffect: DarkFutureStatusEffect.Sedation
-
-DarkFutureItem.SedationDrugOnEquipInhalerCompletionEffect:
-  $type: gamedataObjectActionEffect_Record
-  statusEffect: DarkFutureStatusEffect.SedationInhaler
-
-DarkFutureItem.SedationDrugObjectAction:
+DarkFutureItem.EndotrisineDrugObjectAction:
   $type: gamedataItemAction_Record
   isDefaultLootChoice: False
   removeAfterUse: True
@@ -174,9 +152,7 @@ DarkFutureItem.SedationDrugObjectAction:
   objectActionType: ObjectActionType.Item
   priority: 0
   activationTime: []
-  completionEffects:
-    - DarkFutureItem.SedationDrugOnEquipCompletionEffect
-    - DarkFutureItem.SedationDrugOnEquipInhalerCompletionEffect
+  completionEffects: []
   costs: []
   durationTime: []
   instigatorActivePrereqs: []
@@ -187,30 +163,30 @@ DarkFutureItem.SedationDrugObjectAction:
   targetActivePrereqs: []
   targetPrereqs: []
 
-DarkFutureItem.SedationDrugOnEquip_UIData:
+DarkFutureItem.EndotrisineDrugOnEquip_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureConsumableUIDescriptionSedation"
+  localizedDescription: l"DarkFutureConsumableUIDescriptionEndotrisine"
   localizedName: ''
   floatValues: []
   intValues:
-    - -35
-    - -15
+    - 100
+    - 24
   nameValues: []
   stats: []
 
-DarkFutureItem.SedationDrugOnEquip:
+DarkFutureItem.EndotrisineDrugOnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.SedationDrugOnEquip_UIData
+  UIData: DarkFutureItem.EndotrisineDrugOnEquip_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.SedationDrug:
+DarkFutureItem.EndotrisineDrug:
   $type: gamedataConsumableItem_Record
-  consumableBaseName: DarkFutureConsumableBaseName.Sedation
+  consumableBaseName: DarkFutureConsumableBaseName.Endotrisine
   consumableType: ConsumableType.Drug
   animFeatureName: ItemData
   animName: ui_garment_pose
@@ -253,21 +229,21 @@ DarkFutureItem.SedationDrug:
   appearanceSuffixesOwnerOverride: []
   attachmentSlots: []
   buyPrice:
-    - Price.BlackmarketLongLastingConsumable
+    - DarkFuturePrice.EndotrisineBase
     - Price.BuyPrice_StreetCred_Discount
-    - DarkFuturePrice.IllegalDrugs
+    - DarkFuturePrice.EndotrisineMult
   cameraForward: {x: 0, y: 0, z: 0}
   cameraUp: {x: 0, y: 0, z: 0}
   connections: []
-  displayName: l"DarkFutureItemNameSedation"
+  displayName: l"DarkFutureItemNameEndotrisine"
   equipAreas: []
   equipPrereqs: []
   gameplayRestrictions: []
   hairSkinnedMeshComponents: []
-  localizedDescription: l"DarkFutureItemDescriptionSedation"
+  localizedDescription: l"DarkFutureItemDescriptionEndotrisine"
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.SedationDrugOnEquip
+    - DarkFutureItem.EndotrisineDrugOnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -275,9 +251,9 @@ DarkFutureItem.SedationDrug:
   previewBBoxOverride: []
   requiredSlots: []
   sellPrice:
-    - Price.BlackmarketLongLastingConsumable
+    - DarkFuturePrice.EndotrisineBase
     - Price.SellMultiplier
-    - DarkFuturePrice.IllegalDrugs
+    - DarkFuturePrice.EndotrisineMult
   slotPartList: []
   slotPartListPreset: []
   tags:
@@ -286,19 +262,18 @@ DarkFutureItem.SedationDrug:
     - Consumable
     - Drug
     - Medical
+    - DarkFutureConsumableEndotrisineDrug
+    - DarkFutureAnimPillBPink
     - IllegalItem
-    - DarkFutureConsumableSedationDrug
   variants: []
   visualTags: []
   effectors: []
   objectActions:
-    - DarkFutureItem.SedationDrugObjectAction
+    - DarkFutureItem.EndotrisineDrugObjectAction
     - ItemAction.Drop
-  statModifierGroups:
-    - DarkFutureItem.SedationDrugDuration
+  statModifierGroups: []
   statModifiers:
-    - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -375,8 +350,7 @@ DarkFutureStatusEffect.Weakened:
   immunityStats: []
   packages: []
   SFX: []
-  VFX:
-    - DarkFutureStatusEffect.InhalerVFX
+  VFX: []
 
 DarkFutureItem.NerveRestoreDrugOnEquipCompletionEffect:
   $type: gamedataObjectActionEffect_Record
@@ -424,11 +398,7 @@ DarkFutureItem.NerveRestoreDrugOnEquip:
   statPools: []
   stats: []
 
-DarkFuturePrice.NerveRestoreDrug:
-  $type: gamedataConstantStatModifier_Record
-  value: 3
-  modifierType: Multiplier
-  statType: BaseStats.Price
+
 
 DarkFutureItem.NerveRestoreDrug:
   $type: gamedataConsumableItem_Record
@@ -437,7 +407,7 @@ DarkFutureItem.NerveRestoreDrug:
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
-  appearanceName: drug_15
+  appearanceName: drug_3
   canDrop: True
   crosshair: Crosshairs.None
   deprecated: False
@@ -448,7 +418,7 @@ DarkFutureItem.NerveRestoreDrug:
   friendlyName: ''
   garmentOffset: 0
   icon: UIIcon.ItemIcon
-  iconPath: inhaler_14_rara
+  iconPath: inhaler_6_ripperdoc_med
   isCached: False
   isCoreCW: False
   isCustomizable: False
@@ -518,6 +488,7 @@ DarkFutureItem.NerveRestoreDrug:
     - DarkFutureConsumableAddictiveNarcoticWeak
     - DarkFutureConsumableOverrideTierWithAddictionHeader
     - DarkFutureConsumableCombatUseAllowed
+    - DarkFutureAnimInhalerEmergencyCardioregulator
   variants: []
   visualTags: []
   effectors: []
@@ -528,7 +499,383 @@ DarkFutureItem.NerveRestoreDrug:
     - DarkFutureItem.NerveRestoreDrugDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
+  statPools: []
+  weakspots: []
+
+#
+#
+# Immunosuppressant Drug
+#
+#
+
+# Negate Health Reduction
+DarkFutureItem.ImmunosuppressantNegateHealthReduction_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Multiplier
+  statType: BaseStats.EdgerunnerHealthReduction
+
+DarkFutureStatusEffect.ImmunosuppressantNegateHealthReduction_Package:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureItem.ImmunosuppressantNegateHealthReduction_StatModifier
+
+### Stats Tracking
+#
+#
+DarkFutureStats.HasImmunosuppressantApplied:
+  $type: gamedataStat_Record
+  canBeForcedByQuests: False
+  decimalPlaces: 0
+  displayPercent: False
+  displayPlus: False
+  enumComment: Helper stat to track if Immunosuppressant is applied on the player
+  enumName: DarkFutureHasImmunosuppressantApplied
+  improvementRelation: ImprovementRelation.None
+  inMeters: False
+  inSeconds: False
+  inSpeed: False
+  localizedDescription: ''
+  localizedName: ''
+  localizedStatDisplay: ''
+  max: 1
+  min: 0
+  multiplyBy100InText: False
+  roundValue: False
+  flags:
+    - EquipOnPlayer
+  substats: []
+  themes: []
+
+BaseStats.DarkFutureHasImmunosuppressantApplied:
+  $type: Stat
+  enumName: DarkFutureHasImmunosuppressantApplied
+
+DarkFutureStatusEffect.HasImmunosuppressantAppliedStatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.DarkFutureCyberpsychosisStacks
+
+DarkFutureStatusEffect.HasImmunosuppressantApplied_Package:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.HasImmunosuppressantAppliedStatModifier
+
+DarkFuture.HasImmunosuppressantAppliedStatModifier:
+  $type: gamedataCombinedStatModifier_Record
+  opSymbol: '*'
+  refObject: Self
+  refStat: BaseStats.DarkFutureHasImmunosuppressantApplied
+  value: -100.0
+  modifierType: Additive
+  statType: BaseStats.EffectorChance
+
+# The effectorChance to append the new chances to.
+NewPerks.Tech_Master_Perk_3_inline12.effectorChance:
+  - !append-once DarkFuture.HasImmunosuppressantAppliedStatModifier
+#
+#
+### Stats Tracking
+
+DarkFutureConsumableBaseName.Immunosuppressant:
+  $type: gamedataConsumableBaseName_Record
+  enumName: Immunosuppressant
+
+DarkFutureStatusEffectTypes.Immunosuppressant:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Immunosuppressant
+
+UIIcon.ImmunosuppressantIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ripperdoc
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+
+DarkFutureItem.ImmunosuppressantDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1800
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureItem.ImmunosuppressantDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.ImmunosuppressantDuration_StatModifier
+
+DarkFutureStatusEffect.Immunosuppressant_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  #description: SET BY DFSETTINGS BASED ON CURRENT SETTINGS
+  displayName: l"DarkFutureItemNameImmunosuppressant"
+  fluffText: ''
+  iconPath: ImmunosuppressantIcon
+  priority: -8
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Immunosuppressant:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureItem.ImmunosuppressantDuration
+  uiData: DarkFutureStatusEffect.Immunosuppressant_UIData
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Immunosuppressant
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFutureImmunosuppressant
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.ImmunosuppressantNegateHealthReduction_Package
+    - DarkFutureStatusEffect.HasImmunosuppressantApplied_Package
+    
+  SFX: []
+  VFX: []
+
+DarkFutureItem.ImmunosuppressantDrugObjectActionCompletionEffect:
+  $type: gamedataObjectActionEffect_Record
+  statusEffect: DarkFutureStatusEffect.Immunosuppressant
+
+DarkFutureItem.ImmunosuppressantDrugObjectAction:
+  $type: gamedataItemAction_Record
+  isDefaultLootChoice: False
+  removeAfterUse: True
+  actionName: Consume
+  hackCategory: HackCategory.NotAHack
+  objectActionType: ObjectActionType.Item
+  priority: 0
+  activationTime: []
+  completionEffects:
+    - DarkFutureItem.ImmunosuppressantDrugObjectActionCompletionEffect
+  costs: []
+  durationTime: []
+  instigatorActivePrereqs: []
+  instigatorPrereqs: []
+  interruptionPrereqs: []
+  rewards: []
+  startEffects: []
+  targetActivePrereqs: []
+  targetPrereqs: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_NegateHealthReduction_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionImmunosuppressantEdgerunnerHealth"
+  localizedName: ''
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_CureCyberpsychosis_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionImmunosuppressantCyberpsychosisCure"
+  localizedName: ''
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_SuppressHumanityLoss_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionImmunosuppressantHumanityLossCyberware"
+  localizedName: ''
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_PreventCyberpsychosis_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionImmunosuppressantCyberpsychosisPrevention"
+  localizedName: ''
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_PreventFury_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionImmunosuppressantFuryPrevention"
+  localizedName: ''
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_NegateHealthReduction:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.ImmunosuppressantDrugOnEquip_NegateHealthReduction_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_CureCyberpsychosis:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.ImmunosuppressantDrugOnEquip_CureCyberpsychosis_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_SuppressHumanityLoss:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.ImmunosuppressantDrugOnEquip_SuppressHumanityLoss_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_PreventCyberpsychosis:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.ImmunosuppressantDrugOnEquip_PreventCyberpsychosis_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrugOnEquip_PreventFury:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureItem.ImmunosuppressantDrugOnEquip_PreventFury_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureItem.ImmunosuppressantDrug:
+  $type: gamedataConsumableItem_Record
+  consumableBaseName: DarkFutureConsumableBaseName.Immunosuppressant
+  consumableType: ConsumableType.Drug
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  appearanceName: drug_10
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  dropObject: defaultItemDrop
+  enableNpcRPGData: False
+  entityName: base_inhaler_item
+  equipArea: EquipmentArea.Consumable
+  friendlyName: ''
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: inhaler_3_health_beriteback
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: True
+  itemCategory: ItemCategory.Consumable
+  itemSecondaryAction: ItemAction.Consume
+  itemType: ItemType.Con_LongLasting
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.Rare
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: False
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.ConsumableBasePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Price.LongLastingConsumable
+    - DarkFuturePrice.Pharmaceuticals
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureItemNameImmunosuppressant"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions: []
+  hairSkinnedMeshComponents: []
+  localizedDescription: l"DarkFutureItemDescriptionImmunosuppressant"
+  OnAttach: []
+  OnEquip: [] # DEFINED BY DFSETTINGS BASED ON CURRENT SETTINGS
+  OnLooted: []
+  parts: []
+  placementSlots:
+    - AttachmentSlots.WeaponLeft
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.ConsumableBasePrice
+    - Price.SellMultiplier
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.LongLastingConsumable
+    - DarkFuturePrice.Pharmaceuticals
+  slotPartList: []
+  slotPartListPreset: []
+  tags:
+    - Preload
+    - HasModel
+    - Consumable
+    - Drug
+    - Medical
+    - LongLasting
+    - DarkFutureConsumableImmunosuppressantDrug
+    - DarkFutureConsumableCombatUseAllowed
+    - DarkFutureAnimInhalerImmunosuppressant
+  variants: []
+  visualTags: []
+  effectors: []
+  objectActions:
+    - DarkFutureItem.ImmunosuppressantDrugObjectAction
+    - ItemAction.Drop
+  statModifierGroups:
+    - DarkFutureItem.ImmunosuppressantDuration
+  statModifiers:
+    - Items.LongLasting_inline0
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -558,33 +905,6 @@ DarkFutureStatusEffect.AddictionTreatment_UIData:
     - 12
   nameValues: []
   stats: []
-
-# Effect on item use only. Prevents unintended VFX application.
-DarkFutureStatusEffect.AddictionTreatmentInhaler:
-  $type: gamedataStatusEffect_Record
-  duration: DarkFutureStatusEffect.NoDuration
-  dynamicDuration: False
-  isAffectedByTimeDilationNPC: True
-  isAffectedByTimeDilationPlayer: True
-  maxStacks: DarkFutureStatusEffect.SingleStack
-  reapplyPackagesOnMaxStacks: False
-  removeAllStacksWhenDurationEnds: False
-  removeOnStoryTier: False
-  replicated: False
-  savable: True
-  statusEffectType: DarkFutureStatusEffectTypes.AddictionTreatment
-  stopActiveSfxOnDeactivate: True
-  debugTags: []
-  gameplayTags:
-    - Buff
-    - DarkFutureAddictionTreatmentInhaler
-    - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
-  immunityStats: []
-  packages: []
-  SFX: []
-  VFX:
-    - DarkFutureStatusEffect.InhalerVFX
 
 DarkFutureStatusEffect.AddictionTreatment:
   $type: gamedataStatusEffect_Record
@@ -616,10 +936,6 @@ DarkFutureItem.AddictionTreatmentDrugOnEquipCompletionEffect:
   $type: gamedataObjectActionEffect_Record
   statusEffect: DarkFutureStatusEffect.AddictionTreatment
 
-DarkFutureItem.AddictionTreatmentDrugOnEquipInhalerCompletionEffect:
-  $type: gamedataObjectActionEffect_Record
-  statusEffect: DarkFutureStatusEffect.AddictionTreatmentInhaler
-
 DarkFutureItem.AddictionTreatmentDrugObjectAction:
   $type: gamedataItemAction_Record
   isDefaultLootChoice: False
@@ -631,7 +947,6 @@ DarkFutureItem.AddictionTreatmentDrugObjectAction:
   activationTime: []
   completionEffects:
     - DarkFutureItem.AddictionTreatmentDrugOnEquipCompletionEffect
-    - DarkFutureItem.AddictionTreatmentDrugOnEquipInhalerCompletionEffect
   costs: []
   durationTime: []
   instigatorActivePrereqs: []
@@ -648,7 +963,7 @@ DarkFutureItem.AddictionTreatmentDrugOnEquip_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - -50
+    - -40
     - 12
   nameValues: []
   stats: []
@@ -670,7 +985,7 @@ DarkFutureItem.AddictionTreatmentDrug:
   animFeatureName: ItemData
   animName: ui_garment_pose
   animSetResource: ''
-  appearanceName: drug_10
+  appearanceName: drug_15
   canDrop: True
   crosshair: Crosshairs.None
   deprecated: False
@@ -681,7 +996,7 @@ DarkFutureItem.AddictionTreatmentDrug:
   friendlyName: ''
   garmentOffset: 0
   icon: UIIcon.ItemIcon
-  iconPath: inhaler_3_health_beriteback
+  iconPath: inhaler_14_rara
   isCached: False
   isCoreCW: False
   isCustomizable: False
@@ -748,6 +1063,7 @@ DarkFutureItem.AddictionTreatmentDrug:
     - Drug
     - Medical
     - DarkFutureConsumableAddictionTreatmentDrug
+    - DarkFutureAnimInhalerAddiquit
   variants: []
   visualTags: []
   effectors: []
@@ -757,7 +1073,7 @@ DarkFutureItem.AddictionTreatmentDrug:
   statModifierGroups: []
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -836,9 +1152,10 @@ DarkFutureStatusEffect.GlitterSlowTimeEffector:
   removeAfterActionCall: False
   removeAfterPrereqCheck: False
   statModifierGroups: []
+  affectsPlayer: False
   easeOutCurve: ReflexRecorderEaseOut
   easeInCurve: ReflexRecorderEaseIn
-  reason: glitter
+  reason: df_glitter
   duration: 12.0
   dilation: 0.5
 
@@ -860,7 +1177,7 @@ DarkFutureStatusEffect.GlitterSlowTime:
   duration: DarkFutureStatusEffect.GlitterSlowTimeDuration
   dynamicDuration: False
   isAffectedByTimeDilationNPC: False
-  isAffectedByTimeDilationPlayer: False
+  isAffectedByTimeDilationPlayer: True
   maxStacks: DarkFutureStatusEffect.SingleStack
   reapplyPackagesOnMaxStacks: False
   removeAllStacksWhenDurationEnds: False
@@ -876,6 +1193,7 @@ DarkFutureStatusEffect.GlitterSlowTime:
     - GameplayRestriction
     - NoInhalerOrInjector
     - NoGrenadeOrGadget
+    - TDEffect
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.GlitterSlowTimePackage
@@ -926,6 +1244,7 @@ DarkFutureStatusEffect.Glitter_StaminaMovement_StatsPackage:
     - DarkFutureStatusEffect.Glitter_StatsPackageModifier_Acceleration
     - DarkFutureStatusEffect.Glitter_StatsPackageModifier_MaxHealth
 
+#   - DarkFutureStatusEffect.MethVFX
 DarkFutureStatusEffect.GlitterStaminaMovement:
   $type: gamedataStatusEffect_Record
   duration: DarkFutureStatusEffect.GlitterStaminaMovementDuration
@@ -952,8 +1271,7 @@ DarkFutureStatusEffect.GlitterStaminaMovement:
   packages:
     - DarkFutureStatusEffect.Glitter_StaminaMovement_StatsPackage
   SFX: []
-  VFX:
-    - DarkFutureStatusEffect.MethVFX
+  VFX: []
 
 DarkFutureStatusEffect.Glitter_SlowTime_OnEquipUIData:
   $type: gamedataGameplayLogicPackageUIData_Record
@@ -1178,6 +1496,7 @@ DarkFutureItem.Glitter:
     - DarkFutureConsumableAddictiveNarcoticStrong
     - DarkFutureConsumableOverrideTierWithAddictionHeader
     - DarkFutureConsumableCombatUseAllowed
+    - DarkFutureAnimInhalerGlitter
   variants: []
   visualTags: []
   effectors: []
@@ -1188,7 +1507,7 @@ DarkFutureItem.Glitter:
     - DarkFutureStatusEffect.GlitterStaminaMovementDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -1308,7 +1627,7 @@ DarkFutureItem.TestNerveDeath:
   statModifierGroups: []
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -1325,18 +1644,18 @@ DarkFutureVendors.FirstAidKitQuantityChance:
   modifierType: Additive
   statType: BaseStats.Quantity
 
-DarkFutureVendors.SedationDrugQuantityChance:
+DarkFutureVendors.EndotrisineQuantityChance:
   $type: gamedataRandomStatModifier_Record
-  max: 10.5
-  min: 6.0
+  max: 2.5
+  min: 1.0
   useControlledRandom: False
   modifierType: Additive
   statType: BaseStats.Quantity
 
-DarkFutureVendors.SedationDrugQuantityLowChance:
+DarkFutureVendors.EndotrisineQuantityLowChance:
   $type: gamedataRandomStatModifier_Record
-  max: 3.5
-  min: 0.0
+  max: 1.5
+  min: 1.0
   useControlledRandom: False
   modifierType: Additive
   statType: BaseStats.Quantity
@@ -1353,6 +1672,14 @@ DarkFutureVendors.NerveRestoreDrugQuantityChance:
   $type: gamedataRandomStatModifier_Record
   max: 5.5
   min: 2.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.ImmunosuppressantDrugQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 6.5
+  min: 3.0
   useControlledRandom: False
   modifierType: Additive
   statType: BaseStats.Quantity
@@ -1383,19 +1710,19 @@ DarkFutureVendors.FirstAidKit:
   quantity:
     - DarkFutureVendors.FirstAidKitQuantityChance
 
-DarkFutureVendors.SedationDrug:
+DarkFutureVendors.Endotrisine:
   $type: gamedataVendorItem_Record
-  item: DarkFutureItem.SedationDrug
+  item: DarkFutureItem.EndotrisineDrug
   generationPrereqs: []
   quantity:
-    - DarkFutureVendors.SedationDrugQuantityChance
+    - DarkFutureVendors.EndotrisineQuantityChance
 
-DarkFutureVendors.SedationDrugUncommon:
+DarkFutureVendors.EndotrisineUncommon:
   $type: gamedataVendorItem_Record
-  item: DarkFutureItem.SedationDrug
+  item: DarkFutureItem.EndotrisineDrug
   generationPrereqs: []
   quantity:
-    - DarkFutureVendors.SedationDrugQuantityLowChance
+    - DarkFutureVendors.EndotrisineQuantityLowChance
 
 DarkFutureVendors.AddictionTreatmentDrug:
   $type: gamedataVendorItem_Record
@@ -1410,6 +1737,13 @@ DarkFutureVendors.NerveRestoreDrug:
   generationPrereqs: []
   quantity:
     - DarkFutureVendors.NerveRestoreDrugQuantityChance
+
+DarkFutureVendors.ImmunosuppressantDrug:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.ImmunosuppressantDrug
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.ImmunosuppressantDrugQuantityChance
 
 DarkFutureVendors.Glitter:
   $type: gamedataVendorItem_Record
@@ -1440,7 +1774,8 @@ Vendors.BlackMarketMedicStore.itemStock: &StandardMedicVendors
   - !append-once DarkFutureVendors.FirstAidKit
   - !append-once DarkFutureVendors.NerveRestoreDrug
   - !append-once DarkFutureVendors.AddictionTreatmentDrug
-  - !append-once DarkFutureVendors.SedationDrugUncommon
+  - !append-once DarkFutureVendors.EndotrisineUncommon
+  - !append-once DarkFutureVendors.ImmunosuppressantDrug
 Vendors.bls_ina_se1_medicstore_01.itemStock: *StandardMedicVendors
 Vendors.cct_cpz_medic_01.itemStock: *StandardMedicVendors
 Vendors.cct_dtn_medic_01.itemStock: *StandardMedicVendors
@@ -1464,16 +1799,18 @@ Vendors.cz_stadium_medic_01.itemStock:
   - !append-once DarkFutureVendors.FirstAidKit
   - !append-once DarkFutureVendors.NerveRestoreDrug
   - !append-once DarkFutureVendors.AddictionTreatmentDrug
-  - !append-once DarkFutureVendors.SedationDrug
+  - !append-once DarkFutureVendors.Endotrisine
   - !append-once DarkFutureVendors.Glitter
   - !append-once DarkFutureVendors.BlackLaceV0
   - !append-once DarkFutureVendors.BlackLaceV1
+  - !append-once DarkFutureVendors.ImmunosuppressantDrug
 
 Vendors.cz_con_medic_01.itemStock:
   - !append-once DarkFutureVendors.FirstAidKit
   - !append-once DarkFutureVendors.NerveRestoreDrug
   - !append-once DarkFutureVendors.AddictionTreatmentDrug
-  - !append-once DarkFutureVendors.SedationDrug
+  - !append-once DarkFutureVendors.Endotrisine
+  - !append-once DarkFutureVendors.ImmunosuppressantDrug
 
 # Illegal Drug Vendors
 #

@@ -11,7 +11,7 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.DelayHelper.*
 import DarkFuture.Utils.{
-    RunGuard,
+    DFRunGuard,
     Int32ToFloat,
     HoursToGameTimeSeconds
 }
@@ -20,7 +20,12 @@ import DarkFuture.Settings.{
     DFSettings,
     SettingChangedEvent
 }
-import DarkFuture.Services.DFGameStateService
+import DarkFuture.Services.{
+    DFGameStateService,
+    DFNotificationService,
+    DFMessage,
+    DFMessageContext
+}
 
 public enum DFSummonCreditWidgetAppearance {
     Default = 0,
@@ -37,28 +42,38 @@ private let m_player: ref<GameObject>;
 
 @wrapMethod(VehiclesManagerPopupGameController)
 protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
+    //DFProfile();
     wrappedMethod(player);
     this.m_player = player;
 }
 
 @wrapMethod(VehiclesManagerPopupGameController)
 protected func Select(previous: ref<inkVirtualCompoundItemController>, next: ref<inkVirtualCompoundItemController>) -> Void {
+    //DFProfile();
     wrappedMethod(previous, next);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+    let selectedVehicle: ref<VehiclesManagerListItemController> = next as VehiclesManagerListItemController;
+    let selectedVehicleData: ref<VehicleListItemData> = selectedVehicle.GetVehicleData();
+    let isDelamainTaxi: Bool = Equals(selectedVehicleData.m_data.icon, n"delamain");
 
     if IsSystemEnabledAndRunning(vehicleSummonSystem) {
         let titleText: ref<inkText> = this.GetRootCompoundWidget().GetWidgetByPathName(n"containerRoot/top_holder/contact_name") as inkText;
         let repairText: ref<inkText> = this.GetRootCompoundWidget().GetWidgetByPathName(n"containerRoot/wrapper/container/image/repairOverlay/repairing/inkTextWidget4") as inkText;
         let summonCredits: Int32 = vehicleSummonSystem.GetRemainingSummonCredits();
 
-        if summonCredits > 0 {
+        if isDelamainTaxi || summonCredits > 0 {
             repairText.SetText(GetLocalizedTextByKey(n"Story-base-gameplay-gui-widgets-vehicle_control-vehicles_manager-repairing"));
 
-            if summonCredits < vehicleSummonSystem.GetMaxSummonCredits() {
+            if isDelamainTaxi {
+                titleText.SetText(GetLocalizedTextByKey(n"Story-base-gameplay-gui-widgets-vehicle_control-vehicles_manager-_localizationString1"));
+
+            } else if summonCredits < vehicleSummonSystem.GetMaxSummonCredits() {
                 titleText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTotalCredits") + ToString(vehicleSummonSystem.GetRemainingSummonCredits()) + GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpNextCreditTime") + vehicleSummonSystem.GetSummonCooldownRemainingTimeString());
+
             } else {
                 titleText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpTotalCredits") + ToString(vehicleSummonSystem.GetRemainingSummonCredits()));
             }
+
         } else {
             titleText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpLimitReached") + vehicleSummonSystem.GetSummonCooldownRemainingTimeString());
             repairText.SetText(GetLocalizedTextByKey(n"DarkFutureSummonCarPopUpUnavailable"));
@@ -71,9 +86,13 @@ protected func Select(previous: ref<inkVirtualCompoundItemController>, next: ref
 
 @wrapMethod(VehiclesManagerPopupGameController)
 protected func Activate() -> Void {
+    //DFProfile();
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+    let selectedVehicle: ref<VehiclesManagerListItemController> = this.m_listController.GetSelectedItem() as VehiclesManagerListItemController;
+    let selectedVehicleData: ref<VehicleListItemData> = selectedVehicle.GetVehicleData();
+    let isDelamainTaxi: Bool = Equals(selectedVehicleData.m_data.icon, n"delamain");
 
-    if IsSystemEnabledAndRunning(vehicleSummonSystem) && vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
+    if IsSystemEnabledAndRunning(vehicleSummonSystem) && !isDelamainTaxi && vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
         return;
     } else {
         wrappedMethod();
@@ -84,35 +103,37 @@ protected func Activate() -> Void {
 //
 @wrapMethod(VehiclesManagerListItemController)
 protected cb func OnDataChanged(value: Variant) -> Bool {
+    //DFProfile();
     wrappedMethod(value);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+    let isDelamainTaxi: Bool = Equals(this.m_vehicleData.m_data.icon, n"delamain");
 
-    if IsSystemEnabledAndRunning(vehicleSummonSystem) && vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
+    if IsSystemEnabledAndRunning(vehicleSummonSystem) && !isDelamainTaxi && vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
         this.GetRootWidget().SetState(n"Disabled");
     }
 }
 
 @wrapMethod(VehiclesManagerListItemController)
 protected cb func OnSelected(itemController: wref<inkVirtualCompoundItemController>, discreteNav: Bool) -> Bool {
+    //DFProfile();
     wrappedMethod(itemController, discreteNav);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+    let isDelamainTaxi: Bool = Equals(this.m_vehicleData.m_data.icon, n"delamain");
 
-    if IsSystemEnabledAndRunning(vehicleSummonSystem) {
-        if vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
-            this.GetRootWidget().SetState(n"DisabledActive");
-        }
+    if IsSystemEnabledAndRunning(vehicleSummonSystem) && !isDelamainTaxi && vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
+        this.GetRootWidget().SetState(n"DisabledActive");
     }
 }
 
 @wrapMethod(VehiclesManagerListItemController)
 protected cb func OnDeselected(itemController: wref<inkVirtualCompoundItemController>) -> Bool {
+    //DFProfile();
     wrappedMethod(itemController);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+    let isDelamainTaxi: Bool = Equals(this.m_vehicleData.m_data.icon, n"delamain");
 
-    if IsSystemEnabledAndRunning(vehicleSummonSystem) {
-        if vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
-            this.GetRootWidget().SetState(n"Disabled");
-        }
+    if IsSystemEnabledAndRunning(vehicleSummonSystem) && !isDelamainTaxi && vehicleSummonSystem.GetRemainingSummonCredits() == 0 {
+        this.GetRootWidget().SetState(n"Disabled");
     }
 }
 
@@ -120,14 +141,15 @@ protected cb func OnDeselected(itemController: wref<inkVirtualCompoundItemContro
 //
 @wrapMethod(VehicleComponent)
 protected cb func OnSummonStartedEvent(evt: ref<SummonStartedEvent>) -> Bool {
+    //DFProfile();
     wrappedMethod(evt);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
     
-    if IsSystemEnabledAndRunning(vehicleSummonSystem) {
+    if IsSystemEnabledAndRunning(vehicleSummonSystem) && IsDefined(evt) {
         if Equals(evt.state, vehicleSummonState.EnRoute) {
             // If this caused the vehicle to spawn or move, it is now the "last summoned" vehicle.
             vehicleSummonSystem.SetLastSummonedVehicle(this);
-        } else if Equals(evt.state, vehicleSummonState.AlreadySummoned) {
+        } else if Equals(evt.state, vehicleSummonState.AlreadySummoned) && NotEquals(this.GetPS().GetCustomMappin(), gamedataMappinVariant.Zzz19_DelamainTaxiVariant) {
             // Return a Summon Credit; this vehicle was already summoned.
             vehicleSummonSystem.GrantSummonCredit();
         }
@@ -137,18 +159,20 @@ protected cb func OnSummonStartedEvent(evt: ref<SummonStartedEvent>) -> Bool {
 // QuickSlotsManager
 //
 @addField(QuickSlotsManager)
-private let activeVehicleJustSet: Bool;
+private let DFActiveVehicleJustSet: Bool;
 
 @wrapMethod(QuickSlotsManager)
 public final func SetActiveVehicle(vehicleData: PlayerVehicle) -> Void {
+    //DFProfile();
     // Used to prevent summoning by tapping the Summon hotkey; require the menu to be opened.
-    this.activeVehicleJustSet = true;
+    this.DFActiveVehicleJustSet = true;
 
     wrappedMethod(vehicleData);
 }
 
 @wrapMethod(QuickSlotsManager)
-public final func SummonVehicle(force: Bool) -> Void {
+public final func SummonActiveVehicle(force: Bool) -> Void {
+    //DFProfile();
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
     
     if IsSystemEnabledAndRunning(vehicleSummonSystem) && DFGameStateService.Get().IsValidGameState(this) {
@@ -157,16 +181,18 @@ public final func SummonVehicle(force: Bool) -> Void {
             return;
         };
     
-        if vehicleSummonSystem.GetRemainingSummonCredits() > 0 && this.activeVehicleJustSet {
-            // We have summon credits, and we used the menu to select it; summon a vehicle.
-            vehicleSummonSystem.UseSummonCredit();
-            this.activeVehicleJustSet = false;
+        if vehicleSummonSystem.GetRemainingSummonCredits() > 0 && this.DFActiveVehicleJustSet {
+            // We have summon credits, OR we do not, but the vehicle we selected was the Delamain cab, AND we used the menu to select it; summon a vehicle.
+            //if {
+                vehicleSummonSystem.UseSummonCredit();
+            //}
+            this.DFActiveVehicleJustSet = false;
             let dpadAction: ref<DPADActionPerformed>;
             dpadAction = new DPADActionPerformed();
             dpadAction.action = EHotkey.DPAD_RIGHT;
             dpadAction.state = EUIActionState.COMPLETED;
             dpadAction.successful = true;
-            GameInstance.GetVehicleSystem(GetGameInstance()).SpawnPlayerVehicle(this.GetActiveVehicleType());
+            GameInstance.GetVehicleSystem(GetGameInstance()).SpawnActivePlayerVehicle(this.GetActiveVehicleType());
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(dpadAction);
 
         } else {
@@ -188,6 +214,7 @@ public final func SummonVehicle(force: Bool) -> Void {
 //
 @wrapMethod(TakeOverControlSystem)
 public final static func CreateInputHint(context: GameInstance, isVisible: Bool) -> Void {
+    //DFProfile();
 	wrappedMethod(context, isVisible);
 
 	let VehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
@@ -200,6 +227,7 @@ public final static func CreateInputHint(context: GameInstance, isVisible: Bool)
 //
 @wrapMethod(HotkeysWidgetController)
 protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
+    //DFProfile();
     wrappedMethod(player);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
     
@@ -210,24 +238,24 @@ protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
     counterCanvas.SetAnchor(inkEAnchor.TopLeft);
     counterCanvas.SetHAlign(inkEHorizontalAlign.Center);
     counterCanvas.SetVAlign(inkEVerticalAlign.Center);
-    counterCanvas.SetMargin(new inkMargin(158.0, 35.0, 0.0, 0.0));
-    counterCanvas.SetSize(new Vector2(100.0, 32.0));
-    counterCanvas.Reparent(inkCompoundRef.Get(this.m_carSlot) as inkCompoundWidget, 0);
+    counterCanvas.SetMargin(inkMargin(158.0, 35.0, 0.0, 0.0));
+    counterCanvas.SetSize(Vector2(100.0, 32.0));
+    counterCanvas.Reparent(inkWidgetRef.Get(this.m_carSlot) as inkCompoundWidget, 0);
 
     let counterFlex: ref<inkFlex> = new inkFlex();
     counterFlex.SetName(n"counterFlex");
     counterFlex.SetAnchor(inkEAnchor.TopLeft);
     counterFlex.SetHAlign(inkEHorizontalAlign.Center);
     counterFlex.SetVAlign(inkEVerticalAlign.Center);
-    counterFlex.SetSize(new Vector2(25.0, 25.0));
+    counterFlex.SetSize(Vector2(25.0, 25.0));
     counterFlex.Reparent(counterCanvas);
 
     let counterBg: ref<inkImage> = new inkImage();
     counterBg.SetName(n"counterBg");
     counterBg.SetFitToContent(true);
-    counterBg.SetAnchorPoint(new Vector2(0.5, 0.5));
-    counterBg.SetMargin(new inkMargin(-3.0, 6.0, -3.0, 8.0));
-    counterBg.SetSize(new Vector2(32.0, 32.0));
+    counterBg.SetAnchorPoint(Vector2(0.5, 0.5));
+    counterBg.SetMargin(inkMargin(-3.0, 6.0, -3.0, 8.0));
+    counterBg.SetSize(Vector2(32.0, 32.0));
     counterBg.SetAtlasResource(r"base\\gameplay\\gui\\widgets\\phone\\new_phone_assets.inkatlas");
     counterBg.SetTexturePart(n"counterLabel");
     counterBg.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
@@ -242,7 +270,7 @@ protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
     sizeProvider.SetAffectsLayoutWhenHidden(true);
     sizeProvider.SetHAlign(inkEHorizontalAlign.Center);
     sizeProvider.SetVAlign(inkEVerticalAlign.Center);
-    sizeProvider.SetSize(new Vector2(21.0, 0.0));
+    sizeProvider.SetSize(Vector2(21.0, 0.0));
     sizeProvider.SetVisible(false);
     sizeProvider.Reparent(counterFlex);
 
@@ -253,7 +281,7 @@ protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
     label.SetFontStyle(n"Semi-Bold");
     label.SetHAlign(inkEHorizontalAlign.Center);
     label.SetVAlign(inkEVerticalAlign.Center);
-    label.SetSize(new Vector2(100.0, 32.0));
+    label.SetSize(Vector2(100.0, 32.0));
     label.SetVerticalAlignment(textVerticalAlignment.Bottom);
     label.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
     label.BindProperty(n"tintColor", n"MainColors.Black");
@@ -273,6 +301,7 @@ protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
 //
 @addMethod(CarHotkeyController)
 protected func ResolveState() -> Void {
+    //DFProfile();
     super.ResolveState();
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
     
@@ -291,16 +320,19 @@ public class VehicleSummonCooldownDelayCallback extends DFDelayCallback {
 	public let DFVehicleSummonSystem: wref<DFVehicleSummonSystem>;
 
 	public static func Create(DFVehicleSummonSystem: wref<DFVehicleSummonSystem>) -> ref<DFDelayCallback> {
+        //DFProfile();
 		let self: ref<VehicleSummonCooldownDelayCallback> = new VehicleSummonCooldownDelayCallback();
 		self.DFVehicleSummonSystem = DFVehicleSummonSystem;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+        //DFProfile();
 		this.DFVehicleSummonSystem.summonCreditCooldownDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+        //DFProfile();
 		this.DFVehicleSummonSystem.OnSummonCooldownCallback();
 	}
 }
@@ -309,16 +341,19 @@ public class VehicleSummonCreditChangeDelayCallback extends DFDelayCallback {
 	public let DFVehicleSummonSystem: wref<DFVehicleSummonSystem>;
 
 	public static func Create(DFVehicleSummonSystem: wref<DFVehicleSummonSystem>) -> ref<DFDelayCallback> {
+        //DFProfile();
 		let self: ref<VehicleSummonCreditChangeDelayCallback> = new VehicleSummonCreditChangeDelayCallback();
 		self.DFVehicleSummonSystem = DFVehicleSummonSystem;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+        //DFProfile();
 		this.DFVehicleSummonSystem.creditChangeDebounceDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+        //DFProfile();
 		this.DFVehicleSummonSystem.OnVehicleSummonCreditChangeDelayCallback();
 	}
 }
@@ -328,6 +363,7 @@ public class VehicleSummonCreditChangeDelayCallback extends DFDelayCallback {
 //
 class DFVehicleSummonSystemEventListener extends DFSystemEventListener {
     private func GetSystemInstance() -> wref<DFVehicleSummonSystem> {
+        //DFProfile();
 		return DFVehicleSummonSystem.Get();
 	}
 }
@@ -345,23 +381,25 @@ public final class DFVehicleSummonSystem extends DFSystem {
     private let lastSummonCreditLabelCount: Int32;
     private let UIBlockedDueToCameraControl: Bool = false;
 
-    private let summonCreditCooldownDelayID: DelayID;
+    public let summonCreditCooldownDelayID: DelayID;
     private let summonCreditCooldownDelayIntervalGameTimeSeconds: Float = 300.0;
     
     private let hotkeySummonCreditCanvas: ref<inkCanvas>;
     private let hotkeySummonCreditLabel: ref<inkText>;
     private let hotkeySummonCreditBackground: ref<inkImage>;
-    private let creditChangeDebounceDelayID: DelayID;
+    public let creditChangeDebounceDelayID: DelayID;
     private let creditChangeDebounceDelayInterval: Float = 0.25;
 
     private let chkController: ref<CarHotkeyController>;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFVehicleSummonSystem> {
-		let instance: ref<DFVehicleSummonSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Gameplay.DFVehicleSummonSystem") as DFVehicleSummonSystem;
+        //DFProfile();
+		let instance: ref<DFVehicleSummonSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFVehicleSummonSystem>()) as DFVehicleSummonSystem;
 		return instance;
 	}
 
     public final static func Get() -> ref<DFVehicleSummonSystem> {
+        //DFProfile();
         return DFVehicleSummonSystem.GetInstance(GetGameInstance());
 	}
 
@@ -369,17 +407,20 @@ public final class DFVehicleSummonSystem extends DFSystem {
     //  Required Overrides
     //
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-    private func GetSystems() -> Void {
+    public func GetSystems() -> Void {
+        //DFProfile();
         this.GameStateService = DFGameStateService.Get();
     }
     private func RegisterListeners() -> Void {}
     private func UnregisterListeners() -> Void {}
 
     private func SetupDebugLogging() -> Void {
+        //DFProfile();
 		this.debugEnabled = false;
 	}
 
-    private func SetupData() -> Void {
+    public func SetupData() -> Void {
+        //DFProfile();
         if this.remainingSummonCredits == 9999 {
             this.remainingSummonCredits = this.Settings.maxVehicleSummonCredits;
         }
@@ -390,18 +431,22 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {	
+        //DFProfile();
         this.UpdateWidgetVisibility();
     }
 
-    private final func GetSystemToggleSettingValue() -> Bool {
+    public final func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
         return this.Settings.limitVehicleSummoning;
     }
 
     private final func GetSystemToggleSettingString() -> String {
+        //DFProfile();
         return "limitVehicleSummoning";
     }
 
     public final func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
+        //DFProfile();
         if ArrayContains(changedSettings, "maxVehicleSummonCredits") {
             this.creditsMax = this.Settings.maxVehicleSummonCredits;
             if this.remainingSummonCredits > this.creditsMax {
@@ -427,15 +472,18 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {
+        //DFProfile();
         this.RegisterForSummonCooldown();
     }
 
-    private func UnregisterAllDelayCallbacks() -> Void {
+    public func UnregisterAllDelayCallbacks() -> Void {
+        //DFProfile();
         this.UnregisterForSummonCooldown();
         this.UnregisterForVehicleSummonCreditChangeDelayCallback();
     }
 
-    private final func DoPostSuspendActions() -> Void {
+    public final func DoPostSuspendActions() -> Void {
+        //DFProfile();
         this.remainingSummonCredits = 9999;
         this.remainingCooldownTime = 0.0;
         this.lastSummonedVehicle = null;
@@ -445,12 +493,14 @@ public final class DFVehicleSummonSystem extends DFSystem {
         this.UpdateWidgetVisibility();
     }
 
-    private final func DoPostResumeActions() -> Void {
+    public final func DoPostResumeActions() -> Void {
+        //DFProfile();
         this.SetupData();
         this.UpdateWidgetVisibility();
     }
 
     private final func DoStopActions() -> Void {
+        //DFProfile();
         this.lastSummonedVehicle = null;
     }
 
@@ -458,12 +508,14 @@ public final class DFVehicleSummonSystem extends DFSystem {
     //  System-Specific Methods
     //
     public final func OnTakeControlOfCameraUpdate(hasControl: Bool) -> Void {
+        //DFProfile();
 		// Player took or released control of a camera, turret, or the Sniper's Nest.
 		this.UIBlockedDueToCameraControl = hasControl;
 		this.UpdateWidgetVisibility();
 	}
 
     public final func UpdateWidgetVisibility() -> Void {
+        //DFProfile();
         if IsSystemEnabledAndRunning(this) && IsDefined(this.hotkeySummonCreditCanvas) && !this.UIBlockedDueToCameraControl {
             this.hotkeySummonCreditCanvas.SetVisible(true);
         } else {
@@ -472,22 +524,27 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func SetHotkeySummonCreditCanvas(widget: ref<inkCanvas>) -> Void {
+        //DFProfile();
         this.hotkeySummonCreditCanvas = widget;
     }
 
     public final func SetHotkeySummonCreditLabel(widget: ref<inkText>) -> Void {
+        //DFProfile();
         this.hotkeySummonCreditLabel = widget;
     }
 
     public final func SetHotkeySummonCreditBackground(widget: ref<inkImage>) -> Void {
+        //DFProfile();
         this.hotkeySummonCreditBackground = widget;
     }
 
     public final func SetHotkeySummonCreditCount(count: Int32) {
+        //DFProfile();
         this.hotkeySummonCreditLabel.SetText(ToString(count));
     }
 
     public final func SetHotkeySummonCreditState(state: Bool) {
+        //DFProfile();
         if state {
             if this.Settings.compatibilityProjectE3HUD {
                 this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Red");
@@ -500,22 +557,29 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func GetRemainingSummonCredits() -> Int32 {
+        //DFProfile();
         return this.remainingSummonCredits;
     }
 
     public final func GetMaxSummonCredits() -> Int32 {
+        //DFProfile();
         return this.creditsMax;
     }
 
     public final func GetLastSummonedVehicle() -> ref<VehicleComponent> {
+        //DFProfile();
         return this.lastSummonedVehicle;
     }
 
     public final func SetLastSummonedVehicle(vehicle: ref<VehicleComponent>) -> Void {
-        this.lastSummonedVehicle = vehicle;
+        //DFProfile();
+        if IsDefined(vehicle) {
+            this.lastSummonedVehicle = vehicle;
+        }
     }
 
     public final func UseSummonCredit() -> Void {
+        //DFProfile();
         if this.remainingSummonCredits > 0 {
             this.remainingSummonCredits -= 1;
             this.RegisterForVehicleSummonCreditChangeDelayCallback();
@@ -527,13 +591,15 @@ public final class DFVehicleSummonSystem extends DFSystem {
         DFLog(this, "UseSummonCredit() remainingSummonCredits = " + ToString(this.remainingSummonCredits));
     }
 
-    private final func GrantSummonCredit() -> Void {
+    public final func GrantSummonCredit() -> Void {
+        //DFProfile();
         this.remainingSummonCredits = Clamp(this.remainingSummonCredits + 1, 0, this.creditsMax);
         this.RegisterForVehicleSummonCreditChangeDelayCallback();
         DFLog(this, "GrantSummonCredit() remainingSummonCredits = " + ToString(this.remainingSummonCredits));
     }
 
     private final func PlaySummonCreditRestoreEffects() {
+        //DFProfile();
         // Play a composite sound effect and blink the HUD.
 
         let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
@@ -553,23 +619,28 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     private final func RegisterForSummonCooldown() -> Void {
+        //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, VehicleSummonCooldownDelayCallback.Create(this), this.summonCreditCooldownDelayID, this.summonCreditCooldownDelayIntervalGameTimeSeconds / this.Settings.timescale);
     }
 
-    private final func RegisterForVehicleSummonCreditChangeDelayCallback() -> Void {
+    public final func RegisterForVehicleSummonCreditChangeDelayCallback() -> Void {
+        //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, VehicleSummonCreditChangeDelayCallback.Create(this), this.creditChangeDebounceDelayID, this.creditChangeDebounceDelayInterval);
     }
 
     private final func UnregisterForSummonCooldown() -> Void {
+        //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.summonCreditCooldownDelayID);
     }
 
     private final func UnregisterForVehicleSummonCreditChangeDelayCallback() -> Void {
+        //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.creditChangeDebounceDelayID);
     }
 
     public final func OnSummonCooldownCallback() -> Void {
-        if this.GameStateService.IsValidGameState(this) {
+        //DFProfile();
+        if this.GameStateService.IsValidGameState(this, true) {
             this.remainingCooldownTime -= this.summonCreditCooldownDelayIntervalGameTimeSeconds;
             if this.remainingCooldownTime <= 0.0 {
                 this.remainingCooldownTime = 0.0;
@@ -584,6 +655,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func OnVehicleSummonCreditChangeDelayCallback() -> Void {
+        //DFProfile();
         this.SetHotkeySummonCreditCount(this.remainingSummonCredits);
 
         if this.lastSummonCreditLabelCount < this.remainingSummonCredits {
@@ -594,21 +666,24 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func OnTimeSkipStart() -> Void {
-		if RunGuard(this) { return; }
+        //DFProfile();
+		if DFRunGuard(this) { return; }
 		DFLog(this, "OnTimeSkipStart");
 
 		this.UnregisterForSummonCooldown();
 	}
 
 	public final func OnTimeSkipCancelled() -> Void {
-		if RunGuard(this) { return; }
+        //DFProfile();
+		if DFRunGuard(this) { return; }
 		DFLog(this, "OnTimeSkipStart");
 
 		this.RegisterForSummonCooldown();
 	}
 
     public final func OnTimeSkipFinished(data: DFTimeSkipData) {
-        if RunGuard(this) { return; }
+        //DFProfile();
+        if DFRunGuard(this) { return; }
 
         let secondsPassed: Float = Int32ToFloat(data.hoursSkipped) * 3600.0;
         let creditsToGrant: Int32 = FloorF(((this.summonCreditCooldownDurationGameTimeSeconds - this.remainingCooldownTime) + secondsPassed) / this.summonCreditCooldownDurationGameTimeSeconds);
@@ -628,6 +703,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func GetSummonCooldownRemainingTimeString() -> String {
+        //DFProfile();
         if this.remainingCooldownTime > 0.0 {
             let hours: Int32 = FloorF(this.remainingCooldownTime / 3600.0);
             let minutes: Int32 = FloorF((this.remainingCooldownTime % 3600.0) / 60.0);
@@ -647,21 +723,23 @@ public final class DFVehicleSummonSystem extends DFSystem {
     }
 
     public final func SetCarHotkeyController(controller: ref<CarHotkeyController>) -> Void {
+        //DFProfile();
         DFLog(this, "SetCarHotkeyController " + ToString(controller));
         this.chkController = controller;
     }
 
     public final func SetSummonCreditWidgetAppearance(appearance: DFSummonCreditWidgetAppearance) {
+        //DFProfile();
         if IsDefined(this.hotkeySummonCreditCanvas) && IsDefined(this.hotkeySummonCreditBackground) {
             switch appearance {
                 case DFSummonCreditWidgetAppearance.Default:
-                    this.hotkeySummonCreditCanvas.SetMargin(new inkMargin(158.0, 35.0, 0.0, 0.0));
-                    this.hotkeySummonCreditCanvas.SetScale(new Vector2(1.0, 1.0));
+                    this.hotkeySummonCreditCanvas.SetMargin(inkMargin(158.0, 35.0, 0.0, 0.0));
+                    this.hotkeySummonCreditCanvas.SetScale(Vector2(1.0, 1.0));
                     this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Blue");
                     break;
                 case DFSummonCreditWidgetAppearance.ProjectE3:
-                    this.hotkeySummonCreditCanvas.SetMargin(new inkMargin(34.0, 152.0, 0.0, 0.0));
-                    this.hotkeySummonCreditCanvas.SetScale(new Vector2(0.8, 0.8));
+                    this.hotkeySummonCreditCanvas.SetMargin(inkMargin(34.0, 152.0, 0.0, 0.0));
+                    this.hotkeySummonCreditCanvas.SetScale(Vector2(0.8, 0.8));
                     this.hotkeySummonCreditBackground.BindProperty(n"tintColor", n"MainColors.Red");
                     break;
             }

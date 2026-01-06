@@ -1,8 +1,7 @@
 #
 #
 # The "Rested" and "Refreshed" Status Effects from sleeping and showering don't use
-# unique icons in the base game, even though they are present in the game files. Likely
-# just an oversight on CDPR's part.
+# unique icons in the base game, even though they are present in the game files.
 #
 #
 UIIcon.rested_icon.atlasPartName: house_xp_gain

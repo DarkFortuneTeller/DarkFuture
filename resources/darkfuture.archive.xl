@@ -1,5 +1,30 @@
+journal:
+  - darkfuture\journal\darkfuture.journal
+
 factories:
   - darkfuture\darkfuture_factory.csv
+
+# New Game+ Support
+resource:
+  scope:
+    df_combined_scope.quest:
+      - cyberpunk2077.quest
+      - mod\quest\newgameplus.quest
+      - mod\quest\newgameplus_q001.quest
+      - mod\quest\newgameplus_standalone.quest
+
+quest:
+  phases:
+    - path: darkfuture\quest\phases\darkfuture_vehicle_sleep.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_general_voicelines.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_addiction_withdrawal_anim.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_therapy.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_humanityloss_restore.questphase
+      parent: df_combined_scope.quest
 
 localization:
   onscreens:

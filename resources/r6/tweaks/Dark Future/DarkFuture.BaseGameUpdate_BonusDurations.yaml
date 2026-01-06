@@ -1,0 +1,9 @@
+# Update most Long Lasting Consumable effects to last 15 minutes (was 30 minutes for
+# Boosters, was 7m30s for food and drinks).
+# Dark Future 2.0: Drop Quenched and Well Fed back down to 7m30s for balance.
+Items.LongLastingConsumableDuration_inline0.value: 900
+#Items.SatedDuration_inline0.value: 900
+#Items.WellFedDuration_inline0.value: 900
+
+# Update Housing bonuses to last 15 minutes (was 1 hour).
+HousingStatusEffect.RestedDuration_inline0.value: 900

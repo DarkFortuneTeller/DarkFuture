@@ -25,7 +25,7 @@ import DarkFuture.UI.{
 	DFHUDBarType
 }
 
-enum GameState {
+public enum GameState {
     Valid = 0,
     Invalid = 1,
     TemporarilyInvalid = 2
@@ -33,6 +33,7 @@ enum GameState {
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
+    //DFProfile();
     let gameStateService: ref<DFGameStateService> = DFGameStateService.Get();
 
     if IsSystemEnabledAndRunning(gameStateService) {
@@ -51,6 +52,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
+    //DFProfile();
     let gameStateService: ref<DFGameStateService> = DFGameStateService.Get();
 
     if IsSystemEnabledAndRunning(gameStateService) {
@@ -73,10 +75,12 @@ public class DFGameStateServiceFuryChangedEvent extends CallbackSystemEvent {
     private let data: Bool;
 
     public func GetData() -> Bool {
+        //DFProfile();
         return this.data;
     }
 
-    static func Create(data: Bool) -> ref<DFGameStateServiceFuryChangedEvent> {
+    public static func Create(data: Bool) -> ref<DFGameStateServiceFuryChangedEvent> {
+        //DFProfile();
         let event = new DFGameStateServiceFuryChangedEvent();
         event.data = data;
         return event;
@@ -87,10 +91,12 @@ public class DFGameStateServiceCyberspaceChangedEvent extends CallbackSystemEven
     private let data: Bool;
 
     public func GetData() -> Bool {
+        //DFProfile();
         return this.data;
     }
 
-    static func Create(data: Bool) -> ref<DFGameStateServiceCyberspaceChangedEvent> {
+    public static func Create(data: Bool) -> ref<DFGameStateServiceCyberspaceChangedEvent> {
+        //DFProfile();
         let event = new DFGameStateServiceCyberspaceChangedEvent();
         event.data = data;
         return event;
@@ -101,10 +107,12 @@ public class DFGameStateServiceSceneTierChangedEvent extends CallbackSystemEvent
     private let data: GameplayTier;
 
     public func GetData() -> GameplayTier {
+        //DFProfile();
         return this.data;
     }
 
-    static func Create(data: GameplayTier) -> ref<DFGameStateServiceSceneTierChangedEvent> {
+    public static func Create(data: GameplayTier) -> ref<DFGameStateServiceSceneTierChangedEvent> {
+        //DFProfile();
         let event = new DFGameStateServiceSceneTierChangedEvent();
         event.data = data;
         return event;
@@ -113,12 +121,14 @@ public class DFGameStateServiceSceneTierChangedEvent extends CallbackSystemEvent
 
 class DFGameStateServiceEventListener extends DFSystemEventListener {
 	private func GetSystemInstance() -> wref<DFGameStateService> {
+        //DFProfile();
 		return DFGameStateService.Get();
 	}
 }
 
 public final class DFGameStateService extends DFSystem {
-    private persistent let hasShownActivationMessage: Bool = false;
+    // DO NOT DELETE - Used for inferring Legacy 1.x to 2.0 Upgrade
+    public persistent let hasShownActivationMessage: Bool = false;
 
     private let BlackboardSystem: ref<BlackboardSystem>;
     private let QuestsSystem: ref<QuestsSystem>;
@@ -131,7 +141,6 @@ public final class DFGameStateService extends DFSystem {
 
     private let gameplayTierChangeListener: ref<CallbackHandle>;
     private let menuUpdateListener: ref<CallbackHandle>;
-    private let replacerChangeListener: ref<CallbackHandle>;
     private let baseGameIntroMissionFactListener: Uint32;
     private let baseGameQ101ShowerMissionFactListener: Uint32;
     private let phantomLibertyIntroFactListener: Uint32;
@@ -145,15 +154,18 @@ public final class DFGameStateService extends DFSystem {
     private let isInMenu: Bool = false;
     private let isReplacer: Bool = false;
     private let isInSleepCinematic: Bool = false;
-    private let isInFury: Bool = false;
+    private let isSleepingInVehicle: Bool = false;
+    public let isInFury: Bool = false;
     private let isInCyberspace: Bool = false;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFGameStateService> {
-		let instance: ref<DFGameStateService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Services.DFGameStateService") as DFGameStateService;
+        //DFProfile();
+		let instance: ref<DFGameStateService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFGameStateService>()) as DFGameStateService;
 		return instance;
 	}
 
     public final static func Get() -> ref<DFGameStateService> {
+        //DFProfile();
         return DFGameStateService.GetInstance(GetGameInstance());
 	}
 
@@ -161,28 +173,32 @@ public final class DFGameStateService extends DFSystem {
     //  DFSystem Required Methods
     //
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
-    private func UnregisterAllDelayCallbacks() -> Void {}
-    private func SetupData() -> Void {}
+    public func UnregisterAllDelayCallbacks() -> Void {}
+    public func SetupData() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
     private func SetupDebugLogging() -> Void {
+        //DFProfile();
         this.debugEnabled = false;
     }
 
-    private func DoPostSuspendActions() -> Void {
+    public func DoPostSuspendActions() -> Void {
+        //DFProfile();
         this.gameplayTier = GameplayTier.Tier1_FullGameplay;
         this.baseGameIntroMissionDone = false;
         this.baseGameQ101ShowerDone = false;
         this.phantomLibertyIntroDone = false;
         this.isReplacer = false;
         this.isInSleepCinematic = false;
+        this.isSleepingInVehicle = false;
         this.isInFury = false;
     }
 
-    private func DoPostResumeActions() -> Void {
+    public func DoPostResumeActions() -> Void {
+        //DFProfile();
         this.OnSceneTierChange(this.player.GetPlayerStateMachineBlackboard().GetInt(GetAllBlackboardDefs().PlayerStateMachine.SceneTier));
         this.OnBaseGameIntroMissionFactChanged(this.QuestsSystem.GetFact(n"q001_01_go_to_sleep_done"));
         this.OnBaseGameQ101ShowerMissionFactChanged(this.QuestsSystem.GetFact(n"q101_enable_activities_flat"));
@@ -191,11 +207,11 @@ public final class DFGameStateService extends DFSystem {
         this.OnFuryStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury"), true);
         this.OnCyberspaceStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"CyberspacePresence"), true);
         this.isInSleepCinematic = false;
+        this.isSleepingInVehicle = false;
     }
-    
-    private func DoStopActions() -> Void {}
 
-    private func GetSystems() -> Void {
+    public func GetSystems() -> Void {
+        //DFProfile();
         let gameInstance = GetGameInstance();
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
@@ -203,6 +219,7 @@ public final class DFGameStateService extends DFSystem {
     }
 
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {
+        //DFProfile();
         let allBlackboards: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
         this.playerStateMachineBlackboard = this.BlackboardSystem.GetLocalInstanced(attachedPlayer.GetEntityID(), allBlackboards.PlayerStateMachine);
         this.UISystemBlackboard = this.BlackboardSystem.Get(allBlackboards.UI_System);
@@ -211,6 +228,7 @@ public final class DFGameStateService extends DFSystem {
     }
 
     private func RegisterListeners() -> Void {
+        //DFProfile();
         this.gameplayTierChangeListener = this.playerStateMachineBlackboard.RegisterListenerInt(this.playerSMDef.SceneTier, this, n"OnSceneTierChange", true);
         this.menuUpdateListener = this.UISystemBlackboard.RegisterListenerBool(this.UISystemDef.IsInMenu, this, n"OnMenuUpdate");
         this.baseGameIntroMissionFactListener = this.QuestsSystem.RegisterListener(n"q001_01_go_to_sleep_done", this, n"OnBaseGameIntroMissionFactChanged");
@@ -220,8 +238,12 @@ public final class DFGameStateService extends DFSystem {
     }
 
     private func UnregisterListeners() -> Void {
+        //DFProfile();
         this.player.GetPlayerStateMachineBlackboard().UnregisterListenerInt(GetAllBlackboardDefs().PlayerStateMachine.SceneTier, this.gameplayTierChangeListener);
         this.gameplayTierChangeListener = null;
+
+        this.UISystemBlackboard.UnregisterListenerBool(this.UISystemDef.IsInMenu, this.menuUpdateListener);
+        this.menuUpdateListener = null;
 
         this.QuestsSystem.UnregisterListener(n"q001_01_go_to_sleep_done", this.baseGameIntroMissionFactListener);
         this.baseGameIntroMissionFactListener = 0u;
@@ -236,19 +258,22 @@ public final class DFGameStateService extends DFSystem {
         this.phantomLibertyIntroFactListener = 0u;
     }
 
-    private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+    public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+        //DFProfile();
         this.OnBaseGameIntroMissionFactChanged(this.QuestsSystem.GetFact(n"q001_01_go_to_sleep_done"));
         this.OnBaseGameQ101ShowerMissionFactChanged(this.QuestsSystem.GetFact(n"q101_enable_activities_flat"));
         this.OnPhantomLibertyIntroFactChanged(this.QuestsSystem.GetFact(n"q301_00_done"));
         this.OnReplacerChanged(this.player.IsReplacer());
     }
 
-    private final func GetSystemToggleSettingValue() -> Bool {
+    public final func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
 		// This system does not have a system-specific toggle.
 		return true;
 	}
 
 	private final func GetSystemToggleSettingString() -> String {
+        //DFProfile();
 		// This system does not have a system-specific toggle.
 		return "INVALID";
 	}
@@ -257,10 +282,26 @@ public final class DFGameStateService extends DFSystem {
     //  System-Specific Methods
     //
     public final func SetInSleepCinematic(value: Bool) -> Void {
+        //DFProfile();
         this.isInSleepCinematic = value;
     }
 
+    public final func SetSleepingInVehicle(value: Bool) -> Void {
+        //DFProfile();
+        this.isSleepingInVehicle = value;
+
+        // Work-around: Fake a SceneTierChanged event to force reevaluation of any systems that might have failed
+        // against a game state check while the vehicle sleeping sequence was running.
+        this.OnSceneTierChange(this.player.GetPlayerStateMachineBlackboard().GetInt(GetAllBlackboardDefs().PlayerStateMachine.SceneTier));
+    }
+
+    public final func GetSleepingInVehicle() -> Bool {
+		//DFProfile();
+		return this.isSleepingInVehicle;
+	}
+
     protected cb func OnSceneTierChange(value: Int32) -> Void {
+        //DFProfile();
         DFLog(this, "+++++++++++++++");
         DFLog(this, "+++++++++++++++ OnSceneTierChange value = " + ToString(value));
         DFLog(this, "+++++++++++++++");
@@ -272,35 +313,42 @@ public final class DFGameStateService extends DFSystem {
     }
 
     protected cb func OnMenuUpdate(value: Bool) -> Void {
+        //DFProfile();
         this.isInMenu = value;
     }
 
     private final func OnBaseGameIntroMissionFactChanged(value: Int32) -> Void {
+        //DFProfile();
         DFLog(this, "OnBaseGameIntroMissionFactChanged value = " + ToString(value));
         this.baseGameIntroMissionDone = value == 1 ? true : false;
     }
 
     private final func OnBaseGameQ101ShowerMissionFactChanged(value: Int32) -> Void {
+        //DFProfile();
         DFLog(this, "OnBaseGameQ101ShowerMissionFactChanged value = " + ToString(value));
         this.baseGameQ101ShowerDone = value == 1 ? true : false;
     }
 
     private final func OnBaseGamePointOfNoReturnFactChanged(value: Int32) -> Void {
+        //DFProfile();
         DFLog(this, "OnBaseGamePointOfNoReturnFactChanged value = " + ToString(value));
         this.baseGamePointOfNoReturnDone = value == 1 ? true : false;
     }
 
     private final func OnPhantomLibertyIntroFactChanged(value: Int32) -> Void {
+        //DFProfile();
         DFLog(this, "OnPhantomLibertyIntroFactChanged value = " + ToString(value));
         this.phantomLibertyIntroDone = value == 1 ? true : false;
     }
 
     private final func OnReplacerChanged(value: Bool) -> Void {
+        //DFProfile();
         DFLog(this, "OnReplacerChange value = " + ToString(value));
         this.isReplacer = value;
     }
 
-    private final func OnFuryStateChanged(value: Bool, opt noEvent: Bool) -> Void {
+    public final func OnFuryStateChanged(value: Bool, opt noEvent: Bool) -> Void {
+        //DFProfile();
         DFLog(this, "OnFuryStateChanged value = " + ToString(value));
         this.isInFury = value;
 
@@ -309,7 +357,8 @@ public final class DFGameStateService extends DFSystem {
         }
     }
 
-    private final func OnCyberspaceStateChanged(value: Bool, opt noEvent: Bool) -> Void {
+    public final func OnCyberspaceStateChanged(value: Bool, opt noEvent: Bool) -> Void {
+        //DFProfile();
         DFLog(this, "OnCyberspaceStateChanged value = " + ToString(value));
         this.isInCyberspace = value;
 
@@ -318,7 +367,8 @@ public final class DFGameStateService extends DFSystem {
         }
     }
 
-    public final func GetGameState(caller: ref<IScriptable>, opt ignoreTemporarilyInvalid: Bool, opt ignoreSleepCinematic: Bool) -> GameState {
+    public final func GetGameState(caller: ref<IScriptable>, opt ignoreTemporarilyInvalid: Bool, opt allowLimitedGameplay: Bool) -> GameState {
+        //DFProfile();
         let callerName: String = NameToString(caller.GetClassName());
 
         if !this.Settings.mainSystemEnabled {
@@ -346,9 +396,9 @@ public final class DFGameStateService extends DFSystem {
             return GameState.Invalid;
         }
 
-        if !ignoreSleepCinematic && this.isInSleepCinematic {
-            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.isInSleepCinematic=" + ToString(this.isInSleepCinematic));
-            return GameState.Invalid;
+        if !ignoreTemporarilyInvalid && (this.isInSleepCinematic || this.isSleepingInVehicle) {
+            DFLog(this, "GetGameState() returned Temporarily Invalid for caller " + callerName + ": this.isInSleepCinematic=" + ToString(this.isInSleepCinematic) + ", this.isSleepingInVehicle=" + ToString(this.isSleepingInVehicle));
+            return GameState.TemporarilyInvalid;
         }
 
         if !ignoreTemporarilyInvalid && this.isInFury {
@@ -356,49 +406,23 @@ public final class DFGameStateService extends DFSystem {
             return GameState.TemporarilyInvalid;
         }
 
-        if !ignoreTemporarilyInvalid && !Equals(this.gameplayTier, GameplayTier.Tier1_FullGameplay) && !Equals(this.gameplayTier, GameplayTier.Tier2_StagedGameplay) {
-            DFLog(this, "GetGameState() returned Temporarily Invalid for caller " + callerName + ": this.gameplayTier=" + ToString(this.gameplayTier));
+        let gameplayTierValue: Int32 = EnumInt<GameplayTier>(this.gameplayTier);
+        let highestAllowableTier: Int32 = ignoreTemporarilyInvalid ? 5 : (allowLimitedGameplay ? 3 : 2);
+        if gameplayTierValue > highestAllowableTier {
+            DFLog(this, "GetGameState() returned Temporarily Invalid for caller " + callerName + ": this.gameplayTierValue=" + ToString(gameplayTierValue) + ", highest allowable tier=" + ToString(highestAllowableTier));
             return GameState.TemporarilyInvalid;
         }
 
-        this.TryToShowActivationMessageAndBars();
         return GameState.Valid;
     }
 
-    public final func IsValidGameState(caller: ref<IScriptable>, opt ignoreTemporarilyInvalid: Bool, opt ignoreSleepCinematic: Bool) -> Bool {
-        return Equals(this.GetGameState(caller, ignoreTemporarilyInvalid, ignoreSleepCinematic), GameState.Valid);
+    public final func IsValidGameState(caller: ref<IScriptable>, opt ignoreTemporarilyInvalid: Bool, opt allowLimitedGameplay: Bool) -> Bool {
+        //DFProfile();
+        return Equals(this.GetGameState(caller, ignoreTemporarilyInvalid, allowLimitedGameplay), GameState.Valid);
     }
 
-    private func GetActivationTitleKey() -> CName {
-		return n"DarkFutureTutorialActivateTitle";
-	}
-
-	private func GetActivationMessageKey() -> CName {
-		return n"DarkFutureTutorialActivate";
-	}
-
-    private final func TryToShowActivationMessageAndBars() -> Void {
-        if !this.hasShownActivationMessage {
-			this.hasShownActivationMessage = true;
-			let tutorial: DFTutorial;
-			tutorial.title = GetLocalizedTextByKey(this.GetActivationTitleKey());
-			tutorial.message = GetLocalizedTextByKey(this.GetActivationMessageKey());
-            tutorial.iconID = t"UIIcon.DarkFutureTutorialWelcome";
-			this.NotificationService.QueueTutorial(tutorial);
-
-            // Also ping the UI once on first start-up.
-            let uiToShow: DFUIDisplay;
-			uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
-
-            let oneTimeBarDisplay: DFNotification;
-            oneTimeBarDisplay.allowPlaybackInCombat = false;
-            oneTimeBarDisplay.ui = uiToShow;
-
-            this.NotificationService.QueueNotification(oneTimeBarDisplay);
-		}
-	}
-
     public final func PlayerHasAnyFuryEffect() -> Bool {
+        //DFProfile();
         return StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury") || 
                 (this.Settings.compatibilityWannabeEdgerunner && 
                     (
@@ -409,6 +433,7 @@ public final class DFGameStateService extends DFSystem {
     }
 
     public final func IsInAnyMenu() -> Bool {
+        //DFProfile();
         return this.isInMenu;
     }
 
@@ -416,6 +441,7 @@ public final class DFGameStateService extends DFSystem {
 	//	Wannabe Edgerunner
 	//
     public final func IsWannabeEdgerunnerPsychosisEffect(id: TweakDBID) -> Bool {
+        //DFProfile();
         if this.Settings.compatibilityWannabeEdgerunner {
             if Equals(id, t"BaseStatusEffect.NewPsychosisEffectNormalFx") || Equals(id, t"BaseStatusEffect.NewPsychosisEffectLightFx") {
                 return true;

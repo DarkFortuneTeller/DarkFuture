@@ -9,85 +9,79 @@ module DarkFuture.Logging
 
 import DarkFuture.System.DFSystem
 
-enum DFLogLevel {
+public enum DFLogLevel {
     Debug = 0,
     Warning = 1,
     Error = 2
 }
 
-public static func DFLog(class: ref<DFSystem>, message: String, opt level: DFLogLevel) {
-    let verbose: Bool = false;
+// =====================================
+// Dark Future Function Profiling Toggle
+// =====================================
+public func IsDarkFutureProfilingEnabled() -> Bool { return false; }
 
+public func DFProfile() -> Void {
+    if IsDarkFutureProfilingEnabled() {
+        let entries = GetStackTrace(1, true);
+        let entry = entries[0];
+        let trace = "";
+
+        if IsDefined(entry.object) {
+            trace = s"[CLASS:\(entry.class)][FUNC:\(entry.function)]";
+        } else {
+            trace = s"[FUNC:\(entry.function)]";
+        }
+        //FTLog("[DarkFuture][Profile] " + trace);
+    }
+}
+
+public func DFLog(class: ref<DFSystem>, message: String, opt level: DFLogLevel) -> Void {
     if class.IsDebugEnabled() {
-        let curr: String = "";
-        let old: String = "";
-        let oldest: String = "";
-        let trace: String = "";
+        let entries = GetStackTrace(1, true);
+        let entry = entries[0];
+        let trace = "";
 
-        if verbose {
-            let callStack: array<StackTraceEntry> = GetStackTrace(3, true);
-        
-            if ArraySize(callStack) >= 1 {
-                curr = NameToString(callStack[0].function);
-            }
-            if ArraySize(callStack) >= 2 {
-                old = NameToString(callStack[1].function);
-            }
-            if ArraySize(callStack) >= 3 {
-                oldest = NameToString(callStack[2].function);
-            }
-
-            trace = ":[" + oldest + "]->[" + old + "]->[" + curr + "]";
+        if IsDefined(entry.object) {
+            trace = s"[\(entry.class)][\(entry.function)]";
+        } else {
+            trace = s"[\(entry.function)]";
         }
         
         switch level {
             case DFLogLevel.Warning:
-                //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);
                 break;
             case DFLogLevel.Error:
-                //LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                //LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! " + trace + ": " + message);
                 break;
             default:
-                //LogChannel(n"DEBUG", "[DarkFuture]#INFO# class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                //LogChannel(n"DEBUG", "[DarkFuture]#INFO# " + trace + ": " + message);
                 break;
         }
     }
 }
 
-public static func DFLogNoSystem(enabled: Bool, class: ref<IScriptable>, message: String, opt level: DFLogLevel) {
-    let verbose: Bool = false;
-
+public func DFLogNoSystem(enabled: Bool, class: ref<IScriptable>, message: String, opt level: DFLogLevel) -> Void {
     if enabled {
-        let curr: String = "";
-        let old: String = "";
-        let oldest: String = "";
-        let trace: String = "";
+        let entries = GetStackTrace(1, true);
+        let entry = entries[0];
+        let trace = "";
 
-        if verbose {
-            let callStack: array<StackTraceEntry> = GetStackTrace(3, true);
-        
-            if ArraySize(callStack) >= 1 {
-                curr = NameToString(callStack[0].function);
-            }
-            if ArraySize(callStack) >= 2 {
-                old = NameToString(callStack[1].function);
-            }
-            if ArraySize(callStack) >= 3 {
-                oldest = NameToString(callStack[2].function);
-            }
-
-            trace = ":[" + oldest + "]->[" + old + "]->[" + curr + "]";
+        if IsDefined(entry.object) {
+            trace = s"[\(entry.class)][\(entry.function)]";
+        } else {
+            trace = s"[\(entry.function)]";
         }
         
         switch level {
             case DFLogLevel.Warning:
-                //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);
                 break;
             case DFLogLevel.Error:
-                //LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                //LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! " + trace + ": " + message);
                 break;
             default:
-                //LogChannel(n"DEBUG", "[DarkFuture]#INFO# class[" + NameToString(class.GetClassName()) + "]" + trace + ": " + message);
+                //LogChannel(n"DEBUG", "[DarkFuture]#INFO# " + trace + ": " + message);
                 break;
         }
     }

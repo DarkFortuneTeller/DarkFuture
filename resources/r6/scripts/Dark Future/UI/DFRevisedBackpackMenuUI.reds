@@ -53,7 +53,7 @@ class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
 		return DFRevisedBackpackUISystem.Get();
 	}
 
-    private cb func OnLoad() {
+    public cb func OnLoad() {
 		super.OnLoad();
 
 		GameInstance.GetCallbackSystem().RegisterCallback(n"RevisedBackpack.RevisedCustomEventBackpackOpened", this, n"OnRevisedBackpackOpenedEvent", true);
@@ -102,7 +102,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     private let barClusterfadeOutAnim: ref<inkAnimDef>;
 
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFRevisedBackpackUISystem> {
-		let instance: ref<DFRevisedBackpackUISystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.UI.DFRevisedBackpackUISystem") as DFRevisedBackpackUISystem;
+		let instance: ref<DFRevisedBackpackUISystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRevisedBackpackUISystem>()) as DFRevisedBackpackUISystem;
 		return instance;
 	}
 
@@ -155,8 +155,8 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                         this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
                         this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), this.NutritionSystem.GetNeedMax());
                     } else {
-                        this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, this.HydrationSystem.GetNeedMax());
-                        this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.NutritionSystem.GetNeedMax());
+                        this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, MinF(MaxF(needsData.hydration.ceiling, this.HydrationSystem.GetNeedValue()), this.HydrationSystem.GetNeedMax()));
+					    this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, MinF(MaxF(needsData.nutrition.ceiling, this.NutritionSystem.GetNeedValue()), this.NutritionSystem.GetNeedMax()));
                     }
 
                     // Show the change in Energy if player meets the energy management effect criteria.
@@ -168,7 +168,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                     }
                     
                     // Handle Addiction Withdrawal and Alcohol
-                    let nerveMax: Float = this.NerveSystem.GetNerveLimitAfterItemUse(itemRecord);
+                    let nerveMax: Float = this.NerveSystem.GetNeedMaxAfterItemUse(itemRecord);
                     let nerveValue: Float = this.NerveSystem.GetNeedValue();
                     let potentialNewValue: Float = nerveValue + (needsData.nerve.value + needsData.nerve.valueOnStatusEffectApply);
 
@@ -223,7 +223,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 
     public final func OnRevisedRevisedBackpackCategorySelectedEvent(categoryId: Int32) -> Void {
         DFLog(this, "RevisedBackpack: OnRevisedRevisedBackpackCategorySelectedEvent, categoryId: " + ToString(categoryId));
-        if this.GameStateService.IsValidGameState(this) {
+        if this.GameStateService.IsValidGameState(this, true) {
             // 10 = All Items, 50 = Consumables
             if Equals(categoryId, 10) || Equals(categoryId, 50) {
                 this.SetBarClusterFadeIn();
@@ -242,7 +242,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 	//
 	private func SetupDebugLogging() -> Void {}
 
-	private final func GetSystemToggleSettingValue() -> Bool {
+	public final func GetSystemToggleSettingValue() -> Bool {
 		// This system does not have a system-specific toggle.
 		return true;
 	}
@@ -252,7 +252,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 		return "INVALID";
 	}
 
-	private func GetSystems() -> Void {
+	public func GetSystems() -> Void {
         let gameInstance = GetGameInstance();
         this.Settings = DFSettings.GetInstance(gameInstance);
         this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
@@ -267,18 +267,17 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
 	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-	private func SetupData() -> Void {}
+	public func SetupData() -> Void {}
 	private func RegisterListeners() -> Void {}
 	private func RegisterAllRequiredDelayCallbacks() -> Void {}
 	private func UnregisterListeners() -> Void {}
-	private func UnregisterAllDelayCallbacks() -> Void {}
+	public func UnregisterAllDelayCallbacks() -> Void {}
 	public func OnTimeSkipStart() -> Void {}
 	public func OnTimeSkipCancelled() -> Void {}
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
-	private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-	private func DoPostSuspendActions() -> Void {}
-	private func DoPostResumeActions() -> Void {}
-	private func DoStopActions() -> Void {}
+	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
+	public func DoPostSuspendActions() -> Void {}
+	public func DoPostResumeActions() -> Void {}
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
 	private final func CreateFullScreenSlot(inkHUD: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
@@ -287,8 +286,8 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 
 		let fullScreenSlot: ref<inkCompoundWidget> = new inkCanvas();
 		fullScreenSlot.SetName(n"RevisedBackpackNeedBarFullScreenSlot");
-		fullScreenSlot.SetSize(new Vector2(3840.0, 2160.0));
-		fullScreenSlot.SetRenderTransformPivot(new Vector2(0.0, 0.0));
+		fullScreenSlot.SetSize(Vector2(3840.0, 2160.0));
+		fullScreenSlot.SetRenderTransformPivot(Vector2(0.0, 0.0));
 		fullScreenSlot.Reparent(inkHUD.GetWidgetByPathName(n"Root") as inkCompoundWidget);
 
 		return fullScreenSlot;
@@ -309,19 +308,19 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
         this.barCluster.SetOpacity(0.0);
         this.barCluster.SetName(n"RevisedBackpackNeedsBarCluster");
         this.barCluster.SetAnchor(inkEAnchor.TopCenter);
-        this.barCluster.SetAnchorPoint(new Vector2(0.5, 0.5));
-        this.barCluster.SetScale(new Vector2(0.85, 0.85));
-        this.barCluster.SetTranslation(new Vector2(1920.0, 240.0));
+        this.barCluster.SetAnchorPoint(Vector2(0.5, 0.5));
+        this.barCluster.SetScale(Vector2(0.85, 0.85));
+        this.barCluster.SetTranslation(Vector2(1920.0, 240.0));
         this.barCluster.Reparent(parent, 12);
 
         let rowOne: ref<inkHorizontalPanel> = new inkHorizontalPanel();
         rowOne.SetName(n"RevisedBackpackNeedsBarClusterRowOne");
-        rowOne.SetSize(new Vector2(100.0, 60.0));
+        rowOne.SetSize(Vector2(100.0, 60.0));
         rowOne.SetHAlign(inkEHorizontalAlign.Center);
         rowOne.SetVAlign(inkEVerticalAlign.Center);
         rowOne.SetAnchor(inkEAnchor.Fill);
-        rowOne.SetAnchorPoint(new Vector2(0.5, 0.5));
-        rowOne.SetMargin(new inkMargin(0.0, 0.0, 0.0, 36.0));
+        rowOne.SetAnchorPoint(Vector2(0.5, 0.5));
+        rowOne.SetMargin(inkMargin(0.0, 0.0, 0.0, 36.0));
         rowOne.Reparent(this.barCluster);
 
         let nerveIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
@@ -338,19 +337,19 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 
         let barSetupData: DFNeedsMenuBarSetupData;
 
-        barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true);
         this.nerveBar = new DFNeedsMenuBar();
         this.nerveBar.Init(barSetupData);
 
-        barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false);
         this.hydrationBar = new DFNeedsMenuBar();
         this.hydrationBar.Init(barSetupData);
         
-        barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false);
         this.nutritionBar = new DFNeedsMenuBar();
         this.nutritionBar.Init(barSetupData);
 
-        barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false);
         this.energyBar = new DFNeedsMenuBar();
         this.energyBar.Init(barSetupData);
     }

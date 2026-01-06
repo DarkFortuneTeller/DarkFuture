@@ -31,6 +31,9 @@ public struct DFNeedsHUDBarSetupData {
     public let translationX: Float;
     public let translationY: Float;
     public let showEmptyBar: Bool;
+    public let hasLock: Bool;
+    public let lockIconPath: ResRef;
+    public let lockIconName: CName;
 }
 
 public class DFNeedsHUDBarGroupFadeOutDelayCallback extends DFDelayCallback {
@@ -38,6 +41,7 @@ public class DFNeedsHUDBarGroupFadeOutDelayCallback extends DFDelayCallback {
     public let fromParent: Bool;
 
 	public static func Create(dfNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>, fromParent: Bool) -> ref<DFDelayCallback> {
+        //DFProfile();
 		let self: ref<DFNeedsHUDBarGroupFadeOutDelayCallback> = new DFNeedsHUDBarGroupFadeOutDelayCallback();
 		self.DFNeedsHUDBarGroup = dfNeedsHUDBarGroup;
         self.fromParent = fromParent;
@@ -45,10 +49,12 @@ public class DFNeedsHUDBarGroupFadeOutDelayCallback extends DFDelayCallback {
 	}
 
 	public func InvalidateDelayID() -> Void {
+        //DFProfile();
 		this.DFNeedsHUDBarGroup.m_fadeOutDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+        //DFProfile();
 		this.DFNeedsHUDBarGroup.OnFadeOutStart(this.fromParent);
 	}
 }
@@ -57,16 +63,19 @@ public class DFNeedsHUDBarPulseStopDelayCallback extends DFDelayCallback {
 	public let DFNeedsHUDBar: wref<DFNeedsHUDBar>;
 
 	public static func Create(DFNeedsHUDBar: wref<DFNeedsHUDBar>) -> ref<DFDelayCallback> {
+        //DFProfile();
 		let self: ref<DFNeedsHUDBarPulseStopDelayCallback> = new DFNeedsHUDBarPulseStopDelayCallback();
 		self.DFNeedsHUDBar = DFNeedsHUDBar;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+        //DFProfile();
 		this.DFNeedsHUDBar.m_pulseStopDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+        //DFProfile();
 		this.DFNeedsHUDBar.OnPulseStop();
 	}
 }
@@ -75,16 +84,19 @@ public class DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback exten
 	public let DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>;
 
 	public static func Create(DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>) -> ref<DFDelayCallback> {
+        //DFProfile();
 		let self: ref<DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback> = new DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback();
 		self.DFNeedsHUDBarGroup = DFNeedsHUDBarGroup;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+        //DFProfile();
 		this.DFNeedsHUDBarGroup.m_displayRecheckAfterForceBrightDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+        //DFProfile();
 		this.DFNeedsHUDBarGroup.OnDisplayRecheckAfterForceBright();
 	}
 }
@@ -106,22 +118,25 @@ public class DFNeedsHUDBarGroup {
      */
     private let needsBars: array<ref<DFNeedsHUDBar>>;
     private let needsBarGroupChildren: array<ref<DFNeedsHUDBarGroup>>;
-    private let needsBarGroupParent: ref<DFNeedsHUDBarGroup>;
-    private let displayManagedByParentGroup: Bool = false;
+    public let needsBarGroupParent: ref<DFNeedsHUDBarGroup>;
+    public let displayManagedByParentGroup: Bool = false;
     private let alwaysVisibleInDanger: Bool;
     private let GameStateService: ref<DFGameStateService>;
     private let HUDSystem: ref<DFHUDSystem>;
-    private let DelaySystem: ref<DelaySystem>;
+    public let DelaySystem: ref<DelaySystem>;
     private let PlayerStateService: wref<DFPlayerStateService>;
     private let Settings: ref<DFSettings>;
     
-    private let m_fadeOutDelayID: DelayID;
+    public let m_fadeOutDelayID: DelayID;
     private let m_fadeOutDelayInterval: Float = 5.0;
 
-    private let m_displayRecheckAfterForceBrightDelayID: DelayID;
+    public let m_displayRecheckAfterForceBrightDelayID: DelayID;
     private let m_displayRecheckAfterForceBrightDelayInterval: Float = 2.5;
 
+    private let m_groupBeingDisplayedAndIgnoringSceneTier: Bool = false;
+
     public final func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool) -> Void {
+        //DFProfile();
         let gameInstance = GetGameInstance();
         this.HUDSystem = DFHUDSystem.GetInstance(gameInstance);
         this.GameStateService = DFGameStateService.GetInstance(gameInstance);
@@ -132,30 +147,36 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func GetPSMBlackboard(player: ref<PlayerPuppet>) -> ref<IBlackboard> {
+        //DFProfile();
         return GameInstance.GetBlackboardSystem(GetGameInstance()).GetLocalInstanced(player.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
     }
 
     public final func AddBarToGroup(bar: ref<DFNeedsHUDBar>) -> Void {
+        //DFProfile();
         ArrayPush(this.needsBars, bar);
         bar.m_barGroup = this;
     }
 
     public final func AddGroupToChildren(group: ref<DFNeedsHUDBarGroup>) -> Void {
+        //DFProfile();
         ArrayPush(this.needsBarGroupChildren, group);
         group.AddParentGroup(this);
     }
 
     public final func AddParentGroup(group: ref<DFNeedsHUDBarGroup>) -> Void {
+        //DFProfile();
         this.needsBarGroupParent = group;
     }
 
     public final func BarGroupSetupDone() -> Void {
+        //DFProfile();
         // We've declared that setting up the group is now complete,
         // do an initial visibility update.
         this.EvaluateAllBarVisibility(false);
     }
 
-    public final func EvaluateAllBarVisibility(forceMomentaryDisplay: Bool, opt fromParentUpdate: Bool, opt momentaryDisplayIgnoresSceneTier: Bool) -> Void {
+    public final func EvaluateAllBarVisibility(forceMomentaryDisplay: Bool, opt fromParentUpdate: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt fromInteraction: Bool) -> Void {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility forceMomentaryDisplay: " + ToString(forceMomentaryDisplay));
         if this.displayManagedByParentGroup {
             DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility managed by parent group, returning.");
@@ -180,16 +201,24 @@ public class DFNeedsHUDBarGroup {
         // If Dark Future Updates aren't currently allowed, or if menus are blocking display, bail out.
         // SetAllDisplayContinuous() or SetAllDisplayMomentary() must be called in order for the bar to remain visible. If neither qualify, we hide them.
         if this.GameStateService.IsValidGameState(this, true) && !this.HUDSystem.HUDUIBlockedDueToMenuOpen && !this.HUDSystem.HUDUIBlockedDueToCameraControl {
-            if this.ShouldDisplayContinuously(lowestValueInGroup, currentSceneTier) {
+            if !fromInteraction && this.ShouldDisplayContinuously(lowestValueInGroup, currentSceneTier) {
                 this.SetAllDisplayContinuous(lowestValueInGroup);
 
             // We ignore parent updates that might qualify for momentary display in order to avoid doubling up on momentary display lengths. See: OnFadeOutStart()
-            } else if !fromParentUpdate && this.ShouldDisplayMomentarily(forceMomentaryDisplay, currentSceneTier, momentaryDisplayIgnoresSceneTier) {
-                this.SetAllDisplayMomentary(lowestValueInGroup);
+            } else if !fromParentUpdate {
+                let ignoreSceneTier: Bool = this.m_groupBeingDisplayedAndIgnoringSceneTier || momentaryDisplayIgnoresSceneTier;
+                let forceDisplay: Bool = this.m_groupBeingDisplayedAndIgnoringSceneTier || forceMomentaryDisplay;
+                if this.ShouldDisplayMomentarily(forceDisplay, currentSceneTier, ignoreSceneTier) {
+                    this.SetAllDisplayMomentary(lowestValueInGroup, momentaryDisplayIgnoresSceneTier);
+                
+                } else {
+                    this.SetAllFadeOut();
+                }
 
             } else {
                 this.SetAllFadeOut();
             }
+        
         } else {
             this.SetAllFadeOut();
         }
@@ -199,6 +228,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func NormalizeAllPreviousValues() -> Void {
+        //DFProfile();
         for bar in this.needsBars {
             bar.m_previousValue = bar.m_currentValue;
         }
@@ -211,6 +241,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func ShouldDisplayContinuously(lowestValueInGroup: Float, currentSceneTier: GameplayTier) -> Bool {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "ShouldDisplayContinuously lowestValueInGroup " + ToString(lowestValueInGroup) + ", currentSceneTier " + ToString(currentSceneTier));
 
         if Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) {
@@ -237,6 +268,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func ShouldDisplayMomentarily(forceMomentaryDisplay: Bool, currentSceneTier: GameplayTier, momentaryDisplayIgnoresSceneTier: Bool) -> Bool {
+        //DFProfile();
         // momentaryDisplayIgnoresSceneTier is used very selectively to display bars restoring in otherwise invalid scene tiers (while drinking, smoking, etc).
 
         if momentaryDisplayIgnoresSceneTier || (Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) || Equals(currentSceneTier, GameplayTier.Tier2_StagedGameplay)) {
@@ -244,7 +276,8 @@ public class DFNeedsHUDBarGroup {
                 return true;
             }
             for bar in this.needsBars {
-                if bar.m_previousValue > 0.85 && bar.m_currentValue <= 0.85 {
+                let basicNeedThresholdValue1Mult: Float = this.Settings.basicNeedThresholdValue1 / 100.0;
+                if bar.m_previousValue > basicNeedThresholdValue1Mult && bar.m_currentValue <= basicNeedThresholdValue1Mult {
                     return true;
                 
                 } else if AbsF(bar.m_previousValue - bar.m_currentValue) > 0.01 {
@@ -258,6 +291,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func SetAllDisplayContinuous(lowestValueInGroup: Float) -> Void {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayContinuous lowestValueInGroup: " + ToString(lowestValueInGroup));
         for bar in this.needsBars {
             bar.SetFadeIn(false);
@@ -273,8 +307,16 @@ public class DFNeedsHUDBarGroup {
         }
     }
 
-    private final func SetAllDisplayMomentary(lowestValueInGroup: Float) -> Void {
+    private final func SetAllDisplayMomentary(lowestValueInGroup: Float, opt momentaryDisplayIgnoresSceneTier: Bool) -> Void {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayMomentary lowestValueInGroup: " + ToString(lowestValueInGroup));
+        
+        // If displaying momentarily regardless of scene tier, set a flag that lets subsequent display calls know
+        // that the bar shouldn't be immediately hidden again due to a scene tier change.
+        if momentaryDisplayIgnoresSceneTier {
+            this.m_groupBeingDisplayedAndIgnoringSceneTier = true;
+        }
+        
         for bar in this.needsBars {
             bar.SetFadeIn(false);
         }
@@ -290,10 +332,15 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func SetAllFadeOut() -> Void {
+        //DFProfile();
         if this.m_fadeOutDelayID != GetInvalidDelayID() {
             if this.HUDSystem.HUDUIBlockedDueToMenuOpen || this.HUDSystem.HUDUIBlockedDueToCameraControl {
-                // Allow the bars to fade out.
+                // If we are already registered for a pending fade out, and the HUD UI is blocked due to 
+                // menus or camera control, unregister the pending fade out request and allow the bars to fade out.
                 this.UnregisterForFadeOut();
+                
+                // If currently being displayed regardless of scene tier, clear that flag.
+                this.m_groupBeingDisplayedAndIgnoringSceneTier = false;
             } else {
                 // For any other reason, ignore this request.
                 return;
@@ -311,6 +358,7 @@ public class DFNeedsHUDBarGroup {
     }
 
     public final func SetDisplayManagedByParent(managedByParentGroup: Bool) -> Void {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "SetDisplayManagedByParent managedByParentGroup: " + ToString(managedByParentGroup));
         this.displayManagedByParentGroup = managedByParentGroup;
 
@@ -320,16 +368,19 @@ public class DFNeedsHUDBarGroup {
     }
 
     private final func RegisterForFadeOut(opt fromParent: Bool) -> Void {
+        //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, DFNeedsHUDBarGroupFadeOutDelayCallback.Create(this, fromParent), this.m_fadeOutDelayID, this.m_fadeOutDelayInterval, true);
     }
 
     private final func UnregisterForFadeOut() -> Void {
+        //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.m_fadeOutDelayID);
     }
 
     // Typically, Force Bright is used to force the bar to display brightly when the player has taken an action that affects it (consuming something, using something).
     // This registers for a callback that brings the bar back down to normal opacity after a short duration.
-    private final func RegisterForDisplayRecheckAfterForceBright() -> Void {
+    public final func RegisterForDisplayRecheckAfterForceBright() -> Void {
+        //DFProfile();
         // If we aren't actively managed by a parent group, try to register against our group so that only our bars briefly display.
         // Used for displaying only the Nerve bar when i.e. stepping out of the shower, even if hungry, thirsty, or tired.
 
@@ -341,13 +392,16 @@ public class DFNeedsHUDBarGroup {
     }
 
     public final func OnDisplayRecheckAfterForceBright() -> Void {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "OnDisplayRecheckAfterForceBright");
         for bar in this.needsBars {
+            bar.m_fadeInTargetTransparency = 0.0;
             bar.SetForceBright(false);
         }
 
         for child in this.needsBarGroupChildren {
             for bar in child.needsBars {
+                bar.m_fadeInTargetTransparency = 0.0;
                 bar.SetForceBright(false);
             }
         }
@@ -363,7 +417,12 @@ public class DFNeedsHUDBarGroup {
     }
 
     public final func OnFadeOutStart(fromParent: Bool) -> Void {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "OnFadeOutStart fromParent: " + ToString(fromParent));
+
+        // If currently being displayed regardless of scene tier, clear that flag.
+        this.m_groupBeingDisplayedAndIgnoringSceneTier = false;
+
         if fromParent && this.displayManagedByParentGroup {
             // If initiated from a parent, break the relationship and decide for ourselves whether we should
             // still be displayed or not. Flagged as from parent update to skip erroneous momentary display (causes double-length display).
@@ -385,6 +444,7 @@ public class DFNeedsHUDBar extends inkCanvas {
 
     private let m_width: Float;
     private let m_height: Float;
+    private let m_hasLock: Bool;
 
     private let m_rootWidget: ref<inkCanvas>;
     private let m_icon: ref<inkImage>;
@@ -396,6 +456,8 @@ public class DFNeedsHUDBar extends inkCanvas {
     private let m_barcap: ref<inkRectangle>;
     private let m_changePositiveBar: ref<inkRectangle>;
     private let m_changeNegativeBar: ref<inkRectangle>;
+    private let m_lock: ref<inkImage>;
+    private let m_shadow: ref<inkImage>;
 
     private let m_full_anim_proxy: ref<inkAnimProxy>;
     private let m_full_anim: ref<inkAnimDef>;
@@ -409,14 +471,22 @@ public class DFNeedsHUDBar extends inkCanvas {
     private let m_fadeOut_anim: ref<inkAnimDef>;
     private let m_pulse_anim: ref<PulseAnimation>;
     private let m_pulsing: Bool = false;
+    private let m_showLock_anim: ref<inkAnimDef>;
+    private let m_showLock_lock_anim_proxy: ref<inkAnimProxy>;
+    private let m_showLock_shadow_anim_proxy: ref<inkAnimProxy>;
+    private let m_hideLock_anim: ref<inkAnimDef>;
+    private let m_hideLock_anim_proxy: ref<inkAnimProxy>;
+    private let m_hideLock_lock_anim_proxy: ref<inkAnimProxy>;
+    private let m_hideLock_shadow_anim_proxy: ref<inkAnimProxy>;
 
-    private let m_currentValue: Float = 1.0;
-    private let m_previousValue: Float = 1.0;
+    public let m_currentValue: Float = 1.0;
+    public let m_previousValue: Float = 1.0;
     private let m_MaxChangeNegativeBarFlashSize: Float = 500.0;
     private let m_animDuration: Float = 2.0;
     private let m_inDanger: Bool = false;
+    private let m_lockShown: Bool = false;
 
-    private let m_pulseStopDelayID: DelayID;
+    public let m_pulseStopDelayID: DelayID;
     private let m_pulseStopDelayInterval: Float = 3.0;
     private let m_continuousPulseAtLowThresholdInCombat: Bool = false;
     private let m_continuousPulseThreshold: Float = 0.0;
@@ -424,6 +494,7 @@ public class DFNeedsHUDBar extends inkCanvas {
     private let m_shouldForceBrightOnNextFadeIn: Bool = false;
 
     public final func Init(setupData: DFNeedsHUDBarSetupData) -> Void {
+        //DFProfile();
         this.m_setupData = setupData;
         this.CreateBar();
         this.CreateAnimations();
@@ -432,43 +503,84 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     public final func SetDefaultValues() -> Void {
+        //DFProfile();
         let tempSize: Vector2 = this.m_fullBar.GetSize();
         this.m_width = tempSize.X;
         this.m_height = tempSize.Y;
-        this.m_fullBar.SetSize(new Vector2(this.m_width, this.m_height));
-        this.m_changePositiveBar.SetSize(new Vector2(0.00, this.m_height));
-        this.m_changeNegativeBar.SetSize(new Vector2(0.00, this.m_height));
+        this.m_fullBar.SetSize(Vector2(this.m_width, this.m_height));
+        this.m_changePositiveBar.SetSize(Vector2(0.00, this.m_height));
+        this.m_changeNegativeBar.SetSize(Vector2(0.00, this.m_height));
     }
 
     public final func SetPulseContinuouslyAtLowThreshold(pulse: Bool, opt threshold: Float) -> Void {
+        //DFProfile();
         this.m_continuousPulseAtLowThresholdInCombat = pulse;
         this.m_continuousPulseThreshold = threshold;
     }
 
     public final func SetInDanger(inDanger: Bool) -> Void {
+        //DFProfile();
         this.m_inDanger = inDanger;
         this.EvaluateBarPulse(this.m_currentValue, this.m_previousValue);
     }
 
     private final func CreateBar() -> ref<inkCanvas> {
+        //DFProfile();
         //
         // Recreate a custom Stamina-like bar.
         //
         let canvas: ref<inkCanvas> = new inkCanvas();
         canvas.SetName(this.m_setupData.widgetName);
         canvas.SetChildOrder(inkEChildOrder.Backward);
-        canvas.SetSize(new Vector2(this.m_setupData.canvasWidth, 100.0));
+        canvas.SetSize(Vector2(this.m_setupData.canvasWidth, 100.0));
         canvas.SetTranslation(this.m_setupData.translationX, this.m_setupData.translationY);
         this.m_rootWidget = canvas;
         canvas.Reparent(this.m_setupData.parent);
 
+        if this.m_setupData.hasLock {
+            this.m_hasLock = true;
+
+            let lock: ref<inkImage> = new inkImage();
+            lock.SetName(n"lock");
+            lock.SetFitToContent(true);
+            lock.SetAnchor(inkEAnchor.Centered);
+            lock.SetAnchorPoint(Vector2(0.5, 0.5));
+            lock.SetHAlign(inkEHorizontalAlign.Center);
+            lock.SetVAlign(inkEVerticalAlign.Center);
+            lock.SetOpacity(0.0);
+            lock.SetTintColor(this.m_setupData.colorTheme.MainColor);
+            lock.SetSize(Vector2(100.0, 32.0));
+            lock.SetAtlasResource(this.m_setupData.lockIconPath);
+            lock.SetTexturePart(this.m_setupData.lockIconName);
+            lock.Reparent(canvas);
+            this.m_lock = lock;
+
+            let shadow: ref<inkImage> = new inkImage();
+            shadow.SetName(n"shadow");
+            shadow.SetAffectsLayoutWhenHidden(true);
+            shadow.SetAnchor(inkEAnchor.Centered);
+            shadow.SetAnchorPoint(Vector2(0.5, 0.5));
+            shadow.SetHAlign(inkEHorizontalAlign.Center);
+            shadow.SetVAlign(inkEVerticalAlign.Center);
+            shadow.SetOpacity(0.0);
+            shadow.SetTintColor(HDRColor(0.0, 0.0, 0.0, 1.0));
+            shadow.SetSize(Vector2(150.0, 100.0));
+            shadow.SetAtlasResource(r"base\\gameplay\\gui\\common\\shadow_blobs.inkatlas");
+            shadow.SetTexturePart(n"shadowBlobText");
+            shadow.Reparent(canvas);
+            this.m_shadow = shadow;
+        
+        } else {
+            this.m_hasLock = false;
+        }
+
         let barMain: ref<inkFlex> = new inkFlex();
         barMain.SetName(n"barMain");
         barMain.SetAnchor(inkEAnchor.Centered);
-        barMain.SetAnchorPoint(new Vector2(0.5, 0.5));
+        barMain.SetAnchorPoint(Vector2(0.5, 0.5));
         barMain.SetHAlign(inkEHorizontalAlign.Left);
         barMain.SetVAlign(inkEVerticalAlign.Top);
-        barMain.SetSize(new Vector2(100.0, 100.0));
+        barMain.SetSize(Vector2(100.0, 100.0));
         barMain.Reparent(canvas);
         this.m_barMain = barMain;
 
@@ -476,11 +588,11 @@ public class DFNeedsHUDBar extends inkCanvas {
         icon.SetName(n"icon");
         icon.SetAffectsLayoutWhenHidden(true);
         icon.SetAnchor(inkEAnchor.TopLeft);
-        icon.SetAnchorPoint(new Vector2(0.5, 0.5));
+        icon.SetAnchorPoint(Vector2(0.5, 0.5));
         icon.SetHAlign(inkEHorizontalAlign.Left);
         icon.SetVAlign(inkEVerticalAlign.Center);
-        icon.SetMargin(new inkMargin(-35.0, 0.0, 0.0, 0.0));
-        icon.SetSize(new Vector2(28.0, 28.0));
+        icon.SetMargin(inkMargin(-35.0, 0.0, 0.0, 0.0));
+        icon.SetSize(Vector2(28.0, 28.0));
         icon.SetBrushMirrorType(inkBrushMirrorType.NoMirror);
         icon.SetBrushTileType(inkBrushTileType.NoTile);
         icon.SetTintColor(this.m_setupData.colorTheme.ActiveColor);
@@ -494,18 +606,18 @@ public class DFNeedsHUDBar extends inkCanvas {
         wrapper.SetAnchor(inkEAnchor.TopLeft);
         wrapper.SetHAlign(inkEHorizontalAlign.Left);
         wrapper.SetVAlign(inkEVerticalAlign.Center);
-        wrapper.SetSize(new Vector2(100.0, 100.0));
+        wrapper.SetSize(Vector2(100.0, 100.0));
         wrapper.Reparent(barMain);
 
         let bg: ref<inkRectangle> = new inkRectangle();
         bg.SetName(n"bg");
         bg.SetHAlign(inkEHorizontalAlign.Left);
         bg.SetVAlign(inkEVerticalAlign.Center);
-        bg.SetMargin(new inkMargin(5.0, 0.0, 0.0, 0.0));
+        bg.SetMargin(inkMargin(5.0, 0.0, 0.0, 0.0));
         bg.SetOpacity(0.3);
-        bg.SetShear(new Vector2(0.5, 0.0));
-        bg.SetRenderTransformPivot(new Vector2(1.0, 0.5));
-        bg.SetSize(new Vector2(this.m_setupData.barWidth, 10.0));
+        bg.SetShear(Vector2(0.5, 0.0));
+        bg.SetRenderTransformPivot(Vector2(1.0, 0.5));
+        bg.SetSize(Vector2(this.m_setupData.barWidth, 10.0));
         bg.SetTintColor(this.m_setupData.colorTheme.FaintColor);
         bg.Reparent(wrapper);
         this.m_bg = bg;
@@ -514,7 +626,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         logic.SetName(n"logic");
         logic.SetHAlign(inkEHorizontalAlign.Left);
         logic.SetVAlign(inkEVerticalAlign.Center);
-        logic.SetMargin(new inkMargin(-1.0, 0.0, 0.0, 0.0));
+        logic.SetMargin(inkMargin(-1.0, 0.0, 0.0, 0.0));
         logic.SetSize(240.0, 28.0);
         logic.Reparent(wrapper);
 
@@ -522,8 +634,8 @@ public class DFNeedsHUDBar extends inkCanvas {
         empty.SetName(n"empty");
         empty.SetHAlign(inkEHorizontalAlign.Right);
         empty.SetVAlign(inkEVerticalAlign.Center);
-        empty.SetShear(new Vector2(0.5, 0.0));
-        empty.SetSize(new Vector2(0.0, 10.0));
+        empty.SetShear(Vector2(0.5, 0.0));
+        empty.SetSize(Vector2(0.0, 10.0));
         empty.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
         empty.BindProperty(n"tintColor", n"MainColors.MildRed");
         empty.SetVisible(this.m_setupData.showEmptyBar);
@@ -532,12 +644,12 @@ public class DFNeedsHUDBar extends inkCanvas {
 
         let border: ref<inkBorderConcrete> = new inkBorderConcrete();
         border.SetName(n"border");
-        border.SetMargin(new inkMargin(5.0, 0.0, 0.0, 0.0));
+        border.SetMargin(inkMargin(5.0, 0.0, 0.0, 0.0));
         border.SetHAlign(inkEHorizontalAlign.Fill);
         border.SetVAlign(inkEVerticalAlign.Center);
         border.SetOpacity(0.5);
-        border.SetShear(new Vector2(0.5, 0.0));
-        border.SetSize(new Vector2(100.0, 12.0));
+        border.SetShear(Vector2(0.5, 0.0));
+        border.SetSize(Vector2(100.0, 12.0));
         border.SetThickness(2.0);
         border.SetTintColor(this.m_setupData.colorTheme.ActiveColor);
         border.Reparent(wrapper);
@@ -547,9 +659,9 @@ public class DFNeedsHUDBar extends inkCanvas {
         full.SetName(n"full");
         full.SetHAlign(inkEHorizontalAlign.Left);
         full.SetVAlign(inkEVerticalAlign.Center);
-        full.SetShear(new Vector2(0.5, 0.0));
+        full.SetShear(Vector2(0.5, 0.0));
         full.SetTranslation(6.0, 0.0);
-        full.SetSize(new Vector2(this.m_setupData.barWidth, 10.0));
+        full.SetSize(Vector2(this.m_setupData.barWidth, 10.0));
         full.SetTintColor(this.m_setupData.colorTheme.MainColor);
         full.Reparent(logic);
         this.m_fullBar = full;
@@ -558,8 +670,8 @@ public class DFNeedsHUDBar extends inkCanvas {
         barcap.SetName(n"barcap");
         barcap.SetHAlign(inkEHorizontalAlign.Left);
         barcap.SetVAlign(inkEVerticalAlign.Center);
-        barcap.SetSize(new Vector2(6.0, 10.0));
-        barcap.SetShear(new Vector2(0.5, 0.0));
+        barcap.SetSize(Vector2(6.0, 10.0));
+        barcap.SetShear(Vector2(0.5, 0.0));
         barcap.SetTintColor(this.m_setupData.colorTheme.ActiveColor);
         barcap.SetVisible(false);
         barcap.Reparent(logic);
@@ -569,9 +681,9 @@ public class DFNeedsHUDBar extends inkCanvas {
         changeP.SetName(n"changeP");
         changeP.SetHAlign(inkEHorizontalAlign.Left);
         changeP.SetVAlign(inkEVerticalAlign.Center);
-        changeP.SetShear(new Vector2(0.5, 0.0));
+        changeP.SetShear(Vector2(0.5, 0.0));
         changeP.SetTranslation(6.0, 0.0);
-        changeP.SetSize(new Vector2(0.0, 15.0));
+        changeP.SetSize(Vector2(0.0, 15.0));
         changeP.SetTintColor(this.m_setupData.colorTheme.ChangePositiveColor);
         changeP.SetVisible(false);
         changeP.Reparent(logic);
@@ -582,8 +694,8 @@ public class DFNeedsHUDBar extends inkCanvas {
         changeN.SetAnchor(inkEAnchor.BottomLeft);
         changeN.SetHAlign(inkEHorizontalAlign.Left);
         changeN.SetVAlign(inkEVerticalAlign.Center);
-        changeN.SetShear(new Vector2(0.5, 0.0));
-        changeN.SetSize(new Vector2(5.0, 15.0));
+        changeN.SetShear(Vector2(0.5, 0.0));
+        changeN.SetSize(Vector2(5.0, 15.0));
         changeN.SetTintColor(this.m_setupData.colorTheme.ChangeNegativeColor);
         changeN.Reparent(wrapper);
         this.m_changeNegativeBar = changeN;
@@ -592,7 +704,11 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     public final func UpdateColorTheme(themeName: DFBarColorThemeName) {
+        //DFProfile();
         let newColorTheme: DFBarColorTheme = GetDarkFutureBarColorTheme(themeName);
+        if this.HasLock() {
+            this.m_lock.SetTintColor(newColorTheme.MainColor);
+        }
         this.m_icon.SetTintColor(newColorTheme.ActiveColor);
         this.m_bg.SetTintColor(newColorTheme.FaintColor);
         this.m_border.SetTintColor(newColorTheme.ActiveColor);
@@ -603,31 +719,35 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     public final func UpdateShear(shouldShear: Bool) {
+        //DFProfile();
         let shear: Float = 0.0;
         if shouldShear {
             shear = 0.5;
         }
 
-        this.m_bg.SetShear(new Vector2(shear, 0.0));
-        this.m_emptyBar.SetShear(new Vector2(shear, 0.0));
-        this.m_border.SetShear(new Vector2(shear, 0.0));
-        this.m_fullBar.SetShear(new Vector2(shear, 0.0));
-        this.m_barcap.SetShear(new Vector2(shear, 0.0));
-        this.m_changePositiveBar.SetShear(new Vector2(shear, 0.0));
-        this.m_changeNegativeBar.SetShear(new Vector2(shear, 0.0));
+        this.m_bg.SetShear(Vector2(shear, 0.0));
+        this.m_emptyBar.SetShear(Vector2(shear, 0.0));
+        this.m_border.SetShear(Vector2(shear, 0.0));
+        this.m_fullBar.SetShear(Vector2(shear, 0.0));
+        this.m_barcap.SetShear(Vector2(shear, 0.0));
+        this.m_changePositiveBar.SetShear(Vector2(shear, 0.0));
+        this.m_changeNegativeBar.SetShear(Vector2(shear, 0.0));
     }
 
     private final func StopAnimProxyIfDefined(animProxy: ref<inkAnimProxy>) -> Void {
+        //DFProfile();
         if IsDefined(animProxy) {
             animProxy.Stop();
         }
     }
 
     public final func SetForceBright(forceBright: Bool) -> Void {
+        //DFProfile();
         this.m_shouldForceBrightOnNextFadeIn = forceBright;
     }
 
-    public final func SetProgress(newValue: Float, forceMomentaryDisplay: Bool, instant: Bool, momentaryDisplayIgnoresSceneTier: Bool) -> Void {
+    public final func SetProgress(newValue: Float, forceMomentaryDisplay: Bool, instant: Bool, momentaryDisplayIgnoresSceneTier: Bool, fromInteraction: Bool) -> Void {
+        //DFProfile();
         let barSize: Vector2;
         let fullBarSize: Vector2;
         let negativeMargin: inkMargin;
@@ -648,9 +768,9 @@ public class DFNeedsHUDBar extends inkCanvas {
             this.StopAnimProxyIfDefined(this.m_changePositive_anim_proxy);
             this.StopAnimProxyIfDefined(this.m_changeNegative_anim_proxy);
 
-            this.m_fullBar.SetSize(new Vector2(this.m_width * this.m_currentValue, this.m_height));
-            this.m_changePositiveBar.SetSize(new Vector2(0.00, this.m_height));
-            this.m_changeNegativeBar.SetSize(new Vector2(0.00, this.m_height));
+            this.m_fullBar.SetSize(Vector2(this.m_width * this.m_currentValue, this.m_height));
+            this.m_changePositiveBar.SetSize(Vector2(0.00, this.m_height));
+            this.m_changeNegativeBar.SetSize(Vector2(0.00, this.m_height));
 
         } else {
             if this.m_previousValue < this.m_currentValue {
@@ -681,8 +801,8 @@ public class DFNeedsHUDBar extends inkCanvas {
             
             this.m_full_anim = new inkAnimDef();
             sizeInterpolator = new inkAnimSize();
-            sizeInterpolator.SetStartSize(new Vector2(this.m_width * sizeF, this.m_height));
-            sizeInterpolator.SetEndSize(new Vector2(this.m_width * this.m_currentValue, this.m_height));
+            sizeInterpolator.SetStartSize(Vector2(this.m_width * sizeF, this.m_height));
+            sizeInterpolator.SetEndSize(Vector2(this.m_width * this.m_currentValue, this.m_height));
             sizeInterpolator.SetDuration((sizeF + sizeChangePositive) * this.m_animDuration);
             sizeInterpolator.SetStartDelay(0.00);
             sizeInterpolator.SetType(inkanimInterpolationType.Linear);
@@ -691,8 +811,8 @@ public class DFNeedsHUDBar extends inkCanvas {
 
             this.m_changePositive_anim = new inkAnimDef();
             sizeInterpolator = new inkAnimSize();
-            sizeInterpolator.SetStartSize(new Vector2(this.m_width * sizeChangePositive, this.m_height));
-            sizeInterpolator.SetEndSize(new Vector2(0.00, this.m_height));
+            sizeInterpolator.SetStartSize(Vector2(this.m_width * sizeChangePositive, this.m_height));
+            sizeInterpolator.SetEndSize(Vector2(0.00, this.m_height));
             sizeInterpolator.SetDuration((sizeF + sizeChangePositive) * this.m_animDuration);
             sizeInterpolator.SetStartDelay(0.00);
             sizeInterpolator.SetType(inkanimInterpolationType.Linear);
@@ -702,8 +822,8 @@ public class DFNeedsHUDBar extends inkCanvas {
 
             this.m_changeNegative_anim = new inkAnimDef();
             sizeInterpolator = new inkAnimSize();
-            sizeInterpolator.SetStartSize(new Vector2(visualChangeNegativeMax, this.m_height));
-            sizeInterpolator.SetEndSize(new Vector2(0.00, this.m_height));
+            sizeInterpolator.SetStartSize(Vector2(visualChangeNegativeMax, this.m_height));
+            sizeInterpolator.SetEndSize(Vector2(0.00, this.m_height));
             sizeInterpolator.SetDuration((sizeE + sizeChangeNegative) * this.m_animDuration);
             sizeInterpolator.SetStartDelay(0.00);
             sizeInterpolator.SetType(inkanimInterpolationType.Linear);
@@ -718,11 +838,11 @@ public class DFNeedsHUDBar extends inkCanvas {
                 this.m_changeNegative_anim_proxy = this.m_changeNegativeBar.PlayAnimation(this.m_changeNegative_anim);
             };
             if sizeF + sizeChangePositive <= 0.00 {
-                this.m_fullBar.SetSize(new Vector2(this.m_width * sizeF, this.m_height));
-                this.m_changePositiveBar.SetSize(new Vector2(this.m_width * sizeChangePositive, this.m_height));
+                this.m_fullBar.SetSize(Vector2(this.m_width * sizeF, this.m_height));
+                this.m_changePositiveBar.SetSize(Vector2(this.m_width * sizeChangePositive, this.m_height));
             };
             if sizeE + sizeChangeNegative <= 0.00 {
-                this.m_changeNegativeBar.SetSize(new Vector2(this.m_width * sizeChangeNegative, this.m_height));
+                this.m_changeNegativeBar.SetSize(Vector2(this.m_width * sizeChangeNegative, this.m_height));
             };
 
             this.EvaluateBarPulse(this.m_currentValue, this.m_previousValue);
@@ -733,14 +853,16 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_changeNegativeBar.SetMargin(negativeMargin);
 
         DFLogNoSystem(this.debugEnabled, this, "SetProgress m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
-        this.EvaluateBarGroupVisibility(forceMomentaryDisplay, momentaryDisplayIgnoresSceneTier);
+        this.EvaluateBarGroupVisibility(forceMomentaryDisplay, momentaryDisplayIgnoresSceneTier, fromInteraction);
     }
 
     public final func SetProgressEmpty(newValue: Float) {
-        this.m_emptyBar.SetSize(new Vector2(this.m_width * newValue, this.m_height));
+        //DFProfile();
+        this.m_emptyBar.SetSize(Vector2(this.m_width * newValue, this.m_height));
     }
 
     private final func EvaluateBarPulse(currentValue: Float, previousValue: Float) -> Void {
+        //DFProfile();
         if this.m_continuousPulseAtLowThresholdInCombat && currentValue <= this.m_continuousPulseThreshold && this.m_inDanger {
             this.SetPulse(true);
         } else if previousValue > 0.5 && currentValue <= 0.5 {
@@ -752,38 +874,53 @@ public class DFNeedsHUDBar extends inkCanvas {
         }
     }
 
-    public final func SetPulse(opt infinite: Bool) -> Void {
-        this.EvaluateBarGroupVisibility(true);
+    public final func SetPulse(opt infinite: Bool, opt ignoreSceneTier: Bool) -> Void {
+        //DFProfile();
+        this.EvaluateBarGroupVisibility(true, ignoreSceneTier);
 
         if !this.m_pulsing {
             this.m_pulsing = true;
+
+            // If the current opacity is very low, the bar is likely fading in; delay until the fade in is finished.
+            let fadeUpDelay: Float = this.m_rootWidget.GetOpacity() <= 0.05 ? 0.5 : 0.0;
+
             if this.m_currentValue <= 0.25 {
-                this.m_pulse_anim.Configure(this.m_barMain, 1.00, 0.10, 0.20);
+                this.m_pulse_anim.Configure(this.m_barMain, 1.00, 0.10, 0.20, fadeUpDelay);
             } else {
-                this.m_pulse_anim.Configure(this.m_barMain, 1.00, 0.10, this.m_currentValue);
+                this.m_pulse_anim.Configure(this.m_barMain, 1.00, 0.10, this.m_currentValue, fadeUpDelay);
             };
             this.m_pulse_anim.Start(false);
             if !infinite {
                 this.RegisterForPulseStop();
             }
-        }   
+        }
     }
 
-    public final func EvaluateBarGroupVisibility(forceMomentaryDisplay: Bool, opt momentaryDisplayIgnoresSceneTier: Bool) -> Void {
+    public final func EvaluateBarGroupVisibility(forceMomentaryDisplay: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt fromInteraction: Bool) -> Void {
+        //DFProfile();
         if IsDefined(this.m_barGroup) {
             if this.m_barGroup.displayManagedByParentGroup && IsDefined(this.m_barGroup.needsBarGroupParent) {
-                this.m_barGroup.needsBarGroupParent.EvaluateAllBarVisibility(forceMomentaryDisplay, false);
+                if fromInteraction {
+                    // Dirty Hack - Don't reroute this to the parent group. Allow Nerve Bar to stay visible even when Basic Needs bars fade.
+                    this.m_barGroup.displayManagedByParentGroup = false;
+                    this.m_barGroup.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, fromInteraction);    
+                } else {
+                    this.m_barGroup.needsBarGroupParent.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, fromInteraction);
+                }
             } else {
-                this.m_barGroup.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier);
+                this.m_barGroup.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, fromInteraction);
             }
         }
     }
 
     public final func GetFullSize() -> Vector2 {
-        return new Vector2(this.m_width, this.m_height);
+        //DFProfile();
+        return Vector2(this.m_width, this.m_height);
     }
 
-    private final func SetFadeIn(fromParent: Bool) -> Void {
+    public let m_fadeInTargetTransparency: Float;
+    public final func SetFadeIn(fromParent: Bool) -> Void {
+        //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "SetFadeIn name: " + ToString(this.m_setupData.widgetName) + " m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
         if IsDefined(this.m_barGroup) && this.m_barGroup.displayManagedByParentGroup && !fromParent {
             return;
@@ -791,28 +928,34 @@ public class DFNeedsHUDBar extends inkCanvas {
 
         this.StopAnimProxyIfDefined(this.m_fadeIn_anim_proxy);
 
-        let targetTransparency: Float;
+        //let targetTransparency: Float;
         if this.m_shouldForceBrightOnNextFadeIn {
             DFLogNoSystem(this.debugEnabled, this, "SetFadeIn: Instant or Force Bright, show bright and recheck");
-            targetTransparency = 0.8;
+            this.m_fadeInTargetTransparency = 0.8;
             if IsDefined(this.m_barGroup) {
                 this.m_barGroup.RegisterForDisplayRecheckAfterForceBright();
             }
         } else {
             let minOpacity: Float = DFSettings.Get().hudUIMinOpacity / 100.0;
-            targetTransparency = this.m_currentValue > 0.85 ? minOpacity : (1.0 + minOpacity) - this.m_currentValue;
+            let possibleTargetTransparency: Float = this.m_currentValue > 0.85 ? minOpacity : (1.0 + minOpacity) - this.m_currentValue;
+            this.m_fadeInTargetTransparency = MaxF(this.m_fadeInTargetTransparency, possibleTargetTransparency);
         }
 
         this.m_fadeIn_anim = new inkAnimDef();
         let fadeInInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
         fadeInInterp.SetStartTransparency(this.m_rootWidget.GetOpacity());
-        fadeInInterp.SetEndTransparency(targetTransparency);
+        fadeInInterp.SetEndTransparency(this.m_fadeInTargetTransparency);
         fadeInInterp.SetDuration(0.5);
         this.m_fadeIn_anim.AddInterpolator(fadeInInterp);
         this.m_fadeIn_anim_proxy = this.m_rootWidget.PlayAnimation(this.m_fadeIn_anim);
     }
 
-    private final func SetFadeOut() -> Void {
+    public final func SetFadeOut() -> Void {
+        //DFProfile();
+        if this.m_lockShown {
+            this.SetHideLock();
+        }
+
         this.StopAnimProxyIfDefined(this.m_fadeOut_anim_proxy);
         this.StopAnimProxyIfDefined(this.m_fadeIn_anim_proxy);
 
@@ -826,16 +969,90 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     private final func CreateAnimations() -> Void {
+        //DFProfile();
         this.m_pulse_anim = new PulseAnimation();
     }
 
     public final func OnPulseStop() -> Void {
+        //DFProfile();
         this.m_pulseStopDelayID = GetInvalidDelayID();
         this.m_pulse_anim.Stop();
         this.m_pulsing = false;
     }
 
     private final func RegisterForPulseStop() -> Void {
+        //DFProfile();
         RegisterDFDelayCallback(this.m_barGroup.DelaySystem, DFNeedsHUDBarPulseStopDelayCallback.Create(this), this.m_pulseStopDelayID, this.m_pulseStopDelayInterval);
+    }
+
+    public final func HasLock() -> Bool {
+        //DFProfile();
+        return this.m_hasLock;
+    }
+
+    public final func SetShowLock() -> Void {
+        //DFProfile();
+        if !this.m_lockShown {
+            this.m_lockShown = true;
+
+            this.StopAnimProxyIfDefined(this.m_showLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_showLock_shadow_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_shadow_anim_proxy);
+
+            this.m_showLock_anim = new inkAnimDef();
+
+            let showLockScaleInterp: ref<inkAnimScale> = new inkAnimScale();
+            showLockScaleInterp.SetDuration(0.25);
+            showLockScaleInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            showLockScaleInterp.SetType(inkanimInterpolationType.Back);
+            showLockScaleInterp.SetStartScale(Vector2(1.5, 1.5));
+            showLockScaleInterp.SetEndScale(Vector2(1.0, 1.0));
+            this.m_showLock_anim.AddInterpolator(showLockScaleInterp);
+
+            let showLockTransparencyInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
+            showLockTransparencyInterp.SetDuration(0.24);
+            showLockTransparencyInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            showLockTransparencyInterp.SetType(inkanimInterpolationType.Quartic);
+            showLockTransparencyInterp.SetStartTransparency(0.0);
+            showLockTransparencyInterp.SetEndTransparency(1.0);
+            this.m_showLock_anim.AddInterpolator(showLockTransparencyInterp);
+
+            this.m_showLock_lock_anim_proxy = this.m_lock.PlayAnimation(this.m_showLock_anim);
+            this.m_showLock_shadow_anim_proxy = this.m_shadow.PlayAnimation(this.m_showLock_anim);
+        }
+    }
+
+    public final func SetHideLock() -> Void {
+        //DFProfile();
+        if this.m_lockShown {
+            this.m_lockShown = false;
+
+            this.StopAnimProxyIfDefined(this.m_showLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_showLock_shadow_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_shadow_anim_proxy);
+
+            this.m_hideLock_anim = new inkAnimDef();
+
+            let hideLockScaleInterp: ref<inkAnimScale> = new inkAnimScale();
+            hideLockScaleInterp.SetDuration(0.25);
+            hideLockScaleInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            hideLockScaleInterp.SetType(inkanimInterpolationType.Back);
+            hideLockScaleInterp.SetStartScale(Vector2(1.0, 1.0));
+            hideLockScaleInterp.SetEndScale(Vector2(1.5, 1.5));
+            this.m_hideLock_anim.AddInterpolator(hideLockScaleInterp);
+
+            let hideLockTransparencyInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
+            hideLockTransparencyInterp.SetDuration(0.24);
+            hideLockTransparencyInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            hideLockTransparencyInterp.SetType(inkanimInterpolationType.Quartic);
+            hideLockTransparencyInterp.SetStartTransparency(1.0);
+            hideLockTransparencyInterp.SetEndTransparency(0.0);
+            this.m_hideLock_anim.AddInterpolator(hideLockTransparencyInterp);
+
+            this.m_hideLock_lock_anim_proxy = this.m_lock.PlayAnimation(this.m_hideLock_anim);
+            this.m_hideLock_shadow_anim_proxy = this.m_shadow.PlayAnimation(this.m_hideLock_anim);
+        }
     }
 }

@@ -1,0 +1,13 @@
+# New Game+ Support
+resource:
+  scope:
+    df_combined_scope.quest:
+      - cyberpunk2077.quest
+      - mod\quest\newgameplus.quest
+      - mod\quest\newgameplus_q001.quest
+      - mod\quest\newgameplus_standalone.quest
+
+quest:
+  phases:
+    - path: darkfuture\consumable_anims\quest\phases\darkfuture_item_consume_anim.questphase
+      parent: df_combined_scope.quest

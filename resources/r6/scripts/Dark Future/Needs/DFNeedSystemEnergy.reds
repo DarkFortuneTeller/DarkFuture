@@ -10,8 +10,8 @@ module DarkFuture.Needs
 import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Utils.{
-	RunGuard,
-	IsSleeping
+	DFRunGuard,
+	DFIsSleeping
 }
 import DarkFuture.Main.{
 	DFNeedsDatum,
@@ -38,6 +38,7 @@ import DarkFuture.Settings.{
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
+	//DFProfile();
 	let effectID: TweakDBID = evt.staticData.GetID();
 	let mainSystemEnabled: Bool = DFSettings.Get().mainSystemEnabled;
 	if mainSystemEnabled {
@@ -51,6 +52,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 
 class DFEnergySystemEventListener extends DFNeedSystemEventListener {
 	private func GetSystemInstance() -> wref<DFNeedSystemBase> {
+		//DFProfile();
 		return DFEnergySystem.Get();
 	}
 }
@@ -62,8 +64,8 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private let NerveSystem: ref<DFNerveSystem>;
 
-    private let energyRecoverAmountSleeping: Float = 0.4667;
-	private let energizedMaxStacksFromCaffeine: Uint32 = 3u;
+    private let energyRecoverAmountSleeping: Float = 0.74;
+	public let energizedMaxStacksFromCaffeine: Uint32 = 3u;
 	private let energizedMaxStacksFromStimulants: Uint32 = 6u;
 
 	private let isSkippingTime: Bool = false;
@@ -72,11 +74,13 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	//	System Methods
 	//
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFEnergySystem> {
-		let instance: ref<DFEnergySystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Needs.DFEnergySystem") as DFEnergySystem;
+		//DFProfile();
+		let instance: ref<DFEnergySystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFEnergySystem>()) as DFEnergySystem;
 		return instance;
 	}
 
 	public final static func Get() -> ref<DFEnergySystem> {
+		//DFProfile();
 		return DFEnergySystem.GetInstance(GetGameInstance());
 	}
 
@@ -84,26 +88,31 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
+		//DFProfile();
 		this.debugEnabled = false;
 	}
 	
-	private final func GetSystemToggleSettingValue() -> Bool {
+	public final func GetSystemToggleSettingValue() -> Bool {
+		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return true;
 	}
 
 	private final func GetSystemToggleSettingString() -> String {
+		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return "INVALID";
 	}
 
-	private func GetSystems() -> Void {
+	public func GetSystems() -> Void {
+		//DFProfile();
 		super.GetSystems();
 		this.NerveSystem = DFNerveSystem.Get();
 	}
 
-	private func SetupData() -> Void {
-		this.needStageThresholdDeficits = [15.0, 25.0, 50.0, 75.0, 100.0];
+	public final func SetupData() -> Void {
+		//DFProfile();
+		super.SetupData();
 		this.needStageStatusEffects = [
 			t"DarkFutureStatusEffect.EnergyPenalty_01",
 			t"DarkFutureStatusEffect.EnergyPenalty_02",
@@ -112,12 +121,14 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		];
 	}
 
-	private func DoPostSuspendActions() -> Void {
+	public func DoPostSuspendActions() -> Void {
+		//DFProfile();
 		super.DoPostSuspendActions();
 		this.ClearEnergyManagementEffects();
 	}
 
-	private func DoPostResumeActions() -> Void {
+	public func DoPostResumeActions() -> Void {
+		//DFProfile();
 		super.DoPostResumeActions();
 	}
 
@@ -125,31 +136,37 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	//	Overrides
 	//
 	private final func OnUpdateActual() -> Void {
+		//DFProfile();
 		this.ChangeNeedValue(this.GetEnergyChange());
 	}
 
 	public final func OnTimeSkipStart() -> Void {
+		//DFProfile();
 		super.OnTimeSkipStart();
 		this.isSkippingTime = true;
 	}
 
 	public final func OnTimeSkipCancelled() -> Void {
+		//DFProfile();
 		super.OnTimeSkipCancelled();
 		this.isSkippingTime = false;
 	}
 
 	private final func OnTimeSkipFinishedActual(data: DFTimeSkipData) -> Void {
+		//DFProfile();
 		this.ClearEnergyManagementEffects();
 		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.energy.value - this.GetNeedValue());
 		this.isSkippingTime = false;
 	}
 
 	public final func PerformQuestSleep() -> Void {
+		//DFProfile();
 		this.ClearEnergyManagementEffects();
 		this.QueueContextuallyDelayedNeedValueChange(100.0);
 	}
 
 	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
+		//DFProfile();
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.energy.value < 0.0 {
@@ -171,46 +188,49 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func GetNeedHUDBarType() -> DFHUDBarType {
+		//DFProfile();
 		return DFHUDBarType.Energy;
 	}
 
 	private final func GetNeedType() -> DFNeedType {
+		//DFProfile();
 		return DFNeedType.Energy;
 	}
 
 	private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
+		//DFProfile();
 		DFLog(this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
         
 		let notification: DFNotification;
 
 		if stage >= 3 {
 			if this.Settings.needNegativeSFXEnabled {
-				notification.sfx = new DFAudioCue(n"ono_v_breath_heavy", 10);
+				notification.sfx = DFAudioCue(n"ono_v_breath_heavy", 10);
 			}
 
 			if this.Settings.energyNeedVFXEnabled {
-				notification.vfx = new DFVisualEffect(n"waking_up", null);
+				notification.vfx = DFVisualEffect(n"waking_up", null);
 			}
-
-			notification.ui = new DFUIDisplay(DFHUDBarType.Energy, true, false);
+			
+			notification.ui = DFUIDisplay(DFHUDBarType.Energy, true, false, false, false);
 			this.NotificationService.QueueNotification(notification);
 		} else if stage == 2 || stage == 1 {
 			if this.Settings.needNegativeSFXEnabled {
 				if Equals(this.player.GetResolvedGenderName(), n"Female") {
-					notification.sfx = new DFAudioCue(n"ono_v_exhale_02", 20);
+					notification.sfx = DFAudioCue(n"ono_v_exhale_02", 20);
 				} else {
-					notification.sfx = new DFAudioCue(n"ono_v_breath_heavy", 20);
+					notification.sfx = DFAudioCue(n"ono_v_breath_heavy", 20);
 				}
 			}
 
-			notification.ui = new DFUIDisplay(DFHUDBarType.Energy, false, true);
+			notification.ui = DFUIDisplay(DFHUDBarType.Energy, false, true, false, false);
 			this.NotificationService.QueueNotification(notification);
 		} else if stage == 0 {
 			if this.Settings.needPositiveSFXEnabled {
 				if Equals(this.player.GetResolvedGenderName(), n"Female") {
-					notification.sfx = new DFAudioCue(n"ono_v_pre_insert_splinter", 30);
+					notification.sfx = DFAudioCue(n"ono_v_pre_insert_splinter", 30);
 				} else {
-					notification.sfx = new DFAudioCue(n"q001_sc_01_v_male_sigh", 30);
+					notification.sfx = DFAudioCue(n"q001_sc_01_v_male_sigh", 30);
 				}
 				
 				this.NotificationService.QueueNotification(notification);
@@ -219,83 +239,87 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func GetSevereNeedMessageKey() -> CName {
+		//DFProfile();
 		return n"DarkFutureEnergyNotificationSevere";
 	}
 
 	private final func GetSevereNeedCombinedContextKey() -> CName {
+		//DFProfile();
 		return n"DarkFutureMultipleNotification";
 	}
 
 	private final func GetNeedStageStatusEffectTag() -> CName {
+		//DFProfile();
 		return n"DarkFutureNeedEnergy";
 	}
 
-	public final func CheckIfBonusEffectsValid() -> Void {
-        if RunGuard(this) { return; }
-		DFLog(this, "CheckIfBonusEffectsValid");
-
-		if this.GameStateService.IsValidGameState(this, true) {
-			if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"HousingStatusEffect.Rested") {
-				if this.GetNeedStage() > 0 {
-					StatusEffectHelper.RemoveStatusEffect(this.player, t"HousingStatusEffect.Rested");
-				}
-			}
-		}
-	}
-
 	private final func GetTutorialTitleKey() -> CName {
+		//DFProfile();
 		return n"DarkFutureTutorialCombinedNeedsTitle";
 	}
 
 	private final func GetTutorialMessageKey() -> CName {
+		//DFProfile();
 		return n"DarkFutureTutorialCombinedNeeds";
 	}
 
-	private func GetHasShownTutorialForNeed() -> Bool {
+	private final func GetHasShownTutorialForNeed() -> Bool {
+		//DFProfile();
 		return this.PlayerStateService.hasShownBasicNeedsTutorial;
 	}
 
-	private func SetHasShownTutorialForNeed(hasShownTutorial: Bool) -> Void {
+	private final func SetHasShownTutorialForNeed(hasShownTutorial: Bool) -> Void {
+		//DFProfile();
 		this.PlayerStateService.hasShownBasicNeedsTutorial = hasShownTutorial;
+	}
+
+	private final func GetBonusEffectTDBID() -> TweakDBID {
+		//DFProfile();
+		return t"HousingStatusEffect.Rested";
 	}
 
     //
 	//	RunGuard Protected Methods
 	//
 	public final func ReduceEnergyFromItem(energyAmount: Float, animateUI: Bool, opt unclampedEnergyAmount: Float) -> Void {		
-		if RunGuard(this) { return; }
+		//DFProfile();
+		if DFRunGuard(this) { return; }
 
 		if energyAmount < 0.0 {
 			if energyAmount + this.GetNeedValue() > this.GetNeedMax() {
 				energyAmount = this.GetNeedMax() - this.GetNeedValue();
 			}
 			
+			let changeNeedValueProps: DFChangeNeedValueProps;
+
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
 			uiFlags.instantUIChange = !animateUI;
 			uiFlags.forceBright = true;
 			uiFlags.momentaryDisplayIgnoresSceneTier = true;
-			this.ChangeNeedValue(energyAmount, uiFlags);
+
+			changeNeedValueProps.uiFlags = uiFlags;
+
+			this.ChangeNeedValue(energyAmount, changeNeedValueProps);
 		}
 	}
 
 	public final func TryToApplyEnergizedStacks(energizedStacksFromItem: Uint32, tempEnergyItemType: DFTempEnergyItemType, animateUI: Bool, opt contextuallyDelayed: Bool) -> Void {
-		if RunGuard(this) { return; }
+		//DFProfile();
+		if DFRunGuard(this) { return; }
 
-		let shouldUpdateEnergy: Bool = false;
 		let energizedStacksToApply: Uint32 = 0u;
 		let totalEnergyAmount: Float = 0.0;
 
-		let availableStacks: Uint32;
+		let availableStacks: Int32;
 		if Equals(tempEnergyItemType, DFTempEnergyItemType.Caffeine) {
-			availableStacks = this.energizedMaxStacksFromCaffeine - this.GetEnergizedStacks();
+			availableStacks = Cast<Int32>(this.energizedMaxStacksFromCaffeine) - Cast<Int32>(this.GetEnergizedStacks());
 		} else if Equals(tempEnergyItemType, DFTempEnergyItemType.Stimulant) {
-			availableStacks = this.energizedMaxStacksFromStimulants - this.GetEnergizedStacks();
+			availableStacks = Cast<Int32>(this.energizedMaxStacksFromStimulants) - Cast<Int32>(this.GetEnergizedStacks());
 		}
 
-		if availableStacks > 0u {
-			shouldUpdateEnergy = true;
-			energizedStacksToApply = Cast<Uint32>(Min(Cast<Int32>(energizedStacksFromItem), Cast<Int32>(availableStacks)));
+		if availableStacks > 0 {
+			energizedStacksToApply = Cast<Uint32>(Min(Cast<Int32>(energizedStacksFromItem), availableStacks));
 			
 			let i: Uint32 = 0u;
 			let needValue: Float = this.GetNeedValue();
@@ -321,16 +345,22 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		if contextuallyDelayed {
 			this.QueueContextuallyDelayedNeedValueChange(totalEnergyAmount, true);
 		} else {
+			let changeNeedValueProps: DFChangeNeedValueProps;
+			
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
 			uiFlags.instantUIChange = !animateUI;
 			uiFlags.forceBright = true;
 			uiFlags.momentaryDisplayIgnoresSceneTier = true;
-			this.ChangeNeedValue(totalEnergyAmount, uiFlags);
+
+			changeNeedValueProps.uiFlags = uiFlags;
+
+			this.ChangeNeedValue(totalEnergyAmount, changeNeedValueProps);
 		}
 	}
 
 	public final func GetItemEnergyChangePreviewAmount(itemRecord: wref<Item_Record>, needsData: DFNeedsDatum) -> Float {
+		//DFProfile();
 		if needsData.energy.value < 0.0 {
 			return needsData.energy.value;
 
@@ -341,15 +371,15 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 			let energizedStacksFromItem: Uint32 = this.GetEnergizedStackCountFromItemRecord(itemRecord);
 
 			// How many stacks can currently be applied, given its type?
-			let availableStacks: Uint32;
+			let availableStacks: Int32;
 			if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCaffeine") {
-				availableStacks = this.energizedMaxStacksFromCaffeine - this.GetEnergizedStacks();
+				availableStacks = Cast<Int32>(this.energizedMaxStacksFromCaffeine) - Cast<Int32>(this.GetEnergizedStacks());
 			} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedStimulant") {
-				availableStacks = this.energizedMaxStacksFromStimulants - this.GetEnergizedStacks();
+				availableStacks = Cast<Int32>(this.energizedMaxStacksFromStimulants) - Cast<Int32>(this.GetEnergizedStacks());
 			}
 
-			if availableStacks > 0u {
-				let energizedStacksToApply: Uint32 = Cast<Uint32>(Min(Cast<Int32>(energizedStacksFromItem), Cast<Int32>(availableStacks)));
+			if availableStacks > 0 {
+				let energizedStacksToApply: Uint32 = Cast<Uint32>(Min(Cast<Int32>(energizedStacksFromItem), availableStacks));
 				return this.Settings.energyPerEnergizedStack * Cast<Float>(energizedStacksToApply);
 			} else {
 				return 0.0;
@@ -360,7 +390,8 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	public final func OnEnergizedEffectRemoved() -> Void {
-		if RunGuard(this) { return; }
+		//DFProfile();
+		if DFRunGuard(this) { return; }
 		if this.isSkippingTime { return; }
 
 		DFLog(this, "OnEnergizedEffectRemoved");
@@ -372,11 +403,17 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 			let i: Int32 = 0;
 			while i < delta {
 				let energyToRemove: Float = ArrayPop(this.energyRestoredPerEnergizedStack);
+
+				let changeNeedValueProps: DFChangeNeedValueProps;
+
 				let uiFlags: DFNeedChangeUIFlags;
 				uiFlags.forceMomentaryUIDisplay = true;
 				uiFlags.instantUIChange = false;
 				uiFlags.forceBright = true;
-				this.ChangeNeedValue(-energyToRemove, uiFlags);
+
+				changeNeedValueProps.uiFlags = uiFlags;
+
+				this.ChangeNeedValue(-energyToRemove, changeNeedValueProps);
 				i += 1;
 			}
 		}
@@ -387,19 +424,22 @@ public final class DFEnergySystem extends DFNeedSystemBase {
     //
     //  System-Specific Methods
     //
-    private final func GetEnergyChange() -> Float {
-        // Subtract 100 points every 36 in-game hours (4.5 hours of gameplay)
-		// The player will feel the first effects of this need after 7.2 in-game hours (54 minutes of gameplay)
+    public final func GetEnergyChange() -> Float {
+		//DFProfile();
+        // Subtract 100 points every 30 in-game hours
+		// The player will feel the first effects of this need after 4.5 in-game hours (33.75 minutes of gameplay)
 
 		// (Points to Lose) / ((Target In-Game Hours * 60 In-Game Minutes) / In-Game Update Interval (5 Minutes))
-		return (100.0 / ((36.0 * 60.0) / 5.0) * -1.0) * (this.Settings.energyLossRatePct / 100.0);
+		return (100.0 / ((30.0 * 60.0) / 5.0) * -1.0) * (this.Settings.energyLossRatePct / 100.0);
 	}
 
 	public final func GetEnergizedStacks() -> Uint32 {
+		//DFProfile();
 		return Cast<Uint32>(ArraySize(this.energyRestoredPerEnergizedStack));
 	}
 
 	public final func GetTotalEnergyRestoredFromEnergized() -> Float {
+		//DFProfile();
 		let totalEnergy: Float = 0.0;
 		
 		if ArraySize(this.energyRestoredPerEnergizedStack) > 0 {
@@ -411,10 +451,11 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		return totalEnergy;
 	}
 
-	private final func GetEnergyChangeWithRecoverLimit(energyValue: Float, timeSkipType: DFTimeSkipType) -> Float {
+	public final func GetEnergyChangeWithRecoverLimit(energyValue: Float, timeSkipType: DFTimeSkipType) -> Float {
+		//DFProfile();
 		let amountToChange: Float;
 
-		if IsSleeping(timeSkipType) {
+		if DFIsSleeping(timeSkipType) {
 			let recoverLimit: Float;
 			switch timeSkipType {
 				case DFTimeSkipType.FullSleep:
@@ -444,22 +485,26 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		return amountToChange;
 	}
 
-	private func ReevaluateSystem() -> Void {
+	public func ReevaluateSystem() -> Void {
+		//DFProfile();
 		super.ReevaluateSystem();
 	}
 
-	public func ChangeNeedValue(amount: Float, opt uiFlags: DFNeedChangeUIFlags, opt suppressRecoveryNotification: Bool, opt maxOverride: Float) -> Void {
-		super.ChangeNeedValue(amount, uiFlags, suppressRecoveryNotification, maxOverride);
+	public final func ChangeNeedValue(amount: Float, opt changeValueProps: DFChangeNeedValueProps) -> Void {
+		//DFProfile();
+		super.ChangeNeedValue(amount, changeValueProps);
 		this.CheckIfBonusEffectsValid();
 	}
 
-	private final func ClearEnergyManagementEffects() -> Void {
+	public final func ClearEnergyManagementEffects() -> Void {
+		//DFProfile();
 		DFLog(this, "Clearing energy management effects.");
 		ArrayClear(this.energyRestoredPerEnergizedStack);
 		StatusEffectHelper.RemoveStatusEffect(this.player, this.energizedEffectID, this.energizedMaxStacksFromStimulants);
 	}
 
 	private final func GetEnergizedStackCountFromItemRecord(itemRecord: wref<Item_Record>) -> Uint32 {
+		//DFProfile();
 		if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCount1") {
 			return 1u;
 		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCount2") {

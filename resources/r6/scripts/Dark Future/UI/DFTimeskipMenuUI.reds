@@ -5,6 +5,7 @@
 // - Handles the UI meters in the Timeskip Menu.
 //
 
+import DarkFuture.Logging.*
 import DarkFuture.Settings.{
 	DFSettings,
 	DFSleepQualitySetting
@@ -16,7 +17,8 @@ import DarkFuture.Main.{
 	DFNeedChangeDatum,
 	DFFutureHoursData,
 	DFTimeSkipData,
-	DFTimeSkipType
+	DFTimeSkipType,
+	DFHumanityLossDatum
 }
 import DarkFuture.Services.DFGameStateService
 import DarkFuture.Gameplay.{
@@ -34,7 +36,7 @@ import DarkFuture.UI.{
 	DFNeedsMenuBarSetupData
 }
 import DarkFuture.Utils.{
-	IsSleeping,
+	DFIsSleeping,
 	IsPlayerInBadlands,
 	DFHDRColor,
 	GetDarkFutureHDRColor
@@ -101,6 +103,7 @@ private let timeskipAllowedReasonLabel: wref<inkText>;
 //
 @wrapMethod(HubTimeSkipController)
 protected cb func OnTimeSkipButtonPressed(e: ref<inkPointerEvent>) -> Bool {
+	//DFProfile();
 	if e.IsAction(n"click") {
 		DFInteractionSystem.GetInstance(GetGameInstance()).SetSkippingTimeFromHubMenu(true);
 	}
@@ -113,6 +116,7 @@ protected cb func OnTimeSkipButtonPressed(e: ref<inkPointerEvent>) -> Bool {
 //
 @wrapMethod(TimeskipGameController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	let gameInstance = GetGameInstance();
 
 	this.Settings = DFSettings.GetInstance(gameInstance);
@@ -147,6 +151,7 @@ protected cb func OnInitialize() -> Bool {
 //
 @wrapMethod(TimeskipGameController)
 protected cb func OnGlobalInput(e: ref<inkPointerEvent>) -> Bool {
+	//DFProfile();
 	if e.IsHandled() {
       return false;
     };
@@ -169,6 +174,7 @@ protected cb func OnGlobalInput(e: ref<inkPointerEvent>) -> Bool {
 //
 @wrapMethod(TimeskipGameController)
 protected cb func OnUpdate(timeDelta: Float) -> Bool {
+	//DFProfile();
 	wrappedMethod(timeDelta);
 
 	if this.Settings.mainSystemEnabled {
@@ -198,6 +204,7 @@ protected cb func OnUpdate(timeDelta: Float) -> Bool {
 //
 @wrapMethod(TimeskipGameController)
 protected cb func OnCloseAfterFinishing(proxy: ref<inkAnimProxy>) -> Bool {
+	//DFProfile();
 	if this.Settings.mainSystemEnabled {
 		this.GameStateService.SetInSleepCinematic(false);
 
@@ -205,6 +212,7 @@ protected cb func OnCloseAfterFinishing(proxy: ref<inkAnimProxy>) -> Bool {
 		tsd.hoursSkipped = this.m_hoursToSkip;
 		tsd.targetNeedValues = this.calculatedFutureValues.futureNeedsData[this.m_hoursToSkip - 1];
 		tsd.targetAddictionValues = this.calculatedFutureValues.futureAddictionData[this.m_hoursToSkip - 1];
+		tsd.targetHumanityLossValues = this.calculatedFutureValues.futureHumanityLossData[this.m_hoursToSkip - 1];
 		tsd.timeSkipType = this.timeSkipType;
 		this.MainSystem.DispatchTimeSkipFinishedEvent(tsd);
 	}
@@ -215,6 +223,7 @@ protected cb func OnCloseAfterFinishing(proxy: ref<inkAnimProxy>) -> Bool {
 //
 @wrapMethod(TimeskipGameController)
 protected cb func OnCloseAfterCanceling(proxy: ref<inkAnimProxy>) -> Bool {
+	//DFProfile();
 	if this.Settings.mainSystemEnabled {
 		this.GameStateService.SetInSleepCinematic(false);
 		this.MainSystem.DispatchTimeSkipCancelledEvent();
@@ -226,6 +235,7 @@ protected cb func OnCloseAfterCanceling(proxy: ref<inkAnimProxy>) -> Bool {
 //
 @wrapMethod(TimeskipGameController)
 protected cb func OnUninitialize() -> Bool {
+	//DFProfile();
 	if this.Settings.mainSystemEnabled {
 		this.GameStateService.SetInSleepCinematic(false);
 		this.InteractionSystem.SetSkippingTimeFromHubMenu(false);
@@ -238,15 +248,17 @@ protected cb func OnUninitialize() -> Bool {
 //
 @wrapMethod(TimeskipGameController)
 private final func UpdateTargetTime(angle: Float) -> Void {
+	//DFProfile();
 	wrappedMethod(angle);
 	this.UpdateUI();
 }
 
 @wrapMethod(TimeskipGameController)
 private final func SetTimeSkipText(textWidgetRef: inkTextRef, textParamsRef: ref<inkTextParams>, hours: Int32) -> Void {
+	//DFProfile();
 	wrappedMethod(textWidgetRef, textParamsRef, hours);
 	
-	if IsSleeping(this.timeSkipType) {
+	if DFIsSleeping(this.timeSkipType) {
 		textParamsRef = new inkTextParams();
       	textParamsRef.AddNumber("value", hours);
 		inkTextRef.SetLocalizedText(textWidgetRef, n"DarkFutureTimeskipSleepText", textParamsRef);
@@ -259,6 +271,7 @@ private final func SetTimeSkipText(textWidgetRef: inkTextRef, textParamsRef: ref
 
 @addMethod(TimeskipGameController)
 private final func SetOriginalValuesInUI() -> Void {
+	//DFProfile();
 	if !this.Settings.mainSystemEnabled { return; }
 
 	this.hydrationBar.SetOriginalValue(this.HydrationSystem.GetNeedValue());
@@ -270,31 +283,32 @@ private final func SetOriginalValuesInUI() -> Void {
 
 @addMethod(TimeskipGameController)
 private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void {
+	//DFProfile();
 	this.barCluster = new inkVerticalPanel();
-	this.barCluster.SetVisible(this.GameStateService.IsValidGameState(this, true, true));
+	this.barCluster.SetVisible(this.GameStateService.IsValidGameState(this, true));
 	this.barCluster.SetName(n"NeedsBarCluster");
 	this.barCluster.SetAnchor(inkEAnchor.TopCenter);
-	this.barCluster.SetAnchorPoint(new Vector2(0.5, 0.5));
-	this.barCluster.SetMargin(new inkMargin(-20.0, 0.0, 0.0, 0.0));
+	this.barCluster.SetAnchorPoint(Vector2(0.5, 0.5));
+	this.barCluster.SetMargin(inkMargin(-20.0, 0.0, 0.0, 0.0));
 	this.barCluster.Reparent(parent, 12);
 
 	let rowOne: ref<inkHorizontalPanel> = new inkHorizontalPanel();
 	rowOne.SetName(n"NeedsBarClusterRowOne");
-	rowOne.SetSize(new Vector2(100.0, 60.0));
+	rowOne.SetSize(Vector2(100.0, 60.0));
 	rowOne.SetHAlign(inkEHorizontalAlign.Center);
 	rowOne.SetVAlign(inkEVerticalAlign.Center);
 	rowOne.SetAnchor(inkEAnchor.Fill);
-	rowOne.SetAnchorPoint(new Vector2(0.5, 0.5));
-	rowOne.SetMargin(new inkMargin(0.0, 0.0, 0.0, 50.0));
+	rowOne.SetAnchorPoint(Vector2(0.5, 0.5));
+	rowOne.SetMargin(inkMargin(0.0, 0.0, 0.0, 50.0));
 	rowOne.Reparent(this.barCluster);
 
 	let rowTwo: ref<inkHorizontalPanel> = new inkHorizontalPanel();
 	rowTwo.SetName(n"NeedsBarClusterRowTwo");
-	rowTwo.SetSize(new Vector2(100.0, 60.0));
+	rowTwo.SetSize(Vector2(100.0, 60.0));
 	rowTwo.SetVAlign(inkEVerticalAlign.Center);
 	rowTwo.SetAnchor(inkEAnchor.Fill);
-	rowTwo.SetAnchorPoint(new Vector2(0.5, 0.5));
-	rowTwo.SetMargin(new inkMargin(0.0, 0.0, 0.0, 50.0));
+	rowTwo.SetAnchorPoint(Vector2(0.5, 0.5));
+	rowTwo.SetMargin(inkMargin(0.0, 0.0, 0.0, 50.0));
 	rowTwo.Reparent(this.barCluster);
 
 	let nerveIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
@@ -311,47 +325,48 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 
 	let barSetupData: DFNeedsMenuBarSetupData;
 
-	barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 485.0, 100.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 485.0, 100.0, 0.0, 0.0, true);
 	this.nerveBar = new DFNeedsMenuBar();
 	this.nerveBar.Init(barSetupData);
 
-	barSetupData = new DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 485.0, 0.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 485.0, 0.0, 0.0, 0.0, true);
 	this.energyBar = new DFNeedsMenuBar();
 	this.energyBar.Init(barSetupData);
 
-	barSetupData = new DFNeedsMenuBarSetupData(rowTwo, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 485.0, 100.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 485.0, 100.0, 0.0, 0.0, true);
 	this.hydrationBar = new DFNeedsMenuBar();
 	this.hydrationBar.Init(barSetupData);
 	
-	barSetupData = new DFNeedsMenuBarSetupData(rowTwo, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 485.0, 0.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 485.0, 0.0, 0.0, 0.0, true);
 	this.nutritionBar = new DFNeedsMenuBar();
 	this.nutritionBar.Init(barSetupData);	
 }
 
 @addMethod(TimeskipGameController)
 private final func CreateTimeskipAllowedReasonWidget(parent: ref<inkCompoundWidget>) -> Void {
+	//DFProfile();
 	let reasonWidget: ref<inkVerticalPanel> = new inkVerticalPanel();
-	reasonWidget.SetVisible(this.GameStateService.IsValidGameState(this, true, true));
+	reasonWidget.SetVisible(this.GameStateService.IsValidGameState(this, true));
 	reasonWidget.SetName(n"ReasonWidget");
 	reasonWidget.SetFitToContent(true);
-	reasonWidget.SetSize(new Vector2(150.0, 32.0));
+	reasonWidget.SetSize(Vector2(150.0, 32.0));
 	reasonWidget.SetHAlign(inkEHorizontalAlign.Center);
 	reasonWidget.SetVAlign(inkEVerticalAlign.Bottom);
 	reasonWidget.SetAnchor(inkEAnchor.BottomCenter);
-	reasonWidget.SetAnchorPoint(new Vector2(0.5, 0.5));
-	reasonWidget.SetMargin(new inkMargin(0.0, 0.0, 0.0, 600.0));
+	reasonWidget.SetAnchorPoint(Vector2(0.5, 0.5));
+	reasonWidget.SetMargin(inkMargin(0.0, 0.0, 0.0, 600.0));
 	reasonWidget.Reparent(parent, 2);
 
 	let reasonLabel: ref<inkText> = new inkText();
 	reasonLabel.SetName(n"TimeskipAllowedReasonLabel");
 	reasonLabel.SetFontFamily("base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily");
 	reasonLabel.SetFontSize(38);
-	reasonLabel.SetSize(new Vector2(150.0, 32.0));
+	reasonLabel.SetSize(Vector2(150.0, 32.0));
 	reasonLabel.SetHorizontalAlignment(textHorizontalAlignment.Center);
 	reasonLabel.SetHAlign(inkEHorizontalAlign.Center);
 	reasonLabel.SetVAlign(inkEVerticalAlign.Bottom);
 	reasonLabel.SetAnchor(inkEAnchor.BottomCenter);
-	reasonLabel.SetMargin(new inkMargin(0.0, 0.0, 0.0, 0.0));
+	reasonLabel.SetMargin(inkMargin(0.0, 0.0, 0.0, 0.0));
 	reasonLabel.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
 	reasonLabel.BindProperty(n"tintColor", n"MainColors.Red");
 	reasonLabel.Reparent(reasonWidget);
@@ -361,27 +376,9 @@ private final func CreateTimeskipAllowedReasonWidget(parent: ref<inkCompoundWidg
 
 @addMethod(TimeskipGameController)
 private final func UpdateUI() -> Void {
-	if !this.GameStateService.IsValidGameState(this, true, true) { return; }
+	//DFProfile();
+	if !this.GameStateService.IsValidGameState(this, true) { return; }
 	let timeskipAllowedReasonKey: CName = n"";
-
-	// If the player is too anxious to sleep now, ignore future values and bail out early.
-	if IsSleeping(this.timeSkipType) && this.NerveSystem.GetNeedStage() >= this.NerveSystem.insomniaNeedStageThreshold {
-		this.timeskipAllowed = false;
-		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveNoRecovery";
-
-		this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), 100.0);
-		this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), 100.0);
-		this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue(), 100.0);
-
-		let nerveMax: Float = this.NerveSystem.GetNeedMax();
-		this.nerveBar.SetUpdatedValue(this.NerveSystem.GetNeedValue(), nerveMax);
-		this.UpdateNerveBarLimit(nerveMax);
-
-		this.UpdateConfirmButton(this.timeskipAllowed);
-		this.RefreshTimeskipAllowedReasonWidget(this.timeskipAllowed, timeskipAllowedReasonKey);
-		return;
-	}
-
 	let index: Int32 = this.m_hoursToSkip - 1;
 
 	let hydration: Float = this.calculatedFutureValues.futureNeedsData[index].hydration.value;
@@ -400,6 +397,9 @@ private final func UpdateUI() -> Void {
 	if nerve <= 1.0 {
 		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonFatal";
+	} else if DFIsSleeping(this.timeSkipType) && this.NerveSystem.GetNeedStageAtValue(nerve) >= this.NerveSystem.insomniaNeedStageThreshold {
+		this.timeskipAllowed = true;
+		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveNoRecovery";
 	} else if Equals(this.timeSkipType, DFTimeSkipType.LimitedSleep) {
 		this.timeskipAllowed = true;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonLimitedSleepVehicle";
@@ -413,13 +413,14 @@ private final func UpdateUI() -> Void {
 
 @addMethod(TimeskipGameController)
 private final func GetTimeskipType(nerveStage: Int32) -> DFTimeSkipType {
+	//DFProfile();
 	let sleepingInBed: Bool = this.InteractionSystem.IsPlayerSleeping();
-	let sleepingInVehicle: Bool = this.VehicleSleepSystem.GetSleepingInVehicle();
+	let sleepingInVehicle: Bool = this.GameStateService.GetSleepingInVehicle();
 
 	if sleepingInVehicle {
 		let inBadlands: Bool = IsPlayerInBadlands(this.GameStateService.player);
 		
-		if (inBadlands && Equals(this.Settings.vehicleSleepQualityBadlands, DFSleepQualitySetting.Limited)) {
+		if (inBadlands && Equals(this.Settings.vehicleSleepQualityBadlandsV2, DFSleepQualitySetting.Limited)) {
 			return DFTimeSkipType.LimitedSleep;
 
 		} else if !inBadlands && Equals(this.Settings.vehicleSleepQualityCity, DFSleepQualitySetting.Limited) {
@@ -439,6 +440,7 @@ private final func GetTimeskipType(nerveStage: Int32) -> DFTimeSkipType {
 
 @addMethod(TimeskipGameController)
 private final func UpdateAllBarsAppearance() -> Void {
+	//DFProfile();
 	let useProjectE3UI: Bool = this.Settings.compatibilityProjectE3UI;
 	this.hydrationBar.UpdateAppearance(useProjectE3UI);
 	this.nutritionBar.UpdateAppearance(useProjectE3UI);
@@ -448,6 +450,7 @@ private final func UpdateAllBarsAppearance() -> Void {
 
 @addMethod(TimeskipGameController)
 private final func UpdateUIDuringTimeskip(remainingHoursToSkip: Int32) -> Void {
+	//DFProfile();
 	if !this.Settings.mainSystemEnabled { return; }
 
 	let index: Int32 = (this.m_hoursToSkip - remainingHoursToSkip) - 1;
@@ -481,6 +484,7 @@ private final func UpdateUIDuringTimeskip(remainingHoursToSkip: Int32) -> Void {
 
 @addMethod(TimeskipGameController)
 private final func UpdateConfirmButton(state: Bool) -> Void {
+	//DFProfile();
 	let confirmContainer: ref<inkHorizontalPanel> = this.GetRootCompoundWidget().GetWidget(n"hints/container/ok") as inkHorizontalPanel;
 	let confirmAction: ref<inkText> = confirmContainer.GetWidget(n"action") as inkText;
 	let confirmInputIcon: ref<inkImage> = confirmContainer.GetWidget(n"inputIcon") as inkImage;
@@ -495,11 +499,12 @@ private final func UpdateConfirmButton(state: Bool) -> Void {
 
 @addMethod(TimeskipGameController)
 private final func RefreshTimeskipAllowedReasonWidget(timeskipAllowed: Bool, opt reasonText: CName) -> Void {
+	//DFProfile();
 	if timeskipAllowed {
-		inkTextRef.SetTintColor(this.m_diffTimeLabel, GetDarkFutureHDRColor(DFHDRColor.PanelRed));
+		inkWidgetRef.SetTintColor(this.m_diffTimeLabel, GetDarkFutureHDRColor(DFHDRColor.PanelRed));
 	} else {
 		inkTextRef.SetText(this.m_diffTimeLabel, "Blocked");
-		inkTextRef.SetTintColor(this.m_diffTimeLabel, GetDarkFutureHDRColor(DFHDRColor.ActivePanelRed));
+		inkWidgetRef.SetTintColor(this.m_diffTimeLabel, GetDarkFutureHDRColor(DFHDRColor.ActivePanelRed));
 	}
 
 	if NotEquals(reasonText, n"") {
@@ -511,6 +516,7 @@ private final func RefreshTimeskipAllowedReasonWidget(timeskipAllowed: Bool, opt
 
 @addMethod(TimeskipGameController)
 private final func UpdateNerveBarLimit(newLimitValue: Float) -> Void {
+	//DFProfile();
 	let currentLimitPct: Float = 1.0 - (newLimitValue / 100.0);
 	this.nerveBar.SetProgressEmpty(currentLimitPct);
 }

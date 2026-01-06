@@ -1,0 +1,74 @@
+# DEPRECATED
+
+#
+#
+# Common Records
+#
+#
+DarkFutureStatusEffect.ConditionBuffBarIndicatorStacks_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 2
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.ConditionBuffBarIndicatorStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.ConditionBuffBarIndicatorStacks_StatModifier
+
+
+DarkFutureStatusEffectTypes.ConditionBuffBarIndicator:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: ConditionBuffBarIndicator
+
+#
+#
+# Condition Buff Bar Indicator
+#
+#
+UIIcon.ConditionBuffBarIndicatorIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ico_condition_outline
+  atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
+
+DarkFutureStatusEffect.ConditionBuffBarIndicator_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  fluffText: ''
+  iconPath: ConditionBuffBarIndicatorIcon
+  priority: -9999
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConditionBuffBarIndicator:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.ConditionBuffBarIndicatorStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.ConditionBuffBarIndicator
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.ConditionBuffBarIndicator_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureAllowBuffBarHide
+    - DarkFutureCanHideOnBuffBar
+    - DarkFutureBuffBarConditionIndicator
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []

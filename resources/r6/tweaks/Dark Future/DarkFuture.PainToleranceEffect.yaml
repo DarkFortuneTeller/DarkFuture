@@ -1,0 +1,95 @@
+#
+#
+# Pain Tolerant Effect
+#
+#
+DarkFutureStatusEffectTypes.PainTolerant:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: PainTolerant
+
+DarkFutureStatusEffect.PainTolerant_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholBonusDesc"
+  displayName: l"DarkFutureAlcoholBonusName"
+  fluffText: ''
+  iconPath: berserk_buff
+  priority: -6
+  floatValues: []
+  intValues:
+    - 20
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.PainTolerantMaxStacks_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.PainTolerantMaxStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.PainTolerantMaxStacks_StatModifier
+
+DarkFutureStatusEffect.PainTolerantDurationValue:
+  $type: gamedataConstantStatModifier_Record
+  value: 300
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.PainTolerantDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.PainTolerantDurationValue
+
+DarkFutureStatusEffect.PainTolerant_StatsPackageModifier_Armor:
+  $type: gamedataConstantStatModifier_Record
+  value: 20
+  modifierType: Additive
+  statType: BaseStats.Armor
+
+DarkFutureStatusEffect.PainTolerant_ArmorStatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.PainTolerant_StatsPackageModifier_Armor
+
+DarkFutureStatusEffect.PainTolerant:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.PainTolerantDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.PainTolerantMaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.PainTolerant
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.PainTolerant_UIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFuturePainTolerant
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.PainTolerant_ArmorStatsPackage
+  SFX: []
+  VFX: []

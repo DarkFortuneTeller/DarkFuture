@@ -19,22 +19,22 @@ DarkFutureStatusEffectTypes.Smoking:
   enumComment: ''
   enumName: Smoking
 
-DarkFutureItem.SmallDrugWeight:
+DarkFutureWeight.SmallDrug:
   $type: gamedataConstantStatModifier_Record
-  value: 0.3
+  value: 0
   modifierType: Additive
   statType: BaseStats.Weight
 
 DarkFuturePrice.Cigarettes:
   $type: gamedataConstantStatModifier_Record
-  value: 5
+  value: 1.0
   modifierType: Multiplier
   statType: BaseStats.Price
 
 UIIcon.base_junk_item_cigarette_pack_c:
   $type: gamedataUIIcon_Record
   atlasPartName: base_junk_item_cigarette_pack_c
-  atlasResourcePath: base\gameplay\gui\common\icons\items\darkfuture_customicons_items.inkatlas
+  atlasResourcePath: darkfuture\items\icons\darkfuture_customicons_items.inkatlas
 
 ConsumableBaseName.Cigarette:
   $type: gamedataConsumableBaseName_Record
@@ -172,7 +172,7 @@ DarkFutureItems.CigaretteItemActionCommon:
   targetActivePrereqs: []
   targetPrereqs: []
 
-DarkFutureStatusEffect.ConsumableNerveCigarettes_UIData:
+DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
   localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
   localizedName: ''
@@ -192,10 +192,10 @@ DarkFutureStatusEffect.ConsumableCigarettePenalty_UIData:
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip:
+DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.ConsumableNerveCigarettes_UIData
+  UIData: DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -271,7 +271,7 @@ Items.GenericJunkItem23:
   localizedDescription: l"Gameplay-Misc-Junk-LocalizedDescription-GenericJunkItem23"
   OnAttach: []
   OnEquip:
-    - DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip
     - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
   OnLooted: []
   parts: []
@@ -298,6 +298,7 @@ Items.GenericJunkItem23:
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNicotine
     - DarkFutureCigarette
+    - DarkFutureAnimSmoking
   variants: []
   visualTags: []
   effectors: []
@@ -308,7 +309,7 @@ Items.GenericJunkItem23:
     - DarkFutureItem.CigaretteDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -371,7 +372,7 @@ Items.GenericJunkItem24:
   localizedDescription: l"Gameplay-Misc-Junk-LocalizedDescription-GenericJunkItem24"
   OnAttach: []
   OnEquip:
-    - DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip
     - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
   OnLooted: []
   parts: []
@@ -398,6 +399,7 @@ Items.GenericJunkItem24:
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNicotine
     - DarkFutureCigarette
+    - DarkFutureAnimSmoking
   variants: []
   visualTags: []
   effectors: []
@@ -408,7 +410,7 @@ Items.GenericJunkItem24:
     - DarkFutureItem.CigaretteDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -472,7 +474,7 @@ DarkFutureItem.CigarettePackC:
   localizedDescription: l"DarkFutureCigarette03Desc"
   OnAttach: []
   OnEquip:
-    - DarkFutureStatusEffect.ConsumableNerveCigarettes_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip
     - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
   OnLooted: []
   parts: []
@@ -499,6 +501,7 @@ DarkFutureItem.CigarettePackC:
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNicotine
     - DarkFutureCigarette
+    - DarkFutureAnimSmoking
   variants: []
   visualTags: []
   effectors: []
@@ -509,7 +512,7 @@ DarkFutureItem.CigarettePackC:
     - DarkFutureItem.CigaretteDuration
   statModifiers:
     - Items.LongLasting_inline0
-    - DarkFutureItem.SmallDrugWeight
+    - DarkFutureWeight.SmallDrug
   statPools: []
   weakspots: []
 
@@ -545,27 +548,49 @@ DarkFutureVendors.GenericJunkItem24:
   quantity:
     - DarkFutureVendors.CigaretteQuantity
 
+# 25/7h Kiosks
 Vendors.Kiosk.itemStock:
   - !append-once DarkFutureVendors.CigarettePackC
 
 Vendors.Kiosk_EP1.itemStock:
   - !append-once DarkFutureVendors.CigarettePackC
 
-Vendors.bls_ina_se1_junkshop_01.itemStock: &CigaretteJunkShopItemStock
+# Junk Shops
+Vendors.bls_ina_se1_junkshop_01.itemStock: &CigaretteItemStock
   - !append-once DarkFutureVendors.GenericJunkItem23
   - !append-once DarkFutureVendors.GenericJunkItem24
   - !append-once DarkFutureVendors.CigarettePackC
 
-Vendors.bls_ina_se1_junkshop_02.itemStock: *CigaretteJunkShopItemStock
-Vendors.bls_ina_se5_junkshop_01.itemStock: *CigaretteJunkShopItemStock
-Vendors.cz_con_junkshop_01.itemStock: *CigaretteJunkShopItemStock
-Vendors.hey_gle_junkshop_01.itemStock: *CigaretteJunkShopItemStock
-Vendors.hey_rey_junkshop_01.itemStock: *CigaretteJunkShopItemStock
-Vendors.hey_spr_junkshop_01.itemStock: *CigaretteJunkShopItemStock
-Vendors.Junkshop_HUB.itemStock: *CigaretteJunkShopItemStock
-Vendors.Junkshop.itemStock: *CigaretteJunkShopItemStock
-Vendors.Tech_Junk_EP1.itemStock: *CigaretteJunkShopItemStock
-Vendors.Tech_Junk.itemStock: *CigaretteJunkShopItemStock
-Vendors.wat_kab_junkshop_01.itemStock: *CigaretteJunkShopItemStock
-Vendors.wbr_jpn_junkshop_01.itemStock: *CigaretteJunkShopItemStock
-Vendors.wbr_jpn_junkshop_03.itemStock: *CigaretteJunkShopItemStock
+Vendors.bls_ina_se1_junkshop_02.itemStock: *CigaretteItemStock
+Vendors.bls_ina_se5_junkshop_01.itemStock: *CigaretteItemStock
+Vendors.cz_con_junkshop_01.itemStock: *CigaretteItemStock
+Vendors.hey_gle_junkshop_01.itemStock: *CigaretteItemStock
+Vendors.hey_rey_junkshop_01.itemStock: *CigaretteItemStock
+Vendors.hey_spr_junkshop_01.itemStock: *CigaretteItemStock
+Vendors.Junkshop_HUB.itemStock: *CigaretteItemStock
+Vendors.Junkshop.itemStock: *CigaretteItemStock
+Vendors.Tech_Junk_EP1.itemStock: *CigaretteItemStock
+Vendors.Tech_Junk.itemStock: *CigaretteItemStock
+Vendors.wat_kab_junkshop_01.itemStock: *CigaretteItemStock
+Vendors.wbr_jpn_junkshop_01.itemStock: *CigaretteItemStock
+Vendors.wbr_jpn_junkshop_03.itemStock: *CigaretteItemStock
+
+# Bars
+Vendors.hey_gle_foodshop_02.itemStock: *CigaretteItemStock            # El Pinche Pollo
+Vendors.cz_monument_foodshop_01.itemStock: *CigaretteItemStock        # Heavy Hearts
+Vendors.cz_stadium_food_03.itemStock: *CigaretteItemStock             # Bartender in Stadium
+Vendors.cz_con_foodshop_01.itemStock: *CigaretteItemStock             # The Moth
+Vendors.cct_dtn_food_02.itemStock: *CigaretteItemStock                # 7th Hell
+Vendors.cct_dtn_food_01.itemStock: *CigaretteItemStock                # Empathy
+Vendors.cct_cpz_food_01.itemStock: *CigaretteItemStock                # Cambridge Winery (Hometown Deli)
+Vendors.bls_ina_se1_foodshop_01.itemStock: *CigaretteItemStock        # Sunset Motel
+Vendors.hey_rey_foodshop_01.itemStock: *CigaretteItemStock            # El Coyote Cojo
+Vendors.hey_rey_foodshop_01.itemStock: *CigaretteItemStock            # Dicky Twister
+Vendors.wat_kab_foodshop_02.itemStock: *CigaretteItemStock            # Lizzie's
+Vendors.wat_kab_foodshop_04.itemStock: *CigaretteItemStock            # Ho-Oh Bar
+Vendors.wat_lch_foodshop_01.itemStock: *CigaretteItemStock            # Afterlife
+Vendors.wat_lch_foodshop_03.itemStock: *CigaretteItemStock            # Riot
+Vendors.wat_nid_foodshop_02.itemStock: *CigaretteItemStock            # Totentanz
+Vendors.wbr_hil_foodshop_01.itemStock: *CigaretteItemStock            # Yagami Market
+Vendors.wbr_hil_foodshop_02.itemStock: *CigaretteItemStock            # Tyger Claws Casino
+Vendors.q105_dollhouse_bar_barkeeper.itemStock: *CigaretteItemStock   # Clouds

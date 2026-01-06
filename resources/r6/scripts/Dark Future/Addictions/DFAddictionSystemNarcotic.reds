@@ -13,7 +13,7 @@ import DarkFuture.System.*
 import DarkFuture.Utils.{
 	HoursToGameTimeSeconds,
 	GameTimeSecondsToHours,
-	RunGuard
+	DFRunGuard
 }
 import DarkFuture.Main.{
 	DFAddictionDatum,
@@ -32,27 +32,15 @@ import DarkFuture.Services.{
 import DarkFuture.Needs.{
 	DFEnergySystem,
 	DFNerveSystem,
-	DFNeedChangeUIFlags
+	DFNeedChangeUIFlags,
+	DFChangeNeedValueProps
 }
 import DarkFuture.Gameplay.DFInteractionSystem
 import DarkFuture.Settings.DFSettings
 
-public class RemoveNarcoticFXCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		return new RemoveNarcoticFXCallback();
-	}
-
-	public func InvalidateDelayID() -> Void {
-		DFNarcoticAddictionSystem.Get().removeNarcoticFXDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		DFNarcoticAddictionSystem.Get().OnRemoveNarcoticFX();
-	}
-}
-
 class DFNarcoticAddictionSystemEventListener extends DFAddictionSystemEventListener {
 	private func GetSystemInstance() -> wref<DFAddictionSystemBase> {
+		//DFProfile();
 		return DFNarcoticAddictionSystem.Get();
 	}
 }
@@ -63,9 +51,6 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 
 	private let narcoticDefaultEffectDuration: Float = 300.0;
 
-    private let removeNarcoticFXDelayID: DelayID;
-    private let removeNarcoticFXDelayInterval: Float = 60.0;
-
 	private let narcoticAddictionMaxStage: Int32 = 4;
 	private let narcoticAddictionStageAdvanceAmounts: array<Float>;
 	private let narcoticAddictionNerveLimits: array<Float>;
@@ -73,11 +58,13 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 	private let narcoticAddictionWithdrawalDurationsInGameTimeSeconds: array<Float>;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFNarcoticAddictionSystem> {
-		let instance: ref<DFNarcoticAddictionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Addictions.DFNarcoticAddictionSystem") as DFNarcoticAddictionSystem;
+		//DFProfile();
+		let instance: ref<DFNarcoticAddictionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFNarcoticAddictionSystem>()) as DFNarcoticAddictionSystem;
 		return instance;
 	}
 
 	public final static func Get() -> ref<DFNarcoticAddictionSystem> {
+		//DFProfile();
 		return DFNarcoticAddictionSystem.GetInstance(GetGameInstance());
 	}
 
@@ -85,27 +72,29 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
     //  DFSystem Required Methods
     //
 	private final func SetupDebugLogging() -> Void {
+		//DFProfile();
 		this.debugEnabled = false;
 	}
 
-	private func GetSystemToggleSettingValue() -> Bool {
+	public func GetSystemToggleSettingValue() -> Bool {
+		//DFProfile();
 		return this.Settings.narcoticAddictionEnabled;
 	}
 
 	private func GetSystemToggleSettingString() -> String {
+		//DFProfile();
 		return "narcoticAddictionEnabled";
 	}
 
-	private func DoPostSuspendActions() -> Void {
+	public func DoPostSuspendActions() -> Void {
+		//DFProfile();
         super.DoPostSuspendActions();
-		this.StopNarcoticFX();
     }
 
-	private func UnregisterAllDelayCallbacks() -> Void {
-		this.UnregisterRemoveNarcoticFXCallbacks();
-	}
+	public func UnregisterAllDelayCallbacks() -> Void {}
 	
-	private final func GetSystems() -> Void {
+	public final func GetSystems() -> Void {
+		//DFProfile();
         super.GetSystems();
 
         let gameInstance = GetGameInstance();
@@ -113,7 +102,8 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
         this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
     }
 
-    private final func SetupData() -> Void {
+    public final func SetupData() -> Void {
+		//DFProfile();
 		this.narcoticAddictionWithdrawalDurationsInGameTimeSeconds = [
 			0.0,
 			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage1WithdrawalDurationInGameTimeHours),
@@ -141,6 +131,7 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 	}
 
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
+		//DFProfile();
 		if ArrayContains(changedSettings, "narcoticAddictionStage1WithdrawalDurationInGameTimeHours") ||
 		   ArrayContains(changedSettings, "narcoticAddictionStage2WithdrawalDurationInGameTimeHours") || 
 		   ArrayContains(changedSettings, "narcoticAddictionStage3WithdrawalDurationInGameTimeHours") || 
@@ -208,14 +199,17 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
     //  Required Overrides
     //
 	private final func GetSpecificAddictionUpdateData(addictionData: DFAddictionDatum) -> DFAddictionUpdateDatum {
+		//DFProfile();
 		return addictionData.narcotic;
 	}
 
-    private final func GetDefaultEffectDuration() -> Float {
+    public final func GetDefaultEffectDuration() -> Float {
+		//DFProfile();
         return this.narcoticDefaultEffectDuration;
     }
 
 	private final func GetEffectDuration() -> Float {
+		//DFProfile();
         let durationOverride: Float = this.CyberwareService.GetNarcoticsEffectDurationOverride();
 		if durationOverride > 0.0 {
 			return durationOverride;
@@ -225,113 +219,91 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
     }
 
 	private final func GetAddictionMaxStage() -> Int32 {
+		//DFProfile();
         return this.narcoticAddictionMaxStage;
     }
 
 	private final func GetAddictionProgressionChance() -> Float {
+		//DFProfile();
         return this.Settings.narcoticAddictionProgressChance;
     }
 
 	private final func GetAddictionAmountOnUse() -> Float {
+		//DFProfile();
         // Not Used
         return 0.0;
     }
 
 	private final func GetAddictionStageAdvanceAmounts() -> array<Float> {
+		//DFProfile();
         return this.narcoticAddictionStageAdvanceAmounts;
     }
 
-	private final func GetAddictionNerveLimits() -> array<Float> {
+	public final func GetAddictionNerveLimits() -> array<Float> {
+		//DFProfile();
         return this.narcoticAddictionNerveLimits;
     }
 
-	private final func GetAddictionBackoffDurationsInRealTimeMinutesByStage() -> array<Float> {
+	public func GetAddictionBackoffDurationsInRealTimeMinutesByStage() -> array<Float> {
+		//DFProfile();
         return this.narcoticAddictionBackoffDurationsInRealTimeMinutesByStage;
     }
 
-	private final func GetAddictionAmountLossPerDay() -> Float {
+	public final func GetAddictionAmountLossPerDay() -> Float {
+		//DFProfile();
         return this.Settings.narcoticAddictionLossPerDay;
     }
 
-	private final func GetAddictionMinStacksPerStage() -> array<Uint32> {
+	public final func GetAddictionMinStacksPerStage() -> array<Uint32> {
+		//DFProfile();
         // Unused
 		return [];
     }
 
-	private func GetAddictionWithdrawalDurationsInGameTimeSeconds() -> array<Float> {
+	public func GetAddictionWithdrawalDurationsInGameTimeSeconds() -> array<Float> {
+		//DFProfile();
         return this.narcoticAddictionWithdrawalDurationsInGameTimeSeconds;
     }
 
     private final func DoPostAddictionCureActions() -> Void {
+		//DFProfile();
         // None
     }
 
 	private final func DoPostAddictionAdvanceActions() -> Void {
+		//DFProfile();
         // None
     }
 
-    private final func PlayWithdrawalAdvanceSFX() -> Void {
+    public final func PlayWithdrawalAdvanceSFX() -> Void {
+		//DFProfile();
 		if this.Settings.addictionSFXEnabled {
 			let notification: DFNotification;
-			notification.sfx = new DFAudioCue(n"ono_v_fall", 10);
+			notification.sfx = DFAudioCue(n"ono_v_fall", 5);
 			this.NotificationService.QueueNotification(notification);
 		}
     }
 
     private final func GetWithdrawalStatusEffectTag() -> CName {
+		//DFProfile();
         return n"AddictionWithdrawalNarcotic";
     }
 
     private final func GetAddictionStatusEffectBaseID() -> TweakDBID {
+		//DFProfile();
         return t"DarkFutureStatusEffect.NarcoticWithdrawal_";
     }
 
-	private final func GetAddictionPrimaryStatusEffectTag() -> CName {
+	public final func GetAddictionPrimaryStatusEffectTag() -> CName {
+		//DFProfile();
         return n"DarkFutureAddictionPrimaryEffectNarcotic";
     }
 
-    private final func QueueAddictionNotification(stage: Int32) -> Void {
-		if this.GameStateService.IsValidGameState(this, true) {
-			let messageKey: CName;
-			let messageType: SimpleMessageType;
-			switch stage {
-				case 4:
-					messageKey = n"DarkFutureAddictionNotificationNarcotic04";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 3:
-					messageKey = n"DarkFutureAddictionNotificationNarcotic03";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 2:
-					messageKey = n"DarkFutureAddictionNotificationNarcotic02";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 1:
-					messageKey = n"DarkFutureAddictionNotificationNarcotic01";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 0:
-					messageKey = n"DarkFutureAddictionNotificationNarcoticCured";
-					messageType = SimpleMessageType.Neutral;
-					break;
-			}
-
-			let message: DFMessage;
-			message.key = messageKey;
-			message.type = messageType;
-			message.context = DFMessageContext.NarcoticAddiction;
-
-			if this.Settings.addictionMessagesEnabled || Equals(message.type, SimpleMessageType.Neutral) {
-				this.NotificationService.QueueMessage(message);
-			}
-		}
-    }
-
 	public final func OnAddictionPrimaryEffectApplied(effectID: TweakDBID, effectGameplayTags: array<CName>) -> Void {
+		//DFProfile();
         if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectNarcotic") {
 			// Addiction-Specific - Only continue if system running.
-			if RunGuard(this) { return; }
+			if DFRunGuard(this) { return; }
 
 			// Clear any active withdrawal effects or backoff durations.
 			if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"AddictionWithdrawalNarcotic") {
@@ -353,20 +325,25 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 				if Equals(this.InteractionSystem.GetLastAttemptedChoiceCaption(), GetLocalizedTextByKey(this.InteractionSystem.locKey_Interaction_Q003TakeInhaler)) {
 					this.EnergySystem.TryToApplyEnergizedStacks(3u, DFTempEnergyItemType.Stimulant, true, false);
 					
+					let changeNeedValueProps: DFChangeNeedValueProps;
+
 					let uiFlags: DFNeedChangeUIFlags;
 					uiFlags.forceMomentaryUIDisplay = true;
 					uiFlags.instantUIChange = false;
 					uiFlags.forceBright = true;
 					uiFlags.momentaryDisplayIgnoresSceneTier = true;
-					this.NerveSystem.ChangeNeedValue(this.Settings.nerveStrongNarcoticsRev2, uiFlags);
+
+					changeNeedValueProps.uiFlags = uiFlags;
+					this.NerveSystem.ChangeNeedValue(this.Settings.nerveStrongNarcoticsRev2, changeNeedValueProps);
 				}
 			}
 		}
     }
 
 	public final func OnAddictionPrimaryEffectRemoved(effectID: TweakDBID, effectGameplayTags: array<CName>) -> Void {
+		//DFProfile();
 		// Addiction-Specific - Only continue if system running.
-		if RunGuard(this) { return; }
+		if DFRunGuard(this) { return; }
 
         if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectNarcotic") {
 			DFLog(this, "ProcessNarcoticPrimaryEffectRemoved");
@@ -374,8 +351,6 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 			// a backoff effect if the player is currently addicted.
 
 			if !StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureAddictionPrimaryEffectNarcotic") {
-				this.StopNarcoticFX();
-                
                 if this.GetAddictionStage() > 0 {
 					this.StartBackoffDuration();
 				}
@@ -383,42 +358,78 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 		}
     }
 
+	public final func GetWithdrawalAnimationLowFirstTimeMessageKey() -> CName {
+		//DFProfile();
+		return n"DarkFutureWithdrawalNotificationNarcoticLow";
+	}
+
+    public final func GetWithdrawalAnimationHighFirstTimeMessageKey() -> CName {
+		//DFProfile();
+		return n"DarkFutureWithdrawalNotificationNarcoticHigh";
+	}
+
+	private final func GetAddictionNotificationMessageKeyStage1() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationNarcotic01";
+	}
+
+    private final func GetAddictionNotificationMessageKeyStage2() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationNarcotic02";
+	}
+
+    private final func GetAddictionNotificationMessageKeyStage3() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationNarcotic03";
+	}
+
+    private final func GetAddictionNotificationMessageKeyStage4() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationNarcotic04";
+	}
+
+    private final func GetAddictionNotificationMessageKeyCured() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationNarcoticCured";
+	}
+
+	private final func GetAddictionNotificationMessageContext() -> DFMessageContext {
+		//DFProfile();
+		return DFMessageContext.NarcoticAddiction;
+	}
+
+	private final func GetAddictionTherapyResponseIndexFact() -> CName {
+		//DFProfile();
+		return n"df_fact_therapy_narcotics_response";
+	}
+
+	private final func GetSetTherapyAddictionStateIndexFactAction() -> CName {
+        //DFProfile();
+		return n"df_fact_action_set_therapy_addiction_narcotics_state_index";
+    }
+
     //
     //  System-Specific Methods
     //
     private final func GetAddictionAmountOnUseLow() -> Float {
+		//DFProfile();
         return this.Settings.narcoticAddictionAmountOnUseLow;
     }
 
     private final func GetAddictionAmountOnUseHigh() -> Float {
+		//DFProfile();
         return this.Settings.narcoticAddictionAmountOnUseHigh;
     }
 
-	private final func UpdateActiveNarcoticEffectDuration(effectID: TweakDBID) -> Void {
+	public final func UpdateActiveNarcoticEffectDuration(effectID: TweakDBID) -> Void {
+		//DFProfile();
 		if NotEquals(this.GetEffectDuration(), this.GetDefaultEffectDuration()) {
 			GameInstance.GetStatusEffectSystem(GetGameInstance()).SetStatusEffectRemainingDuration(this.player.GetEntityID(), effectID, this.GetEffectDuration());
 		}
 	}
 
-    private final func StartNarcoticFX(nerveChange: Float) -> Void {
-		GameObjectEffectHelper.StartEffectEvent(this.player, n"status_drugged_heavy", false, null, true);
-		GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 3.00);
-
-		if nerveChange < 0.0 {
-			GameObjectEffectHelper.StartEffectEvent(this.player, n"stagger_effect", false, null, true);
-		}
-	}
-
-    public final func OnRemoveNarcoticFX() -> Void {
-		this.StopNarcoticFX();
-	}
-
-    private final func StopNarcoticFX() -> Void {
-		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"status_drugged_heavy");
-		GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 0.00);
-	}
-
 	private final func UpdateNarcoticWithdrawalEffectDisplayData() -> Void {
+		//DFProfile();
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NarcoticWithdrawal_Cessation_UIData.intValues", [Cast<Int32>(this.narcoticAddictionNerveLimits[5]), GameTimeSecondsToHours(this.narcoticAddictionWithdrawalDurationsInGameTimeSeconds[5])]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression_UIData.intValues", [Cast<Int32>(this.narcoticAddictionNerveLimits[1]), GameTimeSecondsToHours(this.narcoticAddictionWithdrawalDurationsInGameTimeSeconds[1])]);
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression_UIData.intValues", [Cast<Int32>(this.narcoticAddictionNerveLimits[1]), 1]);
@@ -436,19 +447,5 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression_UIData");
-	}
-
-    //
-    //  Registration
-    //
-    private final func RegisterRemoveNarcoticFXInitialCallback() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, RemoveNarcoticFXCallback.Create(), this.removeNarcoticFXDelayID, this.removeNarcoticFXDelayInterval);
-	}
-
-    //
-    //  Unregistration
-    //
-    private final func UnregisterRemoveNarcoticFXCallbacks() -> Void {
-		UnregisterDFDelayCallback(this.DelaySystem, this.removeNarcoticFXDelayID);
 	}
 }

@@ -13,6 +13,7 @@ import DarkFuture.Main.{
 }
 import DarkFuture.Needs.DFNerveSystem
 import DarkFuture.Settings.*
+import DarkFuture.Logging.*
 
 // Allow certain types of consumables (Black Lace, etc) to be used in combat.
 // Fix a base game bug that prevented Inhalers and Injectors from being swapped between in the Backpack Inventory (but not
@@ -20,6 +21,7 @@ import DarkFuture.Settings.*
 // Disallow the use of food and drink outside of combat based on Nerve.
 @replaceMethod(InventoryGPRestrictionHelper)
 public final static func CanUse(const itemData: script_ref<InventoryItemData>, playerPuppet: wref<PlayerPuppet>) -> Bool {
+	//DFProfile();
 	let bb: ref<IBlackboard>;
 	let canUse: Bool = InventoryGPRestrictionHelper.CanInteractByEquipmentArea(itemData, playerPuppet);
 	// Edit Start
@@ -59,6 +61,7 @@ public final static func CanUse(const itemData: script_ref<InventoryItemData>, p
 // Disallow the use of food and drink outside of combat based on Nerve.
 @replaceMethod(InventoryGPRestrictionHelper)
 public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: wref<PlayerPuppet>) -> Bool {
+	//DFProfile();
 	let bb: ref<IBlackboard>;
 	let canUse: Bool = InventoryGPRestrictionHelper.CanInteractByEquipmentArea(itemData, playerPuppet);
 	if Equals(itemData.GetItemType(), gamedataItemType.Prt_Program) {
@@ -96,6 +99,7 @@ public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: w
 //
 @wrapMethod(ConsumeAction)
 public func IsVisible(const context: script_ref<GetActionsContext>, objectActionsCallbackController: wref<gameObjectActionsCallbackController>) -> Bool {
+	//DFProfile();
 	let NerveSystem: wref<DFNerveSystem> = DFNerveSystem.Get();
 
 	if NerveSystem.GetHasNausea() && (this.GetItemData().HasTag(n"Food") || this.GetItemData().HasTag(n"Drink")) {
@@ -109,6 +113,7 @@ public func IsVisible(const context: script_ref<GetActionsContext>, objectAction
 //
 @wrapMethod(ItemActionsHelper)
 public final static func ProcessItemAction(gi: GameInstance, executor: wref<GameObject>, itemData: wref<gameItemData>, actionID: TweakDBID, fromInventory: Bool) -> Bool {
+	//DFProfile();
 	let actionUsed: Bool = wrappedMethod(gi, executor, itemData, actionID, fromInventory);
 
 	if actionUsed {
@@ -125,6 +130,7 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 //
 @wrapMethod(ItemActionsHelper)
 public final static func ProcessItemAction(gi: GameInstance, executor: wref<GameObject>, itemData: wref<gameItemData>, actionID: TweakDBID, fromInventory: Bool, quantity: Int32) -> Bool {
+	//DFProfile();
 	let actionUsed: Bool = wrappedMethod(gi, executor, itemData, actionID, fromInventory, quantity);
 
 	if actionUsed {
@@ -137,7 +143,8 @@ public final static func ProcessItemAction(gi: GameInstance, executor: wref<Game
 	return actionUsed;
 }
 
-public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -> DFNeedsDatum {
+public func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -> DFNeedsDatum {
+	//DFProfile();
 	// Consumable Need Restoration Values
 	let Settings: ref<DFSettings> = DFSettings.Get();
 
@@ -165,11 +172,12 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 	// you've gotten the Alcohol status effect.) These Nerve changes occur in
 	// addition to the +5 change in order to reflect the effect magnitude 
 	// listed on the item.
-	let AlcoholNerveOnStatusEffectApply: Float = Settings.nerveAlcoholTier1;
+	let AlcoholStacksToApply: Float = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholStrong") ? 3.0 : 1.0;
+	let AlcoholNerveOnStatusEffectApply: Float = Settings.nerveAlcoholTier1Rev2;
 
-	let AlcoholNerveTier1: Float = 0.0;  // 6
-	let AlcoholNerveTier2: Float = Settings.nerveAlcoholTier2 - Settings.nerveAlcoholTier1;  // 8
-	let AlcoholNerveTier3: Float = Settings.nerveAlcoholTier3 - Settings.nerveAlcoholTier1; // 10
+	let AlcoholNerveTier1: Float = 0.0;
+	let AlcoholNerveTier2: Float = Settings.nerveAlcoholTier2Rev2 - Settings.nerveAlcoholTier1Rev2;
+	let AlcoholNerveTier3: Float = Settings.nerveAlcoholTier3Rev2 - Settings.nerveAlcoholTier1Rev2;
 
 	// Nerve Penalties are always 40% of benefit on low-quality consumables.
 	let NervePenaltyDrinkTier1: Float = Cast<Float>(-1 * CeilF(Settings.hydrationTier1 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
@@ -180,8 +188,7 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 	let NervePenaltyDeathTest: Float = -95.0;
 
 	let DrugNerveAmount: Float = 30.0;
-	let DrugEnergyPenaltyLow: Float = -15.0;
-	let DrugEnergyPenaltyMed: Float = -40.0;
+	let DrugEnergyPenalty: Float = -40.0;
 
 	let LowQualityConsumableNerveLossLimit: Float = Settings.nerveLowQualityConsumablePenaltyLimit;
 
@@ -241,14 +248,14 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 			consumableBasicNeedsData.nerve.value = CigarettesNerve;
 		
 		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier1") {
-			consumableBasicNeedsData.nerve.value = AlcoholNerveTier1;
-			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
+			consumableBasicNeedsData.nerve.value = AlcoholNerveTier1 * AlcoholStacksToApply;
+			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply * AlcoholStacksToApply;
 		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier2") {
-			consumableBasicNeedsData.nerve.value = AlcoholNerveTier2;
-			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
+			consumableBasicNeedsData.nerve.value = AlcoholNerveTier2 * AlcoholStacksToApply;
+			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply * AlcoholStacksToApply;
 		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier3") {
-			consumableBasicNeedsData.nerve.value = AlcoholNerveTier3;
-			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply;
+			consumableBasicNeedsData.nerve.value = AlcoholNerveTier3 * AlcoholStacksToApply;
+			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply * AlcoholStacksToApply;
 		
 		} else if itemRecord.TagsContains(n"DarkFutureConsumableWeakNarcoticsNerve") {
 			consumableBasicNeedsData.nerve.value = WeakNarcoticsNerve;
@@ -274,17 +281,12 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 	// Nerve Restore Drug
 	if itemRecord.TagsContains(n"DarkFutureConsumableNerveRestoreDrug") {
 		consumableBasicNeedsData.nerve.value = DrugNerveAmount;
-		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyMed;
+		consumableBasicNeedsData.energy.value = DrugEnergyPenalty;
 	}
 
 	// Addiction Treatment Drug
 	if itemRecord.TagsContains(n"DarkFutureConsumableAddictionTreatmentDrug") {
-		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyMed;
-	}
-
-	// Sedation Drug
-	if itemRecord.TagsContains(n"DarkFutureConsumableSedationDrug") {
-		consumableBasicNeedsData.energy.value = DrugEnergyPenaltyLow;
+		consumableBasicNeedsData.energy.value = DrugEnergyPenalty;
 	}
 
 	// Nerve Death Test Item
@@ -295,7 +297,8 @@ public final static func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -
 	return consumableBasicNeedsData;
 }
 
-private final static func GetFoodRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+private func GetFoodRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+	//DFProfile();
 	switch value {
 		case 0:
 			return t"Items.LowQualityFood";
@@ -513,7 +516,8 @@ private final static func GetFoodRecordFromIdleAnywhereFactValue(value: Int32) -
 	}
 }
 
-private final static func GetDrinkRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+private func GetDrinkRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+	//DFProfile();
 	switch value {
 		case 0:
 			return t"Items.LowQualityDrink";
@@ -650,7 +654,8 @@ private final static func GetDrinkRecordFromIdleAnywhereFactValue(value: Int32) 
 	}
 }
 
-private final static func GetAlcoholRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+private func GetAlcoholRecordFromIdleAnywhereFactValue(value: Int32) -> TweakDBID {
+	//DFProfile();
 	switch value {
 		case 0:
 			return t"Items.LowQualityAlcohol";

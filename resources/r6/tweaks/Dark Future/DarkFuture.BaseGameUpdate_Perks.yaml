@@ -1,7 +1,3 @@
-# Edgerunner
-#   Mention immunity benefits and +1 Nerve on kill.
-NewPerks.Tech_Master_Perk_3.loc_desc_key: l"DarkFutureTechMasterPerk3UpdatedDesc"
-
 # Unstoppable Force
 #   Mention that this perk does not apply to Dark Future effects.
 NewPerks.Body_Central_Perk_3_4.loc_desc_key: l"DarkFutureBodyCentralPerk34UpdatedDesc"

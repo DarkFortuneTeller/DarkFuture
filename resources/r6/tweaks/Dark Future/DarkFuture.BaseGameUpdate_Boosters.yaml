@@ -6,7 +6,7 @@
 # Drug Price Adjustment Settings
 DarkFuturePrice.Pharmaceuticals:
   $type: gamedataConstantStatModifier_Record
-  value: 1
+  value: 1.0
   modifierType: Multiplier
   statType: BaseStats.Price
 
@@ -23,7 +23,7 @@ Items.StaminaBooster: *DrugPrice
 # Black Market Drug Price Adjustment Settings
 DarkFuturePrice.IllegalDrugs:
   $type: gamedataConstantStatModifier_Record
-  value: 1
+  value: 1.0
   modifierType: Multiplier
   statType: BaseStats.Price
 
@@ -89,7 +89,8 @@ DarkFutureItem.InjuryCureDrugOnEquip_UIData:
   localizedDescription: l"DarkFutureConsumableInjuryRestoreItemDesc"
   localizedName: ''
   floatValues: []
-  intValues: []
+  intValues:
+    - -100
   nameValues: []
   stats: []
 
@@ -105,8 +106,8 @@ DarkFutureItem.InjuryCureDrugOnEquip:
 
 Items.HealthBooster.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
 Items.HealthBooster.quality: Quality.Uncommon
-Items.HealthBooster.OnEquip:
-  - !prepend-once DarkFutureItem.InjuryCureDrugOnEquip
+#Items.HealthBooster.OnEquip:
+#  - !prepend-once DarkFutureItem.InjuryCureDrugOnEquip
 
 BaseStatusEffect.HealthBooster_inline2.displayName: l"DarkFutureConsumableInjuryRestoreItemName"
 

@@ -7,7 +7,9 @@
 
 module DarkFuture.Utils
 
-enum DFHDRColor {
+import DarkFuture.Logging.*
+
+public enum DFHDRColor {
     // Theme Colors
     ActiveRose = 0,
     Rose = 1,
@@ -84,10 +86,11 @@ enum DFHDRColor {
     // Misc Colors
     MildRed = 60,
     DarkRed = 61,
-    MildWhite = 62
+    MildWhite = 62,
+    ActiveGreen = 63
 }
 
-enum DFBarColorThemeName {
+public enum DFBarColorThemeName {
     Rose = 0,
     HotPink = 1,
     PanelRed = 2,
@@ -110,154 +113,160 @@ public struct DFBarColorTheme {
     public let ChangePositiveColor: HDRColor;   // Split Complement of Main
 }
 
-public final static func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
+// TODOFUTURE: Reinspect the ChangeNegative colors
+public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
+    //DFProfile();
     switch color {
         // Theme Colors
-        case color.ActiveRose:
-            return new HDRColor(1.33, 0.19800, 0.58627, 1.0);
-        case color.Rose:
-            return new HDRColor(1.0, 0.09800, 0.48627, 1.0); // #ff197c
-        case color.FaintRose:
-            return new HDRColor(0.29803, 0.02745, 0.145098, 1.0);
-        case color.ChangeNegativeRose:
-            return new HDRColor(0.09803, 1.0, 0.611764, 1.0);
-        case color.ChangePositiveRose:
-            return new HDRColor(0.09803, 0.84705, 1.0, 1.0);
+        case DFHDRColor.ActiveRose:
+            return HDRColor(1.33, 0.19800, 0.58627, 1.0);
+        case DFHDRColor.Rose:
+            return HDRColor(1.0, 0.09800, 0.48627, 1.0); // #ff197c
+        case DFHDRColor.FaintRose:
+            return HDRColor(0.29803, 0.02745, 0.145098, 1.0);
+        case DFHDRColor.ChangeNegativeRose:
+            return HDRColor(0.09803, 1.0, 0.611764, 1.0);
+        case DFHDRColor.ChangePositiveRose:
+            return HDRColor(0.09803, 0.84705, 1.0, 1.0);
 
-        case color.ActiveHotPink:
-            return new HDRColor(1.3, 0.405, 0.8333, 1.0);
-        case color.HotPink:
-            return new HDRColor(1.0, 0.305, 0.7333, 1.0); // #FF4EBB
-        case color.FaintHotPink:
-            return new HDRColor(0.298, 0.09, 0.2196, 1.0);
-        case color.ChangeNegativeHotPink:
-            return new HDRColor(0.30588, 1.0, 0.57254, 1.0);
-        case color.ChangePositiveHotPink:
-            return new HDRColor(0.30588, 1.0, 0.98823, 1.0);
+        case DFHDRColor.ActiveHotPink:
+            return HDRColor(1.3, 0.405, 0.8333, 1.0);
+        case DFHDRColor.HotPink:
+            return HDRColor(1.0, 0.305, 0.7333, 1.0); // #FF4EBB
+        case DFHDRColor.FaintHotPink:
+            return HDRColor(0.298, 0.09, 0.2196, 1.0);
+        case DFHDRColor.ChangeNegativeHotPink:
+            return HDRColor(0.30588, 1.0, 0.57254, 1.0);
+        case DFHDRColor.ChangePositiveHotPink:
+            return HDRColor(0.30588, 1.0, 0.98823, 1.0);
         
-        case color.ActiveAqua:
-            return new HDRColor(0.19803, 0.94705, 1.3, 1.0);
-        case color.Aqua:
-            return new HDRColor(0.09803, 0.84705, 1.0, 1.0); // #19d8ff
-        case color.FaintAqua:
-            return new HDRColor(0.02745, 0.25490, 0.29803, 1.0);
-        case color.ChangeNegativeAqua:
-            return new HDRColor(1.0, 0.25098, 0.09803, 1.0);
-        case color.ChangePositiveAqua:
-            return new HDRColor(1.0, 0.79215, 0.09803, 1.0);
+        case DFHDRColor.ActiveAqua:
+            return HDRColor(0.19803, 0.94705, 1.3, 1.0);
+        case DFHDRColor.Aqua:
+            return HDRColor(0.09803, 0.84705, 1.0, 1.0); // #19d8ff
+        case DFHDRColor.FaintAqua:
+            return HDRColor(0.02745, 0.25490, 0.29803, 1.0);
+        case DFHDRColor.ChangeNegativeAqua:
+            return HDRColor(1.0, 0.25098, 0.09803, 1.0);
+        case DFHDRColor.ChangePositiveAqua:
+            return HDRColor(1.0, 0.79215, 0.09803, 1.0);
         
-        case color.ActiveMainBlue:
-            return new HDRColor(0.158299997, 1.30330002, 1.41419995, 1.0);
-        case color.MainBlue:
-            return new HDRColor(0.368627459, 0.964705944, 1.0, 1.0); // #5ef6ff
-        case color.FaintMainBlue:
-            return new HDRColor(0.0901960805, 0.172549024, 0.180392161, 1.0);
-        case color.ChangeNegativeMainBlue:
-            return new HDRColor(1.0, 0.40392, 0.36862, 1.0);
-        case color.ChangePositiveMainBlue:
-            return new HDRColor(1.0, 0.78431, 0.36862, 1.0);
+        case DFHDRColor.ActiveMainBlue:
+            return HDRColor(0.158299997, 1.30330002, 1.41419995, 1.0);
+        case DFHDRColor.MainBlue:
+            return HDRColor(0.368627459, 0.964705944, 1.0, 1.0); // #5ef6ff
+        case DFHDRColor.FaintMainBlue:
+            return HDRColor(0.0901960805, 0.172549024, 0.180392161, 1.0);
+        case DFHDRColor.ChangeNegativeMainBlue:
+            return HDRColor(1.0, 0.40392, 0.36862, 1.0);
+        case DFHDRColor.ChangePositiveMainBlue:
+            return HDRColor(1.0, 0.78431, 0.36862, 1.0);
         
-        case color.ActiveSpringGreen:
-            return new HDRColor(0.19803, 1.2, 0.711764, 1.0);
-        case color.SpringGreen:
-            return new HDRColor(0.09803, 1.0, 0.611764, 1.0); // #19FF9C
-        case color.FaintSpringGreen:
-            return new HDRColor(0.02745, 0.298039, 0.184313, 1.0);
-        case color.ChangeNegativeSpringGreen:
-            return new HDRColor(1.0, 0.2509803, 0.098039, 1.0);
-        case color.ChangePositiveSpringGreen:
-            return new HDRColor(0.09803, 0.305882, 1.0, 1.0);
+        case DFHDRColor.ActiveSpringGreen:
+            return HDRColor(0.19803, 1.2, 0.711764, 1.0);
+        case DFHDRColor.SpringGreen:
+            return HDRColor(0.09803, 1.0, 0.611764, 1.0); // #19FF9C
+        case DFHDRColor.FaintSpringGreen:
+            return HDRColor(0.02745, 0.298039, 0.184313, 1.0);
+        case DFHDRColor.ChangeNegativeSpringGreen:
+            return HDRColor(1.0, 0.2509803, 0.098039, 1.0);
+        case DFHDRColor.ChangePositiveSpringGreen:
+            return HDRColor(0.09803, 0.305882, 1.0, 1.0);
 
-        case color.ActivePigeonPost:
-            return new HDRColor(0.76666, 0.884313, 1.143137, 1.0);
-        case color.PigeonPost:
-            return new HDRColor(0.66666, 0.784313, 0.843137, 1.0); // #aac8d7
-        case color.FaintPigeonPost:
-            return new HDRColor(0.2, 0.235294, 0.250980, 1.0);
-        case color.ChangeNegativePigeonPost:
-            return new HDRColor(0.84313, 0.725490, 0.666666, 1.0);
-        case color.ChangePositivePigeonPost:
-            return new HDRColor(0.78431, 0.843137, 0.666666, 1.0);
+        case DFHDRColor.ActivePigeonPost:
+            return HDRColor(0.76666, 0.884313, 1.143137, 1.0);
+        case DFHDRColor.PigeonPost:
+            return HDRColor(0.66666, 0.784313, 0.843137, 1.0); // #aac8d7
+        case DFHDRColor.FaintPigeonPost:
+            return HDRColor(0.2, 0.235294, 0.250980, 1.0);
+        case DFHDRColor.ChangeNegativePigeonPost:
+            return HDRColor(0.84313, 0.725490, 0.666666, 1.0);
+        case DFHDRColor.ChangePositivePigeonPost:
+            return HDRColor(0.78431, 0.843137, 0.666666, 1.0);
         
-        case color.ActiveStreetCredGreen:
-            return new HDRColor(0.0, 1.2, 0.935294, 1.0);
-        case color.StreetCredGreen:
-            return new HDRColor(0.0, 1.0, 0.835294, 1.0); // #00FFD5
-        case color.FaintStreetCredGreen:
-            return new HDRColor(0.0, 0.298039, 0.250980, 1.0);
-        case color.ChangeNegativeStreetCredGreen:
-            return new HDRColor(1.0, 0.0, 0.164705, 1.0);
-        case color.ChangePositiveStreetCredGreen:
-            return new HDRColor(1.0, 0.435294, 0.0, 1.0);
+        case DFHDRColor.ActiveStreetCredGreen:
+            return HDRColor(0.0, 1.2, 0.935294, 1.0);
+        case DFHDRColor.StreetCredGreen:
+            return HDRColor(0.0, 1.0, 0.835294, 1.0); // #00FFD5
+        case DFHDRColor.FaintStreetCredGreen:
+            return HDRColor(0.0, 0.298039, 0.250980, 1.0);
+        case DFHDRColor.ChangeNegativeStreetCredGreen:
+            return HDRColor(1.0, 0.0, 0.164705, 1.0);
+        case DFHDRColor.ChangePositiveStreetCredGreen:
+            return HDRColor(1.0, 0.435294, 0.0, 1.0);
         
-        case color.ActiveMagenta:
-            return new HDRColor(1.23, 0.198039, 1.037254, 1.0);
-        case color.Magenta:
-            return new HDRColor(1.0, 0.098039, 0.937254, 1.0); // #FF19EF
-        case color.FaintMagenta:
-            return new HDRColor(0.29803, 0.027450, 0.282352, 1.0);
-        case color.ChangeNegativeMagenta:
-            return new HDRColor(1.0, 0.341176, 0.098039, 1.0);
-        case color.ChangePositiveMagenta:
-            return new HDRColor(0.098039, 1.0, 0.701960, 1.0);
+        case DFHDRColor.ActiveMagenta:
+            return HDRColor(1.23, 0.198039, 1.037254, 1.0);
+        case DFHDRColor.Magenta:
+            return HDRColor(1.0, 0.098039, 0.937254, 1.0); // #FF19EF
+        case DFHDRColor.FaintMagenta:
+            return HDRColor(0.29803, 0.027450, 0.282352, 1.0);
+        case DFHDRColor.ChangeNegativeMagenta:
+            return HDRColor(1.0, 0.341176, 0.098039, 1.0);
+        case DFHDRColor.ChangePositiveMagenta:
+            return HDRColor(0.098039, 1.0, 0.701960, 1.0);
         
-        case color.ActivePanelRed:
-            return new HDRColor(1.36979997, 0.443699986, 0.404900014, 1.0);
-        case color.PanelRed:
-            return new HDRColor(1.17610002, 0.380899996, 0.347600013, 1.0); // Main Colors Panel Red
-        case color.FaintPanelRed:
-            return new HDRColor(0.282352954, 0.113725498, 0.137254909, 1.0);
-        case color.ChangeNegativePanelRed:
-            return new HDRColor(1.23, 0.198039, 1.037254, 1.0);
-        case color.ChangePositivePanelRed:
-            return new HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
+        case DFHDRColor.ActivePanelRed:
+            return HDRColor(1.36979997, 0.443699986, 0.404900014, 1.0);
+        case DFHDRColor.PanelRed:
+            return HDRColor(1.17610002, 0.380899996, 0.347600013, 1.0); // Main Colors Panel Red
+        case DFHDRColor.FaintPanelRed:
+            return HDRColor(0.282352954, 0.113725498, 0.137254909, 1.0);
+        case DFHDRColor.ChangeNegativePanelRed:
+            return HDRColor(1.23, 0.198039, 1.037254, 1.0);
+        case DFHDRColor.ChangePositivePanelRed:
+            return HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
         
-        case color.ActiveYellow:
-            return new HDRColor(1.33099997, 1.00380003, 0.305000007, 1.0);
-        case color.Yellow:
-            return new HDRColor(1.11919999, 0.844099998, 0.256500006, 1.0);
-        case color.FaintYellow:
-            return new HDRColor(0.258823544, 0.231372565, 0.10980393, 1.0);
-        case color.ChangeNegativeYellow:
-            return new HDRColor(0.545, 0.255, 1.0, 1.0);
-        case color.ChangePositiveYellow:
-            return new HDRColor(0.263, 1.0, 0.255, 1.0);
+        case DFHDRColor.ActiveYellow:
+            return HDRColor(1.33099997, 1.00380003, 0.305000007, 1.0);
+        case DFHDRColor.Yellow:
+            return HDRColor(1.11919999, 0.844099998, 0.256500006, 1.0);
+        case DFHDRColor.FaintYellow:
+            return HDRColor(0.258823544, 0.231372565, 0.10980393, 1.0);
+        case DFHDRColor.ChangeNegativeYellow:
+            return HDRColor(0.545, 0.255, 1.0, 1.0);
+        case DFHDRColor.ChangePositiveYellow:
+            return HDRColor(0.263, 1.0, 0.255, 1.0);
         
-        case color.ActiveWhite:
-            return new HDRColor(1.5, 1.5, 1.5, 1.0);
-        case color.White:
-            return new HDRColor(1.0, 1.0, 1.0, 1.0);
-        case color.FaintWhite:
-            return new HDRColor(0.45, 0.45, 0.45, 1.0);
-        case color.ChangeNegativeWhite:
-            return new HDRColor(1.23, 0.198039, 1.037254, 1.0);
-        case color.ChangePositiveWhite:
-            return new HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
+        case DFHDRColor.ActiveWhite:
+            return HDRColor(1.5, 1.5, 1.5, 1.0);
+        case DFHDRColor.White:
+            return HDRColor(1.0, 1.0, 1.0, 1.0);
+        case DFHDRColor.FaintWhite:
+            return HDRColor(0.45, 0.45, 0.45, 1.0);
+        case DFHDRColor.ChangeNegativeWhite:
+            return HDRColor(1.23, 0.198039, 1.037254, 1.0);
+        case DFHDRColor.ChangePositiveWhite:
+            return HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
         
-        case color.ActiveMainRed:
-            return new HDRColor(1.0, 0.203921571, 0.290196091, 1.0);
-        case color.MainRed:
-            return new HDRColor(0.98, 0.165, 0.270588249, 1.0);
-        case color.FaintMainRed:
-            return new HDRColor(0.282352954, 0.113725498, 0.137254909, 1.0);
-        case color.ChangeNegativeMainRed:
-            return new HDRColor(1.23, 0.198039, 1.037254, 1.0);
-        case color.ChangePositiveMainRed:
-            return new HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
+        case DFHDRColor.ActiveMainRed:
+            return HDRColor(1.0, 0.203921571, 0.290196091, 1.0);
+        case DFHDRColor.MainRed:
+            return HDRColor(0.98, 0.165, 0.270588249, 1.0);
+        case DFHDRColor.FaintMainRed:
+            return HDRColor(0.282352954, 0.113725498, 0.137254909, 1.0);
+        case DFHDRColor.ChangeNegativeMainRed:
+            return HDRColor(1.23, 0.198039, 1.037254, 1.0);
+        case DFHDRColor.ChangePositiveMainRed:
+            return HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
 
         // Misc Colors
-        case color.MildRed:
-            return new HDRColor(0.68235296, 0.231372565, 0.211764723, 1.0);
+        case DFHDRColor.MildRed:
+            return HDRColor(0.68235296, 0.231372565, 0.211764723, 1.0);
 
-        case color.DarkRed:
-            return new HDRColor(0.262745112, 0.0862745121, 0.0941176564, 1.0);
+        case DFHDRColor.DarkRed:
+            return HDRColor(0.262745112, 0.0862745121, 0.0941176564, 1.0);
 
-        case color.MildWhite:
-            return new HDRColor(0.537, 0.651, 0.643, 1.0);
+        case DFHDRColor.MildWhite:
+            return HDRColor(0.537, 0.651, 0.643, 1.0);
+        
+        case DFHDRColor.ActiveGreen:
+            return HDRColor(0.160899997, 1.31439996, 0.726499975, 1.0);
     }
 }
 
-public final static func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarColorTheme {
+public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarColorTheme {
+    //DFProfile();
     let theme: DFBarColorTheme;
 
     switch themeName {

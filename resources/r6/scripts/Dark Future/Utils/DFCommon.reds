@@ -14,34 +14,53 @@ import DarkFuture.System.{
 }
 import DarkFuture.Main.DFTimeSkipType
 
-public final static func HoursToGameTimeSeconds(hours: Int32) -> Float {
+public enum DFGeneralVoiceLine {
+    CyberpsychosisExitFromKill = 1,
+    CyberpsychosisExitFromImmunosuppressant = 2,
+    TherapyFirstSession = 3,
+    TherapySecondSession = 4,
+    HumanityLossRestoreStreetKid = 5,
+    HumanityLossRestoreNomad = 6,
+    HumanityLossRestoreCorpoFreshStart = 7,
+    HumanityLossRestoreSpeed = 8,
+    HumanityLossRestoreConfessionBooth = 9,
+    HumanityLossRestoreCancel = 10
+}
+
+public func HoursToGameTimeSeconds(hours: Int32) -> Float {
+    //DFProfile();
     return Int32ToFloat(hours) * 3600.0;
 }
 
-public final static func GameTimeSecondsToHours(seconds: Float) -> Int32 {
+public func GameTimeSecondsToHours(seconds: Float) -> Int32 {
+    //DFProfile();
     return FloatToInt32(seconds / 3600.0);
 }
 
-public final func Int32ToFloat(value: Int32) -> Float {
+public func Int32ToFloat(value: Int32) -> Float {
+    //DFProfile();
     return Cast<Float>(value);
 }
 
-public final func FloatToInt32(value: Float) -> Int32 {
+public func FloatToInt32(value: Float) -> Int32 {
+    //DFProfile();
     return Cast<Int32>(value);
 }
 
-public static func IsCoinFlipSuccessful() -> Bool {
+public func IsCoinFlipSuccessful() -> Bool {
+    //DFProfile();
     return RandRange(1, 100) >= 50;
 }
 
-public final static func RunGuard(system: ref<DFSystem>, opt suppressLog: Bool) -> Bool {
+public func DFRunGuard(system: ref<DFSystem>, opt suppressLog: Bool) -> Bool {
+    //DFProfile();
     //  Protects functions that should only be called when a given system is running.
     //  Typically, these are functions that change state on the player or system,
     //  or retrieve data that relies on system state in order to be valid.
     //
     //	Intended use:
     //  private func MyFunc() -> Void {
-    //      if RunGuard(this) { return; }
+    //      if DFRunGuard(this) { return; }
     //      ...
     //  }
     //
@@ -55,20 +74,24 @@ public final static func RunGuard(system: ref<DFSystem>, opt suppressLog: Bool) 
     }
 }
 
-public final static func IsSleeping(timeSkipType: DFTimeSkipType) -> Bool {
+public func DFIsSleeping(timeSkipType: DFTimeSkipType) -> Bool {
+    //DFProfile();
     return NotEquals(timeSkipType, DFTimeSkipType.TimeSkip);
 }
 
-public final static func IsPlayerInBadlands(player: wref<PlayerPuppet>) -> Bool {
+public func IsPlayerInBadlands(player: wref<PlayerPuppet>) -> Bool {
+    //DFProfile();
     let parentDistrict: String = GetTopLevelParentDistrictName(player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord());
     return Equals(parentDistrict, "Badlands") || Equals(parentDistrict, "SouthBadlands") || Equals(parentDistrict, "NorthBadlands");
 }
 
-public final static func GetTopLevelParentDistrictName(districtRecord: wref<District_Record>) -> String {
+public func GetTopLevelParentDistrictName(districtRecord: wref<District_Record>) -> String {
+    //DFProfile();
     return GetTopLevelParentDistrictNameRecursive(districtRecord).EnumName();
 }
 
-public final static func GetTopLevelParentDistrictNameRecursive(districtRecord: wref<District_Record>) -> wref<District_Record> {
+public func GetTopLevelParentDistrictNameRecursive(districtRecord: wref<District_Record>) -> wref<District_Record> {
+    //DFProfile();
     let topLevelDistrictRecord: wref<District_Record>;
     
     let parent = districtRecord.ParentDistrict();
@@ -82,7 +105,7 @@ public final static func GetTopLevelParentDistrictNameRecursive(districtRecord: 
 }
 
 @if(ModuleExists("RevisedBackpack"))
-public final static func IsRevisedBackpackInstalled() -> Bool { return true; }
+public func IsRevisedBackpackInstalled() -> Bool { return true; }
 
 @if(!ModuleExists("RevisedBackpack"))
-public final static func IsRevisedBackpackInstalled() -> Bool { return false; }
+public func IsRevisedBackpackInstalled() -> Bool { return false; }

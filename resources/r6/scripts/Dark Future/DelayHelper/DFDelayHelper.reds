@@ -27,7 +27,7 @@ public class MyCallback extends DFDelayCallback {
 
 module DarkFuture.DelayHelper
 
-public static func RegisterDFDelayCallback(delaySystem: ref<DelaySystem>, callback: ref<DFDelayCallback>, out delayID: DelayID, delayInterval: Float, opt allowRestart: Bool) -> Void {
+public func RegisterDFDelayCallback(delaySystem: ref<DelaySystem>, callback: ref<DFDelayCallback>, out delayID: DelayID, delayInterval: Float, opt allowRestart: Bool) -> Void {
     if allowRestart {
         UnregisterDFDelayCallback(delaySystem, delayID);
     }
@@ -37,7 +37,7 @@ public static func RegisterDFDelayCallback(delaySystem: ref<DelaySystem>, callba
     }
 }
 
-public static func UnregisterDFDelayCallback(delaySystem: ref<DelaySystem>, out delayID: DelayID) -> Void {
+public func UnregisterDFDelayCallback(delaySystem: ref<DelaySystem>, out delayID: DelayID) -> Void {
     let invalidDelayID = GetInvalidDelayID();
     if delayID != invalidDelayID {
         GameInstance.GetDelaySystem(GetGameInstance()).CancelCallback(delayID);

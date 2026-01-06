@@ -12,8 +12,8 @@
 
 	<!-- Mappings -->
 	<mapping name="DFVehicleSleepMapping" type="Button" >
-		<button id="IK_X" />
-		<button id="IK_Pad_DigitRight" />
+		<button id="IK_X" overridableUI="DFVehicleSleepButtonMain" />
+		<button id="IK_Pad_DigitRight" overridableUI="DFVehicleSleepButtonAlt" />
 	</mapping>
 
 	<!-- Hold Actions -->

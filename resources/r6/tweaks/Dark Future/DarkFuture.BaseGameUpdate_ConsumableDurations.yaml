@@ -1,5 +1,0 @@
-# Update most Long Lasting Consumable effects to last 15 minutes (was 30 minutes for
-# Boosters, was 7m30s for food and drinks).
-Items.LongLastingConsumableDuration_inline0.value: 900
-Items.SatedDuration_inline0.value: 900
-Items.WellFedDuration_inline0.value: 900

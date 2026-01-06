@@ -12,11 +12,12 @@ import DarkFuture.System.*
 import DarkFuture.Utils.{
 	HoursToGameTimeSeconds,
 	GameTimeSecondsToHours,
-	RunGuard
+	DFRunGuard
 }
 import DarkFuture.Main.{
 	DFAddictionDatum,
-	DFAddictionUpdateDatum
+	DFAddictionUpdateDatum,
+	MainSystemItemConsumedEvent
 }
 import DarkFuture.Services.{
 	DFGameStateService,
@@ -33,8 +34,21 @@ import DarkFuture.Settings.DFSettings
 
 class DFAlcoholAddictionSystemEventListener extends DFAddictionSystemEventListener {
 	private func GetSystemInstance() -> wref<DFAddictionSystemBase> {
+		//DFProfile();
 		return DFAlcoholAddictionSystem.Get();
 	}
+
+	public cb func OnLoad() {
+		//DFProfile();
+        super.OnLoad();
+
+        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemItemConsumedEvent", this, n"OnMainSystemItemConsumedEvent", true);
+    }
+
+    private cb func OnMainSystemItemConsumedEvent(event: ref<MainSystemItemConsumedEvent>) {
+		//DFProfile();
+        this.GetSystemInstance().OnItemConsumed(event.GetItemRecord(), event.GetAnimateUI());
+    }
 }
 
 public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
@@ -45,17 +59,19 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 	private let alcoholAddictionBackoffDurationsInRealTimeMinutesByStage: array<Float>;
 	private let alcoholAddictionMinStacksPerStage: array<Uint32>;
 	private let alcoholAddictionWithdrawalDurationsInGameTimeSeconds: array<Float>;
-	private let numbedMinStackCount: Uint32 = 4u;
+	private let painTolerantMinStackCount: Uint32 = 4u;
 
     //
     //  System Methods
     //
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFAlcoholAddictionSystem> {
-		let instance: ref<DFAlcoholAddictionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Addictions.DFAlcoholAddictionSystem") as DFAlcoholAddictionSystem;
+		//DFProfile();
+		let instance: ref<DFAlcoholAddictionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFAlcoholAddictionSystem>()) as DFAlcoholAddictionSystem;
 		return instance;
 	}
 
 	public final static func Get() -> ref<DFAlcoholAddictionSystem> {
+		//DFProfile();
 		return DFAlcoholAddictionSystem.GetInstance(GetGameInstance());
 	}
 
@@ -63,18 +79,22 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
     //  DFSystem Required Methods
     //
 	private final func SetupDebugLogging() -> Void {
+		//DFProfile();
 		this.debugEnabled = false;
 	}
 
-	private func GetSystemToggleSettingValue() -> Bool {
+	public final func GetSystemToggleSettingValue() -> Bool {
+		//DFProfile();
 		return this.Settings.alcoholAddictionEnabled;
 	}
 
-	private func GetSystemToggleSettingString() -> String {
+	private final func GetSystemToggleSettingString() -> String {
+		//DFProfile();
 		return "alcoholAddictionEnabled";
 	}
 
-    private final func SetupData() -> Void {
+    public final func SetupData() -> Void {
+		//DFProfile();
 		this.alcoholAddictionWithdrawalDurationsInGameTimeSeconds = [
 			0.0,
 			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage1WithdrawalDurationInGameTimeHours),
@@ -103,6 +123,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 	}
 
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
+		//DFProfile();
 		if ArrayContains(changedSettings, "alcoholAddictionStage1WithdrawalDurationInGameTimeHours") ||
 		   ArrayContains(changedSettings, "alcoholAddictionStage2WithdrawalDurationInGameTimeHours") || 
 		   ArrayContains(changedSettings, "alcoholAddictionStage3WithdrawalDurationInGameTimeHours") || 
@@ -166,7 +187,8 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 		}
 	}
 
-	private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+		//DFProfile();
 		super.InitSpecific(attachedPlayer);
 		this.UpdateAlcoholWithdrawalEffectDisplayData();
 	}
@@ -175,121 +197,102 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 	// Required Overrides
 	//
 	private final func GetSpecificAddictionUpdateData(addictionData: DFAddictionDatum) -> DFAddictionUpdateDatum {
+		//DFProfile();
 		return addictionData.alcohol;
 	}
 
-    private final func GetDefaultEffectDuration() -> Float {
+    public final func GetDefaultEffectDuration() -> Float {
+		//DFProfile();
         return this.alcoholDefaultEffectDuration;
     }
 
 	private final func GetEffectDuration() -> Float {
+		//DFProfile();
         // Not Used
 		return 0.0;
     }
 
 	private final func GetAddictionMaxStage() -> Int32 {
+		//DFProfile();
         return this.alcoholAddictionMaxStage;
     }
 
 	private final func GetAddictionProgressionChance() -> Float {
+		//DFProfile();
         return this.Settings.alcoholAddictionProgressChance;
     }
 
 	private final func GetAddictionAmountOnUse() -> Float {
-        return this.Settings.alcoholAddictionAmountOnUse;
+		//DFProfile();
+        return this.Settings.alcoholAddictionAmountOnUsePerStack;
     }
 
 	private final func GetAddictionStageAdvanceAmounts() -> array<Float> {
+		//DFProfile();
         return this.alcoholAddictionStageAdvanceAmounts;
     }
 
-	private final func GetAddictionNerveLimits() -> array<Float> {
+	public final func GetAddictionNerveLimits() -> array<Float> {
+		//DFProfile();
         return this.alcoholAddictionNerveLimits;
     }
 
-	private final func GetAddictionBackoffDurationsInRealTimeMinutesByStage() -> array<Float> {
+	public func GetAddictionBackoffDurationsInRealTimeMinutesByStage() -> array<Float> {
+		//DFProfile();
         return this.alcoholAddictionBackoffDurationsInRealTimeMinutesByStage;
     }
 
-	private final func GetAddictionAmountLossPerDay() -> Float {
+	public final func GetAddictionAmountLossPerDay() -> Float {
+		//DFProfile();
         return this.Settings.alcoholAddictionLossPerDay;
     }
 
-	private final func GetAddictionMinStacksPerStage() -> array<Uint32> {
+	public final func GetAddictionMinStacksPerStage() -> array<Uint32> {
+		//DFProfile();
         return this.alcoholAddictionMinStacksPerStage;
     }
 
-	private func GetAddictionWithdrawalDurationsInGameTimeSeconds() -> array<Float> {
+	public func GetAddictionWithdrawalDurationsInGameTimeSeconds() -> array<Float> {
+		//DFProfile();
         return this.alcoholAddictionWithdrawalDurationsInGameTimeSeconds;
     }
 
     private final func DoPostAddictionCureActions() -> Void {
+		//DFProfile();
         this.UpdateAlcoholWithdrawalEffectDisplayData();
     }
 
 	private final func DoPostAddictionAdvanceActions() -> Void {
+		//DFProfile();
         this.UpdateAlcoholWithdrawalEffectDisplayData();
     }
 
-    private final func PlayWithdrawalAdvanceSFX() -> Void {
+    public final func PlayWithdrawalAdvanceSFX() -> Void {
+		//DFProfile();
 		if this.Settings.addictionSFXEnabled {
 			let notification: DFNotification;
-			notification.sfx = new DFAudioCue(n"ono_v_fall", 10);
+			notification.sfx = DFAudioCue(n"ono_v_fall", 5);
 			this.NotificationService.QueueNotification(notification);
 		}
     }
 
     private final func GetWithdrawalStatusEffectTag() -> CName {
+		//DFProfile();
         return n"AddictionWithdrawalAlcohol";
     }
 
     private final func GetAddictionStatusEffectBaseID() -> TweakDBID {
+		//DFProfile();
         return t"DarkFutureStatusEffect.AlcoholWithdrawal_";
     }
 
-	private final func GetAddictionPrimaryStatusEffectTag() -> CName {
+	public final func GetAddictionPrimaryStatusEffectTag() -> CName {
+		//DFProfile();
         return n"DarkFutureAddictionPrimaryEffectAlcohol";
     }
 
-    private final func QueueAddictionNotification(stage: Int32) -> Void {
-		if this.GameStateService.IsValidGameState(this, true) {
-			let messageKey: CName;
-			let messageType: SimpleMessageType;
-			switch stage {
-				case 4:
-					messageKey = n"DarkFutureAddictionNotificationAlcohol04";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 3:
-					messageKey = n"DarkFutureAddictionNotificationAlcohol03";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 2:
-					messageKey = n"DarkFutureAddictionNotificationAlcohol02";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 1:
-					messageKey = n"DarkFutureAddictionNotificationAlcohol01";
-					messageType = SimpleMessageType.Negative;
-					break;
-				case 0:
-					messageKey = n"DarkFutureAddictionNotificationAlcoholCured";
-					messageType = SimpleMessageType.Neutral;
-					break;
-			}
-
-			let message: DFMessage;
-			message.key = messageKey;
-			message.type = messageType;
-			message.context = DFMessageContext.AlcoholAddiction;
-
-			if this.Settings.addictionMessagesEnabled || Equals(message.type, SimpleMessageType.Neutral) {
-				this.NotificationService.QueueMessage(message);
-			}
-		}
-    }
-
 	public final func OnAddictionPrimaryEffectApplied(effectID: TweakDBID, effectGameplayTags: array<CName>) -> Void {
+		//DFProfile();
         if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectAlcohol") {
 			// Apply a base amount of Nerve restoration. Used by [Drink] dialogue choices.
 			// We want the Nerve bar to provide immediate feedback, so directly change Nerve now
@@ -300,21 +303,21 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 			if IsDefined(alcoholEffect) {
 				let alcoholStackCount: Uint32 = alcoholEffect.GetStackCount();
 
-				// Numbed Status
+				// Pain Tolerant Status
 				if IsSystemEnabledAndRunning(this.NerveSystem) {
-					if this.CyberwareService.GetAlcoholNumbedRequiredStacksOverride() > 0u {
-						if alcoholStackCount >= this.CyberwareService.GetAlcoholNumbedRequiredStacksOverride() {
-							StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed");
+					if this.CyberwareService.GetAlcoholPainTolerantRequiredStacksOverride() > 0u {
+						if alcoholStackCount >= this.CyberwareService.GetAlcoholPainTolerantRequiredStacksOverride() {
+							StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.PainTolerant");
 						}
 					} else {
-						if alcoholStackCount >= this.numbedMinStackCount {
-							StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Numbed");
+						if alcoholStackCount >= this.painTolerantMinStackCount {
+							StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.PainTolerant");
 						}
 					}
 				}
 
 				// Addiction-Specific - Only continue if system running.
-				if RunGuard(this) { return; }
+				if DFRunGuard(this) { return; }
 
 				let addictionMinStacksPerStage: array<Uint32> = this.GetAddictionMinStacksPerStage();
 				let addictionMinStackCount: Uint32 = addictionMinStacksPerStage[this.GetAddictionStage()];
@@ -337,8 +340,9 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
     }
 
 	public final func OnAddictionPrimaryEffectRemoved(effectID: TweakDBID, effectGameplayTags: array<CName>) -> Void {
+		//DFProfile();
 		// Addiction-Specific - Only continue if system running.
-		if RunGuard(this) { return; }
+		if DFRunGuard(this) { return; }
 
 		if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectAlcohol") {
 			DFLog(this, "ProcessAlcoholPrimaryEffectRemoved");
@@ -353,10 +357,74 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 		}
 	}
 
+	public final func GetWithdrawalAnimationLowFirstTimeMessageKey() -> CName {
+		//DFProfile();
+		return n"DarkFutureWithdrawalNotificationAlcoholLow";
+	}
+
+    public final func GetWithdrawalAnimationHighFirstTimeMessageKey() -> CName {
+		//DFProfile();
+		return n"DarkFutureWithdrawalNotificationAlcoholHigh";
+	}
+
+	private final func GetAddictionNotificationMessageKeyStage1() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationAlcohol01";
+	}
+
+    private final func GetAddictionNotificationMessageKeyStage2() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationAlcohol02";
+	}
+
+    private final func GetAddictionNotificationMessageKeyStage3() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationAlcohol03";
+	}
+
+    private final func GetAddictionNotificationMessageKeyStage4() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationAlcohol04";
+	}
+
+    private final func GetAddictionNotificationMessageKeyCured() -> CName {
+		//DFProfile();
+		return n"DarkFutureAddictionNotificationAlcoholCured";
+	}
+
+	private final func GetAddictionNotificationMessageContext() -> DFMessageContext {
+		//DFProfile();
+		return DFMessageContext.AlcoholAddiction;
+	}
+
+	private final func GetAddictionTherapyResponseIndexFact() -> CName {
+		//DFProfile();
+		return n"df_fact_therapy_alcohol_response";
+	}
+
+	private final func GetSetTherapyAddictionStateIndexFactAction() -> CName {
+        //DFProfile();
+		return n"df_fact_action_set_therapy_addiction_alcohol_state_index";
+    }
+
     //
     //  System-Specific Methods
     //
+	public final func OnItemConsumed(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
+		//DFProfile();
+		// Not RunGuard protected; this should occur regardless of run status.
+		let itemTags: array<CName> = itemRecord.Tags();
+		if ArrayContains(itemTags, n"DarkFutureConsumableAddictiveAlcoholStrong") {
+			let i: Int32 = 0;
+			while i < 2 {
+				StatusEffectHelper.ApplyStatusEffect(this.player, t"BaseStatusEffect.Drunk");
+				i += 1;
+			}
+		}
+	}
+
     private final func UpdateAlcoholWithdrawalEffectDisplayData() -> Void {
+		//DFProfile();
 		let addictionStage: Int32 = this.GetAddictionStage();
 
 		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.AlcoholWithdrawal_Cessation_UIData.intValues", [Cast<Int32>(this.alcoholAddictionNerveLimits[5]), Cast<Int32>(this.alcoholAddictionMinStacksPerStage[addictionStage]), GameTimeSecondsToHours(this.alcoholAddictionWithdrawalDurationsInGameTimeSeconds[5])]);
@@ -387,6 +455,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 //
 @replaceMethod(PlayerPuppet)
 private final func ProcessTieredDrunkEffect(evt: ref<StatusEffectEvent>) -> Void {
+	//DFProfile();
 	let stackCount: Int32;
     let drunkID: TweakDBID = t"BaseStatusEffect.Drunk";
     if evt.staticData.GetID() == drunkID {

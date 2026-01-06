@@ -18,11 +18,13 @@ import DarkFuture.Addictions.{
 
 class DFCyberwareServiceEventListener extends DFSystemEventListener {
 	private func GetSystemInstance() -> wref<DFCyberwareService> {
+		//DFProfile();
 		return DFCyberwareService.Get();
 	}
 }
 
 public final class DFCyberwareService extends DFSystem {
+	private let StatsSystem: ref<StatsSystem>;
 	private let TransactionSystem: ref<TransactionSystem>;
 	private let AlcoholAddictionSystem: ref<DFAlcoholAddictionSystem>;
 	private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
@@ -32,18 +34,20 @@ public final class DFCyberwareService extends DFSystem {
 	private let equippedCyberwareItemIDs: array<ItemID>;
 
     private let cyberwareHasSecondHeart: Bool = false;
-    private let cyberwareAlcoholNumbedRequiredStacksOverride: Uint32 = 0u;
+    private let cyberwareAlcoholPainTolerantRequiredStacksOverride: Uint32 = 0u;
     private let cyberwareNicotineEffectDurationOverride: Float = 0.0;
 	private let cyberwareNerveCostWhenHitBonusMult: Float = 1.0;
 	private let cyberwareNarcoticsEffectDurationOverride: Float = 300.0;
 	private let cyberwareSecondHeartNerveRestoreAmount: Float = 30.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFCyberwareService> {
-		let instance: ref<DFCyberwareService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Services.DFCyberwareService") as DFCyberwareService;
+		//DFProfile();
+		let instance: ref<DFCyberwareService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFCyberwareService>()) as DFCyberwareService;
 		return instance;
 	}
 
 	public final static func Get() -> ref<DFCyberwareService> {
+		//DFProfile();
 		return DFCyberwareService.GetInstance(GetGameInstance());
 	}
 
@@ -53,69 +57,79 @@ public final class DFCyberwareService extends DFSystem {
 	private final func RegisterListeners() -> Void {}
 	private final func UnregisterListeners() -> Void {}
 	private final func RegisterAllRequiredDelayCallbacks() -> Void {}
-	private final func UnregisterAllDelayCallbacks() -> Void {}
+	public final func UnregisterAllDelayCallbacks() -> Void {}
 	public final func OnTimeSkipStart() -> Void {}
 	public final func OnTimeSkipCancelled() -> Void {}
 	public final func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
 	public final func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 	private final func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 
-	private final func GetSystemToggleSettingValue() -> Bool {
+	public final func GetSystemToggleSettingValue() -> Bool {
+		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return true;
 	}
 
 	private final func GetSystemToggleSettingString() -> String {
+		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return "INVALID";
 	}
 
-	private final func DoPostSuspendActions() -> Void {
+	public final func DoPostSuspendActions() -> Void {
+		//DFProfile();
 		this.SetDefaultBonusState();
 	}
 
-	private final func DoStopActions() -> Void {}
-
-	private final func DoPostResumeActions() -> Void {
+	public final func DoPostResumeActions() -> Void {
+		//DFProfile();
 		this.UpdateEquippedCyberwareAndBonuses();
 	}
 	
 	private final func SetupDebugLogging() -> Void {
+		//DFProfile();
 		this.debugEnabled = false;
 	}
 
-	private final func GetSystems() -> Void {
+	public final func GetSystems() -> Void {
+		//DFProfile();
 		let gameInstance = GetGameInstance();
+		this.StatsSystem = GameInstance.GetStatsSystem(gameInstance);
 		this.TransactionSystem = GameInstance.GetTransactionSystem(gameInstance);
 		this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
 		this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
 	}
 
-	private final func SetupData() -> Void {
+	public final func SetupData() -> Void {
+		//DFProfile();
 		this.equipmentSystemPlayerData = EquipmentSystem.GetData(this.player);
 		this.cyberwareEquipmentAreas = this.equipmentSystemPlayerData.GetAllCyberwareEquipmentAreas();
 	}
 
-	private final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+	public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+		//DFProfile();
 		this.UpdateEquippedCyberwareAndBonuses();
 	}
 
 	//
 	//	System-Specific Methods
 	private final func SetDefaultBonusState() -> Void {
+		//DFProfile();
 		this.cyberwareHasSecondHeart = false;
-		this.cyberwareAlcoholNumbedRequiredStacksOverride = 0u;
+		this.cyberwareAlcoholPainTolerantRequiredStacksOverride = 0u;
 		this.cyberwareNicotineEffectDurationOverride = 0.0;
 		this.cyberwareNarcoticsEffectDurationOverride = 300.0;
 		this.cyberwareSecondHeartNerveRestoreAmount = 30.0;
 	}
 
     public final func UpdateEquippedCyberwareAndBonuses() -> Void {
+		//DFProfile();
 		this.UpdateEquippedCyberwareItemIDs(this.equippedCyberwareItemIDs);
 		this.UpdateCyberwareBonuses();
 	}
 
     private final func UpdateEquippedCyberwareItemIDs(out itemIDs: array<ItemID>) -> Void {
+		//DFProfile();
 		ArrayClear(itemIDs);
 		
 		let i: Int32 = 0;
@@ -133,9 +147,10 @@ public final class DFCyberwareService extends DFSystem {
 	}
 
     private final func UpdateCyberwareBonuses() -> Void {
+		//DFProfile();
 		// Reset data.
 		this.cyberwareNarcoticsEffectDurationOverride = 300.0;
-        this.cyberwareAlcoholNumbedRequiredStacksOverride = 0u;
+        this.cyberwareAlcoholPainTolerantRequiredStacksOverride = 0u;
         this.cyberwareNicotineEffectDurationOverride = 0.0;
 		this.cyberwareHasSecondHeart = false;
 
@@ -175,23 +190,23 @@ public final class DFCyberwareService extends DFSystem {
 					switch quality {
 						case gamedataQuality.Epic:
 							this.cyberwareNarcoticsEffectDurationOverride = 360.0; // 20% bonus
-							this.cyberwareAlcoholNumbedRequiredStacksOverride = 3u;
+							this.cyberwareAlcoholPainTolerantRequiredStacksOverride = 3u;
 							break;
 						case gamedataQuality.EpicPlus:
 							this.cyberwareNarcoticsEffectDurationOverride = 420.0; // 40% bonus
-							this.cyberwareAlcoholNumbedRequiredStacksOverride = 3u;
+							this.cyberwareAlcoholPainTolerantRequiredStacksOverride = 3u;
 							break;
 						case gamedataQuality.Legendary:
 							this.cyberwareNarcoticsEffectDurationOverride = 480.0; // 60% bonus
-							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
+							this.cyberwareAlcoholPainTolerantRequiredStacksOverride = 2u;
 							break;
 						case gamedataQuality.LegendaryPlus:
 							this.cyberwareNarcoticsEffectDurationOverride = 540.0; // 80% bonus
-							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
+							this.cyberwareAlcoholPainTolerantRequiredStacksOverride = 2u;
 							break;
 						case gamedataQuality.LegendaryPlusPlus:
 							this.cyberwareNarcoticsEffectDurationOverride = 600.0; // 100% bonus
-							this.cyberwareAlcoholNumbedRequiredStacksOverride = 2u;
+							this.cyberwareAlcoholPainTolerantRequiredStacksOverride = 2u;
 							break;
 					}
 
@@ -209,27 +224,42 @@ public final class DFCyberwareService extends DFSystem {
 		DFLog(this, "    cyberwareNarcoticsEffectDurationOverride = " + ToString(this.cyberwareNarcoticsEffectDurationOverride));
 		DFLog(this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
 		DFLog(this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
-		DFLog(this, "    cyberwareAlcoholNumbedRequiredStacksOverride = " + ToString(this.cyberwareAlcoholNumbedRequiredStacksOverride));
+		DFLog(this, "    cyberwareAlcoholPainTolerantRequiredStacksOverride = " + ToString(this.cyberwareAlcoholPainTolerantRequiredStacksOverride));
 	}
 
     public final func GetHasSecondHeart() -> Bool {
+		//DFProfile();
         return this.cyberwareHasSecondHeart;
     }
 
     public final func GetNicotineEffectDurationOverride() -> Float {
+		//DFProfile();
         return this.cyberwareNicotineEffectDurationOverride;
     }
 	
     public final func GetNarcoticsEffectDurationOverride() -> Float {
+		//DFProfile();
         return this.cyberwareNarcoticsEffectDurationOverride;
     }
 
     public final func GetSecondHeartNerveRestoreAmount() -> Float {
+		//DFProfile();
         return this.cyberwareSecondHeartNerveRestoreAmount;
     }
 
-	public final func GetAlcoholNumbedRequiredStacksOverride() -> Uint32 {
-		return this.cyberwareAlcoholNumbedRequiredStacksOverride;
+	public final func GetAlcoholPainTolerantRequiredStacksOverride() -> Uint32 {
+		//DFProfile();
+		return this.cyberwareAlcoholPainTolerantRequiredStacksOverride;
+	}
+
+	public final func GetPointsOfCyberwareCapacityAllocated() -> Float {
+		//DFProfile();
+		return this.StatsSystem.GetStatValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatType.HumanityAllocated);
+	}
+
+	public final func GetPointsOfCyberwareCapacityExceeded() -> Float {
+		//DFProfile();
+		return this.StatsSystem.GetStatValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatType.HumanityOverallocated);
 	}
 }
 
@@ -241,6 +271,7 @@ public final class DFCyberwareService extends DFSystem {
 //
 @wrapMethod(RipperDocGameController)
 protected cb func OnBeforeLeaveScenario(userData: ref<IScriptable>) -> Bool {
+	//DFProfile();
 	let value: Bool = wrappedMethod(userData);
 
 	let CyberwareSystem: ref<DFCyberwareService> = DFCyberwareService.Get();

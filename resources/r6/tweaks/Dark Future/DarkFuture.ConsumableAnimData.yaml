@@ -1,0 +1,1670 @@
+#
+#
+# Props
+#
+#
+DarkFutureProps.pill_a:
+  $type: gamedataProp_Record
+  friendlyName: df_pill_a
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\pill_a.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.pill_b:
+  $type: gamedataProp_Record
+  friendlyName: df_pill_b
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\pill_b.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.burrito_a:
+  $type: gamedataProp_Record
+  friendlyName: df_burrito_a
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\burrito_xxl.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.burrito_b:
+  $type: gamedataProp_Record
+  friendlyName: df_burrito_b
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\burrito_xxl_rosado.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.burrito_c:
+  $type: gamedataProp_Record
+  friendlyName: df_burrito_c
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\burrito_xxl_turquesa.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.taco:
+  $type: gamedataProp_Record
+  friendlyName: df_taco
+  entityTemplatePath: base\gameplay\items\consumables\food\appearances\taco.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.nicola_a:
+  $type: gamedataProp_Record
+  friendlyName: df_nicola_a
+  entityTemplatePath: base\items\interactive\food\soda_can_universal\appearances\mesh_c.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.nicola_b:
+  $type: gamedataProp_Record
+  friendlyName: df_nicola_b
+  entityTemplatePath: base\items\interactive\food\soda_can_universal\appearances\mesh_d.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.cirruscola_a:
+  $type: gamedataProp_Record
+  friendlyName: df_cirruscola_a
+  entityTemplatePath: base\items\interactive\food\soda_can_universal\appearances\mesh_a.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.cirruscola_b:
+  $type: gamedataProp_Record
+  friendlyName: df_cirruscola_b
+  entityTemplatePath: base\items\interactive\food\soda_can_universal\appearances\mesh_b.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.tiancha:
+  $type: gamedataProp_Record
+  friendlyName: df_tiancha
+  entityTemplatePath: base\items\interactive\food\soda_can_universal\appearances\mesh_e.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+# Needs appearance set
+DarkFutureProps.spunkymonkey:
+  $type: gamedataProp_Record
+  friendlyName: df_spunkymonkey
+  entityTemplatePath: base\items\interactive\food\int_food_001__soda_can_f.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.chromanticore:
+  $type: gamedataProp_Record
+  friendlyName: df_chromanticore
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\chromanticore_open.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.waterbottle:
+  $type: gamedataProp_Record
+  friendlyName: df_waterbottle
+  entityTemplatePath: base\items\interactive\food\int_food_001__drink_bottle_a_water.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.wontons:
+  $type: gamedataProp_Record
+  friendlyName: df_wontons
+  entityTemplatePath: base\gameplay\items\consumables\food\appearances\yikes_tofu_bar.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.wine:
+  $type: gamedataProp_Record
+  friendlyName: df_wine
+  entityTemplatePath: base\gameplay\items\consumables\alcohol\appearances\chateau_piquette.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.calavera_feliz:
+  $type: gamedataProp_Record
+  friendlyName: df_calavera_feliz
+  entityTemplatePath: base\gameplay\items\consumables\alcohol\appearances\calavera_feliz.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.champaradise:
+  $type: gamedataProp_Record
+  friendlyName: df_champaradise
+  entityTemplatePath: base\gameplay\items\consumables\alcohol\appearances\champaradise.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.broseph_brown:
+  $type: gamedataProp_Record
+  friendlyName: df_broseph_brown
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\broseph_brown.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.broseph_blue:
+  $type: gamedataProp_Record
+  friendlyName: df_broseph_blue
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\broseph_blue.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.donaghys:
+  $type: gamedataProp_Record
+  friendlyName: df_donaghys
+  entityTemplatePath: base\gameplay\items\consumables\alcohol\appearances\donaghys.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.abydos_large:
+  $type: gamedataProp_Record
+  friendlyName: df_abydos_large
+  entityTemplatePath: base\gameplay\items\consumables\alcohol\appearances\abydos_king_size.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.abydos_small:
+  $type: gamedataProp_Record
+  friendlyName: df_abydos_small
+  entityTemplatePath: base\gameplay\items\consumables\alcohol\appearances\abydos_classic.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.bumelant:
+  $type: gamedataProp_Record
+  friendlyName: df_bumelant
+  entityTemplatePath: base\gameplay\items\consumables\alcohol\appearances\bumelant.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.tequila_unique:
+  $type: gamedataProp_Record
+  friendlyName: df_bumelant
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\tequila_unique.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.odickin:
+  $type: gamedataProp_Record
+  friendlyName: df_odickin_open
+  entityTemplatePath: base\items\interactive\food\int_food_001__drink_bottle_l_whiskey.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.bolshevik:
+  $type: gamedataProp_Record
+  friendlyName: df_bolshevik
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\bolshevik_open.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.tequila_especial:
+  $type: gamedataProp_Record
+  friendlyName: df_tequila_especial
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\tequila_especial_open.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.generic_hooch_open:
+  $type: gamedataProp_Record
+  friendlyName: df_generic_hooch_open
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\generic_hooch_open.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.pingo_palido_open:
+  $type: gamedataProp_Record
+  friendlyName: df_pingo_palido_open
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\pingo_palido_open.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.blue_grass:
+  $type: gamedataProp_Record
+  friendlyName: df_blue_grass
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\blue_grass.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.twenty_first_stout:
+  $type: gamedataProp_Record
+  friendlyName: df_twenty_first_stout
+  entityTemplatePath: ep1\items\quest\q301__broken_bottle.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.vatnajokull:
+  $type: gamedataProp_Record
+  friendlyName: df_vatnajokull
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\vatnajokull.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.sain_ruisseau:
+  $type: gamedataProp_Record
+  friendlyName: df_sain_ruisseau
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\sain_ruisseau.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.base_inhaler:
+  $type: gamedataProp_Record
+  friendlyName: df_base_inhaler
+  entityTemplatePath: base\gameplay\items\consumables\inhalers\base_inhaler_item.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.black_lace:
+  $type: gamedataProp_Record
+  friendlyName: df_blacklace
+  entityTemplatePath: base\items\light_crowd_items\drug_inhaler.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.health_booster:
+  $type: gamedataProp_Record
+  friendlyName: df_healthbooster
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\first_aid_kit_no_collision.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.holobites:
+  $type: gamedataProp_Record
+  friendlyName: df_holobites
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\holobites.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.moonchies:
+  $type: gamedataProp_Record
+  friendlyName: df_moonchies
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\moonchies.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.leeloubeans:
+  $type: gamedataProp_Record
+  friendlyName: df_leeloubeans
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\leeloubeans.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.popturd:
+  $type: gamedataProp_Record
+  friendlyName: df_popturd
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\popturd.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.shwabshwab:
+  $type: gamedataProp_Record
+  friendlyName: df_shwabshwab
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\shwabshwab.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.thin_packaged_generic_food:
+  $type: gamedataProp_Record
+  friendlyName: df_thinpackagedgenericfood
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\thin_packaged_generic_food.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.thin_packaged_generic_food_large:
+  $type: gamedataProp_Record
+  friendlyName: df_thinpackagedgenericfoodlarge
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\thin_packaged_generic_food_large.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.cat_food:
+  $type: gamedataProp_Record
+  friendlyName: df_catfood
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\cat_food.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.daring_dairy:
+  $type: gamedataProp_Record
+  friendlyName: df_daringdairy
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\daringdairy.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.synthsnack:
+  $type: gamedataProp_Record
+  friendlyName: df_synthsnack
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\synthsnack.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.synthsnack_no_label:
+  $type: gamedataProp_Record
+  friendlyName: df_synthsnack_no_label
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\synthsnack_no_label.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.candybar:
+  $type: gamedataProp_Record
+  friendlyName: df_candybar
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\candybar.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.pizza:
+  $type: gamedataProp_Record
+  friendlyName: df_pizza
+  entityTemplatePath: base\items\light_crowd_items\pizza_slice.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.hotdog:
+  $type: gamedataProp_Record
+  friendlyName: df_hotdog
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\hotdog.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.taco:
+  $type: gamedataProp_Record
+  friendlyName: df_taco
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\taco.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.soup_light:
+  $type: gamedataProp_Record
+  friendlyName: df_soup_light
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\soup_light.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.soup_dark:
+  $type: gamedataProp_Record
+  friendlyName: df_soup_dark
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\soup_dark.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.large_packaged_generic_gold:
+  $type: gamedataProp_Record
+  friendlyName: df_large_packaged_generic_gold
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\large_packaged_generic_food_gold.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.large_packaged_generic_silver:
+  $type: gamedataProp_Record
+  friendlyName: df_large_packaged_generic_silver
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\large_packaged_generic_food_silver.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.fruit_apple:
+  $type: gamedataProp_Record
+  friendlyName: df_fruit_apple
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\fruit_apple.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.fruit_orange:
+  $type: gamedataProp_Record
+  friendlyName: df_fruit_orange
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\fruit_orange.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.fruit_peach:
+  $type: gamedataProp_Record
+  friendlyName: df_fruit_peach
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\fruit_peach.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.fruit_pear:
+  $type: gamedataProp_Record
+  friendlyName: df_fruit_pear
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\fruit_pear.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.beef_can:
+  $type: gamedataProp_Record
+  friendlyName: df_ezbeef
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\ezbeef.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.nigiri:
+  $type: gamedataProp_Record
+  friendlyName: df_nigiri
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\nigiri.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.norimaki:
+  $type: gamedataProp_Record
+  friendlyName: df_nigiri
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\norimaki.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+
+DarkFutureProps.meatlog:
+  $type: gamedataProp_Record
+  friendlyName: df_meatlog
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\meatlog.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.ramen:
+  $type: gamedataProp_Record
+  friendlyName: df_ramen
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\noodles.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.dried_meat:
+  $type: gamedataProp_Record
+  friendlyName: df_dried_meat
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\dried_meat.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.pierogi:
+  $type: gamedataProp_Record
+  friendlyName: df_pierogi
+  entityTemplatePath: base\quest\minor_quests\mq055\entities\mq055_gift_panam_alt.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.cupcake:
+  $type: gamedataProp_Record
+  friendlyName: df_cupcake
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\cupcake.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.sandwich:
+  $type: gamedataProp_Record
+  friendlyName: df_sandwich
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\sandwich.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.ram_nugs:
+  $type: gamedataProp_Record
+  friendlyName: df_ram_nugs
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\ram_nugs.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+DarkFutureProps.jellytricity:
+  $type: gamedataProp_Record
+  friendlyName: df_jellytricity
+  entityTemplatePath: darkfuture\consumable_anims\props\entities\jellytricity.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
+#
+#
+# Animations
+#
+#
+
+#
+## To Go Coffee and Tea
+#
+Items.LowQualityDrink1: &DarkFutureAnimCoffeeTeaToGo
+  tags:
+    - !append-once DarkFutureAnimCoffeeTeaToGo
+Items.LowQualityDrink11: *DarkFutureAnimCoffeeTeaToGo
+Items.LowQualityDrink12: *DarkFutureAnimCoffeeTeaToGo
+Items.LowQualityDrink13: *DarkFutureAnimCoffeeTeaToGo
+Items.CarFood1: *DarkFutureAnimCoffeeTeaToGo
+Items.GoodQualityDrink5: *DarkFutureAnimCoffeeTeaToGo
+Items.GoodQualityDrink6: *DarkFutureAnimCoffeeTeaToGo
+Items.GoodQualityDrink7: *DarkFutureAnimCoffeeTeaToGo
+Items.LowQualityDrink2: *DarkFutureAnimCoffeeTeaToGo
+
+#
+## Coffee and Tea Open Cup
+#
+Items.MediumQualityDrink11:
+  tags:
+    - !append-once DarkFutureAnimCoffeeTeaOpenCup
+
+#
+## Soda
+#
+
+# NiCola
+Items.LowQualityDrink10: &DarkFutureAnimDrinkNicolaA
+  tags:
+    - !append-once DarkFutureAnimDrinkNicolaA
+Items.MediumQualityDrink1: *DarkFutureAnimDrinkNicolaA
+Items.MediumQualityDrink2: *DarkFutureAnimDrinkNicolaA
+
+Items.LowQualityDrink9:
+  tags:
+    - !append-once DarkFutureAnimDrinkNicolaB
+
+# Cirrus Cola, also VITA-MINE
+Items.LowQualityDrink7: &DarkFutureAnimDrinkCirrusColaA
+  tags:
+    - !append-once DarkFutureAnimDrinkCirrusColaA
+Items.GoodQualityDrink3: *DarkFutureAnimDrinkCirrusColaA
+
+# Also Naranjita, Real Water
+Items.LowQualityDrink6: &DarkFutureAnimDrinkCirrusColaB
+  tags:
+    - !append-once DarkFutureAnimDrinkCirrusColaB
+Items.LowQualityDrink8: *DarkFutureAnimDrinkCirrusColaB
+Items.MediumQualityDrink5: *DarkFutureAnimDrinkCirrusColaB
+Items.MediumQualityDrink6: *DarkFutureAnimDrinkCirrusColaB
+Items.MediumQualityDrink3: *DarkFutureAnimDrinkCirrusColaB
+Items.MediumQualityDrink4: *DarkFutureAnimDrinkCirrusColaB
+
+# Tiancha
+Items.MediumQualityDrink12: &DarkFutureAnimDrinkTiancha
+  tags:
+    - !append-once DarkFutureAnimDrinkTiancha
+Items.MediumQualityDrink13: *DarkFutureAnimDrinkTiancha
+Items.MediumQualityDrink8: *DarkFutureAnimDrinkTiancha
+Items.MediumQualityDrink9: *DarkFutureAnimDrinkTiancha
+
+# Spunky Monkey
+Items.LowQualityDrink4: &DarkFutureAnimDrinkSpunkyMonkey
+  tags:
+    - !append-once DarkFutureAnimDrinkSpunkyMonkey
+Items.LowQualityDrink5: *DarkFutureAnimDrinkSpunkyMonkey
+
+# Chromanticore / Canned Energy Drinks
+Items.MediumQualityDrink7: &DarkFutureAnimDrinkChromanticore
+  tags:
+    - !append-once DarkFutureAnimDrinkChromanticore
+Items.GoodQualityDrink2: *DarkFutureAnimDrinkChromanticore
+Items.GoodQualityDrink4: *DarkFutureAnimDrinkChromanticore
+
+# Bottled Water
+Items.NomadsDrink1: &DarkFutureAnimDrinkWaterBottle
+  tags:
+    - !append-once DarkFutureAnimDrinkWaterBottle
+Items.GoodQualityDrink10: *DarkFutureAnimDrinkWaterBottle
+
+# Daring Dairy
+Items.LowQualityDrink3:
+  tags:
+    - !append-once DarkFutureAnimDrinkDaringDairy
+
+# Vatnajokull
+Items.GoodQualityDrink8: &DarkFutureAnimDrinkVatnajokull
+  tags:
+    - !append-once DarkFutureAnimDrinkVatnajokull
+Items.GoodQualityDrink9: *DarkFutureAnimDrinkVatnajokull
+
+# Chromanticore (Chug)
+Items.NetrunnerFood1: &DarkFutureAnimDrinkChromanticoreChug
+  tags:
+    - !append-once DarkFutureAnimDrinkChromanticoreChug
+Items.MediumQualityDrink10: *DarkFutureAnimDrinkChromanticoreChug
+Items.Blackmarket_HealthBooster: *DarkFutureAnimDrinkChromanticoreChug
+
+# Sain Ruisseau
+Items.GoodQualityDrink1:
+  tags:
+    - !append-once DarkFutureAnimDrinkSainRuisseau
+
+#
+## Food
+#
+
+# Burritos
+# Burrito XXL
+Items.MediumQualityFood4:
+  tags:
+    - !append-once DarkFutureAnimFoodBurritoA
+
+# Burrito XXL Rosado
+Items.MediumQualityFood12:
+  tags:
+    - !append-once DarkFutureAnimFoodBurritoB
+
+# Burrito XXL Turquesa
+Items.MediumQualityFood13:
+  tags:
+    - !append-once DarkFutureAnimFoodBurritoC
+
+# Holobites
+Items.LowQualityFood12: &DarkFutureAnimFoodHolobites
+  tags:
+    - !append-once DarkFutureAnimFoodHolobites
+Items.LowQualityFood13: *DarkFutureAnimFoodHolobites
+Items.LowQualityFood14: *DarkFutureAnimFoodHolobites
+
+# Moonchies
+Items.LowQualityFood5: &DarkFutureAnimFoodMoonchies
+  tags:
+    - !append-once DarkFutureAnimFoodMoonchies
+Items.LowQualityFood17: *DarkFutureAnimFoodMoonchies
+Items.LowQualityFood18: *DarkFutureAnimFoodMoonchies
+Items.LowQualityFood19: *DarkFutureAnimFoodMoonchies
+
+# Leelou Beans
+Items.LowQualityFood20: &DarkFutureAnimFoodLeelouBeans
+  tags:
+    - !append-once DarkFutureAnimFoodLeelouBeans
+Items.LowQualityFood21: *DarkFutureAnimFoodLeelouBeans
+Items.LowQualityFood22: *DarkFutureAnimFoodLeelouBeans
+Items.LowQualityFood23: *DarkFutureAnimFoodLeelouBeans
+
+# Leelou Beans (Inverted)
+Items.GoodQualityDrink11: &DarkFutureAnimDrinkLeelouBeansInverted
+  tags:
+    - !append-once DarkFutureAnimDrinkLeelouBeansInverted
+Items.NomadsDrink2: *DarkFutureAnimDrinkLeelouBeansInverted
+
+# Pop Turd
+Items.LowQualityFood8:
+  tags:
+    - !append-once DarkFutureAnimFoodPopTurd
+
+# ShwabShwab
+Items.MediumQualityFood17: &DarkFutureAnimFoodShwabShwab
+  tags:
+    - !append-once DarkFutureAnimFoodShwabShwab
+Items.MediumQualityFood18: *DarkFutureAnimFoodShwabShwab
+Items.MediumQualityFood19: *DarkFutureAnimFoodShwabShwab
+
+# Thin Packaged Generic
+Items.LowQualityFood15: &DarkFutureAnimFoodThinPackagedGeneric
+  tags:
+    - !append-once DarkFutureAnimFoodThinPackagedGeneric
+Items.LowQualityFood16: *DarkFutureAnimFoodThinPackagedGeneric
+Items.LowQualityFood7: *DarkFutureAnimFoodThinPackagedGeneric
+Items.LowQualityFood9: *DarkFutureAnimFoodThinPackagedGeneric
+Items.MediumQualityFood5: *DarkFutureAnimFoodThinPackagedGeneric
+Items.MediumQualityFood6: *DarkFutureAnimFoodThinPackagedGeneric
+
+# Thin Packaged Generic Large
+Items.MediumQualityFood3: &DarkFutureAnimFoodThinPackagedGenericLarge
+  tags:
+    - !append-once DarkFutureAnimFoodThinPackagedGenericLarge
+Items.MediumQualityFood7: *DarkFutureAnimFoodThinPackagedGenericLarge
+Items.MediumQualityFood9: *DarkFutureAnimFoodThinPackagedGenericLarge
+Items.MediumQualityFood20: *DarkFutureAnimFoodThinPackagedGenericLarge
+Items.GoodQualityFood7: *DarkFutureAnimFoodThinPackagedGenericLarge
+Items.GoodQualityFood8: *DarkFutureAnimFoodThinPackagedGenericLarge
+
+# Cat Food
+Items.LowQualityFood11:
+  tags:
+    - !append-once DarkFutureAnimFoodCatFood
+
+# Taco
+Items.MediumQualityFood16:
+  tags:
+    - !append-once DarkFutureAnimFoodTaco
+
+# Wontons
+Items.LowQualityFood10:
+  tags:
+    - !append-once DarkFutureAnimFoodWontons
+
+# SynthSnack
+Items.MediumQualityFood1:
+  tags:
+    - !append-once DarkFutureAnimFoodSynthSnack
+
+# Soy Paste, Soop
+Items.NomadsFood1: &DarkFutureAnimFoodSynthSnackNoLabel
+  tags:
+    - !append-once DarkFutureAnimFoodSynthSnackNoLabel
+Items.MediumQualityDrink14: *DarkFutureAnimFoodSynthSnackNoLabel
+
+# Candy Bar
+Items.LowQualityFood24: &DarkFutureAnimFoodCandyBar
+  tags:
+    - !append-once DarkFutureAnimFoodCandyBar
+Items.LowQualityFood25: *DarkFutureAnimFoodCandyBar
+Items.LowQualityFood26: *DarkFutureAnimFoodCandyBar
+Items.LowQualityFood27: *DarkFutureAnimFoodCandyBar
+Items.LowQualityFood28: *DarkFutureAnimFoodCandyBar
+Items.GoodQualityFood3: *DarkFutureAnimFoodCandyBar
+Items.GoodQualityFood4: *DarkFutureAnimFoodCandyBar
+Items.MediumQualityFood8: *DarkFutureAnimFoodCandyBar
+
+# Pizza
+Items.GoodQualityFood10: &DarkFutureAnimFoodPizza
+  tags:
+    - !append-once DarkFutureAnimFoodPizza
+Items.GoodQualityFood11: *DarkFutureAnimFoodPizza
+Items.GoodQualityFood12: *DarkFutureAnimFoodPizza
+
+# Hot Dog
+Items.LowQualityFood3: &DarkFutureAnimFoodHotDog
+  tags:
+    - !append-once DarkFutureAnimFoodHotDog
+Items.HawtDawgClassic: *DarkFutureAnimFoodHotDog
+Items.HawtDawgCheese: *DarkFutureAnimFoodHotDog
+Items.HawtDawgChilli: *DarkFutureAnimFoodHotDog
+Items.HawtDawgKabanos: *DarkFutureAnimFoodHotDog
+
+# Soup (Light)
+Items.GoodQualityFood2: &DarkFutureAnimFoodSoupLight
+  tags:
+    - !append-once DarkFutureAnimFoodSoupLight
+Items.GoodQualityFood9: *DarkFutureAnimFoodSoupLight
+
+# Soup (Dark)
+Items.MediumQualityFood10:
+  tags:
+    - !append-once DarkFutureAnimFoodSoupDark
+
+# Large Generic Packaged Food (Silver)
+Items.CombatFood1: &DarkFutureAnimFoodLargePackagedGenericSilver
+  tags:
+    - !append-once DarkFutureAnimFoodLargePackagedGenericSilver
+Items.HealthFood3: *DarkFutureAnimFoodLargePackagedGenericSilver
+Items.NetrunnerFood2: *DarkFutureAnimFoodLargePackagedGenericSilver
+Items.Blackmarket_CarryCapacityBooster: *DarkFutureAnimFoodLargePackagedGenericSilver
+
+# Large Generic Packaged Food (Gold)
+Items.HealthFood1: &DarkFutureAnimFoodLargePackagedGenericGold
+  tags:
+    - !append-once DarkFutureAnimFoodLargePackagedGenericGold
+Items.HealthFood2: *DarkFutureAnimFoodLargePackagedGenericGold
+Items.CombatFood3: *DarkFutureAnimFoodLargePackagedGenericGold
+Items.StealthFood1: *DarkFutureAnimFoodLargePackagedGenericGold
+
+# Fruit
+Items.GoodQualityFood1:
+  tags:
+    - !append-once DarkFutureAnimFoodFruit
+
+# EEZYBEEF
+Items.LowQualityFood1:
+  tags:
+    - !append-once DarkFutureAnimFoodBeefCan
+
+# Nigiri
+Items.GoodQualityFood6:
+  tags:
+    - !append-once DarkFutureAnimFoodNigiri
+
+# Norimaki
+Items.GoodQualityFood5:
+  tags:
+    - !append-once DarkFutureAnimFoodNorimaki
+
+# Meat Log
+Items.CombatFood2: &DarkFutureAnimFoodMeatLog
+  tags:
+    - !append-once DarkFutureAnimFoodMeatLog
+Items.GoodQualityFood13: *DarkFutureAnimFoodMeatLog
+
+# Ramen
+Items.MediumQualityFood2:
+  tags:
+    - !append-once DarkFutureAnimFoodRamen
+
+# Dried Meat
+Items.NomadsFood2:
+  tags:
+    - !append-once DarkFutureAnimFoodDriedMeat
+
+# Unique Items
+Items.JudyFood1:
+  tags:
+    - !append-once DarkFutureAnimFoodPizzaUnique
+
+Items.JudyDrink1:
+  tags:
+    - !append-once DarkFutureAnimDrinkChromanticoreChugUnique
+
+Items.sq026_judy_sandwich:
+  tags:
+    - !append-once DarkFutureAnimFoodSandwichUnique
+
+Items.sq026_judy_coffee:
+  tags:
+    - !append-once DarkFutureAnimCoffeeTeaToGoUnique
+
+Items.PanamFood1:
+  tags:
+    - !append-once DarkFutureAnimFoodPierogiUnique
+
+Items.RiverFood1:
+  tags:
+    - !append-once DarkFutureAnimFoodCupcakeUnique
+
+Items.RiverDrink1:
+  tags:
+    - !append-once DarkFutureAnimCoffeeTeaOpenCupUnique
+
+Items.KerryAlcohol1:
+  tags:
+    - !append-once DarkFutureAnimAlcoholCentzonUnique
+
+#
+## Drugs
+#
+Items.HealthBooster:
+  tags:
+    - !append-once DarkFutureAnimHealthBooster
+
+# Pills
+Items.CarryCapacityBooster:
+  tags:
+    - !append-once DarkFutureAnimPillAPink
+
+Items.StaminaBooster:
+  tags:
+    - !append-once DarkFutureAnimPillAGreen
+
+Items.MemoryBooster:
+  tags:
+    - !append-once DarkFutureAnimPillABlue
+
+Items.PermanentHealthFood:
+  tags:
+    - !append-once DarkFutureAnimPillBGreen
+
+Items.PermanentMemoryRegenFood:
+  tags:
+    - !append-once DarkFutureAnimPillBPink
+
+Items.PermanentStaminaRegenFood:
+  tags:
+    - !append-once DarkFutureAnimPillBRed
+
+# Mr. Whitey
+Items.LowQualityFood6: &DarkFutureAnimNarcoticsMrWhitey
+  tags:
+    - !append-once DarkFutureAnimNarcoticsMrWhitey
+Items.MediumQualityFood11: *DarkFutureAnimNarcoticsMrWhitey
+Items.MediumQualityFood14: *DarkFutureAnimNarcoticsMrWhitey
+Items.MediumQualityFood15: *DarkFutureAnimNarcoticsMrWhitey
+
+# RAM Nugs
+Items.Blackmarket_MemoryBooster:
+  tags:
+    - !append-once DarkFutureAnimDrugRAMNugs
+
+# Jellytricity
+Items.Blackmarket_StaminaBooster:
+  tags:
+    - !append-once DarkFutureAnimDrugJellytricity
+
+#
+## Alcohol
+#
+
+# Wine
+Items.TopQualityAlcohol2: &DarkFutureAnimAlcoholWine
+  tags:
+    - !append-once DarkFutureAnimAlcoholWine
+Items.GoodQualityAlcohol6: *DarkFutureAnimAlcoholWine
+
+# Calavera Feliz
+Items.TopQualityAlcohol1:
+  tags:
+    - !append-once DarkFutureAnimAlcoholCalaveraFeliz
+
+#Joe Tiel
+Items.MediumQualityAlcohol5:
+  tags:
+    - !append-once DarkFutureAnimAlcoholJoeTiel
+
+#Joe Tiel (Inverted)
+Items.MediumQualityAlcohol4: &DarkFutureAnimAlcoholJoeTielInverted
+  tags:
+    - !append-once DarkFutureAnimAlcoholJoeTielInverted
+Items.TopQualityAlcohol6: *DarkFutureAnimAlcoholJoeTielInverted
+Items.TopQualityAlcohol7: *DarkFutureAnimAlcoholJoeTielInverted
+
+# Centzon Totochtin
+Items.GoodQualityAlcohol2:
+  tags:
+    - !append-once DarkFutureAnimAlcoholCentzon
+
+# Centzon (Inverted)
+Items.MediumQualityAlcohol6:
+  tags:
+    - !append-once DarkFutureAnimAlcoholCentzonInverted
+
+# Champaradise
+Items.GoodQualityAlcohol5: &DarkFutureAnimAlcoholChamparadise
+  tags:
+    - !append-once DarkFutureAnimAlcoholChamparadise
+
+# Champaradise (Inverted)
+Items.TopQualityAlcohol4: &DarkFutureAnimAlcoholChamparadiseInverted
+  tags:
+    - !append-once DarkFutureAnimAlcoholChamparadiseInverted
+
+# Broseph Brown
+Items.LowQualityAlcohol4:
+  tags:
+    - !append-once DarkFutureAnimAlcoholBrosephBrown
+
+# Broseph Blue
+Items.LowQualityAlcohol3:
+  tags:
+    - !append-once DarkFutureAnimAlcoholBrosephBlue
+
+# Donaghy's
+Items.GoodQualityAlcohol1:
+  tags:
+    - !append-once DarkFutureAnimAlcoholDonaghys
+
+# Abydos King Size
+Items.LowQualityAlcohol2:
+  tags:
+    - !append-once DarkFutureAnimAlcoholAbydosLarge
+
+# Abydos Classic
+Items.LowQualityAlcohol1:
+  tags:
+    - !append-once DarkFutureAnimAlcoholAbydosSmall
+
+# Bumelant
+Items.LowQualityAlcohol6:
+  tags:
+    - !append-once DarkFutureAnimAlcoholBumelant
+
+# O'Dickin
+Items.MediumQualityAlcohol2:
+  tags:
+    - !append-once DarkFutureAnimAlcoholOdickin
+
+# O'Dickin (Inverted)
+Items.TopQualityAlcohol3: &DarkFutureAnimAlcoholOdickinInverted
+  tags:
+    - !append-once DarkFutureAnimAlcoholOdickinInverted
+Items.TopQualityAlcohol5: *DarkFutureAnimAlcoholOdickinInverted
+
+# Bolshevik
+Items.MediumQualityAlcohol3:
+  tags:
+    - !append-once DarkFutureAnimAlcoholBolshevik
+
+# Tequila Especial
+Items.LowQualityAlcohol9:
+  tags:
+    - !append-once DarkFutureAnimAlcoholTequilaEspecial
+
+# Tequila Especial (Inverted)
+Items.GoodQualityAlcohol4:
+  tags:
+    - !append-once DarkFutureAnimAlcoholTequilaEspecialInverted
+
+# Broseph Brown (Inverted)
+Items.GoodQualityAlcohol3:
+  tags:
+    - !append-once DarkFutureAnimAlcoholBrosephBrownInverted
+
+# Generic Hooch
+Items.LowQualityAlcohol7: &DarkFutureAnimAlcoholGenericHooch
+  tags:
+    - !append-once DarkFutureAnimAlcoholGenericHooch
+Items.LowQualityAlcohol8: *DarkFutureAnimAlcoholGenericHooch
+Items.NomadsAlcohol1: *DarkFutureAnimAlcoholGenericHooch
+Items.NomadsAlcohol2: *DarkFutureAnimAlcoholGenericHooch
+
+# Pingo Palido
+Items.MediumQualityAlcohol1:
+  tags:
+    - !append-once DarkFutureAnimAlcoholPingoPalido
+
+# Blue Grass
+Items.MediumQualityAlcohol7:
+  tags:
+    - !append-once DarkFutureAnimAlcoholBlueGrass
+
+# Twenty First Stout
+Items.LowQualityAlcohol5:
+  tags:
+    - !append-once DarkFutureAnimAlcoholTwentyFirstStout
+
+# Cocktails
+Items.TopQualityAlcohol8: &DarkFutureAnimAlcoholCocktail
+  tags:
+    - !append-once DarkFutureAnimAlcoholCocktail
+Items.TopQualityAlcohol9: *DarkFutureAnimAlcoholCocktail
+Items.TopQualityAlcohol10: *DarkFutureAnimAlcoholCocktail

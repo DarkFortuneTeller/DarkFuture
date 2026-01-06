@@ -1,0 +1,394 @@
+#
+#
+# Common Records
+#
+#
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
+DarkFutureStatusEffectTypes.Injury:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Injury
+
+UIIcon.DarkFutureInjury:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ico_condition_injury
+  atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
+
+#
+#
+# Injury 01
+#
+#
+DarkFutureStatusEffect.Injury01_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.25
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.Injury01_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.25
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.Injury01_StatsPackageModifier_InhalerBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.15
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InhalerBaseHealing
+
+DarkFutureStatusEffect.Injury01_StatsPackageModifier_InjectorBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.15
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseHealing
+
+DarkFutureStatusEffect.Injury01_StatsPackageModifier_InjectorBaseOverTheTimeHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.15
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury01_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.Injury01_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.Injury01_StatsPackageModifier_HealthInCombatRegenRate
+    - DarkFutureStatusEffect.Injury01_StatsPackageModifier_InhalerBaseHealing
+    - DarkFutureStatusEffect.Injury01_StatsPackageModifier_InjectorBaseHealing
+    - DarkFutureStatusEffect.Injury01_StatsPackageModifier_InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury01_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureInjuryDesc"
+  displayName: l"DarkFutureInjury01Name"
+  fluffText: ''
+  iconPath: DarkFutureInjury
+  priority: -11
+  floatValues: []
+  intValues:
+    - -15
+    - -25
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Injury01:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Injury
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Injury01_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionInjury
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.Injury01_StatsPackage
+  SFX: []
+  VFX: []
+
+#
+#
+# Injury 02
+#
+#
+DarkFutureStatusEffect.Injury02_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.50
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.Injury02_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.50
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.Injury02_StatsPackageModifier_InhalerBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.30
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InhalerBaseHealing
+
+DarkFutureStatusEffect.Injury02_StatsPackageModifier_InjectorBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.30
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseHealing
+
+DarkFutureStatusEffect.Injury02_StatsPackageModifier_InjectorBaseOverTheTimeHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.30
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury02_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.Injury02_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.Injury02_StatsPackageModifier_HealthInCombatRegenRate
+    - DarkFutureStatusEffect.Injury02_StatsPackageModifier_InhalerBaseHealing
+    - DarkFutureStatusEffect.Injury02_StatsPackageModifier_InjectorBaseHealing
+    - DarkFutureStatusEffect.Injury02_StatsPackageModifier_InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury02_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureInjuryDesc"
+  displayName: l"DarkFutureInjury02Name"
+  fluffText: ''
+  iconPath: DarkFutureInjury
+  priority: -11
+  floatValues: []
+  intValues:
+    - -30
+    - -50
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Injury02:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Injury
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Injury02_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionInjury
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.Injury02_StatsPackage
+  SFX: []
+  VFX: []
+
+#
+#
+# Injury 03
+#
+#
+DarkFutureStatusEffect.Injury03_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.75
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.Injury03_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.75
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.Injury03_StatsPackageModifier_InhalerBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.45
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InhalerBaseHealing
+
+DarkFutureStatusEffect.Injury03_StatsPackageModifier_InjectorBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.45
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseHealing
+
+DarkFutureStatusEffect.Injury03_StatsPackageModifier_InjectorBaseOverTheTimeHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.45
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury03_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.Injury03_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.Injury03_StatsPackageModifier_HealthInCombatRegenRate
+    - DarkFutureStatusEffect.Injury03_StatsPackageModifier_InhalerBaseHealing
+    - DarkFutureStatusEffect.Injury03_StatsPackageModifier_InjectorBaseHealing
+    - DarkFutureStatusEffect.Injury03_StatsPackageModifier_InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury03_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureInjuryDesc"
+  displayName: l"DarkFutureInjury03Name"
+  fluffText: ''
+  iconPath: DarkFutureInjury
+  priority: -11
+  floatValues: []
+  intValues:
+    - -45
+    - -75
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Injury03:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Injury
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Injury03_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionInjury
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.Injury03_StatsPackage
+  SFX: []
+  VFX: []
+
+#
+#
+# Injury 04
+#
+#
+DarkFutureStatusEffect.Injury04_StatsPackageModifier_HealthInCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -1.0
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthInCombatRegenRate
+
+DarkFutureStatusEffect.Injury04_StatsPackageModifier_HealthOutOfCombatRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: -1.0
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.HealthOutOfCombatRegenRate
+
+DarkFutureStatusEffect.Injury04_StatsPackageModifier_InhalerBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.60
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InhalerBaseHealing
+
+DarkFutureStatusEffect.Injury04_StatsPackageModifier_InjectorBaseHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.60
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseHealing
+
+DarkFutureStatusEffect.Injury04_StatsPackageModifier_InjectorBaseOverTheTimeHealing:
+  $type: gamedataConstantStatModifier_Record
+  value: -0.60
+  modifierType: AdditiveMultiplier
+  statType: BaseStats.InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury04_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.Injury04_StatsPackageModifier_HealthOutOfCombatRegenRate
+    - DarkFutureStatusEffect.Injury04_StatsPackageModifier_HealthInCombatRegenRate
+    - DarkFutureStatusEffect.Injury04_StatsPackageModifier_InhalerBaseHealing
+    - DarkFutureStatusEffect.Injury04_StatsPackageModifier_InjectorBaseHealing
+    - DarkFutureStatusEffect.Injury04_StatsPackageModifier_InjectorBaseOverTheTimeHealing
+
+DarkFutureStatusEffect.Injury04_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureInjuryDesc"
+  displayName: l"DarkFutureInjury04Name"
+  fluffText: ''
+  iconPath: DarkFutureInjury
+  priority: -11
+  floatValues: []
+  intValues:
+    - -60
+    - -100
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Injury04:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Injury
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Injury04_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionInjury
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCanHideOnBuffBar
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.Injury04_StatsPackage
+  SFX: []
+  VFX: []

@@ -1,0 +1,703 @@
+#
+#
+# Common Records
+#
+#
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
+DarkFutureWeight.SmallDrink:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Additive
+  statType: BaseStats.Weight
+
+DarkFutureWeight.LargeDrink:
+  $type: gamedataConstantStatModifier_Record
+  value: 0
+  modifierType: Additive
+  statType: BaseStats.Weight
+
+#
+#
+# Base Game Alcohol Updates
+#
+#
+DarkFutureStatusEffectTypes.LegendaryAlcoholXP:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: LegendaryAlcoholXP
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedName: ''
+  intValues:
+    - 5
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedName: ''
+  intValues:
+    - 6
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedName: ''
+  intValues:
+    - 7
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier1MultiStack_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedName: ''
+  intValues:
+    - 15
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier2MultiStack_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedName: ''
+  intValues:
+    - 18
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier3MultiStack_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedName: ''
+  intValues:
+    - 21
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.LegendaryAlcoholXP_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureLegendaryAlcoholItemXPDesc"
+  localizedName: ''
+  intValues:
+    - 5
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier1MultiStack_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableNerveAlcoholTier1MultiStack_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier2MultiStack_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableNerveAlcoholTier2MultiStack_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableNerveAlcoholTier3MultiStack_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableNerveAlcoholTier3MultiStack_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.LegendaryAlcoholXP_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.LegendaryAlcoholXP_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.Drunk_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureAlcoholActiveEffectDesc"
+  displayName: l"DarkFutureAlcoholActiveEffectName"
+  fluffText: ''
+  iconPath: drunk
+  priority: -8
+  floatValues: []
+  intValues:
+    - -10
+    - -10
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholPainTolerant_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureAlcoholItemPainTolerantDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 4
+    - 20
+    - 300
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholItemSingleStackEffect_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureAlcoholItemSingleStackDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - -10
+    - -10
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholItemMultiStackEffect_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureAlcoholItemMultiStackDesc"
+  localizedName: ''
+  floatValues: []
+  intValues:
+    - 3
+    - -10
+    - -10
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.AlcoholPainTolerant_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholItemSingleStackEffect_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  UIData: DarkFutureStatusEffect.AlcoholItemSingleStackEffect_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.AlcoholItemMultiStackEffect_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  UIData: DarkFutureStatusEffect.AlcoholItemMultiStackEffect_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.Alcohol_StatsPackageModifier_MitigationStrength:
+  $type: gamedataConstantStatModifier_Record
+  value: -10
+  modifierType: Additive
+  statType: BaseStats.MitigationStrength
+
+DarkFutureStatusEffect.Alcohol_MitigationStrengthStatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.Alcohol_StatsPackageModifier_MitigationStrength
+
+DarkFutureStatusEffect.Alcohol_ReloadSpeedPackageModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.10
+  modifierType: Additive
+  statType: BaseStats.ReloadTimeBonus
+
+DarkFutureStatusEffect.Alcohol_ReloadSpeedPackageStatGroup:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.Alcohol_ReloadSpeedPackageModifier
+
+DarkFutureStatusEffect.Alcohol_ReloadSpeedPackageEffector:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Weapon
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.Alcohol_ReloadSpeedPackageStatGroup
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: Prereqs.AlwaysTruePrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+
+DarkFutureStatusEffect.Alcohol_ReloadSpeedPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.Alcohol_ReloadSpeedPackageEffector
+  items: []
+  statPools: []
+  stats: []
+
+BaseStatusEffect.Drunk.uiData: DarkFutureStatusEffect.Drunk_UIData
+BaseStatusEffect.Drunk.packages:
+  - DarkFutureStatusEffect.Alcohol_MitigationStrengthStatsPackage
+  - DarkFutureStatusEffect.Alcohol_ReloadSpeedPackage
+
+#
+#
+# Legendary Alcohol Effect
+#
+#
+UIIcon.DarkFutureLegendaryAlcoholXPIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: xp_gain
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
+
+DarkFutureItem.LegendaryAlcoholXPDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 900
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureItem.LegendaryAlcoholXPDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.LegendaryAlcoholXPDuration_StatModifier
+
+DarkFutureStatusEffect.LegendaryAlcoholXPPackageStatSkillXP:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.05
+  modifierType: Additive
+  statType: BaseStats.XPbonusMultiplier
+
+DarkFutureStatusEffect.LegendaryAlcoholXPPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.LegendaryAlcoholXPPackageStatSkillXP
+
+DarkFutureStatusEffect.LegendaryAlcoholXPStatusEffectUIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureLegendaryAlcoholActiveEffectDesc"
+  displayName: l"DarkFutureLegendaryAlcoholActiveEffectName"
+  fluffText: ''
+  iconPath: DarkFutureLegendaryAlcoholXPIcon
+  priority: 0
+  floatValues: []
+  intValues:
+    - 5
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.LegendaryAlcoholXP:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureItem.LegendaryAlcoholXPDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.LegendaryAlcoholXP
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.LegendaryAlcoholXPStatusEffectUIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.LegendaryAlcoholXPPackage
+  SFX: []
+  VFX: []
+
+DarkFutureItems.LegendaryAlcoholXPItemActionEffect:
+  $type: gamedataObjectActionEffect_Record
+  statusEffect: DarkFutureStatusEffect.LegendaryAlcoholXP
+
+DarkFutureItems.LegendaryAlcoholConsumeAction:
+  $type: gamedataItemAction_Record
+  isDefaultLootChoice: False
+  removeAfterUse: True
+  actionName: Consume
+  hackCategory: HackCategory.NotAHack
+  objectActionType: ObjectActionType.Item
+  priority: 0
+  activationTime: []
+  completionEffects:
+    - Items.Alcohol_inline6
+    - DarkFutureItems.LegendaryAlcoholXPItemActionEffect
+  costs: []
+  durationTime: []
+  instigatorActivePrereqs: []
+  instigatorPrereqs: []
+  rewards: []
+  startEffects: []
+  targetActivePrereqs: []
+  targetPrereqs: []
+
+#
+#
+# Common Alcohol
+#
+#
+Items.LowQualityAlcohol1: &CommonAlcohol
+  quality: Quality.Common
+  objectActions:
+    - !append-once ItemAction.Drop
+  statModifiers:
+    - !append-once DarkFutureWeight.SmallDrink
+  tags:
+    - !append-once DarkFutureConsumableAddictive
+    - !append-once DarkFutureConsumableAddictiveAlcohol
+Items.LowQualityAlcohol2: *CommonAlcohol
+Items.LowQualityAlcohol3: *CommonAlcohol
+Items.LowQualityAlcohol4: *CommonAlcohol
+Items.LowQualityAlcohol5: *CommonAlcohol
+Items.LowQualityAlcohol6: *CommonAlcohol
+Items.LowQualityAlcohol8: *CommonAlcohol
+Items.LowQualityAlcohol9: *CommonAlcohol
+Items.NomadsAlcohol2: *CommonAlcohol
+
+#
+#
+# Uncommon Alcohol
+#
+#
+Items.LowQualityAlcohol7: &UncommonAlcohol
+  quality: Quality.Uncommon
+  objectActions:
+    - !append-once ItemAction.Drop
+  statModifiers:
+    - !append-once DarkFutureWeight.SmallDrink
+  tags:
+    - !append-once DarkFutureConsumableAddictive
+    - !append-once DarkFutureConsumableAddictiveAlcohol
+Items.MediumQualityAlcohol2: *UncommonAlcohol
+Items.MediumQualityAlcohol3: *UncommonAlcohol
+Items.MediumQualityAlcohol4: *UncommonAlcohol
+Items.MediumQualityAlcohol5: *UncommonAlcohol
+Items.MediumQualityAlcohol6: *UncommonAlcohol
+Items.MediumQualityAlcohol7: *UncommonAlcohol
+Items.NomadsAlcohol1: *UncommonAlcohol
+
+#
+#
+# Rare Alcohol
+#
+#
+Items.GoodQualityAlcohol1: &RareAlcohol
+  quality: Quality.Rare
+  objectActions:
+    - !append-once ItemAction.Drop
+  statModifiers:
+    - !append-once DarkFutureWeight.LargeDrink
+  tags:
+    - !append-once DarkFutureConsumableAddictive
+    - !append-once DarkFutureConsumableAddictiveAlcohol
+Items.MediumQualityAlcohol1: *RareAlcohol
+Items.GoodQualityAlcohol2: *RareAlcohol
+Items.GoodQualityAlcohol3: *RareAlcohol
+Items.GoodQualityAlcohol4: *RareAlcohol
+Items.GoodQualityAlcohol5: *RareAlcohol
+Items.GoodQualityAlcohol6: *RareAlcohol
+
+#
+#
+# Epic Alcohol
+#
+#
+Items.TopQualityAlcohol1: &EpicAlcohol
+  quality: Quality.Epic
+  objectActions:
+    - !append-once ItemAction.Drop
+  statModifiers:
+    - !append-once DarkFutureWeight.LargeDrink
+  tags:
+    - !append-once DarkFutureConsumableAddictive
+    - !append-once DarkFutureConsumableAddictiveAlcohol
+Items.TopQualityAlcohol2: *EpicAlcohol
+Items.TopQualityAlcohol3: *EpicAlcohol
+Items.TopQualityAlcohol4: *EpicAlcohol
+Items.TopQualityAlcohol5: *EpicAlcohol
+Items.TopQualityAlcohol6: *EpicAlcohol
+Items.TopQualityAlcohol7: *EpicAlcohol
+
+#
+#
+# Legendary Alcohol
+#
+#
+Items.TopQualityAlcohol8: &LegendaryAlcohol
+  quality: Quality.Legendary
+  objectActions:
+    - DarkFutureItems.LegendaryAlcoholConsumeAction
+    - ItemAction.Drop
+  statModifiers:
+    - !append-once DarkFutureWeight.SmallDrink
+  tags:
+    - !append-once DarkFutureConsumableAddictive
+    - !append-once DarkFutureConsumableAddictiveAlcohol
+Items.TopQualityAlcohol9: *LegendaryAlcohol
+Items.TopQualityAlcohol10: *LegendaryAlcohol
+Items.KerryAlcohol1: *LegendaryAlcohol
+
+#
+#
+# Weak Alcohol
+#
+#
+Items.LowQualityAlcohol1: &WeakAlcohol
+  tags:
+    - !append-once DarkFutureConsumableAddictiveAlcoholWeak
+Items.LowQualityAlcohol3: *WeakAlcohol
+Items.LowQualityAlcohol4: *WeakAlcohol
+Items.NomadsAlcohol2: *WeakAlcohol
+Items.LowQualityAlcohol2: *WeakAlcohol
+Items.LowQualityAlcohol5: *WeakAlcohol
+Items.TopQualityAlcohol1: *WeakAlcohol
+Items.TopQualityAlcohol8: *WeakAlcohol
+Items.TopQualityAlcohol9: *WeakAlcohol
+Items.TopQualityAlcohol10: *WeakAlcohol
+Items.GoodQualityAlcohol3: *WeakAlcohol
+
+#
+#
+# Strong Alcohol
+#
+#
+Items.GoodQualityAlcohol1: &StrongAlcohol
+  tags:
+    - !append-once DarkFutureConsumableAddictiveAlcoholStrong
+Items.GoodQualityAlcohol2: *StrongAlcohol
+Items.GoodQualityAlcohol4: *StrongAlcohol
+Items.GoodQualityAlcohol5: *StrongAlcohol
+Items.GoodQualityAlcohol6: *StrongAlcohol
+Items.KerryAlcohol1: *StrongAlcohol
+Items.LowQualityAlcohol6: *StrongAlcohol
+Items.LowQualityAlcohol7: *StrongAlcohol
+Items.LowQualityAlcohol8: *StrongAlcohol
+Items.LowQualityAlcohol9: *StrongAlcohol
+Items.MediumQualityAlcohol1: *StrongAlcohol
+Items.MediumQualityAlcohol2: *StrongAlcohol
+Items.MediumQualityAlcohol3: *StrongAlcohol
+Items.MediumQualityAlcohol4: *StrongAlcohol
+Items.MediumQualityAlcohol5: *StrongAlcohol
+Items.MediumQualityAlcohol6: *StrongAlcohol
+Items.MediumQualityAlcohol7: *StrongAlcohol
+Items.NomadsAlcohol1: *StrongAlcohol
+Items.TopQualityAlcohol2: *StrongAlcohol
+Items.TopQualityAlcohol3: *StrongAlcohol
+Items.TopQualityAlcohol4: *StrongAlcohol
+Items.TopQualityAlcohol5: *StrongAlcohol
+Items.TopQualityAlcohol6: *StrongAlcohol
+Items.TopQualityAlcohol7: *StrongAlcohol
+
+#
+#
+# Tier 1 Nerve Alcohol
+#
+#
+Items.LowQualityAlcohol1: &NerveTier1Alcohol
+  tags:
+    - !append-once DarkFutureConsumableNerve
+    - !append-once DarkFutureConsumableAlcoholNerveTier1
+  OnEquip:
+    - DarkFutureStatusEffect.ConsumableNerveAlcoholTier1_OnEquip
+    - DarkFutureStatusEffect.AlcoholItemSingleStackEffect_OnEquip
+    - DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip
+Items.LowQualityAlcohol3: *NerveTier1Alcohol
+Items.LowQualityAlcohol4: *NerveTier1Alcohol
+Items.NomadsAlcohol2: *NerveTier1Alcohol
+Items.LowQualityAlcohol2: *NerveTier1Alcohol
+Items.LowQualityAlcohol5: *NerveTier1Alcohol
+
+#
+#
+# Tier 2 Nerve Alcohol
+#
+#
+Items.TopQualityAlcohol1: &NerveTier2Alcohol
+  tags:
+    - !append-once DarkFutureConsumableNerve
+    - !append-once DarkFutureConsumableAlcoholNerveTier2
+  OnEquip:
+    - DarkFutureStatusEffect.ConsumableNerveAlcoholTier2_OnEquip
+    - DarkFutureStatusEffect.AlcoholItemSingleStackEffect_OnEquip
+    - DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip
+Items.GoodQualityAlcohol3: *NerveTier2Alcohol
+
+#
+#
+# Tier 3 Nerve Alcohol
+#
+#
+Items.TopQualityAlcohol8: &NerveTier3Alcohol
+  tags:
+    - !append-once DarkFutureConsumableNerve
+    - !append-once DarkFutureConsumableAlcoholNerveTier3
+    - !append-once DarkFutureConsumableLegendaryAlcoholBonus
+  OnEquip:
+    - DarkFutureStatusEffect.LegendaryAlcoholXP_OnEquip
+    - DarkFutureStatusEffect.ConsumableNerveAlcoholTier3_OnEquip
+    - DarkFutureStatusEffect.AlcoholItemSingleStackEffect_OnEquip
+    - DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip
+Items.TopQualityAlcohol9: *NerveTier3Alcohol
+Items.TopQualityAlcohol10: *NerveTier3Alcohol
+
+#
+#
+# Tier 1 Multi Stack Nerve Alcohol
+#
+#
+Items.LowQualityAlcohol6: &NerveTier1MultiStackAlcohol
+  tags:
+    - !append-once DarkFutureConsumableNerve
+    - !append-once DarkFutureConsumableAlcoholNerveTier1
+  OnEquip:
+    - DarkFutureStatusEffect.ConsumableNerveAlcoholTier1MultiStack_OnEquip
+    - DarkFutureStatusEffect.AlcoholItemMultiStackEffect_OnEquip
+    - DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip
+Items.LowQualityAlcohol7: *NerveTier1MultiStackAlcohol
+Items.LowQualityAlcohol8: *NerveTier1MultiStackAlcohol
+Items.LowQualityAlcohol9: *NerveTier1MultiStackAlcohol
+Items.MediumQualityAlcohol2: *NerveTier1MultiStackAlcohol
+Items.MediumQualityAlcohol3: *NerveTier1MultiStackAlcohol
+Items.MediumQualityAlcohol4: *NerveTier1MultiStackAlcohol
+Items.MediumQualityAlcohol5: *NerveTier1MultiStackAlcohol
+Items.MediumQualityAlcohol6: *NerveTier1MultiStackAlcohol
+Items.MediumQualityAlcohol7: *NerveTier1MultiStackAlcohol
+Items.NomadsAlcohol1: *NerveTier1MultiStackAlcohol
+
+#
+#
+# Tier 2 Multi Stack Nerve Alcohol
+#
+#
+Items.GoodQualityAlcohol1: &NerveTier2MultiStackAlcohol
+  tags:
+    - !append-once DarkFutureConsumableNerve
+    - !append-once DarkFutureConsumableAlcoholNerveTier2
+  OnEquip:
+    - DarkFutureStatusEffect.ConsumableNerveAlcoholTier2MultiStack_OnEquip
+    - DarkFutureStatusEffect.AlcoholItemMultiStackEffect_OnEquip
+    - DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip
+Items.GoodQualityAlcohol2: *NerveTier2MultiStackAlcohol
+Items.GoodQualityAlcohol4: *NerveTier2MultiStackAlcohol
+Items.GoodQualityAlcohol5: *NerveTier2MultiStackAlcohol
+Items.GoodQualityAlcohol6: *NerveTier2MultiStackAlcohol
+Items.MediumQualityAlcohol1: *NerveTier2MultiStackAlcohol
+
+#
+#
+# Tier 3 Multi Stack Nerve Alcohol
+#
+#
+Items.TopQualityAlcohol2: &NerveTier3MultiStackAlcohol
+  tags:
+    - !append-once DarkFutureConsumableNerve
+    - !append-once DarkFutureConsumableAlcoholNerveTier3
+  OnEquip:
+    - DarkFutureStatusEffect.ConsumableNerveAlcoholTier3MultiStack_OnEquip
+    - DarkFutureStatusEffect.AlcoholItemMultiStackEffect_OnEquip
+    - DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip
+Items.TopQualityAlcohol3: *NerveTier3MultiStackAlcohol
+Items.TopQualityAlcohol4: *NerveTier3MultiStackAlcohol
+Items.TopQualityAlcohol5: *NerveTier3MultiStackAlcohol
+Items.TopQualityAlcohol6: *NerveTier3MultiStackAlcohol
+Items.TopQualityAlcohol7: *NerveTier3MultiStackAlcohol
+
+#
+#
+# Tier 3 Multi Stack Nerve Alcohol - Kerry's Centzon Indigo
+#
+#
+Items.KerryAlcohol1:
+  tags:
+    - !append-once DarkFutureConsumableNerve
+    - !append-once DarkFutureConsumableAlcoholNerveTier3
+    - !append-once DarkFutureConsumableLegendaryAlcoholBonus
+  OnEquip:
+    - DarkFutureStatusEffect.LegendaryAlcoholXP_OnEquip
+    - DarkFutureStatusEffect.ConsumableNerveAlcoholTier3MultiStack_OnEquip
+    - DarkFutureStatusEffect.AlcoholItemMultiStackEffect_OnEquip
+    - DarkFutureStatusEffect.AlcoholPainTolerant_OnEquip

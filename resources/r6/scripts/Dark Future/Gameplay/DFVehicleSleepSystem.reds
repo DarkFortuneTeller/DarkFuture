@@ -10,16 +10,20 @@ module DarkFuture.Gameplay
 import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.DelayHelper.*
-import DarkFuture.Utils.RunGuard
+import DarkFuture.Utils.DFRunGuard
 import DarkFuture.Main.DFTimeSkipData
 import DarkFuture.Services.{
 	DFNotificationService,
-	DFTutorial
+	DFTutorial,
+	DFGameStateService
 }
 import DarkFuture.Settings.{
     DFSettings,
-    SettingChangedEvent,
-	DFRoadDetectionToleranceSetting
+    SettingChangedEvent
+}
+import DarkFuture.Conditions.{
+	DFHumanityLossConditionSystem,
+	DFHumanityLossRestorationActivityType
 }
 
 public enum DFCanPlayerSleepInVehicleResult {
@@ -45,10 +49,11 @@ public enum EnhancedVehicleSystemCompatPowerBehaviorPassenger {
 //	Input Event Registration
 //
 @addField(PlayerPuppet)
-private let m_DarkFutureInputListener: ref<DarkFutureInputListener>;
+public let m_DarkFutureInputListener: ref<DarkFutureInputListener>;
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnDetach() -> Bool {
+	//DFProfile();
     let r: Bool = wrappedMethod();
 
     this.UnregisterInputListener(this.m_DarkFutureInputListener);
@@ -60,92 +65,15 @@ protected cb func OnDetach() -> Bool {
 public class DarkFutureInputListener {
 	protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
 		if Equals(ListenerAction.GetName(action), n"DFVehicleSleepAction") && Equals(ListenerAction.GetType(action), gameinputActionType.BUTTON_HOLD_COMPLETE) {
+			//DFProfile();
 			DFVehicleSleepSystem.Get().SleepInVehicle();
 		}
-
-		return true;
 	}
-}
-
-@addField(InputContextTransitionEvents)
-private let m_oldSleepInVehicleAllowedState: Bool = false;
-
-@addField(InputContextTransitionEvents)
-private let m_newSleepInVehicleAllowedState: Bool = false;
-
-@addField(InputContextTransitionEvents)
-private let sleepInVehicleShowInputHintDebounceDelayID: DelayID;
-
-@addField(InputContextTransitionEvents)
-private let sleepInVehicleShowInputHintDebounceDelayInterval: Float = 0.3;
-
-@addField(InputContextTransitionEvents)
-private let sleepInVehicleInputHintToShow: Bool = false;
-
-@addMethod(InputContextTransitionEvents)
-protected final func DarkFutureForceRefreshInputHints(stateContext: ref<StateContext>) -> Void {
-    stateContext.SetTemporaryBoolParameter(n"ForceRefreshInputHints", true, true);
-}
-
-@wrapMethod(VehicleDriverContextEvents)
-protected func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-    this.DarkFutureReconcileInputHints(stateContext);
-    wrappedMethod(stateContext, scriptInterface);
-}
-
-@wrapMethod(VehicleDriverCombatContextEvents)
-protected func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-    this.DarkFutureReconcileInputHints(stateContext);
-    wrappedMethod(stateContext, scriptInterface);
-}
-
-@wrapMethod(VehiclePassengerContextEvents)
-protected func OnEnter(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-	this.DarkFutureReconcileInputHints(stateContext);
-    wrappedMethod(stateContext, scriptInterface);
-}
-
-@addMethod(InputContextTransitionEvents)
-protected final func DarkFutureReconcileInputHints(stateContext: ref<StateContext>) -> Void {
-	let DFVSS = DFVehicleSleepSystem.Get();
-	this.m_newSleepInVehicleAllowedState = DFVSS.ShouldShowSleepInVehicleInputHint();
-
-    if NotEquals(this.m_oldSleepInVehicleAllowedState, this.m_newSleepInVehicleAllowedState) {
-		this.m_oldSleepInVehicleAllowedState = this.m_newSleepInVehicleAllowedState;
-		this.RegisterSleepInVehicleShowInputHintDebounceDelay(stateContext);
-    }
-}
-
-@addMethod(InputContextTransitionEvents)
-protected final func RegisterSleepInVehicleShowInputHintDebounceDelay(stateContext: ref<StateContext>) -> Void {
-	RegisterDFDelayCallback(GameInstance.GetDelaySystem(GetGameInstance()), SleepInVehicleShowInputHintDebounceDelay.Create(this, stateContext), this.sleepInVehicleShowInputHintDebounceDelayID, this.sleepInVehicleShowInputHintDebounceDelayInterval, true);
-}
-
-@addMethod(InputContextTransitionEvents)
-protected final func OnSleepInVehicleShowInputHintDebounceCallback(stateContext: ref<StateContext>) -> Void {
-	this.DarkFutureForceRefreshInputHints(stateContext);
-}
-
-@wrapMethod(VehicleDriverContextEvents)
-protected final func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-    this.DarkFutureReconcileInputHints(stateContext);
-    wrappedMethod(timeDelta, stateContext, scriptInterface);
-}
-
-@wrapMethod(VehiclePassengerContextEvents)
-protected final func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-    this.DarkFutureReconcileInputHints(stateContext);
-    wrappedMethod(timeDelta, stateContext, scriptInterface);
-}
-
-@wrapMethod(VehicleDriverCombatContextEvents)
-protected final func OnUpdate(timeDelta: Float, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-    this.DarkFutureReconcileInputHints(stateContext);
-    wrappedMethod(timeDelta, stateContext, scriptInterface);
 }
 
 @wrapMethod(VehicleObject)
 protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
+	//DFProfile();
 	let r = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
@@ -157,23 +85,21 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 }
 
 @addMethod(VehicleObject)
-private final func HandleDarkFutureVehicleMounted() -> Void {
+public final func HandleDarkFutureVehicleMounted() -> Void {
+	//DFProfile();
 	let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
-	DFVSS.SetPreventionStrategyPreCheckRequestsOnMount();
 	DFVSS.RegisterVehicleSleepActionListener();
 }
 
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
+	//DFProfile();
 	let r = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {
-		if IsDefined(mountChild) && mountChild.IsPlayer() {
-			let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
-			DFVSS.SetPreventionStrategyPreCheckRequestsOnMount();
-			DFVSS.UnregisterVehicleSleepActionListener();
-		}
+		let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
+		DFVSS.UnregisterVehicleSleepActionListener();
 	}
 	
 	return r;
@@ -181,6 +107,7 @@ protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
 
 @wrapMethod(VehicleComponent)
 protected cb func OnVehicleFinishedMountingEvent(evt: ref<VehicleFinishedMountingEvent>) -> Bool {
+	//DFProfile();
 	let r = wrappedMethod(evt);
 
 	let mountChild: wref<GameObject> = evt.character;
@@ -196,6 +123,7 @@ protected cb func OnVehicleFinishedMountingEvent(evt: ref<VehicleFinishedMountin
 
 @addMethod(InputContextTransitionEvents)
 private final func DarkFutureEvaluateVehicleSleepInputHint(show: Bool, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>, source: CName) -> Void {
+	//DFProfile();
 	if DFSettings.Get().showSleepingInVehiclesInputHint && show {
 		this.ShowInputHint(scriptInterface, n"DFVehicleSleepAction", source, GetLocalizedTextByKey(n"DarkFutureInputHintSleepVehicle"), inkInputHintHoldIndicationType.Hold, true, 127);
 	} else {
@@ -205,175 +133,71 @@ private final func DarkFutureEvaluateVehicleSleepInputHint(show: Bool, stateCont
 
 @wrapMethod(InputContextTransitionEvents)
 protected final const func ShowVehicleDriverInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-	let VehicleSleepSystem: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
-	this.DarkFutureEvaluateVehicleSleepInputHint(VehicleSleepSystem.ShouldShowSleepInVehicleInputHint(), stateContext, scriptInterface, n"VehicleDriver");
+	//DFProfile();
+	//let VehicleSleepSystem: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
+	this.DarkFutureEvaluateVehicleSleepInputHint(true, stateContext, scriptInterface, n"VehicleDriver");
+
+	wrappedMethod(stateContext, scriptInterface);
+}
+
+@wrapMethod(InputContextTransitionEvents)
+protected final const func RemoveVehicleDriverInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+	//DFProfile();
+	this.DarkFutureEvaluateVehicleSleepInputHint(false, stateContext, scriptInterface, n"VehicleDriver");
 
 	wrappedMethod(stateContext, scriptInterface);
 }
 
 @wrapMethod(InputContextTransitionEvents)
 protected final const func ShowVehiclePassengerInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {	
-	let VehicleSleepSystem: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
-	this.DarkFutureEvaluateVehicleSleepInputHint(VehicleSleepSystem.ShouldShowSleepInVehicleInputHint(), stateContext, scriptInterface, n"VehiclePassenger");
+	//DFProfile();
+	//let VehicleSleepSystem: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
+	this.DarkFutureEvaluateVehicleSleepInputHint(true, stateContext, scriptInterface, n"VehiclePassenger");
   
   	wrappedMethod(stateContext, scriptInterface);
 }
 
-@wrapMethod(VehicleEventsTransition)
-protected final func HandleCameraInput(scriptInterface: ref<StateGameScriptInterface>) -> Void {
-	if IsSystemEnabledAndRunning(DFVehicleSleepSystem.Get()) {
-		if scriptInterface.IsActionJustTapped(n"ToggleVehCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) {
-			this.RequestToggleVehicleCamera(scriptInterface);
-		};
-	} else {
-		wrappedMethod(scriptInterface);
-	}
+@wrapMethod(InputContextTransitionEvents)
+protected final const func RemoveVehiclePassengerInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+	//DFProfile();
+	//let VehicleSleepSystem: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
+	this.DarkFutureEvaluateVehicleSleepInputHint(false, stateContext, scriptInterface, n"VehiclePassenger");
+  
+  	wrappedMethod(stateContext, scriptInterface);
 }
 
-@replaceMethod(PreventionSystem)
-private final func UpdateStrategyPreCheckRequests() -> Void {
-	// Setting Strategy Pre-Check Requests allows GetNearestRoadFromPlayerInfo() to return valid road data,
-	// which is necessary to determine the player's distance from a road or highway.
-	//
-	// These pre-check requests are ordinarily set when Heat is >= 1, and cleared when the player's Heat Stage is 0,
-	// presumably for efficiency's sake, they likely have a computation cost associated with them. That said,
-	// the game doesn't appear to have issues when these are set for long periods in practice. The player could
-	// also remain Wanted for long periods, so I assume this was done as good optimization practice (especially
-	// for consoles) and not due to a hard technical requirement.
-	//
-	// We should set Strategy Pre-Check Requests when the player is mounted to a vehicle or when being
-	// pursued by the NCPD. It should only be cleared if the player is not being chased AND the player
-	// is not mounted to a vehicle.
-
-    let preCheckRequests: array<ref<BaseStrategyRequest>>;
-	let vehicleObj: wref<VehicleObject>;
-	VehicleComponent.GetVehicle(GetGameInstance(), this.m_player, vehicleObj);
-
-    let isChasingPlayer: Bool = this.IsChasingPlayer();
-    if !isChasingPlayer && !IsDefined(vehicleObj) {
-    	GameInstance.GetPreventionSpawnSystem(this.GetGame()).ClearStrategyPreCheckRequests();
-    };
-    
-	if this.IsChasingPlayer() || IsDefined(vehicleObj) || !IsFinal() {
-		ArrayPush(preCheckRequests, this.CreateStrategyRequest(vehiclePoliceStrategy.DriveTowardsPlayer));
-		ArrayPush(preCheckRequests, this.CreateStrategyRequest(vehiclePoliceStrategy.DriveAwayFromPlayer));
-		ArrayPush(preCheckRequests, this.CreateStrategyRequest(vehiclePoliceStrategy.PatrolNearby));
-		ArrayPush(preCheckRequests, this.CreateStrategyRequest(vehiclePoliceStrategy.InterceptAtNextIntersection));
-		ArrayPush(preCheckRequests, this.CreateStrategyRequest(vehiclePoliceStrategy.GetToPlayerFromAnywhere));
-		ArrayPush(preCheckRequests, this.CreateStrategyRequest(vehiclePoliceStrategy.InitialSearch));
-		ArrayPush(preCheckRequests, this.CreateStrategyRequest(vehiclePoliceStrategy.SearchFromAnywhere));
-		GameInstance.GetPreventionSpawnSystem(this.GetGame()).SetStrategyPreCheckRequests(preCheckRequests);
-    };
+@replaceMethod(VehicleEventsTransition)
+protected final func HandleCameraInput(scriptInterface: ref<StateGameScriptInterface>) -> Void {
+	// Dark Future 2.0 - Optimize this function (called every frame) to always have new input behavior regardless of system state.
+	if scriptInterface.IsActionJustTapped(n"ToggleVehCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) {
+		this.RequestToggleVehicleCamera(scriptInterface);
+	};
+	if scriptInterface.IsActionJustHeld(n"HoldCinematicCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) {
+		this.RequestVehicleCinematicCamera(scriptInterface);
+	};
 }
 
 //
 // Registration
 //
-public class SleepInVehicleCameraChangeDelay extends DFDelayCallback {
-	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
-
-	public static func Create(DFVehicleSleepSystem: wref<DFVehicleSleepSystem>) -> ref<DFDelayCallback> {
-		let self: ref<SleepInVehicleCameraChangeDelay> = new SleepInVehicleCameraChangeDelay();
-		self.DFVehicleSleepSystem = DFVehicleSleepSystem;
-		return self;
-	}
-
-	public func InvalidateDelayID() -> Void {
-		this.DFVehicleSleepSystem.sleepInVehicleCameraChangeDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		this.DFVehicleSleepSystem.SleepInVehicleStage2();
-	}
-}
-
 public class SleepInVehicleEnginePowerChangeDelay extends DFDelayCallback {
 	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
 
 	public static func Create(DFVehicleSleepSystem: wref<DFVehicleSleepSystem>) -> ref<DFDelayCallback> {
+		//DFProfile();
 		let self: ref<SleepInVehicleEnginePowerChangeDelay> = new SleepInVehicleEnginePowerChangeDelay();
 		self.DFVehicleSleepSystem = DFVehicleSleepSystem;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+		//DFProfile();
 		this.DFVehicleSleepSystem.sleepInVehicleEnginePowerChangeDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
-		this.DFVehicleSleepSystem.SleepInVehicleStage3();
-	}
-}
-
-public class SleepInVehicleEnginePowerChangeWakeUpDelay extends DFDelayCallback {
-	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
-
-	public static func Create(DFVehicleSleepSystem: wref<DFVehicleSleepSystem>) -> ref<DFDelayCallback> {
-		let self: ref<SleepInVehicleEnginePowerChangeWakeUpDelay> = new SleepInVehicleEnginePowerChangeWakeUpDelay();
-		self.DFVehicleSleepSystem = DFVehicleSleepSystem;
-		return self;
-	}
-
-	public func InvalidateDelayID() -> Void {
-		this.DFVehicleSleepSystem.sleepInVehicleEnginePowerChangeWakeUpFPPDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		this.DFVehicleSleepSystem.OnSleepInVehicleEnginePowerChangeWakeUpFPPCallback();
-	}
-}
-
-public class SleepInVehicleVFXDelay extends DFDelayCallback {
-	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
-
-	public static func Create(DFVehicleSleepSystem: wref<DFVehicleSleepSystem>) -> ref<DFDelayCallback> {
-		let self: ref<SleepInVehicleVFXDelay> = new SleepInVehicleVFXDelay();
-		self.DFVehicleSleepSystem = DFVehicleSleepSystem;
-		return self;
-	}
-
-	public func InvalidateDelayID() -> Void {
-		this.DFVehicleSleepSystem.sleepInVehicleVFXDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		this.DFVehicleSleepSystem.SleepInVehicleStage4();
-	}
-}
-
-public class SleepInVehicleShowTimeSkipDelay extends DFDelayCallback {
-	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
-
-	public static func Create(DFVehicleSleepSystem: wref<DFVehicleSleepSystem>) -> ref<DFDelayCallback> {
-		let self: ref<SleepInVehicleShowTimeSkipDelay> = new SleepInVehicleShowTimeSkipDelay();
-		self.DFVehicleSleepSystem = DFVehicleSleepSystem;
-		return self;
-	}
-
-	public func InvalidateDelayID() -> Void {
-		this.DFVehicleSleepSystem.sleepInVehicleShowTimeSkipDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		this.DFVehicleSleepSystem.OnSleepInVehicleShowTimeSkipCallback();
-	}
-}
-
-public class SleepInVehicleFadeUpDelay extends DFDelayCallback {
-	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
-
-	public static func Create(DFVehicleSleepSystem: wref<DFVehicleSleepSystem>) -> ref<DFDelayCallback> {
-		let self: ref<SleepInVehicleFadeUpDelay> = new SleepInVehicleFadeUpDelay();
-		self.DFVehicleSleepSystem = DFVehicleSleepSystem;
-		return self;
-	}
-
-	public func InvalidateDelayID() -> Void {
-		this.DFVehicleSleepSystem.sleepInVehicleFadeUpDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		this.DFVehicleSleepSystem.OnSleepInVehicleFadeUpCallback();
+		//DFProfile();
+		this.DFVehicleSleepSystem.SleepInVehicleStartQuestPhase();
 	}
 }
 
@@ -381,37 +205,20 @@ public class SleepInVehicleFinishDelay extends DFDelayCallback {
 	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
 
 	public static func Create(DFVehicleSleepSystem: wref<DFVehicleSleepSystem>) -> ref<DFDelayCallback> {
+		//DFProfile();
 		let self: ref<SleepInVehicleFinishDelay> = new SleepInVehicleFinishDelay();
 		self.DFVehicleSleepSystem = DFVehicleSleepSystem;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+		//DFProfile();
 		this.DFVehicleSleepSystem.sleepInVehicleFinishDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
-		this.DFVehicleSleepSystem.SleepInVehicleStage5();
-	}
-}
-
-public class SleepInVehicleShowInputHintDebounceDelay extends DFDelayCallback {
-	public let InputContextTransitionEvents: wref<InputContextTransitionEvents>;
-	public let StateContext: wref<StateContext>;
-
-	public static func Create(InputContextTransitionEvents: wref<InputContextTransitionEvents>, StateContext: wref<StateContext>) -> ref<DFDelayCallback> {
-		let self: ref<SleepInVehicleShowInputHintDebounceDelay> = new SleepInVehicleShowInputHintDebounceDelay();
-		self.InputContextTransitionEvents = InputContextTransitionEvents;
-		self.StateContext = StateContext;
-		return self;
-	}
-
-	public func InvalidateDelayID() -> Void {
-		this.InputContextTransitionEvents.sleepInVehicleShowInputHintDebounceDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		this.InputContextTransitionEvents.OnSleepInVehicleShowInputHintDebounceCallback(this.StateContext);
+		//DFProfile();
+		this.DFVehicleSleepSystem.SleepInVehicleFinish();
 	}
 }
 
@@ -420,6 +227,7 @@ public class SleepInVehicleShowInputHintDebounceDelay extends DFDelayCallback {
 //
 class DFVehicleSleepSystemEventListener extends DFSystemEventListener {
     private func GetSystemInstance() -> wref<DFVehicleSleepSystem> {
+		//DFProfile();
 		return DFVehicleSleepSystem.Get();
 	}
 }
@@ -427,39 +235,30 @@ class DFVehicleSleepSystemEventListener extends DFSystemEventListener {
 public final class DFVehicleSleepSystem extends DFSystem {
 	private persistent let hasShownVehicleSleepTutorial: Bool = false;
 
-	private const let roadDetectionTolerance_Curb: Float = 3.1;
-	private const let roadDetectionTolerance_Roadside: Float = 4.1;
-	private const let roadDetectionTolerance_Secluded: Float = 12.0;
-
-	private let PreventionSpawnSystem: ref<PreventionSpawnSystem>;
+	private let QuestsSystem: ref<QuestsSystem>;
+	private let AutoDriveSystem: ref<AutoDriveSystem>;
 	private let RandomEncounterSystem: ref<DFRandomEncounterSystem>;
+	private let GameStateService: ref<DFGameStateService>;
 	private let NotificationService: ref<DFNotificationService>;
-
-	private let isSleepingInVehicle: Bool = false;
+	
 	private let shouldRestoreRadioAfterSleep: Bool = false;
 
-	private let sleepInVehicleCameraChangeDelayID: DelayID;
-	private let sleepInVehicleEnginePowerChangeDelayID: DelayID;
-	private let sleepInVehicleVFXDelayID: DelayID;
-	private let sleepInVehicleShowTimeSkipDelayID: DelayID;
-	private let sleepInVehicleFadeUpDelayID: DelayID;
-	private let sleepInVehicleEnginePowerChangeWakeUpFPPDelayID: DelayID;
-	private let sleepInVehicleFinishDelayID: DelayID;
+	public let sleepInVehicleEnginePowerChangeDelayID: DelayID;
+	public let sleepInVehicleFinishDelayID: DelayID;
 
-	private let sleepInVehicleCameraChangeDelayInterval: Float = 1.0;
 	private let sleepInVehicleEnginePowerChangeDelayInterval: Float = 1.5;
-	private let sleepInVehicleVFXDelayInterval: Float = 1.0;
-	private let sleepInVehicleShowTimeSkipDelayInterval: Float = 2.5;
-	private let sleepInVehicleFadeUpDelayInterval: Float = 3.2;
-	private let sleepInVehicleEnginePowerChangeWakeUpFPPDelayInterval: Float = 2.1;
-	private let sleepInVehicleFinishDelayInterval: Float = 3.0;
+	private let sleepInVehicleEnginePowerChangeFinishDelayInterval: Float = 3.0;
+
+	private let sleepInVehicleActionListener: Uint32;
 
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFVehicleSleepSystem> {
-		let instance: ref<DFVehicleSleepSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(n"DarkFuture.Gameplay.DFVehicleSleepSystem") as DFVehicleSleepSystem;
+		//DFProfile();
+		let instance: ref<DFVehicleSleepSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFVehicleSleepSystem>()) as DFVehicleSleepSystem;
 		return instance;
 	}
 
     public final static func Get() -> ref<DFVehicleSleepSystem> {
+		//DFProfile();
         return DFVehicleSleepSystem.GetInstance(GetGameInstance());
 	}
 
@@ -467,102 +266,150 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	//  DFSystem Required Methods
 	//
 	private func SetupDebugLogging() -> Void {
+		//DFProfile();
 		this.debugEnabled = false;
 	}
 
-	private func SetupData() -> Void {}
+	public func SetupData() -> Void {}
 
-	private final func GetSystemToggleSettingValue() -> Bool {
-        return this.Settings.allowSleepingInVehicles;
-    }
+	public final func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
+		// This system does not have a system-specific toggle.
+		return true;
+	}
 
-    private final func GetSystemToggleSettingString() -> String {
-        return "allowSleepingInVehicles";
-    }
+	private final func GetSystemToggleSettingString() -> String {
+        //DFProfile();
+		// This system does not have a system-specific toggle.
+		return "INVALID";
+	}
 
-	private func DoPostSuspendActions() -> Void {}
-	private func DoPostResumeActions() -> Void {}
+	public func DoPostSuspendActions() -> Void {}
+
+	public func DoPostResumeActions() -> Void {
+		//DFProfile();
+		this.UpdateSettingsFacts();
+	}
+
 	private func DoStopActions() -> Void {}
 
-	private func GetSystems() -> Void {
+	public func GetSystems() -> Void {
+		//DFProfile();
 		let gameInstance = GetGameInstance();
-		this.PreventionSpawnSystem = GameInstance.GetPreventionSpawnSystem(gameInstance);
+		this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
+		this.AutoDriveSystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<AutoDriveSystem>()) as AutoDriveSystem;
 		this.RandomEncounterSystem = DFRandomEncounterSystem.GetInstance(gameInstance);
+		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
 		this.NotificationService = DFNotificationService.GetInstance(gameInstance);
 	}
 
 	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-	private func RegisterListeners() -> Void {}
+
+	private func RegisterListeners() -> Void {
+		//DFProfile();
+		this.sleepInVehicleActionListener = this.QuestsSystem.RegisterListener(n"df_fact_action_sleep_in_vehicle", this, n"OnSleepInVehicleActionFactChanged");
+	}
+	
 	private func RegisterAllRequiredDelayCallbacks() -> Void {}
 	
-	private func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+		//DFProfile();
 		let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(GetGameInstance(), attachedPlayer, vehicleObj);
 		if IsDefined(vehicleObj) {
 			// The player loaded a save game or started Dark Future while mounted to a vehicle.
 			vehicleObj.HandleDarkFutureVehicleMounted();
 		}
+		this.UpdateSettingsFacts();
 	}
 	
-	private func UnregisterListeners() -> Void {}
-	private func UnregisterAllDelayCallbacks() -> Void {}
+	private func UnregisterListeners() -> Void {
+		//DFProfile();
+		this.QuestsSystem.UnregisterListener(n"df_fact_action_sleep_in_vehicle", this.sleepInVehicleActionListener);
+        this.sleepInVehicleActionListener = 0u;
+	}
+
+	public func UnregisterAllDelayCallbacks() -> Void {}
 	public func OnTimeSkipStart() -> Void {}
 
 	public func OnTimeSkipCancelled() -> Void {
-		if this.isSleepingInVehicle {
+		//DFProfile();
+		if this.GameStateService.GetSleepingInVehicle() {
 			this.RandomEncounterSystem.ClearRandomEncounter();
-			this.RegisterSleepInVehicleFadeUp();
 		}
 	}
 
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
-		if this.isSleepingInVehicle {
-			let spawnedEncounter: Bool = this.RandomEncounterSystem.TryToSpawnRandomEncounterAroundPlayer();
-
-			if spawnedEncounter {
-				this.ExitSleepFast();
-			} else {
-				this.RegisterSleepInVehicleFadeUp();
+		//DFProfile();
+		if this.GameStateService.GetSleepingInVehicle() {
+			let encounterSpawned: Bool = this.RandomEncounterSystem.TryToSpawnRandomEncounterAroundPlayer();
+			if !encounterSpawned {
+				DFHumanityLossConditionSystem.Get().CheckShouldShowNomadLifePathHumanityLossRestoreChoice();
 			}
 		}
 	}
 
-	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
+	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
+		//DFProfile();
+		if ArrayContains(changedSettings, "forceFPPWhenSleepingInVehicle") {
+			this.UpdateSettingsFacts();
+		}
+	}
 
 	//
 	//	System-Specific Methods
 	//
-	public final func GetSleepingInVehicle() -> Bool {
-		return this.isSleepingInVehicle;
+	private final func UpdateSettingsFacts() -> Void {
+		//DFProfile();
+		let factValue: Int32 = this.Settings.forceFPPWhenSleepingInVehicle ? 1 : 0;
+		this.QuestsSystem.SetFact(n"df_fact_setting_force_fpp_when_sleeping_in_vehicle", factValue);
 	}
 
 	public final func RegisterVehicleSleepActionListener() -> Void {
+		//DFProfile();
 		this.player.m_DarkFutureInputListener = new DarkFutureInputListener();
     	this.player.RegisterInputListener(this.player.m_DarkFutureInputListener);
 	}
 
 	public final func UnregisterVehicleSleepActionListener() -> Void {
+		//DFProfile();
 		this.player.UnregisterInputListener(this, n"DFVehicleSleepAction");
 		this.player.m_DarkFutureInputListener = null;
 	}
 
 	private func GetTutorialTitleKey() -> CName {
+		//DFProfile();
 		return n"DarkFutureTutorialSleepingInVehiclesTitle";
 	}
 
 	private func GetTutorialMessageKey() -> CName {
+		//DFProfile();
 		return n"DarkFutureTutorialSleepingInVehicles";
 	}
 
 	private func GetHasShownTutorial() -> Bool {
+		//DFProfile();
 		return this.hasShownVehicleSleepTutorial;
 	}
 
 	private func SetHasShownTutorial(hasShownVehicleSleepTutorial: Bool) -> Void {
+		//DFProfile();
 		this.hasShownVehicleSleepTutorial = hasShownVehicleSleepTutorial;
 	}
 
+	private final func IsAnyPhoneStateActive() -> Bool {
+		let lastPhoneCallInformation: PhoneCallInformation;
+		let blackboardSystem: ref<BlackboardSystem> = GameInstance.GetBlackboardSystem(GetGameInstance());
+		let infoVariant: Variant = blackboardSystem.Get(GetAllBlackboardDefs().UI_ComDevice).GetVariant(GetAllBlackboardDefs().UI_ComDevice.PhoneCallInformation);
+		if IsDefined(infoVariant) {
+			lastPhoneCallInformation = FromVariant<PhoneCallInformation>(infoVariant);
+			return Equals(lastPhoneCallInformation.callPhase, questPhoneCallPhase.StartCall) || Equals(lastPhoneCallInformation.callPhase, questPhoneCallPhase.IncomingCall) || Equals(lastPhoneCallInformation.callMode, questPhoneCallMode.Audio);
+		};
+		return false;
+	}
+
 	public final func ShouldShowSleepInVehicleInputHint() -> Bool {
+		//DFProfile();
 		// If Dark Future is not running or this feature is disabled, bail out early.
 		if !IsSystemEnabledAndRunning(this) { return false; }
 
@@ -591,31 +438,33 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
 		blockSleepInVehicleInputHint = 
 			/* Default Time Skip Conditions */
-			psmBlackboard.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Combat) == 1 || 						// Combat
+			this.player.IsInCombat() || 																		// Combat
 			StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") || 						// Time Skip disabled
 			timeSystem.IsPausedState() || 																		// Game paused
 			Equals(psmVehicle, gamePSMVehicle.Transition) ||													// Transitioning into / out of vehicle
 			(tier >= 3 && tier <= 5) || 																		// Scene tier
 			securityData.securityAreaType > ESecurityAreaType.SAFE || 											// Unsafe area
-			GameInstance.GetPhoneManager(gameInstance).IsPhoneCallActive() ||									// Phone call
+			this.IsAnyPhoneStateActive() ||																		// Phone call
 			psmBlackboard.GetBool(GetAllBlackboardDefs().PlayerStateMachine.IsInLoreAnimationScene) || 			// Lore animation (?)
 			this.player.GetPreventionSystem().IsChasingPlayer() || 												// Pursued by NCPD
 			HubMenuUtility.IsPlayerHardwareDisabled(this.player) ||												// Player Cyberware disabled
 
 			/* Vehicle Sleeping Specific Conditions */
-			this.IsPlayerSleepingInVehicle() ||																	// Already sleeping in vehicle
+			this.GameStateService.GetSleepingInVehicle() ||														// Already sleeping in vehicle
 			this.IsPlayerInRoad() ||																			// In the middle of a road or highway
 			isBike ||																							// Motorcycle
 			vehicle.m_damageLevel == 3 ||																		// Impending vehicle destruction
 			vehiclePS.GetIsSubmerged() ||																		// Vehicle in water
 			vehicleObj.IsFlippedOver() ||																		// Vehicle flipped over
 			vehicleObj.IsQuest() ||																				// Quest vehicle
-			GameInstance.GetRacingSystem(gameInstance).IsRaceInProgress();										// Race in progress
+			GameInstance.GetRacingSystem(gameInstance).IsRaceInProgress() ||									// Race in progress
+			vehicleObj.IsAutoDriveModeEnabled();																// AutoDrive
 
 		return !blockSleepInVehicleInputHint;
 	}
 
 	public final func CanPlayerSleepInVehicle(opt genericOnly: Bool) -> DFCanPlayerSleepInVehicleResult {
+		//DFProfile();
 		// Vehicle Sleeping specific variant of CanPlayerTimeSkip(), with stronger typing.
 		
 		// If Dark Future is not running or this feature is disabled, bail out early.
@@ -649,23 +498,24 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
 		blockSleepInVehicleGenericReason = 
 			/* Generic "Action Blocked" conditions */
-			psmBlackboard.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Combat) == 1 || 						// Combat
+			this.player.IsInCombat() ||													 						// Combat
 			StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") || 						// Time Skip disabled
 			timeSystem.IsPausedState() || 																		// Game paused
 			Equals(psmVehicle, gamePSMVehicle.Transition) ||													// Transitioning into / out of vehicle
 			(tier >= 3 && tier <= 5) || 																		// Scene tier
 			securityData.securityAreaType > ESecurityAreaType.SAFE || 											// Unsafe area
-			GameInstance.GetPhoneManager(gameInstance).IsPhoneCallActive() ||									// Phone call
+			this.IsAnyPhoneStateActive() ||																		// Phone call
 			psmBlackboard.GetBool(GetAllBlackboardDefs().PlayerStateMachine.IsInLoreAnimationScene) || 			// Lore animation (?)
 			this.player.GetPreventionSystem().IsChasingPlayer() || 												// Pursued by NCPD
 			HubMenuUtility.IsPlayerHardwareDisabled(this.player) ||												// Player Cyberware disabled
-			this.isSleepingInVehicle ||																			// Already sleeping in vehicle
+			this.GameStateService.GetSleepingInVehicle() ||														// Already sleeping in vehicle
 			isBike ||																							// Motorcycle
 			vehicle.m_damageLevel == 3 ||																		// Impending vehicle destruction
 			vehiclePS.GetIsSubmerged() ||																		// Vehicle in water
 			vehicleObj.IsFlippedOver() ||																		// Vehicle flipped over
 			vehicleObj.IsQuest() ||																				// Quest vehicle
-			GameInstance.GetRacingSystem(gameInstance).IsRaceInProgress();										// Race in progress
+			GameInstance.GetRacingSystem(gameInstance).IsRaceInProgress() ||									// Race in progress
+			vehicleObj.IsAutoDriveModeEnabled();																// AutoDrive active
 
 		blockSleepInVehicleMovingReason = (vehicleSpeed > 0.1 || vehicleSpeed < -0.1);							// Vehicle moving
 		blockSleepInVehicleInRoadReason = this.IsPlayerInRoad();												// In the middle of a road or highway
@@ -682,10 +532,11 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	}
 
 	public final func SleepInVehicle() -> Void {
+		//DFProfile();
 		let canSleep: DFCanPlayerSleepInVehicleResult = this.CanPlayerSleepInVehicle();
 
 		if Equals(canSleep, DFCanPlayerSleepInVehicleResult.Yes) {
-			this.isSleepingInVehicle = true;
+			this.GameStateService.SetSleepingInVehicle(true);
 
 			// Pre-calculate any random encounters.
 			this.RandomEncounterSystem.SetupRandomEncounterOnSleep();
@@ -696,87 +547,42 @@ public final class DFVehicleSleepSystem extends DFSystem {
 				this.SendRadioEvent(false, false, -1);
 			}
 
-			StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureGameplayRestriction.SleepInVehicle");
-			
+			let enginePowerChangeMade: Bool = false;
 
-			let vehicleObj: wref<VehicleObject>;
-			VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
-			let perspective: vehicleCameraPerspective = vehicleObj.GetCameraManager().GetActivePerspective();
+			// EVS Compatibility - Optionally change vehicle state.
+			if VehicleComponent.IsDriver(GetGameInstance(), this.player) || Equals(this.Settings.compatibilityEnhancedVehicleSystemPowerBehaviorAsPassenger, EnhancedVehicleSystemCompatPowerBehaviorPassenger.SameAsDriver) {
+				if Equals(this.Settings.compatibilityEnhancedVehicleSystemPowerBehaviorOnSleep, EnhancedVehicleSystemCompatPowerBehaviorDriver.TurnOff) {
+					enginePowerChangeMade = this.TryToToggleEngineAndPowerStateViaEVS(false);
+				} else if Equals(this.Settings.compatibilityEnhancedVehicleSystemPowerBehaviorOnSleep, EnhancedVehicleSystemCompatPowerBehaviorDriver.TurnOn) {
+					enginePowerChangeMade = this.TryToToggleEngineAndPowerStateViaEVS(true);
+				}
+			}
 
-			if this.Settings.forceFPPWhenSleepingInVehicle && NotEquals(perspective, vehicleCameraPerspective.FPP) {
-				// Switch to FPP and wait for camera to finish moving.
-				StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureGameplayRestriction.SleepInVehicleFPP");
-				this.RegisterSleepInVehicleCameraChangeDelay();
+			if enginePowerChangeMade {
+				this.RegisterSleepInVehicleEnginePowerChangeDelay();
 			} else {
-				// Continue.
-				this.SleepInVehicleStage2();
+				this.SleepInVehicleStartQuestPhase();
 			}
 		} else {
 			this.ShowActionBlockedNotification(canSleep);
 		}
 	}
 
-	public final func SleepInVehicleStage2() -> Void {
-		let enginePowerChangeMade: Bool = false;
+	public final func SleepInVehicleStartQuestPhase() -> Void {
+		//DFProfile();
+		// Quest Phase and Scene Graph
+		GameInstance.GetQuestsSystem(GetGameInstance()).SetFact(n"df_fact_action_sleep_in_vehicle", 1);
+	}
 
-		// EVS Compatibility - Optionally change vehicle state.
-		if VehicleComponent.IsDriver(GetGameInstance(), this.player) || Equals(this.Settings.compatibilityEnhancedVehicleSystemPowerBehaviorAsPassenger, EnhancedVehicleSystemCompatPowerBehaviorPassenger.SameAsDriver) {
-			if Equals(this.Settings.compatibilityEnhancedVehicleSystemPowerBehaviorOnSleep, EnhancedVehicleSystemCompatPowerBehaviorDriver.TurnOff) {
-				enginePowerChangeMade = this.TryToToggleEngineAndPowerStateViaEVS(false);
-			} else if Equals(this.Settings.compatibilityEnhancedVehicleSystemPowerBehaviorOnSleep, EnhancedVehicleSystemCompatPowerBehaviorDriver.TurnOn) {
-				enginePowerChangeMade = this.TryToToggleEngineAndPowerStateViaEVS(true);
-			}
-		}
-
-		if enginePowerChangeMade {
-			this.RegisterSleepInVehicleEnginePowerChangeDelay();
-		} else {
-			this.SleepInVehicleStage3();
+	public final func OnSleepInVehicleActionFactChanged(value: Int32) -> Void {
+		//DFProfile();
+		if value == 0 {
+			this.SleepInVehicleAfterQuestPhase();
 		}
 	}
 
-	public final func SleepInVehicleStage3() -> Void {
-		// SFX
-		let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
-		evt.soundName = n"q001_sc_01_v_wakes_up";
-		this.player.QueueEvent(evt);
-		
-		this.RegisterSleepInVehicleVFXDelay();
-	}
-
-	public final func SleepInVehicleStage4() -> Void {
-		// VFX
-		GameObjectEffectHelper.StartEffectEvent(this.player, n"eyes_closing_slow", false, null, false);
-
-		this.RegisterSleepInVehicleShowTimeSkip();
-	}
-
-	public final func OnSleepInVehicleShowTimeSkipCallback() -> Void {
-		// As a sanity check, make sure a combat encounter hasn't broken out right before sleeping.
-		// If so, bail out.
-		let canSleep: Bool = !this.player.IsInCombat();
-		if canSleep {
-			// Show the time skip wheel, and tell the system that you are sleeping in a vehicle.
-			let menuEvent: ref<inkMenuInstance_SpawnEvent> = new inkMenuInstance_SpawnEvent();
-			menuEvent.Init(n"OnOpenTimeSkip");
-			GameInstance.GetUISystem(GetGameInstance()).QueueEvent(menuEvent);
-		
-		} else {
-			this.ExitSleepFast();
-		}
-
-		// TimeSkip Cancel or Finish will register for Fade Up.
-	}
-
-	public final func OnSleepInVehicleFadeUpCallback() -> Void {
-		// Fade up from black
-		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"eyes_closing_slow");
-		GameObjectEffectHelper.StartEffectEvent(this.player, n"waking_up", false, null, true);
-
-		this.RegisterSleepInVehicleEnginePowerChangeWakeUpFPPDelay();
-	}
-
-	public final func OnSleepInVehicleEnginePowerChangeWakeUpFPPCallback(opt fast: Bool) -> Void {
+	public final func SleepInVehicleAfterQuestPhase() -> Void {
+		//DFProfile();
 		let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
 		let perspective: vehicleCameraPerspective = vehicleObj.GetCameraManager().GetActivePerspective();
@@ -791,32 +597,26 @@ public final class DFVehicleSleepSystem extends DFSystem {
 		}
 
 		// If in FPP, and EVS caused a vehicle state change, wait for that to occur before continuing.
-		if Equals(perspective, vehicleCameraPerspective.FPP) && enginePowerChangeMade && !fast {
+		if Equals(perspective, vehicleCameraPerspective.FPP) && enginePowerChangeMade {
 			this.RegisterSleepInVehicleFinish();
 		} else {
-			this.SleepInVehicleStage5();
+			this.SleepInVehicleFinish();
 		}
 	}
 
-	public final func SleepInVehicleStage5() -> Void {
+	public final func SleepInVehicleFinish() -> Void {
+		//DFProfile();
 		if this.shouldRestoreRadioAfterSleep {
 			this.shouldRestoreRadioAfterSleep = false;
 			this.SendRadioEvent(true, false, 0);
 		}
 		
-		StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureGameplayRestriction.SleepInVehicle");
-		StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureGameplayRestriction.SleepInVehicleFPP");
-		this.isSleepingInVehicle = false;
-	}
-
-	private final func ExitSleepFast() -> Void {
-		// For use when combat occurs.
-		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"eyes_closing_slow");
-		this.OnSleepInVehicleEnginePowerChangeWakeUpFPPCallback(true);
+		this.GameStateService.SetSleepingInVehicle(false);
 	}
 
 	public final func TryToShowTutorial() -> Void {
-        if RunGuard(this) { return; }
+		//DFProfile();
+        if DFRunGuard(this) { return; }
 
         if this.Settings.tutorialsEnabled && !this.GetHasShownTutorial() {
 			this.SetHasShownTutorial(true);
@@ -829,6 +629,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	}
 
 	private final func ShowActionBlockedNotification(reason: DFCanPlayerSleepInVehicleResult) -> Void {
+		//DFProfile();
 		let UISystem = GameInstance.GetUISystem(GetGameInstance());
 		let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
 		UISystem.QueueEvent(new UIInGameNotificationRemoveEvent());
@@ -838,13 +639,8 @@ public final class DFVehicleSleepSystem extends DFSystem {
 			notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
         	notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureSleepingInVehicleErrorMoving");
 		} else if Equals(reason, DFCanPlayerSleepInVehicleResult.No_InRoad) {
-			if Equals(this.Settings.sleepingInVehiclesRoadDetectionToleranceSetting, DFRoadDetectionToleranceSetting.Secluded) {
-				notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
-        		notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureSleepingInVehicleErrorInRoadFar");
-			} else {
-				notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
-        		notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureSleepingInVehicleErrorInRoad");
-			}
+			notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
+        	notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureSleepingInVehicleErrorInRoad");
 		}
 
 		UISystem.QueueEvent(notificationEvent);
@@ -853,64 +649,23 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	//
 	//	Registration
 	//
-	private final func RegisterSleepInVehicleCameraChangeDelay() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleCameraChangeDelay.Create(this), this.sleepInVehicleCameraChangeDelayID, this.sleepInVehicleCameraChangeDelayInterval);
-	}
-
 	private final func RegisterSleepInVehicleEnginePowerChangeDelay() -> Void {
+		//DFProfile();
 		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleEnginePowerChangeDelay.Create(this), this.sleepInVehicleEnginePowerChangeDelayID, this.sleepInVehicleEnginePowerChangeDelayInterval);
 	}
 
-	private final func RegisterSleepInVehicleVFXDelay() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleVFXDelay.Create(this), this.sleepInVehicleVFXDelayID, this.sleepInVehicleVFXDelayInterval);
-	}
-
-	private final func RegisterSleepInVehicleShowTimeSkip() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleShowTimeSkipDelay.Create(this), this.sleepInVehicleShowTimeSkipDelayID, this.sleepInVehicleShowTimeSkipDelayInterval);
-	}
-
-	private final func RegisterSleepInVehicleFadeUp() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleFadeUpDelay.Create(this), this.sleepInVehicleFadeUpDelayID, this.sleepInVehicleFadeUpDelayInterval);
-	}
-
-	private final func RegisterSleepInVehicleEnginePowerChangeWakeUpFPPDelay() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleEnginePowerChangeWakeUpDelay.Create(this), this.sleepInVehicleEnginePowerChangeWakeUpFPPDelayID, this.sleepInVehicleEnginePowerChangeWakeUpFPPDelayInterval);
-	}
-
 	private final func RegisterSleepInVehicleFinish() -> Void {
-		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleFinishDelay.Create(this), this.sleepInVehicleFinishDelayID, this.sleepInVehicleFinishDelayInterval);
+		//DFProfile();
+		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleFinishDelay.Create(this), this.sleepInVehicleFinishDelayID, this.sleepInVehicleEnginePowerChangeFinishDelayInterval);
 	}
 
-	public final func SetPreventionStrategyPreCheckRequestsOnMount() -> Void {
-		this.player.GetPreventionSystem().UpdateStrategyPreCheckRequests();
-	}
-
-	private final func IsPlayerSleepingInVehicle() -> Bool {
-		return this.isSleepingInVehicle;
-	}
-
-	private final func GetRoadDetectionToleranceFromSetting(setting: DFRoadDetectionToleranceSetting) -> Float {
-		switch setting {
-			case DFRoadDetectionToleranceSetting.Curb:
-				return this.roadDetectionTolerance_Curb;
-				break;
-			case DFRoadDetectionToleranceSetting.Roadside:
-				return this.roadDetectionTolerance_Roadside;
-				break;
-			case DFRoadDetectionToleranceSetting.Secluded:
-				return this.roadDetectionTolerance_Secluded;
-				break;
-		}
-	}
-
-	private final func IsPlayerInRoad() -> Bool {
-		let roadInfo: NearestRoadFromPlayerInfo;
-		this.PreventionSpawnSystem.GetNearestRoadFromPlayerInfo(roadInfo);
-
-		return roadInfo.pathLength < this.GetRoadDetectionToleranceFromSetting(this.Settings.sleepingInVehiclesRoadDetectionToleranceSetting);
+	private final func IsPlayerInRoad() -> Bool {		
+		//DFProfile();
+		return NotEquals(this.AutoDriveSystem.CheckCurrentLaneValidity(), gameAutodriveLaneValidityResult.NotOnRoad);
 	}
 
 	public final func SendRadioEvent(toggle: Bool, setStation: Bool, stationIndex: Int32) -> Void {
+		//DFProfile();
 		let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
 
@@ -926,11 +681,13 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
 	@if(!ModuleExists("Hgyi56.Enhanced_Vehicle_System"))
 	private final func TryToToggleEngineAndPowerStateViaEVS(toggle: Bool) -> Bool {
+		//DFProfile();
 		return false;
 	}
 
 	@if(ModuleExists("Hgyi56.Enhanced_Vehicle_System"))
 	private final func TryToToggleEngineAndPowerStateViaEVS(toggle: Bool) -> Bool {
+		//DFProfile();
 		let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
 		let vehicle: wref<VehicleComponent> = vehicleObj.GetVehicleComponent();
