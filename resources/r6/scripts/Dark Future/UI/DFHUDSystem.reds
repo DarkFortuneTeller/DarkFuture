@@ -365,11 +365,6 @@ public final class DFHUDSystem extends DFSystem {
 			this.UpdateAllBaseGameHUDWidgetPositions();
 		}
 
-		if ArrayContains(changedSettings, "hidePersistentStatusIcons") {
-            // "Bounce" all relevant status effects.
-            this.UpdateStatusIcons();
-        }
-
 		if ArrayContains(changedSettings, "nerveLossIsFatal") && IsDefined(this.nerveBar) {
 			if this.Settings.nerveLossIsFatal {
 				this.nerveBar.SetPulseContinuouslyAtLowThreshold(true, 0.1);
@@ -710,12 +705,6 @@ public final class DFHUDSystem extends DFSystem {
 		this.UpdateSongbirdHolocallWidgetPosition();
 		this.UpdateStatusEffectListWidgetPosition();
 		this.UpdateRaceUIPositionCounterWidgetPosition();
-	}
-
-	private final func UpdateStatusIcons() -> Void {
-		//DFProfile();
-		StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DummyBuffStatus");
-		StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DummyDebuffStatus");
 	}
 
 	public final func OnPhoneIconCheckCallback(widget: ref<inkCompoundWidget>) -> Void {

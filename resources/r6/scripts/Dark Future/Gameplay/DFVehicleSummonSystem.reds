@@ -183,9 +183,7 @@ public final func SummonActiveVehicle(force: Bool) -> Void {
     
         if vehicleSummonSystem.GetRemainingSummonCredits() > 0 && this.DFActiveVehicleJustSet {
             // We have summon credits, OR we do not, but the vehicle we selected was the Delamain cab, AND we used the menu to select it; summon a vehicle.
-            //if {
-                vehicleSummonSystem.UseSummonCredit();
-            //}
+            vehicleSummonSystem.UseSummonCredit();
             this.DFActiveVehicleJustSet = false;
             let dpadAction: ref<DPADActionPerformed>;
             dpadAction = new DPADActionPerformed();
@@ -198,7 +196,7 @@ public final func SummonActiveVehicle(force: Bool) -> Void {
         } else {
             // We don't have summon credits, or we did not use the menu; if we have an active vehicle, ping it.
             let lastSummonedVehicle: ref<VehicleComponent> = vehicleSummonSystem.GetLastSummonedVehicle();
-            if IsDefined(lastSummonedVehicle) && !lastSummonedVehicle.GetPS().GetIsDestroyed() {
+            if IsDefined(lastSummonedVehicle) && lastSummonedVehicle.GetEntity().IsAttached() && !lastSummonedVehicle.GetPS().GetIsDestroyed() {
                 // Simulate the "pinging" vehicle behavior of when tapping the summon button
                 // when near a vehicle, without actually summoning it. 
                 lastSummonedVehicle.CreateMappin();

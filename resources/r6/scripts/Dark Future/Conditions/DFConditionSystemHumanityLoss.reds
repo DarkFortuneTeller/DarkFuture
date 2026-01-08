@@ -1229,7 +1229,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public final func TryToRegisterForVehicleSpeedChange(veh: ref<VehicleObject>) -> Void {
         this.lastActivePlayerVehicle = veh;
 
-        if IsSystemEnabledAndRunning(this) {
+        if this.GameStateService.IsValidGameState(this) && IsSystemEnabledAndRunning(this) && !veh.IsQuest() {
             this.RegisterForVehicleSpeedChange();
         }
     }
@@ -1691,6 +1691,15 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         //DFProfile();
         if DFFactListenerCanRun(value, this.factListenerRegistry, this.onceOnlyDFFactListenersFired) {
             this.IncreaseHumanityLoss(DFHumanityLossCostType.OneTimeEventPivotal);
+
+            // Check if Jackie Death journal update is set.
+            let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
+            let jackieDeadState: gameJournalEntryState = journalManager.GetEntryState(journalManager.GetEntryByString("quests/main_quest/prologue/q005_heist/return/02_leave_delamain", "gameJournalQuestObjective"));
+            if NotEquals(jackieDeadState, gameJournalEntryState.Succeeded) {
+                // This is impossible in an organic playthrough, and is likely due from starting the game via New Game+
+                // Apply additional Humanity Loss for Jackie's death
+                this.IncreaseHumanityLoss(DFHumanityLossCostType.OneTimeEventPivotal);
+            }
         }
     }
 
