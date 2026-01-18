@@ -62,8 +62,6 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private let energizedEffectID: TweakDBID = t"DarkFutureStatusEffect.EnergizedEffect";
 
-	private let NerveSystem: ref<DFNerveSystem>;
-
     private let energyRecoverAmountSleeping: Float = 0.74;
 	public let energizedMaxStacksFromCaffeine: Uint32 = 3u;
 	private let energizedMaxStacksFromStimulants: Uint32 = 6u;
@@ -102,12 +100,6 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return "INVALID";
-	}
-
-	public func GetSystems() -> Void {
-		//DFProfile();
-		super.GetSystems();
-		this.NerveSystem = DFNerveSystem.Get();
 	}
 
 	public final func SetupData() -> Void {
@@ -276,6 +268,10 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	private final func GetBonusEffectTDBID() -> TweakDBID {
 		//DFProfile();
 		return t"HousingStatusEffect.Rested";
+	}
+
+	private final func GetNeedDeathSettingValue() -> Bool {
+		return this.Settings.energyLossIsFatal;
 	}
 
     //

@@ -10,12 +10,22 @@
 		<action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
 	</context>
 
+	<context name="InteractionActions" append="true" >
+        <action name="DFAnimatedConsumableManualChoiceAction" map="DFAnimatedConsumableManualChoiceMapping" />
+    </context>
+
 	<!-- Mappings -->
 	<mapping name="DFVehicleSleepMapping" type="Button" >
 		<button id="IK_X" overridableUI="DFVehicleSleepButtonMain" />
 		<button id="IK_Pad_DigitRight" overridableUI="DFVehicleSleepButtonAlt" />
 	</mapping>
 
+	<mapping name="DFAnimatedConsumableManualChoiceMapping" type="Button" >
+		<button id="IK_R" overridableUI="consumableAnimationLootActionKeyKBM" />
+		<button id="IK_Pad_B_CIRCLE" overridableUI="consumableAnimationLootActionKeyControllerV2" />
+	</mapping>
+
 	<!-- Hold Actions -->
     <hold action="DFVehicleSleepAction" timeout="1.0" />
+	<hold action="DFAnimatedConsumableManualChoiceAction" timeout="0.3" />
 </bindings>

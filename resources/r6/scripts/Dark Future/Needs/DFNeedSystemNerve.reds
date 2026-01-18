@@ -120,40 +120,6 @@ protected cb func OnDeath(evt: ref<gameDeathEvent>) -> Bool {
 	return val;
 }
 
-public class PlayerDeathCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		//DFProfile();
-		return new PlayerDeathCallback();
-	}
-
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		DFNerveSystem.Get().playerDeathDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		//DFProfile();
-		DFNerveSystem.Get().OnPlayerDeathCallback();
-	}
-}
-
-public class PostPlayerDeathCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		//DFProfile();
-		return new PostPlayerDeathCallback();
-	}
-
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		DFNerveSystem.Get().postPlayerDeathDelayID = GetInvalidDelayID();
-	}
-
-	public func Callback() -> Void {
-		//DFProfile();
-		DFNerveSystem.Get().OnPostPlayerDeathCallback();
-	}
-}
-
 public class NerveRegenCallback extends DFDelayCallback {
 	public static func Create() -> ref<DFDelayCallback> {
 		//DFProfile();
@@ -230,7 +196,6 @@ class DFNerveSystemEventListener extends DFNeedSystemEventListener {
 }
 
 public final class DFNerveSystem extends DFNeedSystemBase {
-	private let AudioSystem: ref<AudioSystem>;
 	private let StatPoolsSystem: ref<StatPoolsSystem>;
 	private let HUDSystem: ref<DFHUDSystem>;
 	private let HydrationSystem: ref<DFHydrationSystem>;
@@ -247,8 +212,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private const let nerveRegenAmountSlow: Float = 0.05;
 	private const let criticalNerveRegenTarget: Float = 10.0;
 	private const let minDelayedNerveResult: Float = 10.0;
-	private const let criticalNerveFXThreshold: Float = 10.0;
-	private const let extremelyCriticalNerveFXThreshold: Float = 5.0;
 	private const let nauseaNeedStageThreshold: Int32 = 4;
 	public const let insomniaNeedStageThreshold: Int32 = 3;
 	public const let nerveRecoverAmountSleeping: Float = 0.083333334;
@@ -259,14 +222,11 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private const let nervePercentToDeferPerHumanityLossLevel: Float = 0.25;
 
 	private let currentDangerDelayedNerveLoss: Float = 0.0;
-	private let playingCriticalNerveFX: Bool = false;
 	public let currentNerveBreathingFXStage: Int32 = 0;
 
 	public let dangerUpdateDelayID: DelayID;
 	public let nerveBreathingDangerTransitionDelayID: DelayID;
 	public let nerveRegenDelayID: DelayID;
-	public let playerDeathDelayID: DelayID;
-	public let postPlayerDeathDelayID: DelayID;
 	public let removeNarcoticFXDelayID: DelayID;
 	public let softCapMetFeedbackDelayID: DelayID;
 
@@ -276,17 +236,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let withdrawalUpdateDelayInterval: Float = 5.0;
 	private let nerveBreathingDangerTransitionDelayInterval: Float = 10.0;
 	private let nerveRegenDelayInterval: Float = 0.25;
-	private let playerDeathDelayInterval: Float = 2.0;
-	private let postPlayerDeathDelayInterval: Float = 8.0;
 	private let removeNarcoticFXDelayInterval: Float = 60.0;
 	private let softCapMetFeedbackDelayInterval: Float = 1.0;
 
-	private let inDeathState: Bool = false;
-
 	private let lastDangerState: DFPlayerDangerState;
-
-	private let lastNerveForCriticalFXCheck: Float = 100.0;
-	private let cyberwareSecondHeartNerveRestoreAmount: Float = 10.0;
 
 	// Regen
 	private let currentNerveRegenTarget: Float = 10.0; // Default: criticalNerveRegenTarget
@@ -327,7 +280,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		super.GetSystems();
 
 		let gameInstance = GetGameInstance();
-		this.AudioSystem = GameInstance.GetAudioSystem(gameInstance);
 		this.StatPoolsSystem = GameInstance.GetStatPoolsSystem(gameInstance);
 		this.HUDSystem = DFHUDSystem.GetInstance(gameInstance);
 		this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
@@ -353,25 +305,21 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
 		//DFProfile();
 		super.InitSpecific(attachedPlayer);
-		this.CheckForCriticalNerve();
 		this.ForceNeedMaxValueUpdate();
 	}
 
 	public func DoPostSuspendActions() -> Void {
 		//DFProfile();
 		super.DoPostSuspendActions();
-		this.StopCriticalNerveEffects(true);
 		this.StopNerveBreathingEffects();
 		this.StopNarcoticFX();
 		this.lastDangerState = DFPlayerDangerState(false, false);
-		this.lastNerveForCriticalFXCheck = 100.0;
 		this.currentNerveRegenTarget = this.criticalNerveRegenTarget;
 	}
 
 	public func DoPostResumeActions() -> Void {
 		//DFProfile();
 		super.DoPostResumeActions();
-		this.CheckForCriticalNerve();
 		this.ForceNeedMaxValueUpdate();
 	}
 
@@ -417,7 +365,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		this.UnregisterNerveBreathingDangerTransitionCallback();
 		this.UnregisterRemoveNarcoticFXCallbacks();
 		this.UnregisterNerveRegenCallback();
-		this.UnregisterPlayerDeathCallback();
 	}
 
     //
@@ -734,6 +681,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		return t"HousingStatusEffect.Refreshed";
 	}
 
+	private final func GetNeedDeathSettingValue() -> Bool {
+		return this.Settings.nerveLossIsFatal;
+	}
+
 	//
 	//	Overrides
 	//
@@ -741,21 +692,18 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		//DFProfile();
 		super.ReapplyFX();
 		this.TryToTransitionNerveBreathingEffects();
-		this.CheckForCriticalNerve();
 	}
 
 	public final func SuspendFX() -> Void {
 		//DFProfile();
         super.SuspendFX();
         this.StopNerveBreathingEffects();
-		this.StopCriticalNerveEffects(true);
     }
 
 	public final func OnSceneTierChanged(value: GameplayTier) -> Void {
 		//DFProfile();
 		if DFRunGuard(this, true) { return; }
 		super.OnSceneTierChanged(value);
-
 		
 		if Equals(value, GameplayTier.Tier1_FullGameplay) || Equals(value, GameplayTier.Tier2_StagedGameplay) {
 			// When transitioning back to a playable Gameplay Tier, remove any interaction-based
@@ -817,7 +765,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		let stage: Int32 = this.GetNeedStage();
 		if NotEquals(stage, this.lastNeedStage) {
 			DFLog(this, "ChangeNeedValue: Last Need stage (" + ToString(this.lastNeedStage) + ") != current stage (" + ToString(stage) + "). Refreshing status effects and FX.");
-			this.RefreshNeedStatusEffects();
+			this.RegisterStatusEffectRefreshDebounceCallback();
 
 			if !changeValueProps.skipFX {
 				this.UpdateNeedFX(changeValueProps.suppressRecoveryNotification);
@@ -828,7 +776,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			this.QueueSevereNeedMessage();
 		}
 
-		this.CheckForCriticalNerve();
+		this.CheckForCriticalNeed();
 		this.CheckIfBonusEffectsValid();
 		this.TryToShowTutorial();
 		
@@ -1135,8 +1083,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			}
 		} else { // needStage >= 3
 			DFLog(this, "TryToTransitionNerveBreathingEffects this.player.m_isAiming = " + ToString(this.player.m_isAiming));
-			if inDanger || this.player.m_isAiming || (needValue <= this.criticalNerveFXThreshold && needValue > 0.0) {
-				if this.lastDangerState.InCombat || needValue <= this.extremelyCriticalNerveFXThreshold {
+			if inDanger || this.player.m_isAiming || (needValue <= this.criticalNeedThreshold && needValue > 0.0) {
+				if this.lastDangerState.InCombat || needValue <= this.extremelyCriticalNeedThreshold {
 					if this.currentNerveBreathingFXStage != 2 {
 						DFLog(this, "TryToTransitionNerveBreathingEffects: Starting high breathing FX (Nerve Stage >= 3, inDanger = true)");
 						this.TransitionToNerveHighBreathingEffect();
@@ -1160,6 +1108,73 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 				}
 			}
 		}
+	}
+
+	public final func CheckForCriticalNeed() -> Void {
+		//DFProfile();
+		if this.inDeathState { return; }
+
+		let currentNerve: Float = this.GetNeedValue();
+		
+		if this.GameStateService.IsValidGameState(this) {
+			if currentNerve <= 0.0 && this.GetNeedDeathSettingValue() {
+				if this.CyberwareService.GetHasSecondHeart() && !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.SecondHeartCooldown") {
+					// Is the player's max Nerve greater than 0, does the player have a Second Heart, and is it not on a cooldown?
+					let changeNeedValueProps: DFChangeNeedValueProps;
+
+					let uiFlags: DFNeedChangeUIFlags;
+					uiFlags.forceMomentaryUIDisplay = true;
+
+					changeNeedValueProps.uiFlags = uiFlags;
+
+					this.ChangeNeedValue(this.CyberwareService.GetSecondHeartNerveRestoreAmount(), changeNeedValueProps);
+					StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SecondHeartNerveRestore");
+
+				} else {
+					// Kill the player.
+					this.QueuePlayerDeath();
+				}
+			}
+		}
+
+		this.PlayerStateService.UpdateCriticalNeedEffects();
+
+		if this.GameStateService.IsValidGameState(this, true) {
+			if currentNerve > 0.0 {
+				if currentNerve <= this.criticalNeedThreshold {
+					this.TryToTransitionNerveBreathingEffects();
+				} else {
+					this.TryToTransitionNerveBreathingEffects();
+				}
+			}
+
+			// TODOFUTURE - Blink the bar, make more visually apparent
+			if NotEquals(this.updateMode, DFNerveSystemUpdateMode.Regen) {
+				if currentNerve <= this.extremelyCriticalNeedThreshold && this.lastValueForCriticalNeedCheck > this.extremelyCriticalNeedThreshold {
+					this.QueueExtremelyCriticalNeedSFX();
+					this.TryToTransitionNerveBreathingEffects();
+					this.QueueExtremelyCriticalNeedWarningNotification();
+				} else if currentNerve <= this.criticalNeedThreshold && this.lastValueForCriticalNeedCheck > this.criticalNeedThreshold {
+					this.QueueCriticalNeedSFX();
+					this.TryToTransitionNerveBreathingEffects();
+					this.QueueCriticalNeedWarningNotification();
+				}
+			}
+			
+			this.lastValueForCriticalNeedCheck = currentNerve;
+		}
+	}
+
+	public final func QueuePlayerDeath() -> Void {
+		// :(
+
+		this.TryToTransitionNerveBreathingEffects();
+		super.QueuePlayerDeath();
+	}
+
+	public final func OnPostPlayerDeathCallback() -> Void {
+		this.TryToTransitionNerveBreathingEffects();
+		super.OnPostPlayerDeathCallback();
 	}
 
 	private final func StopNerveBreathingEffects() -> Void {
@@ -1224,195 +1239,11 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		}
 	}
 
-	private final func CheckForCriticalNerve() -> Void {
-		//DFProfile();
-		if this.inDeathState { return; }
-
-		let currentNerve: Float = this.GetNeedValue();
-		
-		if this.GameStateService.IsValidGameState(this) {
-			if currentNerve <= 0.0 && this.Settings.nerveLossIsFatal {
-				if this.CyberwareService.GetHasSecondHeart() && !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.SecondHeartCooldown") {
-					// Is the player's max Nerve greater than 0, does the player have a Second Heart, and is it not on a cooldown?
-					let changeNeedValueProps: DFChangeNeedValueProps;
-
-					let uiFlags: DFNeedChangeUIFlags;
-					uiFlags.forceMomentaryUIDisplay = true;
-
-					changeNeedValueProps.uiFlags = uiFlags;
-
-					this.ChangeNeedValue(this.cyberwareSecondHeartNerveRestoreAmount, changeNeedValueProps);
-
-					StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SecondHeartNerveRestore");
-
-				} else {
-					// Kill the player.
-					this.QueuePlayerDeath();
-				}
-			}
-		}
-
-		if this.GameStateService.IsValidGameState(this, true) {
-			if currentNerve > 0.0 {
-				if currentNerve <= this.criticalNerveFXThreshold {
-					this.PlayCriticalNerveEffects();
-					this.TryToTransitionNerveBreathingEffects();
-				} else {
-					if this.playingCriticalNerveFX {
-						this.StopCriticalNerveEffects();
-						this.TryToTransitionNerveBreathingEffects();
-					}
-				}
-			}
-
-			// TODOFUTURE - Blink the bar, make more visually apparent
-			if NotEquals(this.updateMode, DFNerveSystemUpdateMode.Regen) {
-				if currentNerve <= this.extremelyCriticalNerveFXThreshold && this.lastNerveForCriticalFXCheck > this.extremelyCriticalNerveFXThreshold {
-					this.QueueExtremelyCriticalNerveSFX();
-					this.TryToTransitionNerveBreathingEffects();
-					this.QueueExtremelyCriticalNerveWarningNotification();
-				} else if currentNerve <= this.criticalNerveFXThreshold && this.lastNerveForCriticalFXCheck > this.criticalNerveFXThreshold {
-					this.QueueCriticalNerveSFX();
-					this.TryToTransitionNerveBreathingEffects();
-					this.QueueCriticalNerveWarningNotification();
-				}
-			}
-			
-			this.lastNerveForCriticalFXCheck = currentNerve;
-		}
-	}
-
-	private final func QueueCriticalNerveWarningNotification() -> Void {
-		//DFProfile();
-		if this.GameStateService.IsValidGameState(this, true) {
-			let message: DFMessage;
-			message.key = n"DarkFutureCriticalNerveHighNotification";
-			message.type = SimpleMessageType.Negative;
-			message.context = DFMessageContext.Need;
-
-			let notification: DFNotification;
-			notification.message = message;
-			notification.allowPlaybackInCombat = true;
-
-			this.NotificationService.QueueNotification(notification);
-		}
-	}
-
-	private final func QueueExtremelyCriticalNerveWarningNotification() -> Void {
-		//DFProfile();
-		if this.GameStateService.IsValidGameState(this, true) {
-			let message: DFMessage;
-			message.key = n"DarkFutureCriticalNerveLowNotification";
-			message.type = SimpleMessageType.Negative;
-			message.context = DFMessageContext.Need;
-
-			let notification: DFNotification;
-			notification.message = message;
-			notification.allowPlaybackInCombat = true;
-
-			this.NotificationService.QueueNotification(notification);
-		}
-	}
-
-	private final func QueuePlayerDeath() -> Void {
-		//DFProfile();
-		// :(
-		
-		this.inDeathState = true;
-		this.PlayCriticalNerveEffects();
-		this.TryToTransitionNerveBreathingEffects();
-		this.PlayerStateService.StopOutOfBreathSFX();
-
-		this.QueueCriticalNerveSFXDeath();
-		this.RegisterPlayerDeathCallback();
-	}
-
-	private final func PlayCriticalNerveEffects() -> Void {
-		//DFProfile();
-		if !this.playingCriticalNerveFX {
-			this.playingCriticalNerveFX = true;
-			this.AudioSystem.NotifyGameTone(n"InLowHealth");
-			this.PlayCriticalNerveVFX();
-		}
-	}
-
-	private final func StopCriticalNerveEffects(opt force: Bool) -> Void {
-		//DFProfile();
-		if this.playingCriticalNerveFX || force {
-			this.playingCriticalNerveFX = false;
-			this.AudioSystem.NotifyGameTone(n"InNormalHealth");
-			this.StopCriticalNerveVFX();
-		}
-	}
-
-	private final func QueueCriticalNerveSFX() -> Void {
-		//DFProfile();
-		if this.Settings.needNegativeSFXEnabled {
-			let notification: DFNotification;
-			notification.sfx = DFAudioCue(n"ono_v_knock_down", 0);
-			this.NotificationService.QueueNotification(notification);
-		}
-	}
-
-	private final func QueueExtremelyCriticalNerveSFX() -> Void {
-		//DFProfile();
-		if this.Settings.needNegativeSFXEnabled {
-			let notification: DFNotification;
-			notification.sfx = DFAudioCue(n"ono_v_death_short", 0);
-			this.NotificationService.QueueNotification(notification);
-		}
-	}
-
-	private final func QueueCriticalNerveSFXDeath() -> Void {
-		//DFProfile();
-		let notification: DFNotification;
-		notification.sfx = DFAudioCue(n"ono_v_death_long", -10);
-		this.NotificationService.QueueNotification(notification);
-	}
-
-	private final func PlayCriticalNerveVFX() -> Void {
-		//DFProfile();
-		if this.Settings.criticalNerveVFXEnabled {
-			GameObjectEffectHelper.StartEffectEvent(this.player, n"cool_perk_focused_state_fullscreen", false, null, true);
-		}
-	}
-
-	private final func StopCriticalNerveVFX() -> Void {
-		//DFProfile();
-		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"cool_perk_focused_state_fullscreen");
-	}
-
 	public final func OnUpperBodyStateChange() -> Void {
 		//DFProfile();
 		if this.GameStateService.IsValidGameState(this, true) {
 			this.TryToTransitionNerveBreathingEffects();
 			this.UpdateWeaponShake();
-		}
-	}
-
-	public final func OnPlayerDeathCallback() -> Void {
-		//DFProfile();
-		// This kills the player.
-		StatusEffectHelper.ApplyStatusEffect(this.player, t"BaseStatusEffect.HeartAttack");
-
-		// Register for post-death recovery. (Santa Muerte Compatibility)
-		this.RegisterPostPlayerDeathCallback();
-	}
-
-	public final func OnPostPlayerDeathCallback() -> Void {
-		//DFProfile();
-		StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.HeartAttack");
-		this.inDeathState = false;
-		this.TryToTransitionNerveBreathingEffects();
-		
-		// Restore a modest amount of Nerve.
-		let changeNeedValueProps: DFChangeNeedValueProps;
-		let uiFlags: DFNeedChangeUIFlags;
-		uiFlags.forceMomentaryUIDisplay = true;
-		changeNeedValueProps.uiFlags = uiFlags;
-
-		if this.GetNeedValue() < this.cyberwareSecondHeartNerveRestoreAmount {
-			this.ChangeNeedValue(this.cyberwareSecondHeartNerveRestoreAmount - this.GetNeedValue(), changeNeedValueProps);
 		}
 	}
 
@@ -1517,16 +1348,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		//DFProfile();
 		RegisterDFDelayCallback(this.DelaySystem, NerveRegenCallback.Create(), this.nerveRegenDelayID, this.nerveRegenDelayInterval);
 	}
-
-	private final func RegisterPlayerDeathCallback() -> Void {
-		//DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, PlayerDeathCallback.Create(), this.playerDeathDelayID, this.playerDeathDelayInterval);
-	}
-
-	private final func RegisterPostPlayerDeathCallback() -> Void {
-		//DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, PostPlayerDeathCallback.Create(), this.postPlayerDeathDelayID, this.postPlayerDeathDelayInterval);
-	}
 	
     private final func RegisterRemoveNarcoticFXInitialCallback() -> Void {
 		//DFProfile();
@@ -1549,11 +1370,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private final func UnregisterNerveRegenCallback() -> Void {
 		//DFProfile();
 		UnregisterDFDelayCallback(this.DelaySystem, this.nerveRegenDelayID);
-	}
-
-	private final func UnregisterPlayerDeathCallback() -> Void {
-		//DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.playerDeathDelayID);
 	}
 
 	private final func UnregisterRemoveNarcoticFXCallbacks() -> Void {

@@ -38,7 +38,7 @@ public final class DFCyberwareService extends DFSystem {
     private let cyberwareNicotineEffectDurationOverride: Float = 0.0;
 	private let cyberwareNerveCostWhenHitBonusMult: Float = 1.0;
 	private let cyberwareNarcoticsEffectDurationOverride: Float = 300.0;
-	private let cyberwareSecondHeartNerveRestoreAmount: Float = 30.0;
+	private let cyberwareSecondHeartNerveRestoreAmount: Float = 10.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFCyberwareService> {
 		//DFProfile();

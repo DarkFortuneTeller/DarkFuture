@@ -358,10 +358,7 @@ private final func UpdateBuffDebuffList() -> Void {
         buffTimeRemaining = buffList[i].timeRemaining;
         buffTimeTotal = buffList[i].timeTotal;
 
-		// Edit Start
-		// Allow some effects to not be shown on the buff bar.
-        if !IsDefined(data) || !IsDefined(data.UiData()) || Equals(data.UiData().IconPath(), "") || data.GameplayTagsContains(n"DarkFutureInvisibleOnBuffBar") {
-		// Edit End
+        if !IsDefined(data) || !IsDefined(data.UiData()) || Equals(data.UiData().IconPath(), "") {
           currBuffWidget.SetVisible(false);
           currBuffLoc.SetStatusEffectRecord(null);
         } else {
@@ -375,13 +372,7 @@ private final func UpdateBuffDebuffList() -> Void {
           };
           currBuffLoc.SetData(StringToName(data.UiData().IconPath()), buffTimeRemaining, buffTimeTotal, Cast<Int32>(buffList[i].stackCount));
           currBuffWidget.SetVisible(true);
-
-		  // Edit Start
-		  // Only increment the incoming buffs count if the effect doesn't have a certain tag.
-		  if !data.GameplayTagsContains(n"DarkFutureAllowBuffBarHide") {
-			visibleIncomingBuffsCount += 1;
-		  }
-		  // Edit End
+		  visibleIncomingBuffsCount += 1;
         };
       };
       i = i + 1;

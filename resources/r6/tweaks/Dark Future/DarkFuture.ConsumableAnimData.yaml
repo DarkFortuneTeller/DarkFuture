@@ -1152,6 +1152,7 @@ DarkFutureProps.jellytricity:
 #
 Items.LowQualityDrink1: &DarkFutureAnimCoffeeTeaToGo
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimCoffeeTeaToGo
 Items.LowQualityDrink11: *DarkFutureAnimCoffeeTeaToGo
 Items.LowQualityDrink12: *DarkFutureAnimCoffeeTeaToGo
@@ -1167,6 +1168,7 @@ Items.LowQualityDrink2: *DarkFutureAnimCoffeeTeaToGo
 #
 Items.MediumQualityDrink11:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimCoffeeTeaOpenCup
 
 #
@@ -1176,23 +1178,27 @@ Items.MediumQualityDrink11:
 # NiCola
 Items.LowQualityDrink10: &DarkFutureAnimDrinkNicolaA
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkNicolaA
 Items.MediumQualityDrink1: *DarkFutureAnimDrinkNicolaA
 Items.MediumQualityDrink2: *DarkFutureAnimDrinkNicolaA
 
 Items.LowQualityDrink9:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkNicolaB
 
 # Cirrus Cola, also VITA-MINE
 Items.LowQualityDrink7: &DarkFutureAnimDrinkCirrusColaA
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkCirrusColaA
 Items.GoodQualityDrink3: *DarkFutureAnimDrinkCirrusColaA
 
 # Also Naranjita, Real Water
 Items.LowQualityDrink6: &DarkFutureAnimDrinkCirrusColaB
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkCirrusColaB
 Items.LowQualityDrink8: *DarkFutureAnimDrinkCirrusColaB
 Items.MediumQualityDrink5: *DarkFutureAnimDrinkCirrusColaB
@@ -1203,6 +1209,7 @@ Items.MediumQualityDrink4: *DarkFutureAnimDrinkCirrusColaB
 # Tiancha
 Items.MediumQualityDrink12: &DarkFutureAnimDrinkTiancha
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkTiancha
 Items.MediumQualityDrink13: *DarkFutureAnimDrinkTiancha
 Items.MediumQualityDrink8: *DarkFutureAnimDrinkTiancha
@@ -1211,12 +1218,14 @@ Items.MediumQualityDrink9: *DarkFutureAnimDrinkTiancha
 # Spunky Monkey
 Items.LowQualityDrink4: &DarkFutureAnimDrinkSpunkyMonkey
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkSpunkyMonkey
 Items.LowQualityDrink5: *DarkFutureAnimDrinkSpunkyMonkey
 
 # Chromanticore / Canned Energy Drinks
 Items.MediumQualityDrink7: &DarkFutureAnimDrinkChromanticore
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkChromanticore
 Items.GoodQualityDrink2: *DarkFutureAnimDrinkChromanticore
 Items.GoodQualityDrink4: *DarkFutureAnimDrinkChromanticore
@@ -1224,23 +1233,28 @@ Items.GoodQualityDrink4: *DarkFutureAnimDrinkChromanticore
 # Bottled Water
 Items.NomadsDrink1: &DarkFutureAnimDrinkWaterBottle
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkWaterBottle
 Items.GoodQualityDrink10: *DarkFutureAnimDrinkWaterBottle
 
 # Daring Dairy
 Items.LowQualityDrink3:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkDaringDairy
 
 # Vatnajokull
 Items.GoodQualityDrink8: &DarkFutureAnimDrinkVatnajokull
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkVatnajokull
 Items.GoodQualityDrink9: *DarkFutureAnimDrinkVatnajokull
 
 # Chromanticore (Chug)
 Items.NetrunnerFood1: &DarkFutureAnimDrinkChromanticoreChug
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimDrinkChromanticoreChug
 Items.MediumQualityDrink10: *DarkFutureAnimDrinkChromanticoreChug
 Items.Blackmarket_HealthBooster: *DarkFutureAnimDrinkChromanticoreChug
@@ -1248,6 +1262,8 @@ Items.Blackmarket_HealthBooster: *DarkFutureAnimDrinkChromanticoreChug
 # Sain Ruisseau
 Items.GoodQualityDrink1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimDrinkSainRuisseau
 
 #
@@ -1258,21 +1274,25 @@ Items.GoodQualityDrink1:
 # Burrito XXL
 Items.MediumQualityFood4:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodBurritoA
 
 # Burrito XXL Rosado
 Items.MediumQualityFood12:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodBurritoB
 
 # Burrito XXL Turquesa
 Items.MediumQualityFood13:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodBurritoC
 
 # Holobites
 Items.LowQualityFood12: &DarkFutureAnimFoodHolobites
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodHolobites
 Items.LowQualityFood13: *DarkFutureAnimFoodHolobites
 Items.LowQualityFood14: *DarkFutureAnimFoodHolobites
@@ -1280,6 +1300,7 @@ Items.LowQualityFood14: *DarkFutureAnimFoodHolobites
 # Moonchies
 Items.LowQualityFood5: &DarkFutureAnimFoodMoonchies
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodMoonchies
 Items.LowQualityFood17: *DarkFutureAnimFoodMoonchies
 Items.LowQualityFood18: *DarkFutureAnimFoodMoonchies
@@ -1288,6 +1309,7 @@ Items.LowQualityFood19: *DarkFutureAnimFoodMoonchies
 # Leelou Beans
 Items.LowQualityFood20: &DarkFutureAnimFoodLeelouBeans
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodLeelouBeans
 Items.LowQualityFood21: *DarkFutureAnimFoodLeelouBeans
 Items.LowQualityFood22: *DarkFutureAnimFoodLeelouBeans
@@ -1296,17 +1318,20 @@ Items.LowQualityFood23: *DarkFutureAnimFoodLeelouBeans
 # Leelou Beans (Inverted)
 Items.GoodQualityDrink11: &DarkFutureAnimDrinkLeelouBeansInverted
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrinkLeelouBeansInverted
 Items.NomadsDrink2: *DarkFutureAnimDrinkLeelouBeansInverted
 
 # Pop Turd
 Items.LowQualityFood8:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodPopTurd
 
 # ShwabShwab
 Items.MediumQualityFood17: &DarkFutureAnimFoodShwabShwab
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodShwabShwab
 Items.MediumQualityFood18: *DarkFutureAnimFoodShwabShwab
 Items.MediumQualityFood19: *DarkFutureAnimFoodShwabShwab
@@ -1314,16 +1339,17 @@ Items.MediumQualityFood19: *DarkFutureAnimFoodShwabShwab
 # Thin Packaged Generic
 Items.LowQualityFood15: &DarkFutureAnimFoodThinPackagedGeneric
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodThinPackagedGeneric
 Items.LowQualityFood16: *DarkFutureAnimFoodThinPackagedGeneric
 Items.LowQualityFood7: *DarkFutureAnimFoodThinPackagedGeneric
-Items.LowQualityFood9: *DarkFutureAnimFoodThinPackagedGeneric
 Items.MediumQualityFood5: *DarkFutureAnimFoodThinPackagedGeneric
 Items.MediumQualityFood6: *DarkFutureAnimFoodThinPackagedGeneric
 
 # Thin Packaged Generic Large
 Items.MediumQualityFood3: &DarkFutureAnimFoodThinPackagedGenericLarge
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodThinPackagedGenericLarge
 Items.MediumQualityFood7: *DarkFutureAnimFoodThinPackagedGenericLarge
 Items.MediumQualityFood9: *DarkFutureAnimFoodThinPackagedGenericLarge
@@ -1334,32 +1360,38 @@ Items.GoodQualityFood8: *DarkFutureAnimFoodThinPackagedGenericLarge
 # Cat Food
 Items.LowQualityFood11:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodCatFood
 
 # Taco
 Items.MediumQualityFood16:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodTaco
 
 # Wontons
 Items.LowQualityFood10:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodWontons
 
 # SynthSnack
 Items.MediumQualityFood1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodSynthSnack
 
 # Soy Paste, Soop
 Items.NomadsFood1: &DarkFutureAnimFoodSynthSnackNoLabel
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodSynthSnackNoLabel
 Items.MediumQualityDrink14: *DarkFutureAnimFoodSynthSnackNoLabel
 
 # Candy Bar
 Items.LowQualityFood24: &DarkFutureAnimFoodCandyBar
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodCandyBar
 Items.LowQualityFood25: *DarkFutureAnimFoodCandyBar
 Items.LowQualityFood26: *DarkFutureAnimFoodCandyBar
@@ -1368,10 +1400,12 @@ Items.LowQualityFood28: *DarkFutureAnimFoodCandyBar
 Items.GoodQualityFood3: *DarkFutureAnimFoodCandyBar
 Items.GoodQualityFood4: *DarkFutureAnimFoodCandyBar
 Items.MediumQualityFood8: *DarkFutureAnimFoodCandyBar
+Items.LowQualityFood9: *DarkFutureAnimFoodCandyBar
 
 # Pizza
 Items.GoodQualityFood10: &DarkFutureAnimFoodPizza
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodPizza
 Items.GoodQualityFood11: *DarkFutureAnimFoodPizza
 Items.GoodQualityFood12: *DarkFutureAnimFoodPizza
@@ -1379,6 +1413,7 @@ Items.GoodQualityFood12: *DarkFutureAnimFoodPizza
 # Hot Dog
 Items.LowQualityFood3: &DarkFutureAnimFoodHotDog
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodHotDog
 Items.HawtDawgClassic: *DarkFutureAnimFoodHotDog
 Items.HawtDawgCheese: *DarkFutureAnimFoodHotDog
@@ -1388,17 +1423,20 @@ Items.HawtDawgKabanos: *DarkFutureAnimFoodHotDog
 # Soup (Light)
 Items.GoodQualityFood2: &DarkFutureAnimFoodSoupLight
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodSoupLight
 Items.GoodQualityFood9: *DarkFutureAnimFoodSoupLight
 
 # Soup (Dark)
 Items.MediumQualityFood10:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodSoupDark
 
 # Large Generic Packaged Food (Silver)
 Items.CombatFood1: &DarkFutureAnimFoodLargePackagedGenericSilver
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodLargePackagedGenericSilver
 Items.HealthFood3: *DarkFutureAnimFoodLargePackagedGenericSilver
 Items.NetrunnerFood2: *DarkFutureAnimFoodLargePackagedGenericSilver
@@ -1407,6 +1445,7 @@ Items.Blackmarket_CarryCapacityBooster: *DarkFutureAnimFoodLargePackagedGenericS
 # Large Generic Packaged Food (Gold)
 Items.HealthFood1: &DarkFutureAnimFoodLargePackagedGenericGold
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodLargePackagedGenericGold
 Items.HealthFood2: *DarkFutureAnimFoodLargePackagedGenericGold
 Items.CombatFood3: *DarkFutureAnimFoodLargePackagedGenericGold
@@ -1415,70 +1454,87 @@ Items.StealthFood1: *DarkFutureAnimFoodLargePackagedGenericGold
 # Fruit
 Items.GoodQualityFood1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodFruit
 
 # EEZYBEEF
 Items.LowQualityFood1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodBeefCan
 
 # Nigiri
 Items.GoodQualityFood6:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodNigiri
 
 # Norimaki
 Items.GoodQualityFood5:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodNorimaki
 
 # Meat Log
 Items.CombatFood2: &DarkFutureAnimFoodMeatLog
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodMeatLog
 Items.GoodQualityFood13: *DarkFutureAnimFoodMeatLog
 
 # Ramen
 Items.MediumQualityFood2:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodRamen
 
 # Dried Meat
 Items.NomadsFood2:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodDriedMeat
 
 # Unique Items
 Items.JudyFood1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodPizzaUnique
 
 Items.JudyDrink1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimDrinkChromanticoreChugUnique
 
 Items.sq026_judy_sandwich:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodSandwichUnique
 
 Items.sq026_judy_coffee:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimCoffeeTeaToGoUnique
 
 Items.PanamFood1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodPierogiUnique
 
 Items.RiverFood1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimFoodCupcakeUnique
 
 Items.RiverDrink1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimCoffeeTeaOpenCupUnique
 
 Items.KerryAlcohol1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholCentzonUnique
 
 #
@@ -1486,36 +1542,44 @@ Items.KerryAlcohol1:
 #
 Items.HealthBooster:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimHealthBooster
 
 # Pills
 Items.CarryCapacityBooster:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillAPink
 
 Items.StaminaBooster:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillAGreen
 
 Items.MemoryBooster:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillABlue
 
 Items.PermanentHealthFood:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillBGreen
 
 Items.PermanentMemoryRegenFood:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillBPink
 
 Items.PermanentStaminaRegenFood:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillBRed
 
 # Mr. Whitey
 Items.LowQualityFood6: &DarkFutureAnimNarcoticsMrWhitey
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimNarcoticsMrWhitey
 Items.MediumQualityFood11: *DarkFutureAnimNarcoticsMrWhitey
 Items.MediumQualityFood14: *DarkFutureAnimNarcoticsMrWhitey
@@ -1524,11 +1588,13 @@ Items.MediumQualityFood15: *DarkFutureAnimNarcoticsMrWhitey
 # RAM Nugs
 Items.Blackmarket_MemoryBooster:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrugRAMNugs
 
 # Jellytricity
 Items.Blackmarket_StaminaBooster:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrugJellytricity
 
 #
@@ -1538,22 +1604,30 @@ Items.Blackmarket_StaminaBooster:
 # Wine
 Items.TopQualityAlcohol2: &DarkFutureAnimAlcoholWine
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholWine
 Items.GoodQualityAlcohol6: *DarkFutureAnimAlcoholWine
 
 # Calavera Feliz
 Items.TopQualityAlcohol1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholCalaveraFeliz
 
 #Joe Tiel
 Items.MediumQualityAlcohol5:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholJoeTiel
 
 #Joe Tiel (Inverted)
 Items.MediumQualityAlcohol4: &DarkFutureAnimAlcoholJoeTielInverted
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholJoeTielInverted
 Items.TopQualityAlcohol6: *DarkFutureAnimAlcoholJoeTielInverted
 Items.TopQualityAlcohol7: *DarkFutureAnimAlcoholJoeTielInverted
@@ -1561,87 +1635,117 @@ Items.TopQualityAlcohol7: *DarkFutureAnimAlcoholJoeTielInverted
 # Centzon Totochtin
 Items.GoodQualityAlcohol2:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholCentzon
 
 # Centzon (Inverted)
 Items.MediumQualityAlcohol6:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholCentzonInverted
 
 # Champaradise
 Items.GoodQualityAlcohol5: &DarkFutureAnimAlcoholChamparadise
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholChamparadise
 
 # Champaradise (Inverted)
 Items.TopQualityAlcohol4: &DarkFutureAnimAlcoholChamparadiseInverted
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholChamparadiseInverted
 
 # Broseph Brown
 Items.LowQualityAlcohol4:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimAlcoholBrosephBrown
 
 # Broseph Blue
 Items.LowQualityAlcohol3:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimAlcoholBrosephBlue
 
 # Donaghy's
 Items.GoodQualityAlcohol1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholDonaghys
 
 # Abydos King Size
 Items.LowQualityAlcohol2:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholAbydosLarge
 
 # Abydos Classic
 Items.LowQualityAlcohol1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimAlcoholAbydosSmall
 
 # Bumelant
 Items.LowQualityAlcohol6:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholBumelant
 
 # O'Dickin
 Items.MediumQualityAlcohol2:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholOdickin
 
 # O'Dickin (Inverted)
 Items.TopQualityAlcohol3: &DarkFutureAnimAlcoholOdickinInverted
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholOdickinInverted
 Items.TopQualityAlcohol5: *DarkFutureAnimAlcoholOdickinInverted
 
 # Bolshevik
 Items.MediumQualityAlcohol3:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholBolshevik
 
 # Tequila Especial
 Items.LowQualityAlcohol9:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholTequilaEspecial
 
 # Tequila Especial (Inverted)
 Items.GoodQualityAlcohol4:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholTequilaEspecialInverted
 
 # Broseph Brown (Inverted)
 Items.GoodQualityAlcohol3:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimAlcoholBrosephBrownInverted
 
 # Generic Hooch
 Items.LowQualityAlcohol7: &DarkFutureAnimAlcoholGenericHooch
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholGenericHooch
 Items.LowQualityAlcohol8: *DarkFutureAnimAlcoholGenericHooch
 Items.NomadsAlcohol1: *DarkFutureAnimAlcoholGenericHooch
@@ -1650,21 +1754,35 @@ Items.NomadsAlcohol2: *DarkFutureAnimAlcoholGenericHooch
 # Pingo Palido
 Items.MediumQualityAlcohol1:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholPingoPalido
 
 # Blue Grass
 Items.MediumQualityAlcohol7:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholBlueGrass
 
 # Twenty First Stout
 Items.LowQualityAlcohol5:
   tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimatedConsumableDrinkChug
     - !append-once DarkFutureAnimAlcoholTwentyFirstStout
 
 # Cocktails
 Items.TopQualityAlcohol8: &DarkFutureAnimAlcoholCocktail
   tags:
+    - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimAlcoholCocktail
 Items.TopQualityAlcohol9: *DarkFutureAnimAlcoholCocktail
 Items.TopQualityAlcohol10: *DarkFutureAnimAlcoholCocktail
+
+# Black Lace
+Items.BlackLaceV0: &DarkFutureAnimBlackLace
+  tags:
+    - !append-once DarkFutureAnimatedConsumable
+    - !append-once DarkFutureAnimInhalerBlackLace
+Items.BlackLaceV1: *DarkFutureAnimBlackLace

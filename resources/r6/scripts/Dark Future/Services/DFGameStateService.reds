@@ -21,9 +21,6 @@ import DarkFuture.Main.{
     DFMainSystem,
     DFTimeSkipData
 }
-import DarkFuture.UI.{
-	DFHUDBarType
-}
 
 public enum GameState {
     Valid = 0,
@@ -132,7 +129,6 @@ public final class DFGameStateService extends DFSystem {
 
     private let BlackboardSystem: ref<BlackboardSystem>;
     private let QuestsSystem: ref<QuestsSystem>;
-    private let NotificationService: ref<DFNotificationService>;
 
     private let UISystemBlackboard: ref<IBlackboard>;
     private let UISystemDef: ref<UI_SystemDef>;
@@ -215,7 +211,6 @@ public final class DFGameStateService extends DFSystem {
         let gameInstance = GetGameInstance();
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
-        this.NotificationService = DFNotificationService.GetInstance(gameInstance);
     }
 
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {

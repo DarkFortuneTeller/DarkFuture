@@ -11,6 +11,7 @@ import DarkFuture.Logging.*
 import DarkFuture.Conditions.{
     DFInjuryConditionSystem,
     DFHumanityLossConditionSystem
+    //DFBiocorruptionConditionSystem
 }
 import DarkFuture.System.{
     DFSystem,
@@ -21,7 +22,8 @@ import DarkFuture.Settings.DFSettings
 public enum DFConditionType {
     Invalid = 0,
 	HumanityLoss = 1,
-    Injury = 2
+    Injury = 2,
+    Biocorruption = 3
 }
 
 public enum DFConditionArea {
@@ -32,7 +34,11 @@ public enum DFConditionArea {
     Injury_Area_01 = 4,
     Injury_Area_02 = 5,
     Injury_Area_03 = 6,
-    Injury_Area_04 = 7
+    Injury_Area_04 = 7,
+    Biocorruption_Area_01 = 8,
+    Biocorruption_Area_02 = 9,
+    Biocorruption_Area_03 = 10,
+    Biocorruption_Area_04 = 11
 }
 
 public class DFConditionHoverOver extends Event {
@@ -322,6 +328,14 @@ public class ConditionsLogicController extends inkLogicController {
                 }
             }
 
+            /*if IsSystemEnabledAndRunning(DFBiocorruptionConditionSystem.Get()) {
+                let biocorruptionDisplayData: ref<DFConditionDisplayData> = DFBiocorruptionConditionSystem.Get().GetConditionDisplayData(index);
+                if IsDefined(biocorruptionDisplayData) {
+                    ArrayPush(this.virtualItems, biocorruptionDisplayData);
+                    index += 1;
+                }
+            }*/
+
             this.m_dataSource.Reset(this.virtualItems);
         };
         this.m_initialized = true;
@@ -425,6 +439,8 @@ public class ConditionBarLogicController extends inkVirtualCompoundItemControlle
             } else {
                 return GetLocalizedTextByKey(n"DarkFutureConditionHumanityLossNoCyberpsychosisDesc");
             }
+        } else if Equals(condition, DFConditionType.Biocorruption) {
+            return GetLocalizedTextByKey(n"DarkFutureConditionBiocorruptionDesc");
         }
         
         return "";

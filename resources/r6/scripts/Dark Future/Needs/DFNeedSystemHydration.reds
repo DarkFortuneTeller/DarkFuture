@@ -54,8 +54,6 @@ class DFHydrationSystemEventListener extends DFNeedSystemEventListener {
 }
 
 public final class DFHydrationSystem extends DFNeedSystemBase {
-	private let NerveSystem: ref<DFNerveSystem>;
-
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFHydrationSystem> {
 		//DFProfile();
 		let instance: ref<DFHydrationSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFHydrationSystem>()) as DFHydrationSystem;
@@ -92,12 +90,6 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return "INVALID";
-	}
-
-	public func GetSystems() -> Void {
-		//DFProfile();
-		super.GetSystems();
-		this.NerveSystem = DFNerveSystem.Get();
 	}
 
 	public final func SetupData() -> Void {
@@ -228,6 +220,10 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	private final func GetBonusEffectTDBID() -> TweakDBID {
 		//DFProfile();
 		return t"DarkFutureStatusEffect.Sated";
+	}
+
+	private final func GetNeedDeathSettingValue() -> Bool {
+		return this.Settings.hydrationLossIsFatal;
 	}
 
 	//

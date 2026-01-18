@@ -19,6 +19,7 @@ import DarkFuture.UI.{
 import DarkFuture.Conditions.{
 	DFInjuryConditionSystem,
 	DFHumanityLossConditionSystem
+	//DFBiocorruptionConditionSystem
 }
 
 /*
@@ -42,12 +43,14 @@ import DarkFuture.Conditions.{
 public enum DFMessageContext {
 	None = 0,
     Need = 1,
-    AlcoholAddiction = 2,
-    NicotineAddiction = 3,
-    NarcoticAddiction = 4,
-	InjuryCondition = 5,
-	HumanityLossCondition = 6,
-	Cyberpsychosis = 7
+	CriticalNeed = 2,
+    AlcoholAddiction = 3,
+    NicotineAddiction = 4,
+    NarcoticAddiction = 5,
+	InjuryCondition = 6,
+	HumanityLossCondition = 7,
+	Cyberpsychosis = 8
+	//BiocorruptionCondition = 9
 }
 
 public struct DFAudioCue {
@@ -125,6 +128,7 @@ public struct DFNotificationPlaybackSet {
 public struct DFProgressionNotificationPlaybackSet {
 	public let injury: DFProgressionNotification;
 	public let humanityLoss: DFProgressionNotification;
+	//public let biocorruption: DFProgressionNotification;
 }
 
 public struct DFTutorial {
@@ -257,6 +261,7 @@ public final class DFNotificationService extends DFSystem {
 	private let PlayerStateService: ref<DFPlayerStateService>;
 	private let InjuryConditionSystem: ref<DFInjuryConditionSystem>;
 	private let HumanityLossConditionSystem: ref<DFHumanityLossConditionSystem>;
+	//private let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
 	
 	private let inCombatNotificationQueue: array<DFNotification>;
     private let outOfCombatNotificationQueue: array<DFNotification>;
@@ -515,6 +520,10 @@ public final class DFNotificationService extends DFSystem {
 					if notification.progression.currentLevel > progressionsToShow.humanityLoss.currentLevel || (notification.progression.currentLevel == progressionsToShow.humanityLoss.currentLevel && notification.progression.value > progressionsToShow.humanityLoss.value) {
 						progressionsToShow.humanityLoss = notification.progression;
 					}
+				/*} else if Equals(EnumInt<gamedataProficiencyType>(notification.progression.type), Cast<Int32>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureBiocorruption"))) {
+					if notification.progression.currentLevel > progressionsToShow.biocorruption.currentLevel || (notification.progression.currentLevel == progressionsToShow.biocorruption.currentLevel && notification.progression.value > progressionsToShow.biocorruption.value) {
+						progressionsToShow.biocorruption = notification.progression;
+					}*/
 				}
 			}
 
@@ -552,6 +561,8 @@ public final class DFNotificationService extends DFSystem {
 				progressionsToShow.injury = emptyNotification;
 			} else if Equals(message.context, DFMessageContext.HumanityLossCondition) {
 				progressionsToShow.humanityLoss = emptyNotification;
+			/*} else if Equals(message.context, DFMessageContext.BiocorruptionCondition) {
+				progressionsToShow.biocorruption = emptyNotification;*/
 			}
 		}
 
@@ -601,6 +612,11 @@ public final class DFNotificationService extends DFSystem {
 			this.PushProgressionNotification(nps.progressionsToShow.humanityLoss);
 			this.HumanityLossConditionSystem.SetLastDisplayedProgressionNotificationValue(nps.progressionsToShow.humanityLoss.value);
 		}
+
+		/*if NotEquals(nps.progressionsToShow.biocorruption.titleKey, n"") {
+			this.PushProgressionNotification(nps.progressionsToShow.biocorruption);
+			this.BiocorruptionConditionSystem.SetLastDisplayedProgressionNotificationValue(nps.progressionsToShow.biocorruption.value);
+		}*/
 
 		// Set any facts.
 		for fact in nps.factsToSet {

@@ -121,6 +121,7 @@ public class DFNeedsHUDBarGroup {
     public let needsBarGroupParent: ref<DFNeedsHUDBarGroup>;
     public let displayManagedByParentGroup: Bool = false;
     private let alwaysVisibleInDanger: Bool;
+    private let visibleInDangerAtCriticalThreshold: Bool;
     private let GameStateService: ref<DFGameStateService>;
     private let HUDSystem: ref<DFHUDSystem>;
     public let DelaySystem: ref<DelaySystem>;
@@ -135,7 +136,7 @@ public class DFNeedsHUDBarGroup {
 
     private let m_groupBeingDisplayedAndIgnoringSceneTier: Bool = false;
 
-    public final func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool) -> Void {
+    public final func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool, visibleInDangerAtCriticalThreshold: Bool) -> Void {
         //DFProfile();
         let gameInstance = GetGameInstance();
         this.HUDSystem = DFHUDSystem.GetInstance(gameInstance);
@@ -144,6 +145,7 @@ public class DFNeedsHUDBarGroup {
         this.Settings = DFSettings.GetInstance(gameInstance);
         this.DelaySystem = GameInstance.GetDelaySystem(gameInstance);
         this.alwaysVisibleInDanger = alwaysVisibleInDanger;
+        this.visibleInDangerAtCriticalThreshold = visibleInDangerAtCriticalThreshold;
     }
 
     private final func GetPSMBlackboard(player: ref<PlayerPuppet>) -> ref<IBlackboard> {
@@ -255,7 +257,11 @@ public class DFNeedsHUDBarGroup {
             } else {
                 if this.PlayerStateService.GetInDanger() {
                     DFLogNoSystem(this.debugEnabled, this, "alwaysVisibleInDanger false GetInDanger true");
-                    return false;
+                    if this.visibleInDangerAtCriticalThreshold && lowestValueInGroup <= 0.1 {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
                 if lowestValueInGroup <= (this.Settings.needHUDUIAlwaysOnThreshold / 100.0) {
                     DFLogNoSystem(this.debugEnabled, this, "alwaysVisibleInDanger false lowestValueInGroup <= always on threshold");

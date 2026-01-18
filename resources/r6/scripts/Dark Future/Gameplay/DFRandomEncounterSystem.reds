@@ -111,7 +111,11 @@ public final class DFRandomEncounterSystem extends DFSystem {
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-    private func UnregisterListeners() -> Void {}
+    
+    private func UnregisterListeners() -> Void {
+        this.DynamicEntitySystem.UnregisterListener(n"DarkFuture.SpawnedNPC", this, n"OnPuppetUpdate");
+    }
+    
     public func UnregisterAllDelayCallbacks() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}

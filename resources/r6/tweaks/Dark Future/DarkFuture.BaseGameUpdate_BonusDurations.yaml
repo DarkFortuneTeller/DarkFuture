@@ -4,6 +4,3 @@
 Items.LongLastingConsumableDuration_inline0.value: 900
 #Items.SatedDuration_inline0.value: 900
 #Items.WellFedDuration_inline0.value: 900
-
-# Update Housing bonuses to last 15 minutes (was 1 hour).
-HousingStatusEffect.RestedDuration_inline0.value: 900

@@ -480,7 +480,7 @@ public class DFSettings extends ScriptableSystem {
 	private let _maxVehicleSummonCredits: Int32 = 2;
 	private let _hoursPerSummonCredit: Int32 = 8;
 	private let _nerveLossIsFatal: Bool = true;
-	private let _criticalNerveVFXEnabled: Bool = true;
+	private let _criticalNeedVFXEnabled: Bool = true;
 	private let _hudUIScale: Float = 1.0;
 	private let _hudUIPosX: Float = 70.0;
 	private let _hudUIPosY: Float = 240.0;
@@ -498,7 +498,7 @@ public class DFSettings extends ScriptableSystem {
 	private let _compatibilityProjectE3HUD: Bool = false;
 	private let _compatibilityProjectE3UI: Bool = false;
 	private let _consumableAnimationsEnabled: Bool = true;
-	private let _consumableAnimationCooldownTimeInRealTimeSeconds: Float = 30.0;
+	private let _consumableAnimationCooldownTimeInRealTimeSeconds: Float = 60.0;
 	private let _consumableAnimationCooldownBehavior: DFConsumableAnimationCooldownBehavior = DFConsumableAnimationCooldownBehavior.ByGeneralVisualProp;
 	private let _forceFPPWhenSleepingInVehicle: Bool = true;
 	public let _humanityLossCyberpsychosisEnabled: Bool = true;
@@ -841,9 +841,9 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "nerveLossIsFatal");
 		}
 
-		if NotEquals(this._criticalNerveVFXEnabled, this.criticalNerveVFXEnabled) {
-			this._criticalNerveVFXEnabled = this.criticalNerveVFXEnabled;
-			ArrayPush(changedSettings, "criticalNerveVFXEnabled");
+		if NotEquals(this._criticalNeedVFXEnabled, this.criticalNeedVFXEnabled) {
+			this._criticalNeedVFXEnabled = this.criticalNeedVFXEnabled;
+			ArrayPush(changedSettings, "criticalNeedVFXEnabled");
 		}
 
 		if NotEquals(this._hudUIScale, this.hudUIScale) {
@@ -1295,6 +1295,30 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.min", "0.0")
 	@runtimeProperty("ModSettings.max", "800.0")
 	public let nerveLossRateWhenTracedPct: Float = 200.0;
+
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
+	@runtimeProperty("ModSettings.category.order", "50")
+	@runtimeProperty("ModSettings.dependency", "basicNeedsAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingHydrationLossIsFatal")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingHydrationLossIsFatalDesc")
+	public let hydrationLossIsFatal: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
+	@runtimeProperty("ModSettings.category.order", "50")
+	@runtimeProperty("ModSettings.dependency", "basicNeedsAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNutritionLossIsFatal")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingNutritionLossIsFatalDesc")
+	public let nutritionLossIsFatal: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
+	@runtimeProperty("ModSettings.category.order", "50")
+	@runtimeProperty("ModSettings.dependency", "basicNeedsAdvancedSettings")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingEnergyLossIsFatal")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingEnergyLossIsFatalDesc")
+	public let energyLossIsFatal: Bool = false;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
@@ -2431,17 +2455,17 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
 	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNerveNeedVFXEnabled")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingNerveNeedVFXEnabledDesc")
-	public let nerveNeedVFXEnabled: Bool = true;
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCriticalNeedVFXEnabled")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingCriticalNeedVFXEnabledDesc")
+	public let criticalNeedVFXEnabled: Bool = true;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
 	@runtimeProperty("ModSettings.category.order", "120")
 	@runtimeProperty("ModSettings.dependency", "fxAdvancedSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingCriticalNerveVFXEnabled")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingCriticalNerveVFXEnabledDesc")
-	public let criticalNerveVFXEnabled: Bool = true;
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingNerveNeedVFXEnabled")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingNerveNeedVFXEnabledDesc")
+	public let nerveNeedVFXEnabled: Bool = true;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
@@ -2542,6 +2566,29 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayValues.ByAnimationType", "ConsumableAnimSettingCooldownBehaviorTypeByAnimationType")
 	@runtimeProperty("ModSettings.displayValues.All", "ConsumableAnimSettingCooldownBehaviorTypeAll")
 	public let consumableAnimationCooldownBehavior: DFConsumableAnimationCooldownBehavior = DFConsumableAnimationCooldownBehavior.ByGeneralVisualProp;
+
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "ConsumableAnimSettingsCategoryMain")
+	@runtimeProperty("ModSettings.category.order", "140")
+	@runtimeProperty("ModSettings.displayName", "ConsumableAnimSettingLootActionBehavior")
+	@runtimeProperty("ModSettings.description", "ConsumableAnimSettingLootActionBehaviorDesc")
+	public let consumableAnimationLootActionEnabled: Bool = false;
+
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "ConsumableAnimSettingsCategoryMain")
+	@runtimeProperty("ModSettings.category.order", "140")
+	@runtimeProperty("ModSettings.dependency", "consumableAnimationLootActionEnabled")
+	@runtimeProperty("ModSettings.displayName", "ConsumableAnimSettingLootActionManualKeyKBM")
+	@runtimeProperty("ModSettings.description", "ConsumableAnimSettingLootActionManualKeyKBMDesc")
+	public let consumableAnimationLootActionKeyKBM: EInputKey = EInputKey.IK_R;
+ 
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "ConsumableAnimSettingsCategoryMain")
+	@runtimeProperty("ModSettings.category.order", "140")
+	@runtimeProperty("ModSettings.dependency", "consumableAnimationLootActionEnabled")
+	@runtimeProperty("ModSettings.displayName", "ConsumableAnimSettingLootActionManualKeyController")
+	@runtimeProperty("ModSettings.description", "ConsumableAnimSettingLootActionManualKeyControllerDesc")
+	public let consumableAnimationLootActionKeyControllerV2: EInputKey = EInputKey.IK_Pad_B_CIRCLE;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "ConsumableAnimSettingsCategoryMain")

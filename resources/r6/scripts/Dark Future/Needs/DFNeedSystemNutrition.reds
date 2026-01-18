@@ -242,6 +242,10 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		return t"DarkFutureStatusEffect.WellFed";
 	}
 
+	private final func GetNeedDeathSettingValue() -> Bool {
+		return this.Settings.nutritionLossIsFatal;
+	}
+
     //
     //  System-Specific Methods
     //

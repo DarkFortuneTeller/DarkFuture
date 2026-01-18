@@ -58,6 +58,7 @@ import DarkFuture.Addictions.{
 import DarkFuture.Conditions.{
     DFInjuryConditionSystem,
     DFHumanityLossConditionSystem
+    //DFBiocorruptionConditionSystem
 }
 import DarkFuture.UI.{
     DFHUDSystem,
@@ -393,6 +394,7 @@ public final class DFMainSystem extends ScriptableSystem {
         // Conditions
         DFInjuryConditionSystem.GetInstance(gameInstance).Init(this.player);
         DFHumanityLossConditionSystem.GetInstance(gameInstance).Init(this.player);
+        //DFBiocorruptionConditionSystem.GetInstance(gameInstance).Init(this.player);
 
         // Nerve
         DFNerveSystem.GetInstance(gameInstance).Init(this.player);
@@ -468,6 +470,7 @@ public final class DFMainSystem extends ScriptableSystem {
         // Conditions
         DFInjuryConditionSystem.GetInstance(gameInstance).Resume();
         DFHumanityLossConditionSystem.GetInstance(gameInstance).Resume();
+        //DFBiocorruptionConditionSystem.GetInstance(gameInstance).Resume();
 
         // Nerve
         DFNerveSystem.GetInstance(gameInstance).Resume();
@@ -506,6 +509,7 @@ public final class DFMainSystem extends ScriptableSystem {
         DFNerveSystem.GetInstance(gameInstance).Suspend();
 
         // Conditions
+        //DFBiocorruptionConditionSystem.GetInstance(gameInstance).Suspend();
         DFHumanityLossConditionSystem.GetInstance(gameInstance).Suspend();
         DFInjuryConditionSystem.GetInstance(gameInstance).Suspend();
         

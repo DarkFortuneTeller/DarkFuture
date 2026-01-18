@@ -394,7 +394,10 @@ private final func UpdateUI() -> Void {
 	this.nerveBar.SetUpdatedValue(nerve, nerveMax);
 	this.UpdateNerveBarLimit(nerveMax);
 
-	if nerve <= 1.0 {
+	if (this.Settings.nerveLossIsFatal && nerve <= 1.0) ||
+	   (this.Settings.hydrationLossIsFatal && hydration <= 1.0) ||
+	   (this.Settings.nutritionLossIsFatal && nutrition <= 1.0) ||
+	   (this.Settings.energyLossIsFatal && energy <= 1.0) {
 		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonFatal";
 	} else if DFIsSleeping(this.timeSkipType) && this.NerveSystem.GetNeedStageAtValue(nerve) >= this.NerveSystem.insomniaNeedStageThreshold {

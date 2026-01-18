@@ -436,7 +436,7 @@ public final class DFHUDSystem extends DFSystem {
 
 		// The Nerve Bar is in its own Bar Group so that it can display independently.
 		let nerveBarGroup: ref<DFNeedsHUDBarGroup> = new DFNeedsHUDBarGroup();
-		nerveBarGroup.Init(attachedPlayer, true);
+		nerveBarGroup.Init(attachedPlayer, true, this.Settings.nerveLossIsFatal);
 		nerveBarGroup.AddBarToGroup(this.nerveBar);
 		nerveBarGroup.BarGroupSetupDone();
 
@@ -445,21 +445,24 @@ public final class DFHUDSystem extends DFSystem {
 		let hydrationBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"hydrationBar", hydrationIconPath, hydrationIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 33.0, 41.0, false, false, r"", n"");
 		this.hydrationBar = new DFNeedsHUDBar();
 		this.hydrationBar.Init(hydrationBarSetupData);
+		// TODO: If hydration loss is fatal...
 
 		let nutritionIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let nutritionIconName: CName = n"food_vendor";
 		let nutritionBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"nutritionBar", nutritionIconPath, nutritionIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 53.0 + 230.6, 41.0, false, false, r"", n"");
 		this.nutritionBar = new DFNeedsHUDBar();
 		this.nutritionBar.Init(nutritionBarSetupData);
+		// TODO: If nutrition loss is fatal...
 
 		let energyIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let energyIconName: CName = n"wait";
 		let energyBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"energyBar", energyIconPath, energyIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 73.0 + 462.2, 41.0, false, false, r"", n"");
 		this.energyBar = new DFNeedsHUDBar();
 		this.energyBar.Init(energyBarSetupData);
+		// TODO: If energy loss is fatal...
 
 		let physicalNeedsBarGroup: ref<DFNeedsHUDBarGroup> = new DFNeedsHUDBarGroup();
-		physicalNeedsBarGroup.Init(attachedPlayer, false);
+		physicalNeedsBarGroup.Init(attachedPlayer, false, (this.Settings.hydrationLossIsFatal || this.Settings.nutritionLossIsFatal || this.Settings.energyLossIsFatal));
 		physicalNeedsBarGroup.AddBarToGroup(this.hydrationBar);
 		physicalNeedsBarGroup.AddBarToGroup(this.nutritionBar);
 		physicalNeedsBarGroup.AddBarToGroup(this.energyBar);

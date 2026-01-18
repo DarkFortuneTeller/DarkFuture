@@ -33,6 +33,8 @@ import DarkFuture.Addictions.{
 }
 import DarkFuture.Needs.{
     DFHydrationSystem,
+    DFNutritionSystem,
+    DFEnergySystem,
     DFNerveSystem
 }
 import DarkFuture.Conditions.DFHumanityLossConditionSystem
@@ -454,10 +456,13 @@ public final class DFPlayerStateService extends DFSystem {
 
     private let BlackboardSystem: ref<BlackboardSystem>;
     private let PreventionSystem: ref<PreventionSystem>;
+    private let AudioSystem: ref<AudioSystem>;
     private let StatPoolsSystem: ref<StatPoolsSystem>;
     private let QuestsSystem: ref<QuestsSystem>;
     private let MainSystem: ref<DFMainSystem>;
     private let HydrationSystem: ref<DFHydrationSystem>;
+    private let NutritionSystem: ref<DFNutritionSystem>;
+    private let EnergySystem: ref<DFEnergySystem>;
     private let NerveSystem: ref<DFNerveSystem>;
     private let GameStateService: ref<DFGameStateService>;
     private let NotificationService: ref<DFNotificationService>;
@@ -470,6 +475,9 @@ public final class DFPlayerStateService extends DFSystem {
     private let BlackboardDefs: ref<AllBlackboardDefinitions>;
     private let HUDProgressBarBlackboard: ref<IBlackboard>;
     private let locomotionListener: ref<CallbackHandle>;
+
+    private const let criticalNeedFXThreshold: Float = 10.0;
+    private let playingCriticalNeedFX: Bool = false;
 
     private let playerInDanger: Bool = false;
     private let lastLocomotionState: Int32 = 0;
@@ -577,6 +585,7 @@ public final class DFPlayerStateService extends DFSystem {
         this.UpdateFastTravelState();
         this.ClearStaminaCosts();
 		this.StopOutOfBreathEffects();
+        this.StopCriticalNeedEffects(true);
     }
 
     public func GetSystems() -> Void {
@@ -585,10 +594,13 @@ public final class DFPlayerStateService extends DFSystem {
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
         this.PreventionSystem = this.player.GetPreventionSystem();
         this.DelaySystem = GameInstance.GetDelaySystem(gameInstance);
+        this.AudioSystem = GameInstance.GetAudioSystem(gameInstance);
         this.StatPoolsSystem = GameInstance.GetStatPoolsSystem(gameInstance);
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
         this.MainSystem = DFMainSystem.GetInstance(gameInstance);
         this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
+        this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
+        this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
         this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
         this.Settings = DFSettings.GetInstance(gameInstance);
         this.GameStateService = DFGameStateService.GetInstance(gameInstance);
@@ -658,6 +670,10 @@ public final class DFPlayerStateService extends DFSystem {
            ArrayContains(changedSettings, "basicNeedThresholdValue4") {
 
             DFMainSystem.Get().CheckForInvalidConfiguration();
+        }
+
+        if ArrayContains(changedSettings, "criticalNeedVFXEnabled") {
+            this.UpdateCriticalNeedEffects();
         }
     }
 
@@ -1249,6 +1265,81 @@ public final class DFPlayerStateService extends DFSystem {
     private final func UnregisterContextuallyDelayedAddictionWithdrawalAnimation() -> Void {
         //DFProfile();
 		UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedAddictionWithdrawalAnimationDelayID);
+	}
+
+    //
+    // Critical Need Effects
+    //
+    private let updateCriticalNeedEffectsLock: RWLock;
+    public final func UpdateCriticalNeedEffects() -> Void {
+        RWLock.Acquire(this.updateCriticalNeedEffectsLock);
+        if this.GameStateService.IsValidGameState(this, true) {
+            let shouldPlayCriticalFX: Bool = false;
+            let hydrationValue: Float = this.HydrationSystem.GetNeedValue();
+            let nutritionValue: Float = this.NutritionSystem.GetNeedValue();
+            let energyValue: Float = this.EnergySystem.GetNeedValue();
+            let nerveValue: Float = this.NerveSystem.GetNeedValue();
+
+            if this.Settings.hydrationLossIsFatal && hydrationValue <= this.criticalNeedFXThreshold && hydrationValue != -1.0 {
+                shouldPlayCriticalFX = true;
+            }
+
+            if this.Settings.nutritionLossIsFatal && nutritionValue <= this.criticalNeedFXThreshold && nutritionValue != -1.0 {
+                shouldPlayCriticalFX = true;
+            }
+
+            if this.Settings.energyLossIsFatal && energyValue <= this.criticalNeedFXThreshold && energyValue != -1.0 {
+                shouldPlayCriticalFX = true;
+            }
+
+            if this.Settings.nerveLossIsFatal && nerveValue <= this.criticalNeedFXThreshold && nerveValue != -1.0 {
+                shouldPlayCriticalFX = true;
+            }
+
+
+            if shouldPlayCriticalFX {
+                this.PlayCriticalNeedEffects();
+            } else {
+                if this.playingCriticalNeedFX {
+                    this.StopCriticalNeedEffects();
+                }
+            }
+        } else {
+            if this.playingCriticalNeedFX {
+                this.StopCriticalNeedEffects();
+            }
+        }
+        RWLock.Release(this.updateCriticalNeedEffectsLock);
+    }
+
+    public final func PlayCriticalNeedEffects() -> Void {
+		//DFProfile();
+		if !this.playingCriticalNeedFX {
+			this.playingCriticalNeedFX = true;
+			this.AudioSystem.NotifyGameTone(n"InLowHealth");
+			this.PlayCriticalNeedVFX();
+		}
+	}
+
+	public final func StopCriticalNeedEffects(opt force: Bool) -> Void {
+		//DFProfile();
+		if this.playingCriticalNeedFX || force {
+			this.playingCriticalNeedFX = false;
+			this.AudioSystem.NotifyGameTone(n"InNormalHealth");
+			this.StopCriticalNeedVFX();
+		}
+	}
+
+    private final func PlayCriticalNeedVFX() -> Void {
+		//DFProfile();
+		if this.Settings.criticalNeedVFXEnabled {
+			GameObjectEffectHelper.StartEffectEvent(this.player, n"cool_perk_focused_state_fullscreen", false, null, false);
+		}
+	}
+
+	private final func StopCriticalNeedVFX() -> Void {
+		//DFProfile();
+		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"cool_perk_focused_state_fullscreen");
 	}
 
     //

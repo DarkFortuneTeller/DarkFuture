@@ -37,7 +37,8 @@ import DarkFuture.Services.{
 	DFMessage,
 	DFMessageContext,
 	DFTutorial,
-	DFNotification
+	DFNotification,
+	DFAudioCue
 
 }
 import DarkFuture.UI.{
@@ -291,6 +292,48 @@ public class DFNeedValueChangedEvent extends CallbackSystemEvent {
     }
 }
 
+public class PlayerDeathCallback extends DFDelayCallback {
+	public let NeedSystemBase: ref<DFNeedSystemBase>;
+
+	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
+		//DFProfile();
+		let self = new PlayerDeathCallback();
+		self.NeedSystemBase = needSystemBase;
+		return self;
+	}
+
+	public func InvalidateDelayID() -> Void {
+		//DFProfile();
+		this.NeedSystemBase.playerDeathDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+		//DFProfile();
+		this.NeedSystemBase.OnPlayerDeathCallback();
+	}
+}
+
+public class PostPlayerDeathCallback extends DFDelayCallback {
+	public let NeedSystemBase: ref<DFNeedSystemBase>;
+
+	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
+		//DFProfile();
+		let self = new PostPlayerDeathCallback();
+		self.NeedSystemBase = needSystemBase;
+		return self;
+	}
+
+	public func InvalidateDelayID() -> Void {
+		//DFProfile();
+		this.NeedSystemBase.postPlayerDeathDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+		//DFProfile();
+		this.NeedSystemBase.OnPostPlayerDeathCallback();
+	}
+}
+
 public abstract class DFNeedSystemEventListener extends DFSystemEventListener {
 	//
 	// Required Overrides
@@ -360,6 +403,8 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	public let bonusEffectCheckDelayID: DelayID;
 	public let insufficientNeedFXStopDelayID: DelayID;
 	public let statusEffectRefreshDebounceDelayID: DelayID;
+	public let playerDeathDelayID: DelayID;
+	public let postPlayerDeathDelayID: DelayID;
 
     private const let updateIntervalInGameTimeSeconds: Float = 300.0;
     private const let contextuallyDelayedNeedValueChangeDelayInterval: Float = 0.25;
@@ -369,9 +414,16 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	private const let sceneTierChangedCheckFXDelayInterval: Float = 2.0;
 	private const let bonusEffectCheckDelayInterval: Float = 0.1;
 	private const let statusEffectRefreshDebounceDelayInterval: Float = 0.5;
+	private const let playerDeathDelayInterval: Float = 2.0;
+	private const let postPlayerDeathDelayInterval: Float = 8.0;
+	private const let basicNeedPostDeathRestoreAmount: Float = 10.0;
+	public const let criticalNeedThreshold: Float = 10.0;
+	public const let extremelyCriticalNeedThreshold: Float = 5.0;
     
 	public let needMax: Float = 100.0;
     public let lastNeedStage: Int32 = 0;
+	public let lastValueForCriticalNeedCheck: Float = 100.0;
+	public let inDeathState: Bool = false;
 
 	//
 	//	DFSystem Required Methods
@@ -399,6 +451,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 			this.needValue = 10.0;
 		}
 		this.lastNeedStage = 0;
+		this.lastValueForCriticalNeedCheck = 100.0;
 
 		this.ResetContextuallyDelayedNeedValueChange();
 		StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetNeedStageStatusEffectTag());
@@ -412,6 +465,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.OnFuryStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury"));
 		this.OnCyberspaceChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"CyberspacePresence"));
 		this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
+		this.CheckForCriticalNeed();
 		this.ReevaluateSystem();
 	}
 	
@@ -440,6 +494,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.OnFuryStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury"));
 		this.OnCyberspaceChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"CyberspacePresence"));
 		this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
+		this.CheckForCriticalNeed();
 	}
 
 	public func UnregisterAllDelayCallbacks() -> Void {
@@ -450,6 +505,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.UnregisterSceneTierChangedCheckFXCallback();
 		this.UnregisterBonusEffectCheckCallback();
 		this.UnregisterStatusEffectRefreshDebounceCallback();
+		this.UnregisterPlayerDeathCallback();
 	}
 
 	public final func OnPlayerDeath() -> Void {
@@ -590,6 +646,11 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.LogMissingOverrideError("GetBonusEffectTDBID");
 	}
 
+	private func GetNeedDeathSettingValue() -> Bool {
+		//DFProfile();
+		this.LogMissingOverrideError("GetNeedDeathSettingValue");
+	}
+
 	//
 	//	RunGuard Protected Methods
 	//
@@ -704,6 +765,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 			this.QueueSevereNeedMessage();
 		}
 
+		this.CheckForCriticalNeed();
 		this.CheckIfBonusEffectsValid();
 		this.TryToShowTutorial();
 		
@@ -923,6 +985,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	public func SuspendFX() -> Void {
 		//DFProfile();
 		this.UnregisterAllNeedFXCallbacks();
+		this.PlayerStateService.UpdateCriticalNeedEffects();
 	}
 
 	public func ReapplyFX() -> Void {
@@ -931,6 +994,8 @@ public abstract class DFNeedSystemBase extends DFSystem {
 			this.UpdateNeedFX();
 			this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
 		}
+
+		this.PlayerStateService.UpdateCriticalNeedEffects();
 	}
 
     public func UpdateNeedFX(opt suppressRecoveryNotification: Bool) -> Void {
@@ -991,6 +1056,131 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		return RandRangeF(-20.0, 20.0);
 	}
 
+	//
+	//  Basic Need Death
+	//
+	public func CheckForCriticalNeed() -> Void {
+		//DFProfile();
+		if this.inDeathState { return; }
+		
+		if this.GameStateService.IsValidGameState(this) {
+			if this.GetNeedValue() <= 0.0 && this.GetNeedDeathSettingValue() {
+				// Kill the player.
+				this.QueuePlayerDeath();
+			}
+		}
+
+		this.PlayerStateService.UpdateCriticalNeedEffects();
+
+		if this.GameStateService.IsValidGameState(this, true) {
+			// TODOFUTURE - Blink the bar, make more visually apparent
+			let currentValue: Float = this.GetNeedValue();
+
+			if currentValue <= this.extremelyCriticalNeedThreshold && this.lastValueForCriticalNeedCheck > this.extremelyCriticalNeedThreshold {
+				this.QueueExtremelyCriticalNeedSFX();
+				this.QueueExtremelyCriticalNeedWarningNotification();
+			} else if currentValue <= this.criticalNeedThreshold && this.lastValueForCriticalNeedCheck > this.criticalNeedThreshold {
+				this.QueueCriticalNeedSFX();
+				this.QueueCriticalNeedWarningNotification();
+			}
+			
+			this.lastValueForCriticalNeedCheck = currentValue;
+		}
+	}
+
+	public final func QueueCriticalNeedWarningNotification() -> Void {
+		//DFProfile();
+		if this.GameStateService.IsValidGameState(this, true) {
+			let message: DFMessage;
+			message.key = n"DarkFutureCriticalNeedHighNotification";
+			message.type = SimpleMessageType.Negative;
+			message.context = DFMessageContext.CriticalNeed;
+
+			let notification: DFNotification;
+			notification.message = message;
+			notification.allowPlaybackInCombat = true;
+
+			this.NotificationService.QueueNotification(notification);
+		}
+	}
+
+	public final func QueueExtremelyCriticalNeedWarningNotification() -> Void {
+		//DFProfile();
+		if this.GameStateService.IsValidGameState(this, true) {
+			let message: DFMessage;
+			message.key = n"DarkFutureCriticalNeedLowNotification";
+			message.type = SimpleMessageType.Negative;
+			message.context = DFMessageContext.CriticalNeed;
+
+			let notification: DFNotification;
+			notification.message = message;
+			notification.allowPlaybackInCombat = true;
+
+			this.NotificationService.QueueNotification(notification);
+		}
+	}
+
+	public final func QueueCriticalNeedSFX() -> Void {
+		//DFProfile();
+		if this.Settings.needNegativeSFXEnabled {
+			let notification: DFNotification;
+			notification.sfx = DFAudioCue(n"ono_v_knock_down", 0);
+			this.NotificationService.QueueNotification(notification);
+		}
+	}
+
+	public final func QueueExtremelyCriticalNeedSFX() -> Void {
+		//DFProfile();
+		if this.Settings.needNegativeSFXEnabled {
+			let notification: DFNotification;
+			notification.sfx = DFAudioCue(n"ono_v_death_short", 0);
+			this.NotificationService.QueueNotification(notification);
+		}
+	}
+
+	public func QueuePlayerDeath() -> Void {
+		// :(
+		
+		this.inDeathState = true;
+		this.PlayerStateService.PlayCriticalNeedEffects();
+		this.PlayerStateService.StopOutOfBreathSFX();
+
+		this.QueueCriticalNeedSFXDeath();
+		this.RegisterPlayerDeathCallback();
+	}
+
+	public final func QueueCriticalNeedSFXDeath() -> Void {
+		//DFProfile();
+		let notification: DFNotification;
+		notification.sfx = DFAudioCue(n"ono_v_death_long", -10);
+		this.NotificationService.QueueNotification(notification);
+	}
+
+	public final func OnPlayerDeathCallback() -> Void {
+		//DFProfile();
+		// This kills the player.
+		StatusEffectHelper.ApplyStatusEffect(this.player, t"BaseStatusEffect.HeartAttack");
+
+		// Register for post-death recovery. (Santa Muerte Compatibility)
+		this.RegisterPostPlayerDeathCallback();
+	}
+
+	public func OnPostPlayerDeathCallback() -> Void {
+		//DFProfile();
+		StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.HeartAttack");
+		this.inDeathState = false;
+		
+		// Restore a modest amount of the Basic Need.
+		let changeNeedValueProps: DFChangeNeedValueProps;
+		let uiFlags: DFNeedChangeUIFlags;
+		uiFlags.forceMomentaryUIDisplay = true;
+		changeNeedValueProps.uiFlags = uiFlags;
+
+		if this.GetNeedValue() < this.basicNeedPostDeathRestoreAmount {
+			this.ChangeNeedValue(this.basicNeedPostDeathRestoreAmount - this.GetNeedValue(), changeNeedValueProps);
+		}
+	}
+
     //  Registration
     //
 	public final func RegisterUpdateCallback() -> Void {
@@ -1041,6 +1231,16 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		RegisterDFDelayCallback(this.DelaySystem, StatusEffectRefreshDebounceCallback.Create(this), this.statusEffectRefreshDebounceDelayID, this.statusEffectRefreshDebounceDelayInterval, true);
 	}
 
+	public final func RegisterPlayerDeathCallback() -> Void {
+		//DFProfile();
+		RegisterDFDelayCallback(this.DelaySystem, PlayerDeathCallback.Create(this), this.playerDeathDelayID, this.playerDeathDelayInterval);
+	}
+
+	public final func RegisterPostPlayerDeathCallback() -> Void {
+		//DFProfile();
+		RegisterDFDelayCallback(this.DelaySystem, PostPlayerDeathCallback.Create(this), this.postPlayerDeathDelayID, this.postPlayerDeathDelayInterval);
+	}
+
     //  Unregistration
     //
 	public final func UnregisterUpdateCallback() -> Void {
@@ -1084,6 +1284,11 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	public final func UnregisterStatusEffectRefreshDebounceCallback() -> Void {
 		//DFProfile();
 		UnregisterDFDelayCallback(this.DelaySystem, this.statusEffectRefreshDebounceDelayID);
+	}
+
+	private final func UnregisterPlayerDeathCallback() -> Void {
+		//DFProfile();
+		UnregisterDFDelayCallback(this.DelaySystem, this.playerDeathDelayID);
 	}
 
     //  Callback Handlers
