@@ -23,7 +23,11 @@ import DarkFuture.Main.{
     DFMainSystem,
     DFTimeSkipData,
     DFAddictionUpdateDatum,
-    MainSystemItemConsumedEvent
+    MainSystemItemConsumedEvent,
+    DFFutureHoursData,
+    DFTimeSkipType,
+    DFNeedsDatum,
+    DFHumanityLossDatum
 }
 import DarkFuture.Addictions.{
     DFNicotineAddictionSystem,
@@ -38,6 +42,7 @@ import DarkFuture.Needs.{
     DFNerveSystem
 }
 import DarkFuture.Conditions.DFHumanityLossConditionSystem
+import DarkFuture.Gameplay.DFInteractionSystem
 
 enum DFOutOfBreathReason {
     LowHydrationNotification = 0,
@@ -45,7 +50,7 @@ enum DFOutOfBreathReason {
     SprintingDashingAfterSmoking = 2
 }
 
-enum DFAddictionType {
+public enum DFAddictionType {
     None = 0,
     Alcohol = 1,
     Nicotine = 2,
@@ -282,6 +287,23 @@ public class ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback extend
 	}
 }
 
+public class ContextuallyDelayedBlackoutAnimationDelayCallback extends DFDelayCallback {
+    public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+        return new ContextuallyDelayedBlackoutAnimationDelayCallback();
+	}
+
+	public func InvalidateDelayID() -> Void {
+        //DFProfile();
+		DFPlayerStateService.Get().contextuallyDelayedBlackoutAnimationDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+        //DFProfile();
+		DFPlayerStateService.Get().TryToStartBlackoutAnimation();
+	}
+}
+
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
     //DFProfile();
@@ -301,13 +323,8 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
         // Stamina Costs
         } else if ArrayContains(effectTags, n"DarkFutureStaminaBooster") {
             playerStateService.UpdateStaminaCosts();
-        
-        /* DEPRECATED
-        // Conditions
-        } else if ArrayContains(effectTags, n"DarkFutureCondition") {
-            this.DarkFutureRefreshConditionBuffBarIndicator();
-        */
         }
+
     } else {
         // DARK FUTURE DISABLED
         // If Dark Future is disabled, don't allow certain player status effects to apply.
@@ -347,11 +364,6 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
     if IsSystemEnabledAndRunning(playerStateService) {
         if ArrayContains(effectTags, n"DarkFutureAddictionPrimaryEffect") {
             playerStateService.DispatchAddictionPrimaryEffectRemoved(effectID, effectTags);
-        
-        /* DEPRECATED
-        } else if ArrayContains(effectTags, n"DarkFutureCondition") {
-            this.DarkFutureRefreshConditionBuffBarIndicator();
-        */
         }
     }
 
@@ -364,25 +376,6 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 
 	return wrappedMethod(evt);
 }
-
-/* DEPRECATED
-@addMethod(PlayerPuppet)
-private final func DarkFutureRefreshConditionBuffBarIndicator() -> Void {
-    //DFProfile();
-    StatusEffectHelper.RemoveStatusEffectsWithTag(this, n"DarkFutureBuffBarConditionIndicator");
-
-    let conditionEffects: array<ref<StatusEffect>>;
-    StatusEffectHelper.GetAppliedEffectsWithTag(this, n"DarkFutureCondition", conditionEffects);
-    let conditionEffectCount: Int32 = ArraySize(conditionEffects);
-
-    if conditionEffectCount == 1 {
-        StatusEffectHelper.ApplyStatusEffect(this, t"DarkFutureStatusEffect.ConditionBuffBarIndicator");
-    } else if conditionEffectCount == 2 {
-        StatusEffectHelper.ApplyStatusEffect(this, t"DarkFutureStatusEffect.ConditionBuffBarIndicator");
-        StatusEffectHelper.ApplyStatusEffect(this, t"DarkFutureStatusEffect.ConditionBuffBarIndicator");
-    }
-}
-*/
 
 //
 //  Stamina Costs
@@ -439,7 +432,7 @@ class DFPlayerStateServiceEventListeners extends DFSystemEventListener {
         //DFProfile();
 		super.OnLoad();
 
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemItemConsumedEvent", this, n"OnMainSystemItemConsumedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
     }
 
     private cb func OnMainSystemItemConsumedEvent(event: ref<MainSystemItemConsumedEvent>) {
@@ -475,6 +468,7 @@ public final class DFPlayerStateService extends DFSystem {
     private let BlackboardDefs: ref<AllBlackboardDefinitions>;
     private let HUDProgressBarBlackboard: ref<IBlackboard>;
     private let locomotionListener: ref<CallbackHandle>;
+    private let blackoutFactListener: Uint32;
 
     private const let criticalNeedFXThreshold: Float = 10.0;
     private let playingCriticalNeedFX: Bool = false;
@@ -485,8 +479,10 @@ public final class DFPlayerStateService extends DFSystem {
     private const let addictionTreatmentEffectDurationInGameHours: Int32 = 12;
     public let addictionTreatmentDurationUpdateDelayID: DelayID;
     public let contextuallyDelayedAddictionWithdrawalAnimationDelayID: DelayID;
+    public let contextuallyDelayedBlackoutAnimationDelayID: DelayID;
     private let addictionTreatmentDurationUpdateIntervalInGameTimeSeconds: Float = 300.0;
     private let contextuallyDelayedAddictionWithdrawalAnimationDelayInterval: Float = 0.25;
+    private let contextuallyDelayedBlackoutAnimationDelayInterval: Float = 0.25;
 
     // Low Hydration Stamina Costs
 	private let playerHydrationPenalty02StaminaCostSprinting: Float = 0.035;
@@ -538,6 +534,7 @@ public final class DFPlayerStateService extends DFSystem {
     private func RegisterListeners() -> Void {
         //DFProfile();
         this.locomotionListener = this.PSMBlackboard.RegisterListenerInt(this.BlackboardDefs.PlayerStateMachine.Locomotion, this, n"OnLocomotionStateChanged");
+        this.blackoutFactListener = this.QuestsSystem.RegisterListener(this.GetStartBlackoutFactAction(), this, n"OnStartBlackoutFactChanged");
     }
     
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
@@ -546,11 +543,14 @@ public final class DFPlayerStateService extends DFSystem {
         //DFProfile();
         this.PSMBlackboard.UnregisterListenerInt(this.BlackboardDefs.PlayerStateMachine.Locomotion, this.locomotionListener);
 		this.locomotionListener = null;
+
+        this.QuestsSystem.UnregisterListener(this.GetStartBlackoutFactAction(), this.blackoutFactListener);
+        this.blackoutFactListener = 0u;
     }
 
     private func SetupDebugLogging() -> Void {
         //DFProfile();
-        this.debugEnabled = false;
+        this.debugEnabled = true;
     }
 
     public final func GetSystemToggleSettingValue() -> Bool {
@@ -627,6 +627,7 @@ public final class DFPlayerStateService extends DFSystem {
 		this.UnregisterOutOfBreathRecheckSprintCallback();
 		this.UnregisterOutOfBreathStopCallback();
         this.UnregisterContextuallyDelayedAddictionWithdrawalAnimation();
+        this.UnregisterContextuallyDelayedBlackoutAnimation();
     }
 
     public func OnTimeSkipStart() -> Void {
@@ -664,10 +665,10 @@ public final class DFPlayerStateService extends DFSystem {
             this.MainSystem.UpdateCodexEntries();
         }
 
-        if ArrayContains(changedSettings, "basicNeedThresholdValue1") ||
-           ArrayContains(changedSettings, "basicNeedThresholdValue2") ||
-           ArrayContains(changedSettings, "basicNeedThresholdValue3") ||
-           ArrayContains(changedSettings, "basicNeedThresholdValue4") {
+        if ArrayContains(changedSettings, "basicNeedThresholdValue1V2") ||
+           ArrayContains(changedSettings, "basicNeedThresholdValue2V2") ||
+           ArrayContains(changedSettings, "basicNeedThresholdValue3V2") ||
+           ArrayContains(changedSettings, "basicNeedThresholdValue4V2") {
 
             DFMainSystem.Get().CheckForInvalidConfiguration();
         }
@@ -1081,6 +1082,13 @@ public final class DFPlayerStateService extends DFSystem {
             return;
         }
 
+        // If playing another animation, wait until it is complete.
+        if this.AnimationService.IsAnyAnimPlaying() {
+            DFLog(this, "    Another animation is playing, checking again.");
+            this.RegisterContextuallyDelayedAddictionWithdrawalAnimation(addictionData);
+            return;
+        }
+
         // If the Game State is valid, but we're not in an allowed state to play animations, stop and do not retry.
         if !this.AnimationService.IsPlayerInAllowedStateForAddictionWithdrawalAnimation() {
             DFLog(this, "    Player is not in allowed state for withdrawal animation. Exiting!");
@@ -1095,16 +1103,20 @@ public final class DFPlayerStateService extends DFSystem {
 
         // Which addiction withdrawal is currently the most severe?
         let mostSevereAddiction: DFAddictionType = DFAddictionType.None;
+        let mostSevereAddictionWithdrawalNerveLimit: Float = 100.0;
         let mostSevereAddictionWithdrawalLevel: Int32 = 0;
 
         if this.Settings.withdrawalAnimationsEnabled {
-            if addictionData.nicotine.withdrawalLevel > 0 && addictionData.nicotine.withdrawalLevel >= mostSevereAddictionWithdrawalLevel && addictionData.nicotine.isWithdrawalLevelWorsened {
+            let nicotineNerveLimits: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveLimits();
+            let nicotineNerveLimit: Float = nicotineNerveLimits[addictionData.nicotine.withdrawalLevel];
+            if addictionData.nicotine.withdrawalLevel > 0 && nicotineNerveLimit <= mostSevereAddictionWithdrawalNerveLimit && addictionData.nicotine.isWithdrawalLevelWorsened {
                 DFLog(this, "    Nicotine withdrawal worsened...");
                 if addictionData.nicotine.withdrawalLevel == 2 || addictionData.nicotine.withdrawalLevel == 3 {
                     DFLog(this, "    Nicotine withdrawal = 2 or 3...");
                     if Equals(this.NicotineAddictionSystem.GetHasEverPlayedTier1WithdrawalAnim(), false) || RandRange(1, 100) <= this.Settings.withdrawalAnimationChance {
                         DFLog(this, "    We've never played Nicotine Withdrawal Stage 3 animation before, or, the random roll succeeded!");
                         mostSevereAddiction = DFAddictionType.Nicotine;
+                        mostSevereAddictionWithdrawalNerveLimit = nicotineNerveLimit;
                         mostSevereAddictionWithdrawalLevel = addictionData.nicotine.withdrawalLevel;
                     }
 
@@ -1113,18 +1125,22 @@ public final class DFPlayerStateService extends DFSystem {
                     if Equals(this.NicotineAddictionSystem.GetHasEverPlayedTier2WithdrawalAnim(), false) || RandRange(1, 100) <= this.Settings.withdrawalAnimationChance {
                         DFLog(this, "    We've never played Nicotine Withdrawal Stage 4 animation before, or, the random roll succeeded!");
                         mostSevereAddiction = DFAddictionType.Nicotine;
+                        mostSevereAddictionWithdrawalNerveLimit = nicotineNerveLimit;
                         mostSevereAddictionWithdrawalLevel = addictionData.nicotine.withdrawalLevel;
                     }
                 }
             }
 
-            if addictionData.alcohol.withdrawalLevel > 0 && addictionData.alcohol.withdrawalLevel >= mostSevereAddictionWithdrawalLevel && addictionData.alcohol.isWithdrawalLevelWorsened {
+            let alcoholNerveLimits: array<Float> = this.AlcoholAddictionSystem.GetAddictionNerveLimits();
+            let alcoholNerveLimit: Float = alcoholNerveLimits[addictionData.alcohol.withdrawalLevel];
+            if addictionData.alcohol.withdrawalLevel > 0 && alcoholNerveLimit <= mostSevereAddictionWithdrawalNerveLimit && addictionData.alcohol.isWithdrawalLevelWorsened {
                 DFLog(this, "    Alcohol withdrawal worsened...");
                 if addictionData.alcohol.withdrawalLevel == 2 || addictionData.alcohol.withdrawalLevel == 3 {
                     DFLog(this, "    Alcohol withdrawal = 2 or 3...");
                     if Equals(this.AlcoholAddictionSystem.GetHasEverPlayedTier1WithdrawalAnim(), false) || RandRange(1, 100) <= this.Settings.withdrawalAnimationChance {
                         DFLog(this, "    We've never played Alcohol Withdrawal Stage 3 animation before, or, the random roll succeeded!");
                         mostSevereAddiction = DFAddictionType.Alcohol;
+                        mostSevereAddictionWithdrawalNerveLimit = alcoholNerveLimit;
                         mostSevereAddictionWithdrawalLevel = addictionData.alcohol.withdrawalLevel;
                     }
 
@@ -1133,18 +1149,22 @@ public final class DFPlayerStateService extends DFSystem {
                     if Equals(this.AlcoholAddictionSystem.GetHasEverPlayedTier2WithdrawalAnim(), false) || RandRange(1, 100) <= this.Settings.withdrawalAnimationChance {
                         DFLog(this, "    We've never played Alcohol Withdrawal Stage 4 animation before, or, the random roll succeeded!");
                         mostSevereAddiction = DFAddictionType.Alcohol;
+                        mostSevereAddictionWithdrawalNerveLimit = alcoholNerveLimit;
                         mostSevereAddictionWithdrawalLevel = addictionData.alcohol.withdrawalLevel;
                     }
                 }
             }
 
-            if addictionData.narcotic.withdrawalLevel > 0 && addictionData.narcotic.withdrawalLevel >= mostSevereAddictionWithdrawalLevel && addictionData.narcotic.isWithdrawalLevelWorsened {
+            let narcoticNerveLimits: array<Float> = this.NarcoticAddictionSystem.GetAddictionNerveLimits();
+            let narcoticNerveLimit: Float = narcoticNerveLimits[addictionData.narcotic.withdrawalLevel];
+            if addictionData.narcotic.withdrawalLevel > 0 && narcoticNerveLimit <= mostSevereAddictionWithdrawalNerveLimit && addictionData.narcotic.isWithdrawalLevelWorsened {
                 DFLog(this, "    Narcotic withdrawal worsened...");
                 if addictionData.narcotic.withdrawalLevel == 2 || addictionData.narcotic.withdrawalLevel == 3 {
                     DFLog(this, "    Narcotic withdrawal = 2 or 3...");
                     if Equals(this.NarcoticAddictionSystem.GetHasEverPlayedTier1WithdrawalAnim(), false) || RandRange(1, 100) <= this.Settings.withdrawalAnimationChance {
                         DFLog(this, "    We've never played Narcotic Withdrawal Stage 3 animation before, or, the random roll succeeded!");
                         mostSevereAddiction = DFAddictionType.Narcotic;
+                        mostSevereAddictionWithdrawalNerveLimit = narcoticNerveLimit;
                         mostSevereAddictionWithdrawalLevel = addictionData.narcotic.withdrawalLevel;
                     }
 
@@ -1153,6 +1173,7 @@ public final class DFPlayerStateService extends DFSystem {
                     if Equals(this.NarcoticAddictionSystem.GetHasEverPlayedTier2WithdrawalAnim(), false) || RandRange(1, 100) <= this.Settings.withdrawalAnimationChance {
                         DFLog(this, "    We've never played Narcotic Withdrawal Stage 4 animation before, or, the random roll succeeded!");
                         mostSevereAddiction = DFAddictionType.Narcotic;
+                        mostSevereAddictionWithdrawalNerveLimit = narcoticNerveLimit;
                         mostSevereAddictionWithdrawalLevel = addictionData.narcotic.withdrawalLevel;
                     }
                 }
@@ -1162,7 +1183,7 @@ public final class DFPlayerStateService extends DFSystem {
         }
 
         if NotEquals(mostSevereAddiction, DFAddictionType.None) {
-            DFLog(this, "    We are going to play a Withdrawal Animation! mostSevereAddiction Type: " + ToString(mostSevereAddiction) + ", mostSevereAddictionWithdrawalLevel: " + ToString(mostSevereAddictionWithdrawalLevel));
+            DFLog(this, "    We are going to play a Withdrawal Animation! mostSevereAddiction Type: " + ToString(mostSevereAddiction) + ", mostSevereAddictionWithdrawalNerveLimit: " + ToString(mostSevereAddictionWithdrawalNerveLimit));
 
             // Clear any existing audio notifications.
             this.NotificationService.ClearOutOfCombatAudioNotifications();
@@ -1259,12 +1280,22 @@ public final class DFPlayerStateService extends DFSystem {
 		RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback.Create(addictionData), this.contextuallyDelayedAddictionWithdrawalAnimationDelayID, this.contextuallyDelayedAddictionWithdrawalAnimationDelayInterval);
 	}
 
+    private final func RegisterContextuallyDelayedBlackoutAnimation() -> Void {
+        //DFProfile();
+		RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedBlackoutAnimationDelayCallback.Create(), this.contextuallyDelayedBlackoutAnimationDelayID, this.contextuallyDelayedBlackoutAnimationDelayInterval);
+	}
+
     //
     // Unregistration
     //
     private final func UnregisterContextuallyDelayedAddictionWithdrawalAnimation() -> Void {
         //DFProfile();
 		UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedAddictionWithdrawalAnimationDelayID);
+	}
+
+    private final func UnregisterContextuallyDelayedBlackoutAnimation() -> Void {
+        //DFProfile();
+		UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedBlackoutAnimationDelayID);
 	}
 
     //
@@ -1277,7 +1308,6 @@ public final class DFPlayerStateService extends DFSystem {
             let shouldPlayCriticalFX: Bool = false;
             let hydrationValue: Float = this.HydrationSystem.GetNeedValue();
             let nutritionValue: Float = this.NutritionSystem.GetNeedValue();
-            let energyValue: Float = this.EnergySystem.GetNeedValue();
             let nerveValue: Float = this.NerveSystem.GetNeedValue();
 
             if this.Settings.hydrationLossIsFatal && hydrationValue <= this.criticalNeedFXThreshold && hydrationValue != -1.0 {
@@ -1285,10 +1315,6 @@ public final class DFPlayerStateService extends DFSystem {
             }
 
             if this.Settings.nutritionLossIsFatal && nutritionValue <= this.criticalNeedFXThreshold && nutritionValue != -1.0 {
-                shouldPlayCriticalFX = true;
-            }
-
-            if this.Settings.energyLossIsFatal && energyValue <= this.criticalNeedFXThreshold && energyValue != -1.0 {
                 shouldPlayCriticalFX = true;
             }
 
@@ -1391,6 +1417,115 @@ public final class DFPlayerStateService extends DFSystem {
             this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds = HoursToGameTimeSeconds(newDurationInGameTimeHours);
         }
     }
+
+    //
+    // Blackout
+    //
+    private final func GetStartBlackoutFactAction() -> CName {
+        return n"df_fact_start_blackout_anim";
+    }
+
+    private final func GetLastBlackoutHoursSleptFact() -> CName {
+        return n"df_fact_last_blackout_hours_slept";
+    }
+
+    // TODO - Don't play when playing other animations
+    public final func TryToStartBlackoutAnimation() -> Void {
+        //DFProfile();
+        if DFRunGuard(this) { return; }
+		DFLog(this, "-----------");
+        DFLog(this, "-----------");
+        DFLog(this, "TryToStartBlackoutAnimation");
+        DFLog(this, "-----------");
+        DFLog(this, "-----------");
+		
+		let gs: GameState = this.GameStateService.GetGameState(this);
+		if Equals(gs, GameState.Valid) {
+            DFLog(this, "    Game State is Valid, continuing.");
+        } else if Equals(gs, GameState.TemporarilyInvalid) {
+            DFLog(this, "    Game State is Temporarily Invalid, checking again.");
+            this.RegisterContextuallyDelayedBlackoutAnimation();
+            return;
+        }
+
+        // If playing another animation, wait until it is complete.
+        if this.AnimationService.IsAnyAnimPlaying() {
+            DFLog(this, "    Another animation is playing, checking again.");
+            this.RegisterContextuallyDelayedBlackoutAnimation();
+            return;
+        }
+
+        if !this.AnimationService.IsPlayerInAllowedStateForBlackoutAnimation() {
+            DFLog(this, "    Player is not in allowed state for blackout animation, checking again.");
+            this.RegisterContextuallyDelayedBlackoutAnimation();
+            return;
+        }
+
+        let vehicleObj: wref<VehicleObject>;
+		VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
+		if IsDefined(vehicleObj) {
+            DFLog(this, "    Pushing player off vehicle!");
+            let workspotSystem: ref<WorkspotGameSystem> = GameInstance.GetWorkspotSystem(GetGameInstance());
+            workspotSystem.UnmountFromVehicle(vehicleObj, this.player, false);
+
+        } else if this.IsFloorTooSteep() || !this.PlayerHasSpaceBehind(0.90, 1.50, 1.25) {
+            DFLog(this, "    Floor too steep or no room behind; playing blocked anim!");
+            this.QuestsSystem.SetFact(this.GetStartBlackoutFactAction(), 2);
+        } else {
+            DFLog(this, "    Playing full anim!");
+            this.QuestsSystem.SetFact(this.GetStartBlackoutFactAction(), 1);
+        }
+    }
+
+    private final func OnStartBlackoutFactChanged(value: Int32) -> Void {
+        if value == 0 {
+            // Calculate future hours.
+            let calculatedFutureHours: DFFutureHoursData = DFInteractionSystem.Get().GetCalculatedValuesForFutureHours(DFTimeSkipType.Blackout, GameTime.Hours(GameInstance.GetTimeSystem(GetGameInstance()).GetGameTime()));
+
+            // "Sleep"
+            let hoursSlept: Int32 = this.QuestsSystem.GetFact(this.GetLastBlackoutHoursSleptFact());
+            let tsd: DFTimeSkipData;
+            tsd.hoursSkipped = hoursSlept;
+            tsd.targetNeedValues = calculatedFutureHours.futureNeedsData[hoursSlept - 1];
+            tsd.targetAddictionValues = calculatedFutureHours.futureAddictionData[hoursSlept - 1];
+            tsd.targetHumanityLossValues = calculatedFutureHours.futureHumanityLossData[hoursSlept - 1];
+            tsd.timeSkipType = DFTimeSkipType.Blackout;
+            this.MainSystem.DispatchTimeSkipFinishedEvent(tsd);
+
+            // Standard time skip handling.
+            GameTimeUtils.FastForwardPlayerState(this.player);
+        }
+    }
+
+    private final func IsFloorTooSteep() -> Bool {
+        let floorAngle: Float;
+        if SpatialQueriesHelper.GetFloorAngle(this.player, floorAngle) && floorAngle >= TDB.GetFloat(t"AIGeneralSettings.maxAllowedIncapacitatedFloorAngle") {
+            return true;
+        };
+        return false;
+    }
+
+    private final func PlayerHasSpaceBehind(areaWidth: Float, areaLength: Float, areaHeight: Float) -> Bool {
+        let gameInstance = GetGameInstance();
+        let boxDimensions: Vector4;
+        let boxOrientation: EulerAngles;
+        let fitTestOvelap: TraceResult;
+        let overlapSuccessStatic: Bool;
+        let overlapSuccessVehicle: Bool;
+        let queryDirection = this.player.GetWorldForward() * -1.0;
+        queryDirection.Z = 0.00;
+        queryDirection = Vector4.Normalize(queryDirection);
+        boxDimensions.X = areaWidth * 0.50;
+        boxDimensions.Y = areaLength * 0.50;
+        boxDimensions.Z = areaHeight * 0.50;
+        let queryPosition: Vector4 = this.player.GetWorldPosition();
+        queryPosition.Z += boxDimensions.Z + 0.6;
+        queryPosition += boxDimensions.Y * queryDirection;
+        boxOrientation = Quaternion.ToEulerAngles(Quaternion.BuildFromDirectionVector(queryDirection));
+        overlapSuccessStatic = GameInstance.GetSpatialQueriesSystem(gameInstance).Overlap(boxDimensions, queryPosition, boxOrientation, n"Static", fitTestOvelap);
+        overlapSuccessVehicle = GameInstance.GetSpatialQueriesSystem(gameInstance).Overlap(boxDimensions, queryPosition, boxOrientation, n"Vehicle", fitTestOvelap);
+        return !overlapSuccessStatic && !overlapSuccessVehicle;
+  }
 }
 
 //

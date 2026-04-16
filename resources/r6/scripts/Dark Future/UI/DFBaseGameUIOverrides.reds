@@ -11,7 +11,10 @@ import DarkFuture.Settings.{
 }
 import DarkFuture.System.*
 import DarkFuture.Logging.*
-import DarkFuture.UI.DFHUDSystem
+import DarkFuture.UI.{
+	DFHUDSystem,
+	DFRadialMenuActiveEffectType
+}
 import DarkFuture.Addictions.{
 	DFAlcoholAddictionSystem,
 	DFNicotineAddictionSystem,
@@ -41,6 +44,7 @@ import DarkFuture.Utils.{
 //
 @wrapMethod(UIInventoryItemsManager)
 public final static func GetBlacklistedTags() -> array<CName> {
+	//DFProfile();
 	let filteredTags: array<CName> = wrappedMethod();
 	let settings: ref<DFSettings> = DFSettings.Get();
 
@@ -57,6 +61,7 @@ public final static func GetBlacklistedTags() -> array<CName> {
 //
 @wrapMethod(UIInventoryItemsManager)
 public final static func GetStashBlacklistedTags() -> array<CName> {
+	//DFProfile();
 	let settings: ref<DFSettings> = DFSettings.Get();
 	let tagList: array<CName> = wrappedMethod();
 	if settings.mainSystemEnabled && settings.noConsumablesInStash {
@@ -69,6 +74,7 @@ public final static func GetStashBlacklistedTags() -> array<CName> {
 //
 @addMethod(ItemTooltipHeaderController)
 public final func TryToShowAddictiveConsumableHeader(itemData: wref<gameItemData>) -> Void {
+	//DFProfile();
 	if itemData.HasTag(n"DarkFutureConsumableAddictive") {
 		let addictionLabel: String = "";
 		
@@ -104,6 +110,7 @@ public final func TryToShowAddictiveConsumableHeader(itemData: wref<gameItemData
 //
 @addMethod(ItemTooltipHeaderController)
 public final func TryToShowCombatConsumableHeader(itemData: wref<gameItemData>) -> Void {
+	//DFProfile();
 	if DFSettings.Get().mainSystemEnabled {
 		let itemType: gamedataItemType = itemData.GetItemType();
 		if Equals(itemType, gamedataItemType.Con_Inhaler) {
@@ -120,6 +127,7 @@ public final func TryToShowCombatConsumableHeader(itemData: wref<gameItemData>) 
 //
 @wrapMethod(ItemTooltipHeaderController)
 public func NEW_Update(data: wref<UIInventoryItem>) -> Void {
+	//DFProfile();
 	wrappedMethod(data);
 
 	let realItemData: wref<gameItemData> = data.GetRealItemData();
@@ -135,6 +143,7 @@ public func NEW_Update(data: wref<UIInventoryItem>) -> Void {
 //
 @wrapMethod(ItemTooltipHeaderController)
 public func Update(data: ref<MinimalItemTooltipData>) -> Void {
+	//DFProfile();
     wrappedMethod(data);
 
 	this.TryToShowCombatConsumableHeader(data.itemData);
@@ -144,6 +153,7 @@ public func Update(data: ref<MinimalItemTooltipData>) -> Void {
 //
 @wrapMethod(ItemTooltipBottomModule)
 public final static func ShouldDisplayPrice(displayContext: InventoryTooltipDisplayContext, isSellable: Bool, itemData: ref<gameItemData>, itemType: gamedataItemType, opt lootItemType: LootItemType) -> Bool {
+	//DFProfile();
 	let settings: ref<DFSettings> = DFSettings.Get();
 	if NotEquals(displayContext, InventoryTooltipDisplayContext.Vendor) && (Equals(settings.ammoWeightEnabledV2, DFAmmoWeightSetting.EnabledLimitedAmmo) || Equals(settings.ammoWeightEnabledV2, DFAmmoWeightSetting.EnabledUnlimitedAmmo)) && Equals(itemType, gamedataItemType.Con_Ammo) {
 		return true;
@@ -156,6 +166,7 @@ public final static func ShouldDisplayPrice(displayContext: InventoryTooltipDisp
 //
 @addMethod(ItemTooltipBottomModule)
 public final func TryToShowNewItemWeights(itemData: wref<gameItemData>) -> Void {
+	//DFProfile();
 	let isConsumable: Bool = itemData.HasTag(n"Consumable");
 	let isAmmo: Bool = itemData.HasTag(n"Ammo");
 
@@ -172,6 +183,7 @@ public final func TryToShowNewItemWeights(itemData: wref<gameItemData>) -> Void 
 //
 @wrapMethod(ItemTooltipBottomModule)
 public final func NEW_Update(data: wref<UIInventoryItem>, player: wref<PlayerPuppet>, m_overridePrice: Int32) -> Void {
+	//DFProfile();
 	wrappedMethod(data, player, m_overridePrice);
 	if DFSettings.Get().mainSystemEnabled {
 		this.TryToShowNewItemWeights(data.GetItemData());
@@ -182,6 +194,7 @@ public final func NEW_Update(data: wref<UIInventoryItem>, player: wref<PlayerPup
 //
 @replaceMethod(ItemQuantityPickerController)
 protected final func UpdateWeight() -> Void {
+	//DFProfile();
 	let itemData: ref<gameItemData>;
 	if IsDefined(this.m_inventoryItem) {
 		itemData = this.m_inventoryItem.GetItemData();
@@ -209,6 +222,7 @@ protected final func UpdateWeight() -> Void {
 //
 @wrapMethod(ItemCategoryFliter)
 public final static func IsOfCategoryType(filter: ItemFilterCategory, data: wref<gameItemData>) -> Bool {
+	//DFProfile();
 	let settings: ref<DFSettings> = DFSettings.Get();
 	if IsDefined(data) && settings.mainSystemEnabled && settings.newInventoryFilters {
 		if Equals(filter, ItemFilterCategory.Consumables) {
@@ -229,6 +243,7 @@ public final static func IsOfCategoryType(filter: ItemFilterCategory, data: wref
 //
 @wrapMethod(CraftingDataView)
 public func FilterItem(item: ref<IScriptable>) -> Bool {
+	//DFProfile();
 	let settings: ref<DFSettings> = DFSettings.Get();
 	if settings.mainSystemEnabled && settings.newInventoryFilters {
 		let itemRecord: ref<Item_Record>;
@@ -260,6 +275,7 @@ public func FilterItem(item: ref<IScriptable>) -> Bool {
 //
 @wrapMethod(ItemFilterCategories)
 public final static func GetLabelKey(filterType: ItemFilterCategory) -> CName {
+	//DFProfile();
 	let settings: ref<DFSettings> = DFSettings.Get();
 	if settings.mainSystemEnabled {
 		if settings.newInventoryFilters && Equals(filterType, ItemFilterCategory.Grenades) {
@@ -280,36 +296,38 @@ public final static func GetLabelKey(filterType: ItemFilterCategory) -> CName {
 // STATUS EFFECTS
 // ===================================================
 
-// buffListGameController - Selectively hide certain status icons based on settings.
+// buffListGameController - Selectively hide certain status icons.
 //
-/*
+
 @wrapMethod(buffListGameController)
 protected cb func OnBuffDataChanged(value: Variant) -> Bool {
+//DFProfile();
 	let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
     wrappedMethod(filteredBuffDataList);
 }
 
-// buffListGameController - Selectively hide certain status icons based on settings.
+// buffListGameController - Selectively hide certain status icons.
 //
 @wrapMethod(buffListGameController)
 protected cb func OnDeBuffDataChanged(value: Variant) -> Bool {
+//DFProfile();
 	let filteredBuffDataList: array<BuffInfo> = this.GetFilteredBuffList(value);
     wrappedMethod(filteredBuffDataList);
 }
 
-// buffListGameController - Selectively hide certain status icons based on settings.
+// buffListGameController - Selectively hide certain status icons.
 //
 @addMethod(buffListGameController)
 private final func GetFilteredBuffList(value: Variant) -> array<BuffInfo> {
-	let hideDFPersistentStatusIcons: Bool = DFSettings.Get().hidePersistentStatusIcons;
+	//DFProfile();
 	let buffDataList: array<BuffInfo> = FromVariant<array<BuffInfo>>(value);
 	let filteredBuffDataList: array<BuffInfo>;
 	
 	for buff in buffDataList {
 		let buffTags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buff.buffID).GameplayTags();
 		
-		if hideDFPersistentStatusIcons && ArrayContains(buffTags, n"DarkFutureCanHideOnBuffBar") {
-			// Filter out buffs that should be hidden on the buff bar regardless based on Dark Future settings.
+		if Equals(buffTags[0], n"DarkFutureCanHideOnBuffBar") {
+			// Filter out buffs that should be hidden on the buff bar.
 		} else {
 			ArrayPush(filteredBuffDataList, buff);
 		}
@@ -317,14 +335,13 @@ private final func GetFilteredBuffList(value: Variant) -> array<BuffInfo> {
 
 	return filteredBuffDataList;
 }
-*/
-
 
 // buffListGameController - Ignore certain effects when determining whether or not to display the Buff Bar. (Allows the Health Bar to hide.)
 //                          Avoid playing animations.
 //
 @replaceMethod(buffListGameController)
 private final func UpdateBuffDebuffList() -> Void {
+	//DFProfile();
     let buffList: array<BuffInfo>;
     let buffTimeRemaining: Float;
     let buffTimeTotal: Float;
@@ -387,6 +404,7 @@ private final func UpdateBuffDebuffList() -> Void {
 //
 @replaceMethod(inkCooldownGameController)
 public final func RequestCooldownVisualization(buffData: UIBuffInfo) -> Void {
+	//DFProfile();
 	let i: Int32;
 	// Edit Start
 	// -1.00 = Infinite Duration
@@ -410,12 +428,15 @@ public final func RequestCooldownVisualization(buffData: UIBuffInfo) -> Void {
 // ===================================================
 
 // The Status Effect list could sometimes erroneously display incorrect stack counts
-// on debuffs in the Status Effect / Quick Switch Wheel menu.
+// on debuffs in the Status Effect / Radial Wheel menu.
 //
 @replaceMethod(inkCooldownGameController)
 protected cb func OnEffectUpdate(v: Variant) -> Bool {
+	//DFProfile();
     let buffs: array<BuffInfo>;
     let debuffs: array<BuffInfo>;
+	let filteredBuffs: array<BuffInfo>;
+	let filteredDebuffs: array<BuffInfo>;
     let effect: UIBuffInfo;
     let effects: array<UIBuffInfo>;
     let i: Int32;
@@ -424,6 +445,23 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
     };
     if Equals(this.m_mode, ECooldownGameControllerMode.COOLDOWNS) {
       this.GetBuffs(buffs);
+	  // Edit Start
+	  // Filter the buff list.
+	  i = 0;
+	  while i < ArraySize(buffs) {
+		let tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
+		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+	      if NotEquals(tags[2], n"DarkFutureCondition") {
+			ArrayPush(filteredBuffs, buffs[i]);
+		  }
+	  	} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+		  if Equals(tags[2], n"DarkFutureCondition") {
+			ArrayPush(filteredBuffs, buffs[i]);
+		  }
+		}
+		i += 1;
+	  }
+	  // Edit End
       i = 0;
       while i < ArraySize(buffs) {
         if Equals(TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).StatusEffectType().Type(), gamedataStatusEffectType.PlayerCooldown) {
@@ -437,37 +475,71 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
     } else {
       this.GetBuffs(buffs);
       this.GetDebuffs(debuffs);
+	  // Edit Start
+	  // Filter the buff and debuff lists.
+	  i = 0;
+	  while i < ArraySize(buffs) {
+		let tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
+		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+	      if NotEquals(tags[2], n"DarkFutureCondition") {
+			ArrayPush(filteredBuffs, buffs[i]);
+		  }
+	  	} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+		  if Equals(tags[2], n"DarkFutureCondition") {
+			ArrayPush(filteredBuffs, buffs[i]);
+		  }
+		}
+		i += 1;
+	  }
+	  i = 0;
+	  while i < ArraySize(debuffs) {
+		let tags = TweakDBInterface.GetStatusEffectRecord(debuffs[i].buffID).GameplayTags();
+		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+	      if NotEquals(tags[2], n"DarkFutureCondition") {
+			ArrayPush(filteredDebuffs, debuffs[i]);
+		  }
+	  	} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+		  if Equals(tags[2], n"DarkFutureCondition") {
+			ArrayPush(filteredDebuffs, debuffs[i]);
+		  }
+		}
+		i += 1;
+	  }
+	  // Edit End
+
       i = 0;
-      while i < ArraySize(buffs) {
-        effect.buffID = buffs[i].buffID;
-        effect.timeRemaining = buffs[i].timeRemaining;
-        effect.stackCount = buffs[i].stackCount;
+      while i < ArraySize(filteredBuffs) {
+        effect.buffID = filteredBuffs[i].buffID;
+        effect.timeRemaining = filteredBuffs[i].timeRemaining;
+        effect.stackCount = filteredBuffs[i].stackCount;
         effect.isBuff = true;
         ArrayPush(effects, effect);
         i += 1;
       };
       i = 0;
-      while i < ArraySize(debuffs) {
-        effect.buffID = debuffs[i].buffID;
-        effect.timeRemaining = debuffs[i].timeRemaining;
+      while i < ArraySize(filteredDebuffs) {
+        effect.buffID = filteredDebuffs[i].buffID;
+        effect.timeRemaining = filteredDebuffs[i].timeRemaining;
 		// Edit Start
 		// Incorrectly references buffs[i].stackCount in base game.
-        effect.stackCount = debuffs[i].stackCount;
+        effect.stackCount = filteredDebuffs[i].stackCount;
 		// Edit End
         effect.isBuff = false;
         ArrayPush(effects, effect);
         i += 1;
       };
     };
+
     if ArraySize(effects) > 0 {
-      inkWidgetRef.SetVisible(this.m_cooldownTitle, true);
-      inkWidgetRef.SetVisible(this.m_cooldownContainer, true);
-      this.ParseBuffList(effects);
+        this.ParseBuffList(effects);
     };
-    if ArraySize(effects) == 0 {
+
+	// Edit Start
+    /*if ArraySize(effects) == 0 {
       inkWidgetRef.SetVisible(this.m_cooldownTitle, false);
       inkWidgetRef.SetVisible(this.m_cooldownContainer, false);
-    };
+    };*/
+	// Edit End
 }
 
 // SingleCooldownManager - Cache the gameplay tags, for efficiency. Fix the vertical alignment of the stack count in
@@ -478,6 +550,7 @@ private let m_gameplayTags: array<CName>;
 
 @wrapMethod(SingleCooldownManager)
 public final func ActivateCooldown(buffData: UIBuffInfo) -> Void {
+	//DFProfile();
 	wrappedMethod(buffData);
 
 	// Cache the gameplay tags, for efficiency.
@@ -495,6 +568,7 @@ public final func ActivateCooldown(buffData: UIBuffInfo) -> Void {
 //
 @wrapMethod(SingleCooldownManager)
 private final func SetTimeRemaining(time: Float) -> Void {
+	//DFProfile();
 	if time == -1.0 {
 		// Don't display duration text on effects with an infinite duration.
 		inkTextRef.SetText(this.m_timeRemaining, "");
@@ -508,6 +582,7 @@ private final func SetTimeRemaining(time: Float) -> Void {
 //
 @replaceMethod(SingleCooldownManager)
 public final func Update(timeLeft: Float, stackCount: Uint32) -> Void {
+	//DFProfile();
 	let fraction: Float;
     let updatedSize: Float;
 	// Edit Start
@@ -544,6 +619,7 @@ public final func Update(timeLeft: Float, stackCount: Uint32) -> Void {
 //
 @wrapMethod(SingleplayerMenuGameController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	let r = wrappedMethod();
 
 	let srh: wref<inkISystemRequestsHandler> = this.GetSystemRequestsHandler();
@@ -578,6 +654,7 @@ private let DarkFuture_ShouldResetIcon: Bool = false;
 //
 @wrapMethod(WarningMessageGameController)
 private final func UpdateWidgets() -> Void {
+	//DFProfile();
 	if this.m_simpleMessage.isShown && StrBeginsWith(this.m_simpleMessage.message, "DarkFutureMagicMessageString") {
 		this.DarkFuture_ShouldResetIcon = true;
 
@@ -626,6 +703,7 @@ private final func UpdateWidgets() -> Void {
 //
 @addMethod(WarningMessageGameController)
 private final func DarkFutureGetMessageTextFromMagicString(magicString: String) -> String {
+	//DFProfile();
 	switch magicString {
 		case "DarkFutureMagicMessageStringConditionInjury1":
 			return GetLocalizedTextByKey(n"DarkFutureConditionNotificationInjury01");
@@ -643,6 +721,14 @@ private final func DarkFutureGetMessageTextFromMagicString(magicString: String) 
 			return GetLocalizedTextByKey(n"DarkFutureConditionNotificationHumanityLoss03");
 		case "DarkFutureMagicMessageStringConditionHumanityLoss4":
 			return GetLocalizedTextByKey(n"DarkFutureConditionNotificationHumanityLoss04");
+		case "DarkFutureMagicMessageStringConditionBiocorruption1":
+			return GetLocalizedTextByKey(n"DarkFutureConditionNotificationBiocorruption01");
+		case "DarkFutureMagicMessageStringConditionBiocorruption2":
+			return GetLocalizedTextByKey(n"DarkFutureConditionNotificationBiocorruption02");
+		case "DarkFutureMagicMessageStringConditionBiocorruption3":
+			return GetLocalizedTextByKey(n"DarkFutureConditionNotificationBiocorruption03");
+		case "DarkFutureMagicMessageStringConditionBiocorruption4":
+			return GetLocalizedTextByKey(n"DarkFutureConditionNotificationBiocorruption04");
 		
 		default:
 			return "";
@@ -653,6 +739,7 @@ private final func DarkFutureGetMessageTextFromMagicString(magicString: String) 
 //
 @wrapMethod(WarningMessageGameController)
 protected cb func OnHidden(anim: ref<inkAnimProxy>) -> Bool {
+	//DFProfile();
 	let r: Bool = wrappedMethod(anim);
 
 	// Revert the TwinTone icon back to default, if it was changed before.
@@ -698,16 +785,19 @@ public class DFProgressCyberpsychosisMessageCallback extends DFDelayCallback {
 	public let warningMessageController: ref<WarningMessageGameController>;
 
 	public static func Create(warningMessageController: wref<WarningMessageGameController>) -> ref<DFDelayCallback> {
+		//DFProfile();
 		let self: ref<DFProgressCyberpsychosisMessageCallback> = new DFProgressCyberpsychosisMessageCallback();
 		self.warningMessageController = warningMessageController;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+		//DFProfile();
 		this.warningMessageController.DarkFutureCyberpsychosisMessageDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+		//DFProfile();
 		this.warningMessageController.ProgressCyberpsychosisMessage();
 	}
 }
@@ -716,6 +806,7 @@ public class DFProgressCyberpsychosisMessageCallback extends DFDelayCallback {
 //
 @addMethod(WarningMessageGameController)
 private final func RegisterProgressCyberpsychosisMessageCallback(opt long: Bool) -> Void {
+	//DFProfile();
 	let rand: Float = RandRangeF(-0.005, 0.01);
 
 	if long {
@@ -729,6 +820,7 @@ private final func RegisterProgressCyberpsychosisMessageCallback(opt long: Bool)
 //
 @addMethod(WarningMessageGameController)
 private final func UnregisterProgressCyberpsychosisMessageCallback() -> Void {
+	//DFProfile();
 	UnregisterDFDelayCallback(GameInstance.GetDelaySystem(GetGameInstance()), this.DarkFutureCyberpsychosisMessageDelayID);
 }
 
@@ -736,6 +828,7 @@ private final func UnregisterProgressCyberpsychosisMessageCallback() -> Void {
 //
 @addMethod(WarningMessageGameController)
 public final func ProgressCyberpsychosisMessage() -> Void {
+	//DFProfile();
 	this.DarkFutureCyberpsychosisMessageIndex += 1;
 	if this.DarkFutureCyberpsychosisMessageIndex < this.DarkFutureCyberpsychosisMessageIndexMax {
 		
@@ -800,6 +893,7 @@ public final func ProgressCyberpsychosisMessage() -> Void {
 //
 @wrapMethod(WarningMessageGameController)
 protected cb func OnShown(anim: ref<inkAnimProxy>) -> Bool {
+	//DFProfile();
 	if Equals(this.m_simpleMessage.message, GetLocalizedTextByKey(n"DarkFutureCyberpsychosisNotification0")) {
 		this.DarkFutureCyberpsychosisMessageIndex = 0;
 		this.ProgressCyberpsychosisMessage();
@@ -812,6 +906,7 @@ protected cb func OnShown(anim: ref<inkAnimProxy>) -> Bool {
 //
 @wrapMethod(WarningMessageGameController)
 protected cb func OnUnitialize() -> Bool {
+	//DFProfile();
 	wrappedMethod();
 	this.UnregisterProgressCyberpsychosisMessageCallback();
 }
@@ -824,6 +919,7 @@ protected cb func OnUnitialize() -> Bool {
 //
 @wrapMethod(ItemsNotificationQueue)
 protected cb func OnPlayerAttach(playerPuppet: ref<GameObject>) -> Bool {
+	//DFProfile();
 	// Store a reference to the Item Notification Queue on Dark Future's Notification Service.
 	DFNotificationService.Get().SetItemsNotificationQueue(this);
 
@@ -834,6 +930,7 @@ protected cb func OnPlayerAttach(playerPuppet: ref<GameObject>) -> Bool {
 //
 @addMethod(ItemsNotificationQueue)
 public final func PushDarkFutureProgressNotification(value: Int32, remainingPointsToLevelUp: Int32, barDelta: Int32, actualDelta: Int32, notificationColorTheme: CName, const notificationName: script_ref<String>, type: gamedataProficiencyType, currentLevel: Int32, isLevelMaxed: Bool) -> Void {
+	//DFProfile();
 	let notificationData: gameuiGenericNotificationData;
     let userData: ref<DFProgressionViewData>;
     let sum: Int32 = remainingPointsToLevelUp + value;
@@ -864,6 +961,7 @@ public final func PushDarkFutureProgressNotification(value: Int32, remainingPoin
 //
 @wrapMethod(InitializationSoundController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	if Equals(this.m_soundControlName, n"ExpPopup") && Equals(this.m_initializeSoundName, n"OnOpen") {
 		// Wait for ProgressionNotification to tell us what to play.
 		return false;
@@ -876,6 +974,7 @@ protected cb func OnInitialize() -> Bool {
 //
 @addMethod(InitializationSoundController)
 public final func DFOnInitialize() -> Bool {
+	//DFProfile();
 	if NotEquals(this.m_soundControlName, n"None") && NotEquals(this.m_initializeSoundName, n"None") {
       	this.PlaySound(this.m_soundControlName, this.m_initializeSoundName);
     };
@@ -885,6 +984,7 @@ public final func DFOnInitialize() -> Bool {
 //
 @replaceMethod(ProgressionNotification)
 public native func SetNotificationData(notificationData: ref<GenericNotificationViewData>) -> Void {
+	//DFProfile();
     let barEndSize: Vector2;
     let barStartSize: Vector2;
     this.m_expBarWidthSize = inkWidgetRef.GetWidth(this.m_expBar);
@@ -940,7 +1040,8 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
 	let expPlus: ref<inkText> = (inkWidgetRef.Get(this.m_expText).parentWidget as inkHorizontalPanel).GetWidgetByPathName(n"plus") as inkText;
 	if IsDefined(asProgressionViewData) {
 		if Equals(asProgressionViewData.type, IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureHumanityLoss"))) ||
-		   Equals(asProgressionViewData.type, IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureInjury"))) {
+		   Equals(asProgressionViewData.type, IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureInjury"))) ||
+		   Equals(asProgressionViewData.type, IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureBiocorruption"))) {
 			
 			// Hide the plus symbol when the value is decreasing.
 			let deltaToCheck: Int32 = IsDefined(asDFProgressionViewData) ? asDFProgressionViewData.actualDelta : this.progression_data.delta;
@@ -982,6 +1083,7 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
 //
 @addMethod(ProgressionNotification)
 public final func DFBarProgressAnim(animatingObject: inkWidgetRef, barStartSize: Vector2, barEndSize: Vector2) -> Void {
+	//DFProfile();
     let barProgress: ref<inkAnimDef> = new inkAnimDef();
     let sizeInterpolator: ref<inkAnimSize> = new inkAnimSize();
     sizeInterpolator.SetDuration(1.50);
@@ -1001,16 +1103,19 @@ public class DFProgressionNotificationBarAnimFinishDelay extends DFDelayCallback
 	public let ProgressionNotification: wref<ProgressionNotification>;
 
 	public static func Create(ProgressionNotification: wref<ProgressionNotification>) -> ref<DFDelayCallback> {
+		//DFProfile();
 		let self: ref<DFProgressionNotificationBarAnimFinishDelay> = new DFProgressionNotificationBarAnimFinishDelay();
 		self.ProgressionNotification = ProgressionNotification;
 		return self;
 	}
 
 	public func InvalidateDelayID() -> Void {
+		//DFProfile();
 		this.ProgressionNotification.DFProgressionNotificationBarAnimFinishDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+		//DFProfile();
 		this.ProgressionNotification.PlayAnim(n"outro");
 	}
 }
@@ -1025,11 +1130,13 @@ public let DFProgressionNotificationBarAnimFinishDelayInterval: Float = 3.0;
 
 @addMethod(ProgressionNotification)
 public final func RegisterDFProgressionNotificationBarAnimFinishDelay() -> Void {
+	//DFProfile();
 	RegisterDFDelayCallback(GameInstance.GetDelaySystem(GetGameInstance()), DFProgressionNotificationBarAnimFinishDelay.Create(this), this.DFProgressionNotificationBarAnimFinishDelayID, this.DFProgressionNotificationBarAnimFinishDelayInterval);
 }
 
 @addMethod(ProgressionNotification)
 protected cb func OnDFBarAnimationFinishDelay(anim: ref<inkAnimProxy>) -> Bool {
+	//DFProfile();
     this.RegisterDFProgressionNotificationBarAnimFinishDelay();
 }
 
@@ -1058,6 +1165,7 @@ public let DarkFutureCyberpsychosisStatValue: ref<inkText>;
 //
 @wrapMethod(RipperdocBarTooltip)
 public func SetData(tooltipData: ref<ATooltipData>) -> Void {
+	//DFProfile();
     wrappedMethod(tooltipData);
 
 	let settings: ref<DFSettings> = DFSettings.Get();
@@ -1267,6 +1375,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 //
 @addMethod(RipperdocMetersBase)
 public final func CreateDarkFutureConditionIndicator(root: ref<inkCompoundWidget>, iconPart: CName, color: DFHDRColor, leftMargin: Float, opt isBlocked: Bool, opt blockedMessage: CName) -> ref<inkText> {
+	//DFProfile();
 	// Create the Humanity Loss / Injury Multiplier Widget
 	
 	// Canvas
@@ -1392,6 +1501,7 @@ private let DarkFutureHumanityLossMultIndicatorIsBlocked: Bool = false;
 
 @wrapMethod(RipperdocMetersCapacity)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	wrappedMethod();
 
 	if DFSettings.Get().humanityLossConditionEnabled {
@@ -1405,6 +1515,7 @@ protected cb func OnInitialize() -> Bool {
 
 @wrapMethod(RipperdocMetersCapacity)
 private final func ConfigureBar(curEquippedCapacity: Int32, newEquippedCapacity: Int32, maxCapacity: Int32, overclockCapacity: Int32, isChange: Bool) -> Void {
+	//DFProfile();
 	wrappedMethod(curEquippedCapacity, newEquippedCapacity, maxCapacity, overclockCapacity, isChange);
 
 	if this.DarkFutureHumanityLossMultIndicatorIsBlocked { return; }
@@ -1453,6 +1564,7 @@ private let DarkFutureInjuryMultIndicatorPulse: ref<PulseAnimation>;
 
 @wrapMethod(RipperdocMetersArmor)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	wrappedMethod();
 
 	if DFSettings.Get().injuryConditionEnabled {
@@ -1464,6 +1576,7 @@ protected cb func OnInitialize() -> Bool {
 
 @wrapMethod(RipperdocMetersArmor)
 private final func SetArmorData(newEquippedArmor: Float, maxCurrentArmor: Float, maxArmorPossible: Float, maxDamageReduction: Float) -> Void {
+	//DFProfile();
 	wrappedMethod(newEquippedArmor, maxCurrentArmor, maxArmorPossible, maxDamageReduction);
 
 	if NotEquals(this.DarkFutureInjuryMultIndicatorValue, null) {
@@ -1478,6 +1591,7 @@ private final func SetArmorData(newEquippedArmor: Float, maxCurrentArmor: Float,
 
 @wrapMethod(RipperdocMetersArmor)
 private final func PreviewChange(change: Float, isHover: Bool, isCyberwareEquipped: Bool) -> Void {
+	//DFProfile();
 	wrappedMethod(change, isHover, isCyberwareEquipped);
 
 	if NotEquals(this.DarkFutureInjuryMultIndicatorValue, null) {

@@ -17,7 +17,8 @@ import DarkFuture.Utils.{
 import DarkFuture.Main.{
 	DFNeedsDatum,
 	DFNeedChangeDatum,
-	DFTimeSkipData
+	DFTimeSkipData,
+	DFTimeSkipType
 }
 import DarkFuture.Addictions.{
 	DFAlcoholAddictionSystem,
@@ -33,7 +34,7 @@ import DarkFuture.Services.{
 	DFNotificationService,
 	DFAudioCue,
 	DFVisualEffect,
-	DFUIDisplay,
+	DFBarUIDisplay,
 	DFMessage,
 	DFMessageContext,
 	DFNotification,
@@ -221,14 +222,12 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private const let boosterMemoryBlackMarketTraceNerveLossBonusMult: Float = 0.35;
 	private const let nervePercentToDeferPerHumanityLossLevel: Float = 0.25;
 
-	private let currentDangerDelayedNerveLoss: Float = 0.0;
 	public let currentNerveBreathingFXStage: Int32 = 0;
 
 	public let dangerUpdateDelayID: DelayID;
 	public let nerveBreathingDangerTransitionDelayID: DelayID;
 	public let nerveRegenDelayID: DelayID;
 	public let removeNarcoticFXDelayID: DelayID;
-	public let softCapMetFeedbackDelayID: DelayID;
 
 	private let updateMode: DFNerveSystemUpdateMode = DFNerveSystemUpdateMode.Time;
 
@@ -237,7 +236,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	private let nerveBreathingDangerTransitionDelayInterval: Float = 10.0;
 	private let nerveRegenDelayInterval: Float = 0.25;
 	private let removeNarcoticFXDelayInterval: Float = 60.0;
-	private let softCapMetFeedbackDelayInterval: Float = 1.0;
 
 	private let lastDangerState: DFPlayerDangerState;
 
@@ -587,7 +585,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 				notification.vfx = DFVisualEffect(n"hacking_interference_shot", null);
 			}
 
-			notification.ui = DFUIDisplay(DFHUDBarType.Nerve, true, false, false, false);
+			notification.needsUI = DFBarUIDisplay(DFHUDBarType.Nerve, true, false, false, false);
 			this.NotificationService.QueueNotification(notification);
 
 		} else if stage == 3 {
@@ -599,7 +597,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 				notification.vfx = DFVisualEffect(n"stagger_effect", null);
 			}
 
-			notification.ui = DFUIDisplay(DFHUDBarType.Nerve, true, false, false, false);
+			notification.needsUI = DFBarUIDisplay(DFHUDBarType.Nerve, true, false, false, false);
 			this.NotificationService.QueueNotification(notification);
 
 		} else if stage == 2 {
@@ -611,7 +609,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 				notification.vfx = DFVisualEffect(n"stagger_effect", null);
 			}
 
-			notification.ui = DFUIDisplay(DFHUDBarType.Nerve, false, true, false, false);
+			notification.needsUI = DFBarUIDisplay(DFHUDBarType.Nerve, false, true, false, false);
 			this.NotificationService.QueueNotification(notification);
 
 		} else if stage == 1 {
@@ -619,7 +617,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 				notification.sfx = DFAudioCue(n"ono_v_exhale_01", 20);
 			}
 
-			notification.ui = DFUIDisplay(DFHUDBarType.Nerve, false, true, false, false);
+			notification.needsUI = DFBarUIDisplay(DFHUDBarType.Nerve, false, true, false, false);
 			this.NotificationService.QueueNotification(notification);
 
 		} else if stage == 0 && !suppressRecoveryNotification {
@@ -635,7 +633,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			// Don't show the UI when recovering if it is the result of
 			// a nerve regen interaction.
 			if this.GetNerveRegenTarget() == 0.0 {
-				notification.ui = DFUIDisplay(DFHUDBarType.Nerve, false, true, false, false);
+				notification.needsUI = DFBarUIDisplay(DFHUDBarType.Nerve, false, true, false, false);
 			}
 			this.NotificationService.QueueNotification(notification);
 		}
@@ -685,6 +683,10 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		return this.Settings.nerveLossIsFatal;
 	}
 
+	private final func GetNeedSoftCapValue() -> Float {
+		return this.HumanityLossConditionSystem.GetCurrentNerveSoftCapFromHumanityLoss();
+	}
+
 	//
 	//	Overrides
 	//
@@ -714,79 +716,6 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 			DFHUDSystem.Get().nerveBar.SetHideLock();
 		}
-	}
-
-    //
-	//	RunGuard Protected Methods
-	//
-	public final func ChangeNeedValue(amount: Float, opt changeValueProps: DFChangeNeedValueProps) -> Void {
-		//DFProfile();
-		if DFRunGuard(this) { return; }
-		DFLog(this, "ChangeNeedValue: amount = " + ToString(amount) + ", changeValueProps = " + ToString(changeValueProps));
-
-		let needMax: Float = changeValueProps.maxOverride > 0.0 ? changeValueProps.maxOverride : this.GetCalculatedNeedMax();
-		let oldValue: Float = this.needValue;
-		let softCap: Float = this.HumanityLossConditionSystem.GetCurrentNerveSoftCapFromHumanityLoss();
-		let newValue: Float;
-
-		if amount > 0.0 && changeValueProps.isSoftCapRestrictedChange {
-			if oldValue < softCap {
-				// Clamp to the lowest cap. This will either increase the value (up to the soft cap), or lower it (to the max).
-				let lowestCap: Float = MinF(softCap, needMax);
-				newValue = ClampF(this.needValue + amount, 0.0, lowestCap);
-			} else {
-				// We are increasing, this is a soft cap restricted change, and we are already at or above the soft cap. Clamp to only the max while retaining the current value.
-				newValue = ClampF(this.needValue, 0.0, needMax);
-			}
-			
-		} else {
-			// We are not increasing, or we are increasing, but this is not a soft cap restricted change. Change the value clamped to the max.
-			newValue = ClampF(this.needValue + amount, 0.0, needMax);
-		}
-			
-		let change: Float = newValue - oldValue;
-		this.needValue = newValue;
-
-		this.needMax = needMax;
-
-		if changeValueProps.doNotUpdateUIIfNoChange && oldValue == newValue {
-			// Skip the HUD UI update. Allows the bar to fade out.
-
-		} else if amount > 0.0 && changeValueProps.isSoftCapRestrictedChange && newValue >= softCap {
-			// We are restoring Nerve from an activity, and are at the soft cap. Full bright the UI and display the lock (if softCap below 100) regardless of flag settings.
-			let uiFlags = changeValueProps.uiFlags;
-			this.UpdateNeedHUDUI(true, uiFlags.instantUIChange, true, true, true, softCap < 100.0);
-
-		} else {
-			let uiFlags = changeValueProps.uiFlags;
-			this.UpdateNeedHUDUI(uiFlags.forceMomentaryUIDisplay, uiFlags.instantUIChange, uiFlags.forceBright, uiFlags.momentaryDisplayIgnoresSceneTier, changeValueProps.isSoftCapRestrictedChange, false);
-		}
-
-		let stage: Int32 = this.GetNeedStage();
-		if NotEquals(stage, this.lastNeedStage) {
-			DFLog(this, "ChangeNeedValue: Last Need stage (" + ToString(this.lastNeedStage) + ") != current stage (" + ToString(stage) + "). Refreshing status effects and FX.");
-			this.RegisterStatusEffectRefreshDebounceCallback();
-
-			if !changeValueProps.skipFX {
-				this.UpdateNeedFX(changeValueProps.suppressRecoveryNotification);
-			}
-		}
-
-		if stage > this.lastNeedStage && this.lastNeedStage < 4 && stage == 4 {
-			this.QueueSevereNeedMessage();
-		}
-
-		this.CheckForCriticalNeed();
-		this.CheckIfBonusEffectsValid();
-		this.TryToShowTutorial();
-		
-		this.lastNeedStage = stage;
-
-		// TODOFUTURE: Removing this check crashes the game. Investigate.
-		if !changeValueProps.isMaxValueUpdate {
-			this.DispatchNeedValueChangedEvent(change, newValue, changeValueProps.isMaxValueUpdate, changeValueProps.fromDanger);
-		}
-		DFLog(this, "ChangeNeedValue: change: " + ToString(change) + ", newValue = " + ToString(newValue));
 	}
 
     //
@@ -916,7 +845,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		return amountToChange;
 	}
 
-    public final func GetNerveChangeFromDangerAndAccumulateDelayedAmount() -> Float {
+    public final func GetNerveChangeFromDanger() -> Float {
 		//DFProfile();
 		let baseNerveLossInDanger: Float;
 		let nerveLossBonusMult: Float = 1.0;
@@ -927,20 +856,16 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
 			} else if this.lastDangerState.BeingRevealed {
 				baseNerveLossInDanger = (this.nerveLossInDanger * (this.Settings.nerveLossRateWhenTracedPct / 100.0)) * -1.0;
+				// TODO - CONVERT TO COMPOSED
 				nerveLossBonusMult -= this.GetMemoryBoosterTraceNerveLossBonusMult();
 			}
 
 			let totalNerveLossBonusMult: Float = MaxF(nerveLossBonusMult, 0.0);
 			let nerveLossInDangerWithBonus: Float = baseNerveLossInDanger * totalNerveLossBonusMult;
+		
+			DFLog(this, "GetNerveChangeFromDanger() nerveLossInDangerWithBonus: " + ToString(nerveLossInDangerWithBonus));
 
-			let delayedPercentage: Float = this.nervePercentToDeferPerHumanityLossLevel * Cast<Float>(this.HumanityLossConditionSystem.GetConditionLevel());
-			let delayedAmount: Float = nerveLossInDangerWithBonus * delayedPercentage;
-
-			let totalNerveLoss: Float = nerveLossInDangerWithBonus - delayedAmount;
-			this.currentDangerDelayedNerveLoss += delayedAmount;
-			DFLog(this, "GetNerveChangeFromDangerAndAccumulateDelayedAmount() totalNerveLoss: " + ToString(totalNerveLoss) + ", delayedAmount: " + ToString(delayedAmount));
-
-			return totalNerveLoss;
+			return nerveLossInDangerWithBonus;
 		
 		} else {
 			// Failsafe - Not in danger, but this function was called anyway.
@@ -1005,7 +930,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 			this.RegisterNerveBreathingDangerTransitionCallback();
 
 			// Humanity Loss - Apply any delayed Nerve loss
-			if this.currentDangerDelayedNerveLoss != 0.0 {
+			if this.currentDelayedNeedLoss != 0.0 {
 				// Failsafe - Don't allow this to drop Nerve below a certain value
 				let currentNeedValue: Float = this.GetNeedValue();
 				let deltaToMinThreshold: Float = currentNeedValue - this.minDelayedNerveResult;
@@ -1018,13 +943,13 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 					changeValueProps.fromDanger = true;
 					changeValueProps.uiFlags = uiFlags;
 					
-					if deltaToMinThreshold >= AbsF(this.currentDangerDelayedNerveLoss) {
-						this.ChangeNeedValue(this.currentDangerDelayedNerveLoss, changeValueProps);
+					if deltaToMinThreshold >= AbsF(this.currentDelayedNeedLoss) {
+						this.ChangeNeedValue(this.currentDelayedNeedLoss, changeValueProps);
 					} else {
 						this.ChangeNeedValue(-deltaToMinThreshold, changeValueProps);
 					}
 				}
-				this.currentDangerDelayedNerveLoss = 0.0;
+				this.currentDelayedNeedLoss = 0.0;
 			}
         }
 
@@ -1041,9 +966,9 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		let nicotineNerveTargets: array<Float> = this.NicotineAddictionSystem.GetAddictionNerveLimits();
 		let narcoticNerveTargets: array<Float> = this.NarcoticAddictionSystem.GetAddictionNerveLimits();
 
-		let alcoholNerveTarget = alcoholNerveTargets[alcoholWithdrawalLevel];
-		let nicotineNerveTarget = nicotineNerveTargets[nicotineWithdrawalLevel];
-		let narcoticNerveTarget = narcoticNerveTargets[narcoticWithdrawalLevel];
+		let alcoholNerveTarget: Float = alcoholNerveTargets[alcoholWithdrawalLevel];
+		let nicotineNerveTarget: Float = nicotineNerveTargets[nicotineWithdrawalLevel];
+		let narcoticNerveTarget: Float = narcoticNerveTargets[narcoticWithdrawalLevel];
 		let cyberpsychoNerveTarget: Float = Cast<Float>(100u - StatusEffectHelper.GetStatusEffectByID(this.player, t"DarkFutureStatusEffect.Cyberpsychosis").GetStackCount());
 
 		if Equals(addictionTreatmentDuration, 0.0) {
@@ -1277,8 +1202,9 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		if this.GameStateService.IsValidGameState(this) {
 			let changeValueProps: DFChangeNeedValueProps;
 			changeValueProps.fromDanger = true;
+			changeValueProps.delayPercent = this.nervePercentToDeferPerHumanityLossLevel * Cast<Float>(this.HumanityLossConditionSystem.GetConditionLevel());
 
-			this.ChangeNeedValue(this.GetNerveChangeFromDangerAndAccumulateDelayedAmount(), changeValueProps);
+			this.ChangeNeedValue(this.GetNerveChangeFromDanger(), changeValueProps);
 		}
 
 		this.AutoSetUpdateMode();

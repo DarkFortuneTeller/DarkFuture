@@ -39,8 +39,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData:
   priority: -12
   floatValues: []
   intValues:
-    - 80
-    - 24
+    - 85
+    - 48
   nameValues: []
   stats: []
 
@@ -67,7 +67,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_Cessation:
     - AddictionWithdrawalCessation
     - AddictionWithdrawalCessationNicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -88,8 +87,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData:
   priority: -12
   floatValues: []
   intValues:
-    - 80
-    - 12
+    - 85
+    - 36
   nameValues: []
   stats: []
 
@@ -116,7 +115,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Nicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -137,8 +135,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression_UIData:
   priority: -12
   floatValues: []
   intValues:
-    - 80
-    - 1
+    - 85
+    - 2
   nameValues: []
   stats: []
 
@@ -165,7 +163,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Nicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -186,8 +183,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData:
   priority: -12
   floatValues: []
   intValues:
-    - 70
-    - 12
+    - 75
+    - 48
   nameValues: []
   stats: []
 
@@ -214,7 +211,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Nicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -235,8 +231,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression_UIData:
   priority: -12
   floatValues: []
   intValues:
-    - 70
-    - 1
+    - 75
+    - 2
   nameValues: []
   stats: []
 
@@ -263,7 +259,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Nicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -284,8 +279,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData:
   priority: -12
   floatValues: []
   intValues:
+    - 65
     - 60
-    - 24
   nameValues: []
   stats: []
 
@@ -312,7 +307,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Nicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -333,8 +327,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression_UIData:
   priority: -12
   floatValues: []
   intValues:
-    - 60
-    - 1
+    - 65
+    - 2
   nameValues: []
   stats: []
 
@@ -361,7 +355,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Nicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -382,8 +375,8 @@ DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData:
   priority: -12
   floatValues: []
   intValues:
-    - 50
-    - 24
+    - 55
+    - 72
   nameValues: []
   stats: []
 
@@ -410,7 +403,6 @@ DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression:
     - AddictionWithdrawalStage4
     - AddictionWithdrawalStage4Nicotine
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []

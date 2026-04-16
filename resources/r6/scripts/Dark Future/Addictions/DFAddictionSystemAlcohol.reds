@@ -26,10 +26,15 @@ import DarkFuture.Services.{
 	DFAudioCue,
 	DFNotification,
 	DFMessage,
-	DFMessageContext
+	DFMessageContext,
+	DFAddictionType
 }
 import DarkFuture.Needs.DFNerveSystem
 import DarkFuture.Addictions.DFAddictionSystemBase
+import DarkFuture.Conditions.{
+	DFBiocorruptionConditionSystem,
+	DFBiocorruptionConditionState
+}
 import DarkFuture.Settings.DFSettings
 
 class DFAlcoholAddictionSystemEventListener extends DFAddictionSystemEventListener {
@@ -42,7 +47,7 @@ class DFAlcoholAddictionSystemEventListener extends DFAddictionSystemEventListen
 		//DFProfile();
         super.OnLoad();
 
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemItemConsumedEvent", this, n"OnMainSystemItemConsumedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
     }
 
     private cb func OnMainSystemItemConsumedEvent(event: ref<MainSystemItemConsumedEvent>) {
@@ -56,10 +61,10 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 	private let alcoholAddictionMaxStage: Int32 = 4;
 	private let alcoholAddictionStageAdvanceAmounts: array<Float>;
 	private let alcoholAddictionNerveLimits: array<Float>;
-	private let alcoholAddictionBackoffDurationsInRealTimeMinutesByStage: array<Float>;
+	private let alcoholAddictionBackoffDurationsInGameTimeSecondsByStage: array<Float>;
 	private let alcoholAddictionMinStacksPerStage: array<Uint32>;
 	private let alcoholAddictionWithdrawalDurationsInGameTimeSeconds: array<Float>;
-	private let painTolerantMinStackCount: Uint32 = 4u;
+	private let alcoholBonusMinStackCount: Uint32 = 3u;
 
     //
     //  System Methods
@@ -80,7 +85,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
     //
 	private final func SetupDebugLogging() -> Void {
 		//DFProfile();
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 
 	public final func GetSystemToggleSettingValue() -> Bool {
@@ -97,11 +102,11 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 		//DFProfile();
 		this.alcoholAddictionWithdrawalDurationsInGameTimeSeconds = [
 			0.0,
-			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage1WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage2WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage3WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage4WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.alcoholAddictionCessationDurationInGameTimeHours)
+			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.alcoholAddictionCessationDurationInGameTimeHoursV2)
 		];
 		this.alcoholAddictionStageAdvanceAmounts = [
 			this.Settings.alcoholAddictionMinAmountStage1,
@@ -110,32 +115,32 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 			this.Settings.alcoholAddictionMinAmountStage4,
 			-1.0
 		];
-		this.alcoholAddictionBackoffDurationsInRealTimeMinutesByStage = [
+		this.alcoholAddictionBackoffDurationsInGameTimeSecondsByStage = [
 			0.0,
-			this.Settings.alcoholAddictionBackoffDurationStage1,
-			this.Settings.alcoholAddictionBackoffDurationStage2,
-			this.Settings.alcoholAddictionBackoffDurationStage3,
-			this.Settings.alcoholAddictionBackoffDurationStage4
+			this.Settings.alcoholAddictionBackoffDurationStage1V2 * 3600.0,
+			this.Settings.alcoholAddictionBackoffDurationStage2V2 * 3600.0,
+			this.Settings.alcoholAddictionBackoffDurationStage3V2 * 3600.0,
+			this.Settings.alcoholAddictionBackoffDurationStage4V2 * 3600.0
 		];
-		this.alcoholAddictionMinStacksPerStage = [0u, 2u, 3u, 4u, 4u];
-		this.alcoholAddictionNerveLimits = [100.0, 70.0, 55.0, 40.0, 25.0, 80.0];
+		this.alcoholAddictionMinStacksPerStage = [0u, 4u, 6u, 8u, 10u];
+		this.alcoholAddictionNerveLimits = [100.0, 80.0, 65.0, 50.0, 35.0, 80.0];
 		this.UpdateAlcoholWithdrawalEffectDisplayData();
 	}
 
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
 		//DFProfile();
-		if ArrayContains(changedSettings, "alcoholAddictionStage1WithdrawalDurationInGameTimeHours") ||
-		   ArrayContains(changedSettings, "alcoholAddictionStage2WithdrawalDurationInGameTimeHours") || 
-		   ArrayContains(changedSettings, "alcoholAddictionStage3WithdrawalDurationInGameTimeHours") || 
-		   ArrayContains(changedSettings, "alcoholAddictionStage4WithdrawalDurationInGameTimeHours") || 
-		   ArrayContains(changedSettings, "alcoholAddictionCessationDurationInGameTimeHours") {
+		if ArrayContains(changedSettings, "alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2") ||
+		   ArrayContains(changedSettings, "alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "alcoholAddictionCessationDurationInGameTimeHoursV2") {
 			this.alcoholAddictionWithdrawalDurationsInGameTimeSeconds = [
 				0.0,
-				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage1WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage2WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage3WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage4WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.alcoholAddictionCessationDurationInGameTimeHours)
+				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.alcoholAddictionCessationDurationInGameTimeHoursV2)
 			];
 			this.UpdateAlcoholWithdrawalEffectDisplayData();
 			
@@ -166,22 +171,22 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 				}
 		}
 
-		if ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage1") || 
-			ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage2") || 
-			ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage3") || 
-			ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage4") {
+		if ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage1V2") || 
+			ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage2V2") || 
+			ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage3V2") || 
+			ArrayContains(changedSettings, "alcoholAddictionBackoffDurationStage4V2") {
 
-				this.alcoholAddictionBackoffDurationsInRealTimeMinutesByStage = [
+				this.alcoholAddictionBackoffDurationsInGameTimeSecondsByStage = [
 					0.0,
-					this.Settings.alcoholAddictionBackoffDurationStage1,
-					this.Settings.alcoholAddictionBackoffDurationStage2,
-					this.Settings.alcoholAddictionBackoffDurationStage3,
-					this.Settings.alcoholAddictionBackoffDurationStage4
+					this.Settings.alcoholAddictionBackoffDurationStage1V2 * 3600.0,
+					this.Settings.alcoholAddictionBackoffDurationStage2V2 * 3600.0,
+					this.Settings.alcoholAddictionBackoffDurationStage3V2 * 3600.0,
+					this.Settings.alcoholAddictionBackoffDurationStage4V2 * 3600.0
 				];
 
 				if IsSystemEnabledAndRunning(this) {
-					if this.remainingBackoffDurationInGameTimeSeconds > this.alcoholAddictionBackoffDurationsInRealTimeMinutesByStage[this.GetAddictionStage()] {
-						this.remainingBackoffDurationInGameTimeSeconds = (this.alcoholAddictionBackoffDurationsInRealTimeMinutesByStage[this.GetAddictionStage()] * this.Settings.timescale) * 60.0;
+					if this.remainingBackoffDurationInGameTimeSeconds > this.alcoholAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()] {
+						this.remainingBackoffDurationInGameTimeSeconds = this.alcoholAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()];
 					}
 				}
 		}
@@ -237,9 +242,9 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
         return this.alcoholAddictionNerveLimits;
     }
 
-	public func GetAddictionBackoffDurationsInRealTimeMinutesByStage() -> array<Float> {
+	public func GetAddictionBackoffDurationsInGameTimeSecondsByStage() -> array<Float> {
 		//DFProfile();
-        return this.alcoholAddictionBackoffDurationsInRealTimeMinutesByStage;
+        return this.alcoholAddictionBackoffDurationsInGameTimeSecondsByStage;
     }
 
 	public final func GetAddictionAmountLossPerDay() -> Float {
@@ -302,19 +307,6 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 			let alcoholEffect: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.player, t"BaseStatusEffect.Drunk");
 			if IsDefined(alcoholEffect) {
 				let alcoholStackCount: Uint32 = alcoholEffect.GetStackCount();
-
-				// Pain Tolerant Status
-				if IsSystemEnabledAndRunning(this.NerveSystem) {
-					if this.CyberwareService.GetAlcoholPainTolerantRequiredStacksOverride() > 0u {
-						if alcoholStackCount >= this.CyberwareService.GetAlcoholPainTolerantRequiredStacksOverride() {
-							StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.PainTolerant");
-						}
-					} else {
-						if alcoholStackCount >= this.painTolerantMinStackCount {
-							StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.PainTolerant");
-						}
-					}
-				}
 
 				// Addiction-Specific - Only continue if system running.
 				if DFRunGuard(this) { return; }
@@ -407,6 +399,10 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 		return n"df_fact_action_set_therapy_addiction_alcohol_state_index";
     }
 
+	private final func GetAddictionType() -> DFAddictionType {
+		return DFAddictionType.Alcohol;
+    }
+
     //
     //  System-Specific Methods
     //
@@ -451,38 +447,58 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 //	Base Game Methods
 //
 
-//	PlayerPuppet - Scale the tiered Drunk effect up to 4 stacks.
-//
-@replaceMethod(PlayerPuppet)
+@wrapMethod(PlayerPuppet)
 private final func ProcessTieredDrunkEffect(evt: ref<StatusEffectEvent>) -> Void {
-	//DFProfile();
-	let stackCount: Int32;
-    let drunkID: TweakDBID = t"BaseStatusEffect.Drunk";
-    if evt.staticData.GetID() == drunkID {
-		stackCount = Cast<Int32>(StatusEffectHelper.GetStatusEffectByID(this, drunkID).GetStackCount());
-		GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drunk_level_1");
-		GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drunk_level_2");
-		GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drunk_level_3");
-		GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drugged_low");
-		GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 0.00);
+	if DFSettings.Get().mainSystemEnabled {
+		//DFProfile();
+		let stackCount: Int32;
+		let drunkID: TweakDBID = t"BaseStatusEffect.Drunk";
+		if evt.staticData.GetID() == drunkID {
+			stackCount = Cast<Int32>(StatusEffectHelper.GetStatusEffectByID(this, drunkID).GetStackCount());
+			GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drunk_level_1");
+			GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drunk_level_2");
+			GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drunk_level_3");
+			GameObjectEffectHelper.BreakEffectLoopEvent(this, n"status_drugged_low");
+			GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 0.00);
 
-		switch stackCount {
-			case 1:
-				GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_1");
-				GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 1.00);
-				break;
-			case 2:
-				GameObjectEffectHelper.StartEffectEvent(this, n"status_drugged_low");
-				GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 2.00);
-				break;
-			case 3:
-				GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_2");
-				GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 2.00);
-				break;
-			case 5:
-			case 4:
-				GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_3");
-				GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 3.00);
+			switch stackCount {
+				case 1:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_1");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 1.00);
+					break;
+				case 2:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drugged_low");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 2.00);
+					break;
+				case 3:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_2");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 2.00);
+					break;
+				case 4:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_3");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 3.00);
+					break;
+				case 5:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_2");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 2.00);
+					break;
+				case 6:
+				case 7:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_3");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 3.00);
+					break;
+				case 8:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_2");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 2.00);
+					break;
+				case 9:
+				case 10:
+					GameObjectEffectHelper.StartEffectEvent(this, n"status_drunk_level_3");
+					GameObject.SetAudioParameter(this, n"vfx_fullscreen_drunk_level", 3.00);
+					break;
+			};
 		};
-    };
+	} else {
+		wrappedMethod(evt);
+	}
 }

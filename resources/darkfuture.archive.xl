@@ -21,6 +21,10 @@ quest:
       parent: df_combined_scope.quest
     - path: darkfuture\quest\phases\darkfuture_addiction_withdrawal_anim.questphase
       parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_blackout_anim.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_impaireddriving.questphase
+      parent: df_combined_scope.quest
     - path: darkfuture\quest\phases\darkfuture_therapy.questphase
       parent: df_combined_scope.quest
     - path: darkfuture\quest\phases\darkfuture_humanityloss_restore.questphase

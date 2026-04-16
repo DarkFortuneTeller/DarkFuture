@@ -24,12 +24,17 @@ import DarkFuture.Services.{
 	DFPlayerStateService,
 	DFAudioCue,
 	DFVisualEffect,
-	DFUIDisplay,
+	DFBarUIDisplay,
 	DFNotification,
 	DFNotificationCallback
 }
 import DarkFuture.UI.DFHUDBarType
 import DarkFuture.Settings.DFSettings
+import DarkFuture.Conditions.{
+	DFBiocorruptionConditionSystem,
+	DFBiocorruptionConditionState,
+	BiocorruptionConditionSystemApplyDelayedNeedLossEvent
+}
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
@@ -65,10 +70,25 @@ class DFNutritionSystemEventListener extends DFNeedSystemEventListener {
 		//DFProfile();
 		return DFNutritionSystem.Get();
 	}
+
+	public cb func OnLoad() {
+		//DFProfile();
+		super.OnLoad();
+
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<BiocorruptionConditionSystemApplyDelayedNeedLossEvent>(), this, n"OnBiocorruptionConditionSystemApplyDelayedNeedLossEvent", true);
+	}
+
+	private cb func OnBiocorruptionConditionSystemApplyDelayedNeedLossEvent(event: ref<BiocorruptionConditionSystemApplyDelayedNeedLossEvent>) {
+		//DFProfile();
+        this.GetSystemInstance().ApplyDelayedNeedLoss();
+    }
 }
 
 public final class DFNutritionSystem extends DFNeedSystemBase {
-	public let insufficientNeedFXStopDelayInterval: Float = 2.1;
+	let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
+
+	public const let insufficientNeedFXStopDelayInterval: Float = 2.1;
+	private const let nutritionPercentToDeferPerBiocorruptionLevel: Float = 0.25;
 
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFNutritionSystem> {
 		//DFProfile();
@@ -86,7 +106,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 	//
 	private func SetupDebugLogging() -> Void {
 		//DFProfile();
-		this.debugEnabled = false;
+		this.debugEnabled = true;
 	}
 	
 	public final func GetSystemToggleSettingValue() -> Bool {
@@ -112,6 +132,11 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		];
 	}
 
+	public final func GetSystems() -> Void {
+		super.GetSystems();
+		this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.Get();
+	}
+
     //
 	//  Required Overrides
 	//
@@ -119,7 +144,13 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		//DFProfile();
 		DFLog(this, "OnUpdateActual");
 		if !StatusEffectSystem.ObjectHasStatusEffect(this.player, this.GetBonusEffectTDBID()) {
-			this.ChangeNeedValue(this.GetNutritionChange());
+			let props: DFChangeNeedValueProps;
+			
+			if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Bonus) {
+				props.delayPercent = this.nutritionPercentToDeferPerBiocorruptionLevel * Cast<Float>(this.BiocorruptionConditionSystem.GetConditionLevel());
+			}
+			
+			this.ChangeNeedValue(this.GetNutritionChange(), props);
 		}
 	}
 
@@ -143,6 +174,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 			uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
 			changeNeedValueProps.uiFlags = uiFlags;
+			changeNeedValueProps.isSoftCapRestrictedChange = true;
 
 			this.ChangeNeedValue(this.GetClampedNeedChangeFromData(consumableNeedsData.nutrition), changeNeedValueProps);
 		}
@@ -175,7 +207,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 			if this.Settings.nutritionNeedVFXEnabled {
 				notification.vfx = DFVisualEffect(n"status_bleeding", DFNutritionSystemVFXStopCallback.Create());
 			}
-			notification.ui = DFUIDisplay(DFHUDBarType.Nutrition, true, false, false, false);
+			notification.needsUI = DFBarUIDisplay(DFHUDBarType.Nutrition, true, false, false, false);
 			this.NotificationService.QueueNotification(notification);
 
 		} else if stage == 2 || stage == 1 {
@@ -187,7 +219,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 				}
 			}
 
-			notification.ui = DFUIDisplay(DFHUDBarType.Nutrition, false, true, false, false);
+			notification.needsUI = DFBarUIDisplay(DFHUDBarType.Nutrition, false, true, false, false);
 			this.NotificationService.QueueNotification(notification);
 
 		} else if stage == 0 {
@@ -244,6 +276,15 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 
 	private final func GetNeedDeathSettingValue() -> Bool {
 		return this.Settings.nutritionLossIsFatal;
+	}
+
+	private final func GetNeedSoftCapValue() -> Float {
+		if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Crash) {
+			return this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption();
+		
+		} else {
+			return 100.0;
+		}
 	}
 
     //

@@ -24,6 +24,7 @@ public struct DFNeedsMenuBarSetupData {
     public let translationX: Float;
     public let translationY: Float;
     public let showEmptyBar: Bool;
+    public let hasLock: Bool;
 }
 
 public class DFNeedsMenuBar extends inkCanvas {
@@ -31,6 +32,7 @@ public class DFNeedsMenuBar extends inkCanvas {
 
     private let m_width: Float;
     private let m_height: Float;
+    private let m_hasLock: Bool;
 
     private let m_rootWidget: ref<inkCanvas>;
     private let m_icon: ref<inkImage>;
@@ -42,12 +44,23 @@ public class DFNeedsMenuBar extends inkCanvas {
     private let m_emptyBar: ref<inkRectangle>;
     private let m_changeBar: ref<inkRectangle>;
     private let m_valueLabel: ref<inkText>;
+    private let m_lock: ref<inkImage>;
+    private let m_shadow: ref<inkImage>;
+
+    private let m_showLock_anim: ref<inkAnimDef>;
+    private let m_showLock_lock_anim_proxy: ref<inkAnimProxy>;
+    private let m_showLock_shadow_anim_proxy: ref<inkAnimProxy>;
+    private let m_hideLock_anim: ref<inkAnimDef>;
+    private let m_hideLock_anim_proxy: ref<inkAnimProxy>;
+    private let m_hideLock_lock_anim_proxy: ref<inkAnimProxy>;
+    private let m_hideLock_shadow_anim_proxy: ref<inkAnimProxy>;
 
     private let m_originalValueLabelTintColor: HDRColor;
 
     private let m_originalValue: Float = 1.0;
     private let m_currentValue: Float = 1.0;
     private let m_previousValue: Float = 1.0;
+    private let m_lockShown: Bool = false;
 
     private let m_barContentHeight: Float = 8.0;
 
@@ -80,6 +93,45 @@ public class DFNeedsMenuBar extends inkCanvas {
         canvas.SetMargin(inkMargin(0.0, 0.0, this.m_setupData.canvasRightMargin, 0.0));
         this.m_rootWidget = canvas;
         canvas.Reparent(this.m_setupData.parent);
+
+        if this.m_setupData.hasLock {
+            this.m_hasLock = true;
+
+            let lock: ref<inkImage> = new inkImage();
+            lock.SetName(n"lock");
+            lock.SetFitToContent(true);
+            lock.SetAnchor(inkEAnchor.Centered);
+            lock.SetAnchorPoint(Vector2(0.5, 0.5));
+            lock.SetHAlign(inkEHorizontalAlign.Center);
+            lock.SetVAlign(inkEVerticalAlign.Center);
+            lock.SetMargin(70.0, 20.0, 0.0, 0.0);
+            lock.SetOpacity(0.0);
+            lock.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActiveMainRed));
+            lock.SetSize(Vector2(100.0, 32.0));
+            lock.SetAtlasResource(r"base\\gameplay\\gui\\common\\stamina_oxygen_bar\\stamina_oxygen_bar.inkatlas");
+            lock.SetTexturePart(n"ico_lock");
+            lock.Reparent(canvas);
+            this.m_lock = lock;
+
+            let shadow: ref<inkImage> = new inkImage();
+            shadow.SetName(n"shadow");
+            shadow.SetAffectsLayoutWhenHidden(true);
+            shadow.SetAnchor(inkEAnchor.Centered);
+            shadow.SetAnchorPoint(Vector2(0.5, 0.5));
+            shadow.SetHAlign(inkEHorizontalAlign.Center);
+            shadow.SetVAlign(inkEVerticalAlign.Center);
+            shadow.SetMargin(70.0, 20.0, 0.0, 0.0);
+            shadow.SetOpacity(0.0);
+            shadow.SetTintColor(HDRColor(0.0, 0.0, 0.0, 1.0));
+            shadow.SetSize(Vector2(150.0, 100.0));
+            shadow.SetAtlasResource(r"base\\gameplay\\gui\\common\\shadow_blobs.inkatlas");
+            shadow.SetTexturePart(n"shadowBlobText");
+            shadow.Reparent(canvas);
+            this.m_shadow = shadow;
+        
+        } else {
+            this.m_hasLock = false;
+        }
 
         let horizPanel: ref<inkHorizontalPanel> = new inkHorizontalPanel();
         horizPanel.SetName(n"horizPanel");
@@ -231,7 +283,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         this.m_originalValue = ClampF(value, 0.0, 100.0);
     }
 
-    public final func SetUpdatedValue(newValue: Float, max: Float) -> Void {
+    public final func SetUpdatedValue(newValue: Float, max: Float, opt showLock: Bool) -> Void {
         //DFProfile();
         this.m_valueLabel.SetText(ToString(Cast<Int32>(ClampF(newValue, 0.0, max))));
 
@@ -260,6 +312,12 @@ public class DFNeedsMenuBar extends inkCanvas {
             this.m_valueLabel.SetTintColor(this.m_originalValueLabelTintColor);
             this.m_fullBar.SetSize(Vector2((this.m_width * this.m_previousValue) - 2.0, this.m_barContentHeight));
             this.m_changeBar.SetSize(Vector2(0.0, this.m_barContentHeight));
+        }
+
+        if showLock {
+            this.SetShowLock();
+        } else {
+            this.SetHideLock();
         }
     }
 
@@ -301,5 +359,83 @@ public class DFNeedsMenuBar extends inkCanvas {
 
         this.m_emptyBar.SetShear(Vector2(shear, 0.0));
         this.m_changeBar.SetShear(Vector2(shear, 0.0));
+    }
+
+    private final func StopAnimProxyIfDefined(animProxy: ref<inkAnimProxy>) -> Void {
+        //DFProfile();
+        if IsDefined(animProxy) {
+            animProxy.Stop();
+        }
+    }
+
+    public final func HasLock() -> Bool {
+        //DFProfile();
+        return this.m_hasLock;
+    }
+
+    public final func SetShowLock() -> Void {
+        //DFProfile();
+        if !this.m_lockShown {
+            this.m_lockShown = true;
+
+            this.StopAnimProxyIfDefined(this.m_showLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_showLock_shadow_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_shadow_anim_proxy);
+
+            this.m_showLock_anim = new inkAnimDef();
+
+            let showLockScaleInterp: ref<inkAnimScale> = new inkAnimScale();
+            showLockScaleInterp.SetDuration(0.25);
+            showLockScaleInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            showLockScaleInterp.SetType(inkanimInterpolationType.Back);
+            showLockScaleInterp.SetStartScale(Vector2(1.5, 1.5));
+            showLockScaleInterp.SetEndScale(Vector2(1.0, 1.0));
+            this.m_showLock_anim.AddInterpolator(showLockScaleInterp);
+
+            let showLockTransparencyInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
+            showLockTransparencyInterp.SetDuration(0.24);
+            showLockTransparencyInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            showLockTransparencyInterp.SetType(inkanimInterpolationType.Quartic);
+            showLockTransparencyInterp.SetStartTransparency(0.0);
+            showLockTransparencyInterp.SetEndTransparency(1.0);
+            this.m_showLock_anim.AddInterpolator(showLockTransparencyInterp);
+
+            this.m_showLock_lock_anim_proxy = this.m_lock.PlayAnimation(this.m_showLock_anim);
+            this.m_showLock_shadow_anim_proxy = this.m_shadow.PlayAnimation(this.m_showLock_anim);
+        }
+    }
+
+    public final func SetHideLock() -> Void {
+        //DFProfile();
+        if this.m_lockShown {
+            this.m_lockShown = false;
+
+            this.StopAnimProxyIfDefined(this.m_showLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_showLock_shadow_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_lock_anim_proxy);
+            this.StopAnimProxyIfDefined(this.m_hideLock_shadow_anim_proxy);
+
+            this.m_hideLock_anim = new inkAnimDef();
+
+            let hideLockScaleInterp: ref<inkAnimScale> = new inkAnimScale();
+            hideLockScaleInterp.SetDuration(0.25);
+            hideLockScaleInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            hideLockScaleInterp.SetType(inkanimInterpolationType.Back);
+            hideLockScaleInterp.SetStartScale(Vector2(1.0, 1.0));
+            hideLockScaleInterp.SetEndScale(Vector2(1.5, 1.5));
+            this.m_hideLock_anim.AddInterpolator(hideLockScaleInterp);
+
+            let hideLockTransparencyInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
+            hideLockTransparencyInterp.SetDuration(0.24);
+            hideLockTransparencyInterp.SetMode(inkanimInterpolationMode.EasyOut);
+            hideLockTransparencyInterp.SetType(inkanimInterpolationType.Quartic);
+            hideLockTransparencyInterp.SetStartTransparency(1.0);
+            hideLockTransparencyInterp.SetEndTransparency(0.0);
+            this.m_hideLock_anim.AddInterpolator(hideLockTransparencyInterp);
+
+            this.m_hideLock_lock_anim_proxy = this.m_lock.PlayAnimation(this.m_hideLock_anim);
+            this.m_hideLock_shadow_anim_proxy = this.m_shadow.PlayAnimation(this.m_hideLock_anim);
+        }
     }
 }

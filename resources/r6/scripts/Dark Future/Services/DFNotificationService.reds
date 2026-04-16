@@ -14,12 +14,13 @@ import DarkFuture.Utils.IsCoinFlipSuccessful
 import DarkFuture.Main.DFTimeSkipData
 import DarkFuture.UI.{
 	DFHUDBarType,
+	DFHUDSegmentedIndicatorSegmentType,
 	DFConditionType
 }
 import DarkFuture.Conditions.{
 	DFInjuryConditionSystem,
-	DFHumanityLossConditionSystem
-	//DFBiocorruptionConditionSystem
+	DFHumanityLossConditionSystem,
+	DFBiocorruptionConditionSystem
 }
 
 /*
@@ -49,8 +50,8 @@ public enum DFMessageContext {
     NarcoticAddiction = 5,
 	InjuryCondition = 6,
 	HumanityLossCondition = 7,
-	Cyberpsychosis = 8
-	//BiocorruptionCondition = 9
+	Cyberpsychosis = 8,
+	BiocorruptionCondition = 9
 }
 
 public struct DFAudioCue {
@@ -63,12 +64,19 @@ public struct DFVisualEffect {
     public let stopCallback: ref<DFNotificationCallback>;
 }
 
-public struct DFUIDisplay {
+public struct DFBarUIDisplay {
 	public let bar: DFHUDBarType;
 	public let pulse: Bool;
 	public let forceBright: Bool;
 	public let ignoreSceneTier: Bool;
 	public let showLock: Bool;
+}
+
+public struct DFSegmentedIndicatorUIDisplay {
+	public let targetSegment: DFHUDSegmentedIndicatorSegmentType;
+	public let pulse: Bool;
+	public let forceBright: Bool;
+	public let ignoreSceneTier: Bool;
 }
 
 public struct DFMessage {
@@ -85,7 +93,7 @@ public struct DFMessage {
 public struct DFNotification {
     public let sfx: DFAudioCue;
     public let vfx: DFVisualEffect;
-	public let ui: DFUIDisplay;
+	public let needsUI: DFBarUIDisplay;
 	public let message: DFMessage;
 	public let progression: DFProgressionNotification;
 	public let callback: ref<DFNotificationCallback>;
@@ -118,7 +126,8 @@ public struct DFFactNameValue {
 public struct DFNotificationPlaybackSet {
 	public let sfxToPlay: DFAudioCue;
     public let vfxToPlay: array<DFVisualEffect>;
-	public let uiToShow: array<DFUIDisplay>;
+	public let needsUIToShow: array<DFBarUIDisplay>;
+	public let conditionsUIToShow: array<DFSegmentedIndicatorUIDisplay>;
 	public let messagesToShow: array<DFMessage>;
 	public let progressionsToShow: DFProgressionNotificationPlaybackSet;
 	public let factsToSet: array<DFFactNameValue>;
@@ -128,7 +137,7 @@ public struct DFNotificationPlaybackSet {
 public struct DFProgressionNotificationPlaybackSet {
 	public let injury: DFProgressionNotification;
 	public let humanityLoss: DFProgressionNotification;
-	//public let biocorruption: DFProgressionNotification;
+	public let biocorruption: DFProgressionNotification;
 }
 
 public struct DFTutorial {
@@ -230,17 +239,17 @@ public class DisplayNextTutorialDelayCallback extends DFDelayCallback {
 	}
 }
 
-public class DisplayHUDUIEvent extends CallbackSystemEvent {
-    private let data: DFUIDisplay;
+public class DisplayNeedsHUDUIEvent extends CallbackSystemEvent {
+    private let data: DFBarUIDisplay;
 
-    public func GetData() -> DFUIDisplay {
+    public func GetData() -> DFBarUIDisplay {
 		//DFProfile();
         return this.data;
     }
 
-    public static func Create(data: DFUIDisplay) -> ref<DisplayHUDUIEvent> {
+    public static func Create(data: DFBarUIDisplay) -> ref<DisplayNeedsHUDUIEvent> {
 		//DFProfile();
-        let event = new DisplayHUDUIEvent();
+        let event = new DisplayNeedsHUDUIEvent();
         event.data = data;
         return event;
     }
@@ -261,7 +270,7 @@ public final class DFNotificationService extends DFSystem {
 	private let PlayerStateService: ref<DFPlayerStateService>;
 	private let InjuryConditionSystem: ref<DFInjuryConditionSystem>;
 	private let HumanityLossConditionSystem: ref<DFHumanityLossConditionSystem>;
-	//private let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
+	private let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
 	
 	private let inCombatNotificationQueue: array<DFNotification>;
     private let outOfCombatNotificationQueue: array<DFNotification>;
@@ -303,6 +312,7 @@ public final class DFNotificationService extends DFSystem {
 		let largestConst: Int64 = EnumGetMax(n"gamedataProficiencyType");
 		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureHumanityLoss", largestConst + Cast<Int64>(1));
 		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureInjury", largestConst + Cast<Int64>(2));
+		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureBiocorruption", largestConst + Cast<Int64>(3));
 	}
 
 	private func RegisterListeners() -> Void {}
@@ -344,6 +354,7 @@ public final class DFNotificationService extends DFSystem {
 		this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
 		this.InjuryConditionSystem = DFInjuryConditionSystem.GetInstance(gameInstance);
 		this.HumanityLossConditionSystem = DFHumanityLossConditionSystem.GetInstance(gameInstance);
+		this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
 	}
 	
 	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -464,7 +475,8 @@ public final class DFNotificationService extends DFSystem {
         */
         let sfxToPlay: DFAudioCue = DFAudioCue(n"", 9999);
         let vfxToPlay: array<DFVisualEffect>;
-		let uiToShow: array<DFUIDisplay>;
+		let needsUIToShow: array<DFBarUIDisplay>;
+		let conditionsUIToShow: array<DFSegmentedIndicatorUIDisplay>;
 		let messagesToShow: array<DFMessage>;
 		let progressionsToShow: DFProgressionNotificationPlaybackSet;
 		let factsToSet: array<DFFactNameValue>;
@@ -505,9 +517,9 @@ public final class DFNotificationService extends DFSystem {
 				}
 			}
 
-			// UI
-			if NotEquals(notification.ui.bar, DFHUDBarType.None) {
-				ArrayPush(uiToShow, notification.ui);
+			// HUD UI
+			if NotEquals(notification.needsUI.bar, DFHUDBarType.None) {
+				ArrayPush(needsUIToShow, notification.needsUI);
 			}
 
 			// Progression
@@ -520,10 +532,10 @@ public final class DFNotificationService extends DFSystem {
 					if notification.progression.currentLevel > progressionsToShow.humanityLoss.currentLevel || (notification.progression.currentLevel == progressionsToShow.humanityLoss.currentLevel && notification.progression.value > progressionsToShow.humanityLoss.value) {
 						progressionsToShow.humanityLoss = notification.progression;
 					}
-				/*} else if Equals(EnumInt<gamedataProficiencyType>(notification.progression.type), Cast<Int32>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureBiocorruption"))) {
+				} else if Equals(EnumInt<gamedataProficiencyType>(notification.progression.type), Cast<Int32>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureBiocorruption"))) {
 					if notification.progression.currentLevel > progressionsToShow.biocorruption.currentLevel || (notification.progression.currentLevel == progressionsToShow.biocorruption.currentLevel && notification.progression.value > progressionsToShow.biocorruption.value) {
 						progressionsToShow.biocorruption = notification.progression;
-					}*/
+					}
 				}
 			}
 
@@ -561,12 +573,12 @@ public final class DFNotificationService extends DFSystem {
 				progressionsToShow.injury = emptyNotification;
 			} else if Equals(message.context, DFMessageContext.HumanityLossCondition) {
 				progressionsToShow.humanityLoss = emptyNotification;
-			/*} else if Equals(message.context, DFMessageContext.BiocorruptionCondition) {
-				progressionsToShow.biocorruption = emptyNotification;*/
+			} else if Equals(message.context, DFMessageContext.BiocorruptionCondition) {
+				progressionsToShow.biocorruption = emptyNotification;
 			}
 		}
 
-        let nps: DFNotificationPlaybackSet = DFNotificationPlaybackSet(sfxToPlay, vfxToPlay, uiToShow, messagesToShow, progressionsToShow, factsToSet, callbacks);
+        let nps: DFNotificationPlaybackSet = DFNotificationPlaybackSet(sfxToPlay, vfxToPlay, needsUIToShow, conditionsUIToShow, messagesToShow, progressionsToShow, factsToSet, callbacks);
 		this.PlayNotificationPlaybackSet(nps);
     }
 
@@ -590,8 +602,8 @@ public final class DFNotificationService extends DFSystem {
         }
 
 		// Display any requested UI.
-        for ui in nps.uiToShow {
-			GameInstance.GetCallbackSystem().DispatchEvent(DisplayHUDUIEvent.Create(ui));
+        for needsUI in nps.needsUIToShow {
+			GameInstance.GetCallbackSystem().DispatchEvent(DisplayNeedsHUDUIEvent.Create(needsUI));
 		}
 
 		// Display any messages.
@@ -613,10 +625,10 @@ public final class DFNotificationService extends DFSystem {
 			this.HumanityLossConditionSystem.SetLastDisplayedProgressionNotificationValue(nps.progressionsToShow.humanityLoss.value);
 		}
 
-		/*if NotEquals(nps.progressionsToShow.biocorruption.titleKey, n"") {
+		if NotEquals(nps.progressionsToShow.biocorruption.titleKey, n"") {
 			this.PushProgressionNotification(nps.progressionsToShow.biocorruption);
 			this.BiocorruptionConditionSystem.SetLastDisplayedProgressionNotificationValue(nps.progressionsToShow.biocorruption.value);
-		}*/
+		}
 
 		// Set any facts.
 		for fact in nps.factsToSet {

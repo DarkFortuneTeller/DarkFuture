@@ -128,11 +128,12 @@ protected cb func OnInitialize() -> Bool {
 	this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
 	this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
 	this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
+	let timeSystem: ref<TimeSystem> = GameInstance.GetTimeSystem(gameInstance);
 	
 	if this.Settings.mainSystemEnabled {
 		this.MainSystem.DispatchTimeSkipStartEvent();
 		this.timeSkipType = this.GetTimeskipType(this.NerveSystem.GetNeedStage());
-		this.calculatedFutureValues = this.InteractionSystem.GetCalculatedValuesForFutureHours(this.timeSkipType);
+		this.calculatedFutureValues = this.InteractionSystem.GetCalculatedValuesForFutureHours(this.timeSkipType, GameTime.Hours(timeSystem.GetGameTime()));
 	}
 
 	let value: Bool = wrappedMethod();
@@ -325,19 +326,19 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 
 	let barSetupData: DFNeedsMenuBarSetupData;
 
-	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 485.0, 100.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 485.0, 100.0, 0.0, 0.0, true, true);
 	this.nerveBar = new DFNeedsMenuBar();
 	this.nerveBar.Init(barSetupData);
 
-	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 485.0, 0.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 485.0, 0.0, 0.0, 0.0, true, true);
 	this.energyBar = new DFNeedsMenuBar();
 	this.energyBar.Init(barSetupData);
 
-	barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 485.0, 100.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 485.0, 100.0, 0.0, 0.0, true, false);
 	this.hydrationBar = new DFNeedsMenuBar();
 	this.hydrationBar.Init(barSetupData);
 	
-	barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 485.0, 0.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 485.0, 0.0, 0.0, 0.0, true, false);
 	this.nutritionBar = new DFNeedsMenuBar();
 	this.nutritionBar.Init(barSetupData);	
 }
@@ -384,20 +385,22 @@ private final func UpdateUI() -> Void {
 	let hydration: Float = this.calculatedFutureValues.futureNeedsData[index].hydration.value;
 	let nutrition: Float = this.calculatedFutureValues.futureNeedsData[index].nutrition.value;
 	let energy: Float = this.calculatedFutureValues.futureNeedsData[index].energy.value;
+	let energyCeiling: Float = this.calculatedFutureValues.futureNeedsData[index].energy.ceiling;
+	let showEnergyLock: Bool = this.calculatedFutureValues.futureNeedsData[index].energy.showLock;
 	let nerve: Float = this.calculatedFutureValues.futureNeedsData[index].nerve.value;
+	let showNerveLock: Bool = this.calculatedFutureValues.futureNeedsData[index].nerve.showLock;
 
 	this.hydrationBar.SetUpdatedValue(hydration, 100.0);
 	this.nutritionBar.SetUpdatedValue(nutrition, 100.0);
-	this.energyBar.SetUpdatedValue(energy, 100.0);
+	this.energyBar.SetUpdatedValue(energy, energyCeiling, showEnergyLock);
 	
 	let nerveMax: Float = this.calculatedFutureValues.futureNeedsData[index].nerve.ceiling;
-	this.nerveBar.SetUpdatedValue(nerve, nerveMax);
+	this.nerveBar.SetUpdatedValue(nerve, nerveMax, showNerveLock);
 	this.UpdateNerveBarLimit(nerveMax);
 
 	if (this.Settings.nerveLossIsFatal && nerve <= 1.0) ||
 	   (this.Settings.hydrationLossIsFatal && hydration <= 1.0) ||
-	   (this.Settings.nutritionLossIsFatal && nutrition <= 1.0) ||
-	   (this.Settings.energyLossIsFatal && energy <= 1.0) {
+	   (this.Settings.nutritionLossIsFatal && nutrition <= 1.0) {
 		this.timeskipAllowed = false;
 		timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonFatal";
 	} else if DFIsSleeping(this.timeSkipType) && this.NerveSystem.GetNeedStageAtValue(nerve) >= this.NerveSystem.insomniaNeedStageThreshold {
@@ -479,10 +482,14 @@ private final func UpdateUIDuringTimeskip(remainingHoursToSkip: Int32) -> Void {
 
 	this.hydrationBar.SetUpdatedValue(newHydration, 100.0);
 	this.nutritionBar.SetUpdatedValue(newNutrition, 100.0);
-	this.energyBar.SetUpdatedValue(newEnergy, 100.0);
+
+	let energyCeiling: Float = this.calculatedFutureValues.futureNeedsData[newIndex].energy.ceiling;
+	let showEnergyLock: Bool = this.calculatedFutureValues.futureNeedsData[newIndex].energy.showLock;
+	this.energyBar.SetUpdatedValue(newEnergy, energyCeiling, showEnergyLock);
 	
-	let nerveMax: Float = this.calculatedFutureValues.futureNeedsData[newIndex].nerve.ceiling;
-	this.nerveBar.SetUpdatedValue(newNerve, nerveMax);
+	let nerveCeiling: Float = this.calculatedFutureValues.futureNeedsData[newIndex].nerve.ceiling;
+	let showNerveLock: Bool = this.calculatedFutureValues.futureNeedsData[newIndex].nerve.showLock;
+	this.nerveBar.SetUpdatedValue(newNerve, nerveCeiling, showNerveLock);
 }
 
 @addMethod(TimeskipGameController)

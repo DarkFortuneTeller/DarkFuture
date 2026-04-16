@@ -6,6 +6,24 @@
 // - Handles mod-wide system startup and shutdown.
 //
 
+// BUG: Smoking in the japantown apartment makes a UI notification noise with Dark Future installed
+// BUG: Multiple addiction reductions at midnight cause multiple Biocorruption notifications
+// TEST: Energized lasts for X minutes. When it expires, all stacks and temporary Energy is removed at once.
+// TEST: Biocorruption mechanics
+// DONE: Alcohol stack rework
+// TEST: Narcotics stack rework
+// DONE: Withdrawal Nerve limits have been rebalanced; Nicotine addiction withdrawal can no longer interrupt sleep
+// DONE: Withdrawal animations are now triggered based on the withdrawal with the most severe Nerve limit, not the most advanced addiction
+// BUG: Energy lock appearance value in time skip appears to be wrong when biocorruption level changes during sleep
+// TODO: Rebalance Energy debuffs
+// TODO: Block anims against fx as well
+// TODO: When drinking would cause Energy to fall to 0, you immediately collapse instead of playing the drinking animation
+// TEST: Rebalance addiction withdrawal timelines
+// TODO: 24 hour crash timer
+// TODO: Real passage of time does not trigger delayed need loss application from Crash
+// TODO: No smoking option in the world. Missing metadata?
+// TODO: Hangout Romances, Hangout Romances add-on, Romance Hangouts Enhanced breaking HL restore on sleep
+
 // FUTURE: TEST: Don't repeat SFX / VFX if at the max of a value (Nerve) if that value is capped
 // FUTURE: TEST: add vfx_fullscreen_drugged_start, vfx_fullscreen_drugged_stop to drugged vfx
 // FUTURE: Night City Immersive Debris incompatibility?
@@ -33,7 +51,7 @@ import DarkFuture.Services.{
     DFPlayerStateService,
     DFAnimationService,
     DFTutorial,
-    DFUIDisplay,
+    DFBarUIDisplay,
     DFNotification
 }
 import DarkFuture.Gameplay.{
@@ -57,8 +75,9 @@ import DarkFuture.Addictions.{
 }
 import DarkFuture.Conditions.{
     DFInjuryConditionSystem,
-    DFHumanityLossConditionSystem
-    //DFBiocorruptionConditionSystem
+    DFHumanityLossConditionSystem,
+    DFBiocorruptionConditionSystem,
+    DFBiocorruptionConditionState
 }
 import DarkFuture.UI.{
     DFHUDSystem,
@@ -68,9 +87,11 @@ import DarkFuture.UI.{
 
 public struct DFNeedChangeDatum {
 	public let value: Float;
+    public let delayedValue: Float;
 	public let floor: Float;
 	public let ceiling: Float;
     public let valueOnStatusEffectApply: Float;
+    public let showLock: Bool;
 }
 
 public struct DFNeedsDatum {
@@ -82,6 +103,7 @@ public struct DFNeedsDatum {
 
 public struct DFAddictionUpdateDatum {
     public let addictionAmount: Float;
+    public let addictionAmountAsPercentage: Float;
     public let addictionStage: Int32;
     public let withdrawalLevel: Int32;
     public let remainingBackoffDuration: Float;
@@ -108,9 +130,11 @@ public struct DFFutureHoursData {
 }
 
 public enum DFTimeSkipType {
-    TimeSkip = 0,
-    FullSleep = 1,
-    LimitedSleep = 2
+    None = 0,
+    TimeSkip = 1,
+    FullSleep = 2,
+    LimitedSleep = 3,
+    Blackout = 4
 }
 
 public struct DFTimeSkipData {
@@ -123,7 +147,9 @@ public struct DFTimeSkipData {
 
 public enum DFTempEnergyItemType {
     Caffeine = 0,
-    Stimulant = 1
+    Stimulant = 1,
+    WeakAlcohol = 2,
+    StrongAlcohol = 3
 }
 
 @wrapMethod(RadialWheelController)
@@ -281,7 +307,7 @@ class DFMainSystemEventListeners extends ScriptableService {
 
 	public cb func OnLoad() {
         //DFProfile();
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Settings.SettingChangedEvent", this, n"OnSettingChangedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<SettingChangedEvent>(), this, n"OnSettingChangedEvent", true);
     }
 
     private cb func OnSettingChangedEvent(event: ref<SettingChangedEvent>) {
@@ -394,7 +420,7 @@ public final class DFMainSystem extends ScriptableSystem {
         // Conditions
         DFInjuryConditionSystem.GetInstance(gameInstance).Init(this.player);
         DFHumanityLossConditionSystem.GetInstance(gameInstance).Init(this.player);
-        //DFBiocorruptionConditionSystem.GetInstance(gameInstance).Init(this.player);
+        DFBiocorruptionConditionSystem.GetInstance(gameInstance).Init(this.player);
 
         // Nerve
         DFNerveSystem.GetInstance(gameInstance).Init(this.player);
@@ -470,7 +496,7 @@ public final class DFMainSystem extends ScriptableSystem {
         // Conditions
         DFInjuryConditionSystem.GetInstance(gameInstance).Resume();
         DFHumanityLossConditionSystem.GetInstance(gameInstance).Resume();
-        //DFBiocorruptionConditionSystem.GetInstance(gameInstance).Resume();
+        DFBiocorruptionConditionSystem.GetInstance(gameInstance).Resume();
 
         // Nerve
         DFNerveSystem.GetInstance(gameInstance).Resume();
@@ -509,7 +535,7 @@ public final class DFMainSystem extends ScriptableSystem {
         DFNerveSystem.GetInstance(gameInstance).Suspend();
 
         // Conditions
-        //DFBiocorruptionConditionSystem.GetInstance(gameInstance).Suspend();
+        DFBiocorruptionConditionSystem.GetInstance(gameInstance).Suspend();
         DFHumanityLossConditionSystem.GetInstance(gameInstance).Suspend();
         DFInjuryConditionSystem.GetInstance(gameInstance).Suspend();
         
@@ -641,9 +667,9 @@ public final class DFMainSystem extends ScriptableSystem {
 
     public final func CheckForInvalidConfiguration() -> Void {
         let settings: ref<DFSettings> = DFSettings.Get();
-        if settings.basicNeedThresholdValue1 > settings.basicNeedThresholdValue2 &&
-           settings.basicNeedThresholdValue2 > settings.basicNeedThresholdValue3 &&
-           settings.basicNeedThresholdValue3 > settings.basicNeedThresholdValue4 {
+        if settings.basicNeedThresholdValue1V2 > settings.basicNeedThresholdValue2V2 &&
+           settings.basicNeedThresholdValue2V2 > settings.basicNeedThresholdValue3V2 &&
+           settings.basicNeedThresholdValue3V2 > settings.basicNeedThresholdValue4V2 {
 
             // Valid.
         } else {
@@ -819,12 +845,12 @@ public final class DFMainSystem extends ScriptableSystem {
             );
 
             // Also ping the UI once on first start-up.
-            let uiToShow: DFUIDisplay;
+            let uiToShow: DFBarUIDisplay;
 			uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
 
             let oneTimeBarDisplay: DFNotification;
             oneTimeBarDisplay.allowPlaybackInCombat = false;
-            oneTimeBarDisplay.ui = uiToShow;
+            oneTimeBarDisplay.needsUI = uiToShow;
 
             DFNotificationService.Get().QueueNotification(oneTimeBarDisplay);
 		}

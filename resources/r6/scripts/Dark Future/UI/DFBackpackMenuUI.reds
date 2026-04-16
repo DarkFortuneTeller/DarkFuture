@@ -22,6 +22,10 @@ import DarkFuture.Addictions.{
 	DFNicotineAddictionSystem,
 	DFNarcoticAddictionSystem
 }
+import DarkFuture.Conditions.{
+	DFBiocorruptionConditionSystem,
+	DFBiocorruptionConditionState
+}
 import DarkFuture.Services.{
 	DFGameStateService,
 	DFPlayerStateService
@@ -60,6 +64,9 @@ private let NicotineAddictionSystem: wref<DFNicotineAddictionSystem>;
 
 @addField(BackpackMainGameController)
 private let NarcoticAddictionSystem: wref<DFNarcoticAddictionSystem>;
+
+@addField(BackpackMainGameController)
+private let BiocorruptionConditionSystem: wref<DFBiocorruptionConditionSystem>;
 
 @addField(BackpackMainGameController)
 private let barCluster: ref<inkVerticalPanel>;
@@ -108,6 +115,7 @@ protected cb func OnInitialize() -> Bool {
 	this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
 	this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
 	this.NarcoticAddictionSystem = DFNarcoticAddictionSystem.GetInstance(gameInstance);
+	this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
 
 	let parentWidget: ref<inkCompoundWidget> = this.GetRootCompoundWidget();
 	
@@ -133,10 +141,24 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
 				let itemRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID());
 				let needsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
-				// Show the increase in Hydration and Nutrition if player's Nerve is not too low.
+				// Show the increase in Hydration and Nutrition if player's Nerve is not too low or not impacted by Biocorruption.
 				if this.NerveSystem.GetHasNausea() {
+					// Player has nausea from low Nerve.
 					this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
 					this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), this.NutritionSystem.GetNeedMax());
+				} else if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Crash) {
+					// Player has Biocorruption Crash, which prevents Needs restoration.
+					let biocorruptionSoftCap: Float = this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption();
+					let showHydrationLock: Bool = ((this.HydrationSystem.GetNeedValue() + needsData.hydration.value) >= biocorruptionSoftCap) && (needsData.hydration.value > 0.0);
+					let showNutritionLock: Bool = ((this.NutritionSystem.GetNeedValue() + needsData.nutrition.value) >= biocorruptionSoftCap) && (needsData.nutrition.value > 0.0);
+					
+					if needsData.hydration.value > 0.0 {
+						this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption(), showHydrationLock);
+					}
+					if needsData.nutrition.value > 0.0 {
+						this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption(), showNutritionLock);
+					}
+					
 				} else {
 					this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, MinF(MaxF(needsData.hydration.ceiling, this.HydrationSystem.GetNeedValue()), this.HydrationSystem.GetNeedMax()));
 					this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, MinF(MaxF(needsData.nutrition.ceiling, this.NutritionSystem.GetNeedValue()), this.NutritionSystem.GetNeedMax()));
@@ -306,19 +328,19 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 
 	let barSetupData: DFNeedsMenuBarSetupData;
 
-	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true, false);
 	this.nerveBar = new DFNeedsMenuBar();
 	this.nerveBar.Init(barSetupData);
 
-	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false, true);
 	this.hydrationBar = new DFNeedsMenuBar();
 	this.hydrationBar.Init(barSetupData);
 	
-	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false, true);
 	this.nutritionBar = new DFNeedsMenuBar();
 	this.nutritionBar.Init(barSetupData);
 
-	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false);
+	barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false, false);
 	this.energyBar = new DFNeedsMenuBar();
 	this.energyBar.Init(barSetupData);
 }

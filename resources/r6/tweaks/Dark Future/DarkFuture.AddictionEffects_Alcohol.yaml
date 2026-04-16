@@ -53,8 +53,8 @@ DarkFutureStatusEffect.AlcoholWithdrawal_Cessation_UIData:
   floatValues: []
   intValues:
     - 80
-    - 2
-    - 24
+    - 4
+    - 48
   nameValues: []
   stats: []
 
@@ -81,7 +81,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_Cessation:
     - AddictionWithdrawalCessation
     - AddictionWithdrawalCessationAlcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -102,9 +101,9 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression_UIData:
   priority: -13
   floatValues: []
   intValues:
-    - 70
-    - 2
-    - 12
+    - 80
+    - 4
+    - 36
   nameValues: []
   stats: []
 
@@ -131,7 +130,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Alcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -152,9 +150,9 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression_UIData:
   priority: -13
   floatValues: []
   intValues:
-    - 70
+    - 80
+    - 4
     - 2
-    - 1
   nameValues: []
   stats: []
 
@@ -181,7 +179,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_WithProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Alcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -202,9 +199,9 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression_UIData:
   priority: -13
   floatValues: []
   intValues:
-    - 55
-    - 3
-    - 12
+    - 65
+    - 6
+    - 48
   nameValues: []
   stats: []
 
@@ -231,7 +228,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Alcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -252,9 +248,9 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression_UIData:
   priority: -13
   floatValues: []
   intValues:
-    - 55
-    - 3
-    - 1
+    - 65
+    - 6
+    - 2
   nameValues: []
   stats: []
 
@@ -281,7 +277,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_WithProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Alcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -302,9 +297,9 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression_UIData:
   priority: -13
   floatValues: []
   intValues:
-    - 40
-    - 4
-    - 24
+    - 50
+    - 8
+    - 60
   nameValues: []
   stats: []
 
@@ -331,7 +326,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Alcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -352,9 +346,9 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression_UIData:
   priority: -13
   floatValues: []
   intValues:
-    - 40
-    - 4
-    - 1
+    - 50
+    - 8
+    - 2
   nameValues: []
   stats: []
 
@@ -381,7 +375,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_WithProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Alcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -402,9 +395,9 @@ DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression_UIData:
   priority: -13
   floatValues: []
   intValues:
-    - 25
-    - 4
-    - 24
+    - 35
+    - 10
+    - 72
   nameValues: []
   stats: []
 
@@ -431,7 +424,6 @@ DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression:
     - AddictionWithdrawalStage4
     - AddictionWithdrawalStage4Alcohol
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []

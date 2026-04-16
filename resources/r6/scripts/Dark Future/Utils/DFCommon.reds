@@ -76,7 +76,7 @@ public func DFRunGuard(system: ref<DFSystem>, opt suppressLog: Bool) -> Bool {
 
 public func DFIsSleeping(timeSkipType: DFTimeSkipType) -> Bool {
     //DFProfile();
-    return NotEquals(timeSkipType, DFTimeSkipType.TimeSkip);
+    return Equals(timeSkipType, DFTimeSkipType.FullSleep) || Equals(timeSkipType, DFTimeSkipType.LimitedSleep) || Equals(timeSkipType, DFTimeSkipType.Blackout);
 }
 
 public func IsPlayerInBadlands(player: wref<PlayerPuppet>) -> Bool {

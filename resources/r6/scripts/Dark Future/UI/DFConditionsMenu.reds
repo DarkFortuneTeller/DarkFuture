@@ -10,8 +10,8 @@ module DarkFuture.UI
 import DarkFuture.Logging.*
 import DarkFuture.Conditions.{
     DFInjuryConditionSystem,
-    DFHumanityLossConditionSystem
-    //DFBiocorruptionConditionSystem
+    DFHumanityLossConditionSystem,
+    DFBiocorruptionConditionSystem
 }
 import DarkFuture.System.{
     DFSystem,
@@ -328,13 +328,13 @@ public class ConditionsLogicController extends inkLogicController {
                 }
             }
 
-            /*if IsSystemEnabledAndRunning(DFBiocorruptionConditionSystem.Get()) {
+            if IsSystemEnabledAndRunning(DFBiocorruptionConditionSystem.Get()) {
                 let biocorruptionDisplayData: ref<DFConditionDisplayData> = DFBiocorruptionConditionSystem.Get().GetConditionDisplayData(index);
                 if IsDefined(biocorruptionDisplayData) {
                     ArrayPush(this.virtualItems, biocorruptionDisplayData);
                     index += 1;
                 }
-            }*/
+            }
 
             this.m_dataSource.Reset(this.virtualItems);
         };

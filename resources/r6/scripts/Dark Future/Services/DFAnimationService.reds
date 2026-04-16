@@ -528,8 +528,11 @@ public final class DFAnimationService extends DFSystem {
     private let QuestsSystem: ref<QuestsSystem>;
     private let GameStateService: ref<DFGameStateService>;
 
+    public let animToken: Bool = false;
+    private let animTokenLock: RWLock;
+
     private let consumableAnimData: array<DFConsumableAnimDatum>;
-    private let queuedAnim: DFConsumableAnimDatum;
+    private let queuedConsumableAnim: DFConsumableAnimDatum;
     private let queuedFallbackFX: DFConsumableAnimFX;
     private let lootingController: ref<LootingController>;
 
@@ -560,7 +563,7 @@ public final class DFAnimationService extends DFSystem {
 
     private func SetupDebugLogging() -> Void {
         //DFProfile();
-        this.debugEnabled = false;
+        this.debugEnabled = true;
     }
 
     public func GetSystemToggleSettingValue() -> Bool {
@@ -575,7 +578,7 @@ public final class DFAnimationService extends DFSystem {
 
     public func DoPostSuspendActions() -> Void {
         //DFProfile();
-        this.ClearAnimQueue();
+        this.ClearConsumableAnimQueue();
     }
 
     public func DoPostResumeActions() -> Void {}
@@ -631,7 +634,7 @@ public final class DFAnimationService extends DFSystem {
 
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
         //DFProfile();
-        this.ClearAnimQueue();
+        this.ClearConsumableAnimQueue();
     }
 
     //
@@ -708,37 +711,37 @@ public final class DFAnimationService extends DFSystem {
             let newCooldownEntry: DFAnimCooldownEntry = DFAnimCooldownEntry(anim.subType, anim.propType, anim.propSubType, anim.cooldownExceptionType, anim.id, GameInstance.GetSimTime(GetGameInstance()).ToFloat());
             if this.IsAnimOnCooldownAndUpdateCooldownStack(newCooldownEntry) {
                 DFLog(this, "    RETURNING: On Cooldown");
-                this.QueueFallbackFX(anim.fallbackFX, this.queuedAnim);
+                this.QueueFallbackFX(anim.fallbackFX, this.queuedConsumableAnim);
                 return;
             }
         }
     
-        if NotEquals(this.queuedAnim.priority, this.GetInvalidAnimPriority()) {
-            if this.queuedAnim.priority < anim.priority {
+        if NotEquals(this.queuedConsumableAnim.priority, this.GetInvalidAnimPriority()) {
+            if this.queuedConsumableAnim.priority < anim.priority {
                 // Queued animation's priority was higher. Play this anim's fallback FX.
-                this.QueueFallbackFX(anim.fallbackFX, this.queuedAnim);
+                this.QueueFallbackFX(anim.fallbackFX, this.queuedConsumableAnim);
 
-            } else if this.queuedAnim.priority == anim.priority {
+            } else if this.queuedConsumableAnim.priority == anim.priority {
                 // Queued animation's priority was the same. Choose one at random.
                 if IsCoinFlipSuccessful() {
                     // We chose the new animation. Play the old queued animation's fallback FX.
-                    this.QueueFallbackFX(this.queuedAnim.fallbackFX, anim);
-                    this.queuedAnim = anim;
+                    this.QueueFallbackFX(this.queuedConsumableAnim.fallbackFX, anim);
+                    this.queuedConsumableAnim = anim;
                     this.RegisterProcessAnimQueueCallback();
 
                 } else {
                     // We chose the old animation. Play the new animation's fallback FX.
-                    this.QueueFallbackFX(anim.fallbackFX, this.queuedAnim);
+                    this.QueueFallbackFX(anim.fallbackFX, this.queuedConsumableAnim);
                 }
             } else {
                 // Queued animation's priority was less. Queue the new animation. Play the old queued animation's fallback FX.
-                this.QueueFallbackFX(this.queuedAnim.fallbackFX, anim);
-                this.queuedAnim = anim;
+                this.QueueFallbackFX(this.queuedConsumableAnim.fallbackFX, anim);
+                this.queuedConsumableAnim = anim;
                 this.RegisterProcessAnimQueueCallback();
             }
         } else {
             // The queued anim is in an initial, invalid state (is null). Queue this new animation.
-            this.queuedAnim = anim;
+            this.queuedConsumableAnim = anim;
             this.RegisterProcessAnimQueueCallback();
         }
 	}
@@ -952,25 +955,36 @@ public final class DFAnimationService extends DFSystem {
         return this.GetInvalidDFConsumableAnimDatum();
     }
 
-    private final func IsAnimPlaying() -> Bool {
-        //DFProfile();
+    public final func IsAnyAnimPlaying() -> Bool {
+        return this.IsConsumableAnimPlaying() || this.IsWithdrawalAnimPlaying() || this.IsBlackoutAnimPlaying();
+    }
+
+    private final func IsConsumableAnimPlaying() -> Bool {
         return this.QuestsSystem.GetFact(this.GetPlayQueuedAnimByIDActionQuestFact()) > 0 ? true : false;
     }
 
-    private final func PlayQueuedAnim() -> Void {
+    private final func IsWithdrawalAnimPlaying() -> Bool {
+        return this.QuestsSystem.GetFact(n"df_fact_start_addiction_withdrawal_anim") > 0 ? true : false;
+    }
+
+    private final func IsBlackoutAnimPlaying() -> Bool {
+        return this.QuestsSystem.GetFact(n"df_fact_start_blackout_anim") > 0 ? true : false;
+    }
+
+    private final func PlayQueuedConsumableAnim() -> Void {
         //DFProfile();
-        DFLog(this, "PlayQueuedAnim: Selected Type and ID: Type = " + ToString(this.queuedAnim.type) + ", ID = " + ToString(this.queuedAnim.id));
+        DFLog(this, "PlayQueuedConsumableAnim: Selected Type and ID: Type = " + ToString(this.queuedConsumableAnim.type) + ", ID = " + ToString(this.queuedConsumableAnim.id));
         // MISMATCH
-        this.QuestsSystem.SetFact(this.GetQueuedAnimTypeQuestFact(), EnumInt<DFAnimType>(this.queuedAnim.type));
-        this.QuestsSystem.SetFact(this.GetPlayQueuedAnimByIDActionQuestFact(), this.queuedAnim.id);
+        this.QuestsSystem.SetFact(this.GetQueuedAnimTypeQuestFact(), EnumInt<DFAnimType>(this.queuedConsumableAnim.type));
+        this.QuestsSystem.SetFact(this.GetPlayQueuedAnimByIDActionQuestFact(), this.queuedConsumableAnim.id);
     }
 
-    private final func ClearAnimQueue() -> Void {
+    private final func ClearConsumableAnimQueue() -> Void {
         //DFProfile();
-        this.queuedAnim = this.GetInvalidDFConsumableAnimDatum();
+        this.queuedConsumableAnim = this.GetInvalidDFConsumableAnimDatum();
     }
 
-    private final func ClearFallbackFXQueue() -> Void {
+    private final func ClearConsumableFallbackFXQueue() -> Void {
         //DFProfile();
         this.queuedFallbackFX = this.GetInvalidDFConsumableAnimFX();
     }
@@ -994,7 +1008,7 @@ public final class DFAnimationService extends DFSystem {
 
     public final func OnProcessAnimQueue() -> Void {
         //DFProfile();
-		if NotEquals(this.queuedAnim.type, DFAnimType.Invalid) {
+		if NotEquals(this.queuedConsumableAnim.type, DFAnimType.Invalid) {
 			this.ProcessAnimQueue();
 		}
 	}
@@ -1010,19 +1024,19 @@ public final class DFAnimationService extends DFSystem {
 
     private final func ProcessAnimQueue() -> Void {
         //DFProfile();
-        this.PlayQueuedAnim();
-        this.ClearAnimQueue();
+        this.PlayQueuedConsumableAnim();
+        this.ClearConsumableAnimQueue();
     }
 
     private final func ProcessFallbackFXQueue() -> Void {
         //DFProfile();
-        this.TryToPlayFallbackFX();
-        this.ClearFallbackFXQueue();
+        this.TryToPlayConsumableFallbackFX();
+        this.ClearConsumableFallbackFXQueue();
     }
 
-    private final func QueueFallbackFX(fx: DFConsumableAnimFX, opt queuedAnim: DFConsumableAnimDatum) -> Void {
+    private final func QueueFallbackFX(fx: DFConsumableAnimFX, opt queuedConsumableAnim: DFConsumableAnimDatum) -> Void {
         //DFProfile();
-        if Equals(queuedAnim.fallbackFX, fx) {
+        if Equals(queuedConsumableAnim.fallbackFX, fx) {
             // Avoid playing fallback effects for repeated use of the same consumable.
             return;
         }
@@ -1031,7 +1045,7 @@ public final class DFAnimationService extends DFSystem {
         this.RegisterProcessFallbackFXQueueCallback();
     }
 
-    public final func TryToPlayFallbackFX() -> Void {
+    public final func TryToPlayConsumableFallbackFX() -> Void {
         //DFProfile();
         if NotEquals(this.queuedFallbackFX.vfx, n"") {
             GameObjectEffectHelper.StartEffectEvent(this.player, this.queuedFallbackFX.vfx, false, null, false);
@@ -1090,7 +1104,7 @@ public final class DFAnimationService extends DFSystem {
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
 
         let validGameState: Bool = this.GameStateService.IsValidGameState(this);
-        let animPlaying: Bool = this.IsAnimPlaying();
+        let animPlaying: Bool = this.IsAnyAnimPlaying();
 
         let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).GetLocalInstanced(this.player.GetEntityID(), bbDefs.PlayerStateMachine);
         let upperBodyState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.UpperBody);
@@ -1268,6 +1282,97 @@ public final class DFAnimationService extends DFSystem {
         DFLog(this, "        isUploadingQuickhacks (Expected: false): " + ToString(isUploadingQuickhacks));
         DFLog(this, "        noDialogueChoiceHubsShown (Expected: true): " + ToString(noDialogueChoiceHubsShown));
         DFLog(this, "        isPlayerPursuedByNCPD (Expected: false): " + ToString(isPlayerPursuedByNCPD));
+
+        return false;
+    }
+
+    public final func IsPlayerInAllowedStateForBlackoutAnimation() -> Bool {
+        //DFProfile();
+        DFLog(this, "IsPlayerInAllowedStateForAddictionWithdrawalAnimation");
+        let gameInstance = GetGameInstance();
+        let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
+
+        let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).GetLocalInstanced(this.player.GetEntityID(), bbDefs.PlayerStateMachine);
+        let upperBodyState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.UpperBody);
+        let inLoreAnimationScene: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsInLoreAnimationScene);
+        let isCarryingBody: Bool = bboard.GetInt(bbDefs.PlayerStateMachine.BodyCarrying) > 0;
+        let isControllingDevice: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsControllingDevice);
+        let isControllingCamera: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsControllingCamera);
+        let isForceOpeningDoor: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsForceOpeningDoor);
+
+        let locomotionState: gamePSMDetailedLocomotionStates = IntEnum<gamePSMDetailedLocomotionStates>(bboard.GetInt(bbDefs.PlayerStateMachine.LocomotionDetailed));
+        let isLocomotionStateAllowed: Bool = Equals(locomotionState, gamePSMDetailedLocomotionStates.Stand) || Equals(locomotionState, gamePSMDetailedLocomotionStates.Crouch);
+        
+        let combatGadgetState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.CombatGadget);
+        let leftHandCyberwareState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.LeftHandCyberware);
+        
+        let isPlayerInsideElevator: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsPlayerInsideElevator);
+        let isPlayerInsideMovingElevator: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsPlayerInsideMovingElevator);
+        isPlayerInsideElevator = isPlayerInsideElevator || isPlayerInsideMovingElevator;
+        
+        let uploadingQuickHackIDs: array<TweakDBID> = FromVariant<array<TweakDBID>>(bboard.GetVariant(bbDefs.PlayerStateMachine.UploadingQuickHackIDs));
+        let isUploadingQuickhacks: Bool = ArraySize(uploadingQuickHackIDs) > 0;
+        
+        bboard = GameInstance.GetBlackboardSystem(gameInstance).Get(bbDefs.UIInteractions);
+        let dialogChoiceHubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(bboard.GetVariant(bbDefs.UIInteractions.DialogChoiceHubs));
+        let noDialogueChoiceHubsShown: Bool = ArraySize(dialogChoiceHubs.choiceHubs) == 0;
+
+        let variantData: Variant = bboard.GetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData);
+        let securityData: SecurityAreaData;
+        if IsDefined(variantData) {
+            securityData = FromVariant<SecurityAreaData>(variantData);
+        };
+
+        let isReplacer: Bool = this.player.IsReplacer();
+        let isPlayerInWorkspot: Bool = GameInstance.GetWorkspotSystem(gameInstance).IsActorInWorkspot(this.player);
+        let inAllowedVehicleState: Bool = !VehicleComponent.IsMountedToVehicle(gameInstance, this.player); // Or if they are, check other conditions.
+        let isPlayerPursuedByNCPD: Bool = this.player.GetPreventionSystem().IsChasingPlayer();
+        let blockTimeSkip: Bool = bboard.GetInt(bbDefs.PlayerStateMachine.Combat) == 1 || 
+                                  StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") || 
+                                  this.player.IsMovingVertically() || 
+                                  PlayerPuppet.IsSwimming(this.player) || 
+                                  securityData.securityAreaType > ESecurityAreaType.SAFE ||
+                                  GameInstance.GetPhoneManager(GetGameInstance()).IsPhoneCallActive() ||
+                                  bboard.GetBool(bbDefs.PlayerStateMachine.Carrying);
+
+        if  !isReplacer && 
+            !inLoreAnimationScene &&
+            !isCarryingBody &&
+            !isControllingDevice &&
+            !isControllingCamera &&
+            !isForceOpeningDoor &&
+            !isPlayerInWorkspot && 
+            upperBodyState != 4 && 
+            isLocomotionStateAllowed && 
+            combatGadgetState == 0 && 
+            leftHandCyberwareState == 0 && 
+            !isPlayerInsideElevator && 
+            !isUploadingQuickhacks && 
+            noDialogueChoiceHubsShown && 
+            inAllowedVehicleState &&
+            !isPlayerPursuedByNCPD &&
+            !blockTimeSkip {
+                return true;
+        }
+
+        DFLog(this, "    Returning false. State: ");
+        DFLog(this, "        isReplacer (Expected: false): " + ToString(isReplacer));
+        DFLog(this, "        inLoreAnimationScene (Expected: false): " + ToString(inLoreAnimationScene));
+        DFLog(this, "        isCarryingBody (Expected: false): " + ToString(isCarryingBody));
+        DFLog(this, "        isControllingDevice (Expected: false): " + ToString(isControllingDevice));
+        DFLog(this, "        isControllingCamera (Expected: false): " + ToString(isControllingCamera));
+        DFLog(this, "        isForceOpeningDoor (Expected: false): " + ToString(isForceOpeningDoor));
+        DFLog(this, "        isPlayerInWorkspot (Expected: false): " + ToString(isPlayerInWorkspot));
+        DFLog(this, "        upperBodyState (Expected: != 4): " + ToString(upperBodyState));
+        DFLog(this, "        isLocomotionStateAllowed (Expected: true): " + ToString(isLocomotionStateAllowed));
+        DFLog(this, "        combatGadgetState (Expected: 0): " + ToString(combatGadgetState));
+        DFLog(this, "        leftHandCyberwareState (Expected: 0): " + ToString(leftHandCyberwareState));
+        DFLog(this, "        isPlayerInsideElevator (Expected: false): " + ToString(isPlayerInsideElevator));
+        DFLog(this, "        isUploadingQuickhacks (Expected: false): " + ToString(isUploadingQuickhacks));
+        DFLog(this, "        noDialogueChoiceHubsShown (Expected: true): " + ToString(noDialogueChoiceHubsShown));
+        DFLog(this, "        inAllowedVehicleState (Expected: true): " + ToString(inAllowedVehicleState));
+        DFLog(this, "        isPlayerPursuedByNCPD (Expected: false): " + ToString(isPlayerPursuedByNCPD));
+        DFLog(this, "        blockTimeSkip (Expected: false): " + ToString(blockTimeSkip));
 
         return false;
     }
@@ -1544,3 +1649,9 @@ public final class DFAnimationService extends DFSystem {
     lcm_mvs_normal_medium <---- used by other base game stuff
     lcm_mvs_slow_light <----- same
 */
+
+
+// $/mod/worldbuildergroup_df_impaireddriving_west_alwaysloaded/#worldbuildergroup_df_impaireddriving_west_alwaysloaded_static_marker
+// $/mod/worldbuildergroup_df_impaireddriving_north_alwaysloaded/#worldbuildergroup_df_impaireddriving_north_alwaysloaded_static_marker
+// $/mod/worldbuildergroup_df_impaireddriving_east_alwaysloaded/#worldbuildergroup_df_impaireddriving_east_alwaysloaded_static_marker
+// $/mod/worldbuildergroup_df_impaireddriving_south_alwaysloaded/#worldbuildergroup_df_impaireddriving_south_alwaysloaded_static_marker

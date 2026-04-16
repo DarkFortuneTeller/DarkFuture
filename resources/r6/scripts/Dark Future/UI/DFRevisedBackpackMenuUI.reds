@@ -47,6 +47,10 @@ import DarkFuture.UI.{
 	DFNeedsMenuBar,
 	DFNeedsMenuBarSetupData
 }
+import DarkFuture.Conditions.{
+    DFBiocorruptionConditionSystem,
+    DFBiocorruptionConditionState
+}
 
 class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
 	private func GetSystemInstance() -> wref<DFRevisedBackpackUISystem> {
@@ -56,10 +60,10 @@ class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
     public cb func OnLoad() {
 		super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(n"RevisedBackpack.RevisedCustomEventBackpackOpened", this, n"OnRevisedBackpackOpenedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"RevisedBackpack.RevisedCustomEventItemHoverOver", this, n"OnRevisedCustomEventItemHoverOverEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"RevisedBackpack.RevisedCustomEventItemHoverOut", this, n"OnRevisedCustomEventItemHoverOutEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"RevisedBackpack.RevisedCustomEventCategorySelected", this, n"OnRevisedCustomEventCategorySelectedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventBackpackOpened>(), this, n"OnRevisedBackpackOpenedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventItemHoverOver>(), this, n"OnRevisedCustomEventItemHoverOverEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventItemHoverOut>(), this, n"OnRevisedCustomEventItemHoverOutEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventCategorySelected>(), this, n"OnRevisedCustomEventCategorySelectedEvent", true);
     }
 	
 	private cb func OnRevisedBackpackOpenedEvent(event: ref<RevisedCustomEventBackpackOpened>) {
@@ -91,6 +95,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     private let AlcoholAddictionSystem: wref<DFAlcoholAddictionSystem>;
     private let NicotineAddictionSystem: wref<DFNicotineAddictionSystem>;
     private let NarcoticAddictionSystem: wref<DFNarcoticAddictionSystem>;
+    private let BiocorruptionConditionSystem: wref<DFBiocorruptionConditionSystem>;
     private let barCluster: ref<inkVerticalPanel>;
     private let nerveBar: ref<DFNeedsMenuBar>;
     private let energyBar: ref<DFNeedsMenuBar>;
@@ -154,6 +159,19 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                     if this.NerveSystem.GetHasNausea() {
                         this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
                         this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), this.NutritionSystem.GetNeedMax());
+                    } else if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Crash) {
+                        // Player has Biocorruption Crash, which prevents Needs restoration.
+                        let biocorruptionSoftCap: Float = this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption();
+                        let showHydrationLock: Bool = ((this.HydrationSystem.GetNeedValue() + needsData.hydration.value) >= biocorruptionSoftCap) && (needsData.hydration.value > 0.0);
+                        let showNutritionLock: Bool = ((this.NutritionSystem.GetNeedValue() + needsData.nutrition.value) >= biocorruptionSoftCap) && (needsData.nutrition.value > 0.0);
+
+                        if needsData.hydration.value > 0.0 {
+                            this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption(), showHydrationLock);
+                        }
+                        if needsData.nutrition.value > 0.0 {
+                            this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption(), showNutritionLock);
+                        }
+                        
                     } else {
                         this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, MinF(MaxF(needsData.hydration.ceiling, this.HydrationSystem.GetNeedValue()), this.HydrationSystem.GetNeedMax()));
 					    this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, MinF(MaxF(needsData.nutrition.ceiling, this.NutritionSystem.GetNeedValue()), this.NutritionSystem.GetNeedMax()));
@@ -264,6 +282,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
         this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
         this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
         this.NarcoticAddictionSystem = DFNarcoticAddictionSystem.GetInstance(gameInstance);
+        this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     }
 
 	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
@@ -337,19 +356,19 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 
         let barSetupData: DFNeedsMenuBarSetupData;
 
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true, false);
         this.nerveBar = new DFNeedsMenuBar();
         this.nerveBar.Init(barSetupData);
 
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false, true);
         this.hydrationBar = new DFNeedsMenuBar();
         this.hydrationBar.Init(barSetupData);
         
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false, true);
         this.nutritionBar = new DFNeedsMenuBar();
         this.nutritionBar.Init(barSetupData);
 
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false, false);
         this.energyBar = new DFNeedsMenuBar();
         this.energyBar.Init(barSetupData);
     }

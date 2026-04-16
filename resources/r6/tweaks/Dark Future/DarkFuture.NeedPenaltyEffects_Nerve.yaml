@@ -112,7 +112,6 @@ DarkFutureStatusEffect.NervePenalty_01:
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.NervePenalty_01_StatsPackage
@@ -374,7 +373,6 @@ DarkFutureStatusEffect.NervePenalty_02:
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.NervePenalty_02_StatsPackage
@@ -661,7 +659,6 @@ DarkFutureStatusEffect.NervePenalty_03:
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.NervePenalty_03_StatsPackage
@@ -948,7 +945,6 @@ DarkFutureStatusEffect.NervePenalty_04:
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
     - DarkFutureEatingDrinkingRestricted
   immunityStats: []
   packages:

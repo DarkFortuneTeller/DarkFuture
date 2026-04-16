@@ -81,12 +81,12 @@ DarkFutureStatusEffect.HumanityLoss01:
   uiData: DarkFutureStatusEffect.HumanityLoss01_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionHumanityLoss
     - DarkFutureInfiniteDurationEffect
     - DarkFutureAllowBuffBarHide
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -128,12 +128,12 @@ DarkFutureStatusEffect.HumanityLoss02:
   uiData: DarkFutureStatusEffect.HumanityLoss02_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionHumanityLoss
     - DarkFutureInfiniteDurationEffect
     - DarkFutureAllowBuffBarHide
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -175,12 +175,12 @@ DarkFutureStatusEffect.HumanityLoss03:
   uiData: DarkFutureStatusEffect.HumanityLoss03_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionHumanityLoss
     - DarkFutureInfiniteDurationEffect
     - DarkFutureAllowBuffBarHide
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -222,12 +222,12 @@ DarkFutureStatusEffect.HumanityLoss04:
   uiData: DarkFutureStatusEffect.HumanityLoss04_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionHumanityLoss
     - DarkFutureInfiniteDurationEffect
     - DarkFutureAllowBuffBarHide
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []

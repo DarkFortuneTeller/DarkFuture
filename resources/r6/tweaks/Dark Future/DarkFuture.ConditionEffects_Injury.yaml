@@ -109,11 +109,11 @@ DarkFutureStatusEffect.Injury01:
   uiData: DarkFutureStatusEffect.Injury01_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionInjury
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.Injury01_StatsPackage
@@ -200,11 +200,11 @@ DarkFutureStatusEffect.Injury02:
   uiData: DarkFutureStatusEffect.Injury02_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionInjury
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.Injury02_StatsPackage
@@ -291,11 +291,11 @@ DarkFutureStatusEffect.Injury03:
   uiData: DarkFutureStatusEffect.Injury03_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionInjury
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.Injury03_StatsPackage
@@ -382,11 +382,11 @@ DarkFutureStatusEffect.Injury04:
   uiData: DarkFutureStatusEffect.Injury04_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureCondition
     - DarkFutureConditionInjury
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.Injury04_StatsPackage

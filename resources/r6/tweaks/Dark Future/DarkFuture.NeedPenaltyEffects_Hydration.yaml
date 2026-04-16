@@ -85,7 +85,6 @@ DarkFutureStatusEffect.HydrationPenalty_01:
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages:
     - DarkFutureStatusEffect.HydrationPenalty_01_StatsPackage
@@ -147,7 +146,6 @@ DarkFutureStatusEffect.HydrationPenalty_02:
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
     - DarkFutureShouldInterruptSprintOnEmptyStamina
   immunityStats: []
   packages:
@@ -210,7 +208,6 @@ DarkFutureStatusEffect.HydrationPenalty_03:
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
     - DarkFutureShouldInterruptSprintOnEmptyStamina
   immunityStats: []
   packages:
@@ -273,7 +270,6 @@ DarkFutureStatusEffect.HydrationPenalty_04:
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
     - DarkFutureShouldInterruptSprintOnEmptyStamina
   immunityStats: []
   packages:

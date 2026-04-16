@@ -119,10 +119,10 @@ public class DFSettings extends ScriptableSystem {
 
 		// Basic Needs
 		//
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Hydrated_UIData.intValues", [Cast<Int32>(this.basicNeedThresholdValue1), 5]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Hydrated_UIData.intValues", [Cast<Int32>(this.basicNeedThresholdValue1V2), 5]);
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.Hydrated_UIData");
 
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Nourishment_UIData.intValues", [Cast<Int32>(this.basicNeedThresholdValue1), 5]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Nourishment_UIData.intValues", [Cast<Int32>(this.basicNeedThresholdValue1V2), 5]);
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.Nourishment_UIData");
 
 		
@@ -429,52 +429,54 @@ public class DFSettings extends ScriptableSystem {
 	private let _hydrationHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.PigeonPost;
 	private let _nutritionHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.PigeonPost;
 	private let _energyHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.PigeonPost;
+	private let _conditionsIndicatorHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.MainRed;
 	private let _increasedStaminaRecoveryTime: Bool = true;
 	private let _reducedCarryWeight: DFReducedCarryWeightAmount = DFReducedCarryWeightAmount.Full;
 	private let _alcoholAddictionEnabled: Bool = true;
-	private let _alcoholAddictionStage1WithdrawalDurationInGameTimeHours: Int32 = 12;
-	private let _alcoholAddictionStage2WithdrawalDurationInGameTimeHours: Int32 = 24;
-	private let _alcoholAddictionStage3WithdrawalDurationInGameTimeHours: Int32 = 36;
-	private let _alcoholAddictionStage4WithdrawalDurationInGameTimeHours: Int32 = 48;
-	private let _alcoholAddictionCessationDurationInGameTimeHours: Int32 = 24;
+	private let _alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2: Int32 = 36;
+	private let _alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2: Int32 = 48;
+	private let _alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2: Int32 = 60;
+	private let _alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2: Int32 = 72;
+	private let _alcoholAddictionCessationDurationInGameTimeHoursV2: Int32 = 48;
 	private let _alcoholAddictionMinAmountStage1: Float = 6.0;
 	private let _alcoholAddictionMinAmountStage2: Float = 12.0;
 	private let _alcoholAddictionMinAmountStage3: Float = 18.0;
 	private let _alcoholAddictionMinAmountStage4: Float = 24.0;
-	private let _alcoholAddictionBackoffDurationStage1: Float = 30.0;
-	private let _alcoholAddictionBackoffDurationStage2: Float = 22.5;
-	private let _alcoholAddictionBackoffDurationStage3: Float = 15.0;
-	private let _alcoholAddictionBackoffDurationStage4: Float = 10.0;
+	private let _alcoholAddictionBackoffDurationStage1V2: Float = 12.0;
+	private let _alcoholAddictionBackoffDurationStage2V2: Float = 8.0;
+	private let _alcoholAddictionBackoffDurationStage3V2: Float = 6.0;
+	private let _alcoholAddictionBackoffDurationStage4V2: Float = 4.0;
 	private let _nicotineAddictionEnabled: Bool = true;
-	private let _nicotineAddictionStage1WithdrawalDurationInGameTimeHours: Int32 = 12;
-	private let _nicotineAddictionStage2WithdrawalDurationInGameTimeHours: Int32 = 24;
-	private let _nicotineAddictionStage3WithdrawalDurationInGameTimeHours: Int32 = 36;
-	private let _nicotineAddictionStage4WithdrawalDurationInGameTimeHours: Int32 = 48;
-	private let _nicotineAddictionCessationDurationInGameTimeHours: Int32 = 24;
+	private let _nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2: Int32 = 36;
+	private let _nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2: Int32 = 48;
+	private let _nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2: Int32 = 60;
+	private let _nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2: Int32 = 72;
+	private let _nicotineAddictionCessationDurationInGameTimeHoursV2: Int32 = 48;
 	private let _nicotineAddictionMinAmountStage1: Float = 4.0;
 	private let _nicotineAddictionMinAmountStage2: Float = 8.0;
 	private let _nicotineAddictionMinAmountStage3: Float = 12.0;
 	private let _nicotineAddictionMinAmountStage4: Float = 16.0;
-	private let _nicotineAddictionBackoffDurationStage1: Float = 30.0;
-	private let _nicotineAddictionBackoffDurationStage2: Float = 22.5;
-	private let _nicotineAddictionBackoffDurationStage3: Float = 15.0;
-	private let _nicotineAddictionBackoffDurationStage4: Float = 10.0;
+	private let _nicotineAddictionBackoffDurationStage1V2: Float = 12.0;
+	private let _nicotineAddictionBackoffDurationStage2V2: Float = 8.0;
+	private let _nicotineAddictionBackoffDurationStage3V2: Float = 6.0;
+	private let _nicotineAddictionBackoffDurationStage4V2: Float = 4.0;
 	private let _narcoticAddictionEnabled: Bool = true;
-	private let _narcoticAddictionStage1WithdrawalDurationInGameTimeHours: Int32 = 12;
-	private let _narcoticAddictionStage2WithdrawalDurationInGameTimeHours: Int32 = 24;
-	private let _narcoticAddictionStage3WithdrawalDurationInGameTimeHours: Int32 = 36;
-	private let _narcoticAddictionStage4WithdrawalDurationInGameTimeHours: Int32 = 48;
-	private let _narcoticAddictionCessationDurationInGameTimeHours: Int32 = 24;
+	private let _narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2: Int32 = 36;
+	private let _narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2: Int32 = 48;
+	private let _narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2: Int32 = 60;
+	private let _narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2: Int32 = 72;
+	private let _narcoticAddictionCessationDurationInGameTimeHoursV2: Int32 = 48;
 	private let _narcoticAddictionMinAmountStage1: Float = 3.0;
 	private let _narcoticAddictionMinAmountStage2: Float = 5.0;
 	private let _narcoticAddictionMinAmountStage3: Float = 7.0;
 	private let _narcoticAddictionMinAmountStage4: Float = 9.0;
-	private let _narcoticAddictionBackoffDurationStage1: Float = 30.0;
-	private let _narcoticAddictionBackoffDurationStage2: Float = 22.5;
-	private let _narcoticAddictionBackoffDurationStage3: Float = 15.0;
-	private let _narcoticAddictionBackoffDurationStage4: Float = 10.0;
+	private let _narcoticAddictionBackoffDurationStage1V2: Float = 12.0;
+	private let _narcoticAddictionBackoffDurationStage2V2: Float = 8.0;
+	private let _narcoticAddictionBackoffDurationStage3V2: Float = 6.0;
+	private let _narcoticAddictionBackoffDurationStage4V2: Float = 4.0;
 	private let _injuryConditionEnabled: Bool = true;
 	private let _humanityLossConditionEnabled: Bool = true;
+	private let _biocorruptionConditionEnabled: Bool = true;
 	private let _fastTravelSettingV2: DFFastTravelSetting = DFFastTravelSetting.Disabled;
 	private let _limitVehicleSummoning: Bool = true;
 	private let _maxVehicleSummonCredits: Int32 = 2;
@@ -506,10 +508,10 @@ public class DFSettings extends ScriptableSystem {
 	private let _cyberpsychosisEffectsRepeatEnabled: Bool = true;
 	private let _cyberpsychosisEffectsRepeatFrequencyInRealTimeSeconds: Float = 180.0;
 	private let _humanityLossFuryAcceleratedPrevention: Bool = true;
-	private let _basicNeedThresholdValue1: Float = 85.0;
-	private let _basicNeedThresholdValue2: Float = 75.0;
-	private let _basicNeedThresholdValue3: Float = 50.0;
-	private let _basicNeedThresholdValue4: Float = 25.0;
+	private let _basicNeedThresholdValue1V2: Float = 85.0;
+	private let _basicNeedThresholdValue2V2: Float = 75.0;
+	private let _basicNeedThresholdValue3V2: Float = 50.0;
+	private let _basicNeedThresholdValue4V2: Float = 25.0;
 	// Internal change tracking use only. DO NOT USE.
 	// Internal change tracking use only. DO NOT USE.
 
@@ -586,6 +588,11 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "energyHUDUIColorTheme");
 		}
 
+		if NotEquals(this._conditionsIndicatorHUDUIColorTheme, this.conditionsIndicatorHUDUIColorTheme) {
+			this._conditionsIndicatorHUDUIColorTheme = this.conditionsIndicatorHUDUIColorTheme;
+			ArrayPush(changedSettings, "conditionsIndicatorHUDUIColorTheme");
+		}
+
 		if NotEquals(this._increasedStaminaRecoveryTime, this.increasedStaminaRecoveryTime) {
 			this._increasedStaminaRecoveryTime = this.increasedStaminaRecoveryTime;
 			ArrayPush(changedSettings, "increasedStaminaRecoveryTime");
@@ -601,29 +608,29 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "alcoholAddictionEnabled");
 		}
 
-		if NotEquals(this._alcoholAddictionStage1WithdrawalDurationInGameTimeHours, this.alcoholAddictionStage1WithdrawalDurationInGameTimeHours) {
-			this._alcoholAddictionStage1WithdrawalDurationInGameTimeHours = this.alcoholAddictionStage1WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "alcoholAddictionStage1WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2, this.alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2) {
+			this._alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2 = this.alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._alcoholAddictionStage2WithdrawalDurationInGameTimeHours, this.alcoholAddictionStage2WithdrawalDurationInGameTimeHours) {
-			this._alcoholAddictionStage2WithdrawalDurationInGameTimeHours = this.alcoholAddictionStage2WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "alcoholAddictionStage2WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2, this.alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2) {
+			this._alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2 = this.alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._alcoholAddictionStage3WithdrawalDurationInGameTimeHours, this.alcoholAddictionStage3WithdrawalDurationInGameTimeHours) {
-			this._alcoholAddictionStage3WithdrawalDurationInGameTimeHours = this.alcoholAddictionStage3WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "alcoholAddictionStage3WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2, this.alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2) {
+			this._alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2 = this.alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._alcoholAddictionStage4WithdrawalDurationInGameTimeHours, this.alcoholAddictionStage4WithdrawalDurationInGameTimeHours) {
-			this._alcoholAddictionStage4WithdrawalDurationInGameTimeHours = this.alcoholAddictionStage4WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "alcoholAddictionStage4WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2, this.alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2) {
+			this._alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2 = this.alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._alcoholAddictionCessationDurationInGameTimeHours, this.alcoholAddictionCessationDurationInGameTimeHours) {
-			this._alcoholAddictionCessationDurationInGameTimeHours = this.alcoholAddictionCessationDurationInGameTimeHours;
-			ArrayPush(changedSettings, "alcoholAddictionCessationDurationInGameTimeHours");
+		if NotEquals(this._alcoholAddictionCessationDurationInGameTimeHoursV2, this.alcoholAddictionCessationDurationInGameTimeHoursV2) {
+			this._alcoholAddictionCessationDurationInGameTimeHoursV2 = this.alcoholAddictionCessationDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "alcoholAddictionCessationDurationInGameTimeHoursV2");
 		}
 
 		if NotEquals(this._alcoholAddictionMinAmountStage1, this.alcoholAddictionMinAmountStage1) {
@@ -646,24 +653,24 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "alcoholAddictionMinAmountStage4");
 		}
 
-		if NotEquals(this._alcoholAddictionBackoffDurationStage1, this.alcoholAddictionBackoffDurationStage1) {
-			this._alcoholAddictionBackoffDurationStage1 = this.alcoholAddictionBackoffDurationStage1;
-			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage1");
+		if NotEquals(this._alcoholAddictionBackoffDurationStage1V2, this.alcoholAddictionBackoffDurationStage1V2) {
+			this._alcoholAddictionBackoffDurationStage1V2 = this.alcoholAddictionBackoffDurationStage1V2;
+			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage1V2");
 		}
 
-		if NotEquals(this._alcoholAddictionBackoffDurationStage2, this.alcoholAddictionBackoffDurationStage2) {
-			this._alcoholAddictionBackoffDurationStage2 = this.alcoholAddictionBackoffDurationStage2;
-			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage2");
+		if NotEquals(this._alcoholAddictionBackoffDurationStage2V2, this.alcoholAddictionBackoffDurationStage2V2) {
+			this._alcoholAddictionBackoffDurationStage2V2 = this.alcoholAddictionBackoffDurationStage2V2;
+			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage2V2");
 		}
 
-		if NotEquals(this._alcoholAddictionBackoffDurationStage3, this.alcoholAddictionBackoffDurationStage3) {
-			this._alcoholAddictionBackoffDurationStage3 = this.alcoholAddictionBackoffDurationStage3;
-			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage3");
+		if NotEquals(this._alcoholAddictionBackoffDurationStage3V2, this.alcoholAddictionBackoffDurationStage3V2) {
+			this._alcoholAddictionBackoffDurationStage3V2 = this.alcoholAddictionBackoffDurationStage3V2;
+			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage3V2");
 		}
 
-		if NotEquals(this._alcoholAddictionBackoffDurationStage4, this.alcoholAddictionBackoffDurationStage4) {
-			this._alcoholAddictionBackoffDurationStage4 = this.alcoholAddictionBackoffDurationStage4;
-			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage4");
+		if NotEquals(this._alcoholAddictionBackoffDurationStage4V2, this.alcoholAddictionBackoffDurationStage4V2) {
+			this._alcoholAddictionBackoffDurationStage4V2 = this.alcoholAddictionBackoffDurationStage4V2;
+			ArrayPush(changedSettings, "alcoholAddictionBackoffDurationStage4V2");
 		}
 
 		if NotEquals(this._nicotineAddictionEnabled, this.nicotineAddictionEnabled) {
@@ -671,29 +678,29 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "nicotineAddictionEnabled");
 		}
 
-		if NotEquals(this._nicotineAddictionStage1WithdrawalDurationInGameTimeHours, this.nicotineAddictionStage1WithdrawalDurationInGameTimeHours) {
-			this._nicotineAddictionStage1WithdrawalDurationInGameTimeHours = this.nicotineAddictionStage1WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "nicotineAddictionStage1WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2, this.nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2) {
+			this._nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2 = this.nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._nicotineAddictionStage2WithdrawalDurationInGameTimeHours, this.nicotineAddictionStage2WithdrawalDurationInGameTimeHours) {
-			this._nicotineAddictionStage2WithdrawalDurationInGameTimeHours = this.nicotineAddictionStage2WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "nicotineAddictionStage2WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2, this.nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2) {
+			this._nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2 = this.nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._nicotineAddictionStage3WithdrawalDurationInGameTimeHours, this.nicotineAddictionStage3WithdrawalDurationInGameTimeHours) {
-			this._nicotineAddictionStage3WithdrawalDurationInGameTimeHours = this.nicotineAddictionStage3WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "nicotineAddictionStage3WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2, this.nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2) {
+			this._nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2 = this.nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._nicotineAddictionStage4WithdrawalDurationInGameTimeHours, this.nicotineAddictionStage4WithdrawalDurationInGameTimeHours) {
-			this._nicotineAddictionStage4WithdrawalDurationInGameTimeHours = this.nicotineAddictionStage4WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "nicotineAddictionStage4WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2, this.nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2) {
+			this._nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2 = this.nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._nicotineAddictionCessationDurationInGameTimeHours, this.nicotineAddictionCessationDurationInGameTimeHours) {
-			this._nicotineAddictionCessationDurationInGameTimeHours = this.nicotineAddictionCessationDurationInGameTimeHours;
-			ArrayPush(changedSettings, "nicotineAddictionCessationDurationInGameTimeHours");
+		if NotEquals(this._nicotineAddictionCessationDurationInGameTimeHoursV2, this.nicotineAddictionCessationDurationInGameTimeHoursV2) {
+			this._nicotineAddictionCessationDurationInGameTimeHoursV2 = this.nicotineAddictionCessationDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "nicotineAddictionCessationDurationInGameTimeHoursV2");
 		}
 
 		if NotEquals(this._nicotineAddictionMinAmountStage1, this.nicotineAddictionMinAmountStage1) {
@@ -716,24 +723,24 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "nicotineAddictionMinAmountStage4");
 		}
 
-		if NotEquals(this._nicotineAddictionBackoffDurationStage1, this.nicotineAddictionBackoffDurationStage1) {
-			this._nicotineAddictionBackoffDurationStage1 = this.nicotineAddictionBackoffDurationStage1;
-			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage1");
+		if NotEquals(this._nicotineAddictionBackoffDurationStage1V2, this.nicotineAddictionBackoffDurationStage1V2) {
+			this._nicotineAddictionBackoffDurationStage1V2 = this.nicotineAddictionBackoffDurationStage1V2;
+			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage1V2");
 		}
 
-		if NotEquals(this._nicotineAddictionBackoffDurationStage2, this.nicotineAddictionBackoffDurationStage2) {
-			this._nicotineAddictionBackoffDurationStage2 = this.nicotineAddictionBackoffDurationStage2;
-			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage2");
+		if NotEquals(this._nicotineAddictionBackoffDurationStage2V2, this.nicotineAddictionBackoffDurationStage2V2) {
+			this._nicotineAddictionBackoffDurationStage2V2 = this.nicotineAddictionBackoffDurationStage2V2;
+			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage2V2");
 		}
 
-		if NotEquals(this._nicotineAddictionBackoffDurationStage3, this.nicotineAddictionBackoffDurationStage3) {
-			this._nicotineAddictionBackoffDurationStage3 = this.nicotineAddictionBackoffDurationStage3;
-			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage3");
+		if NotEquals(this._nicotineAddictionBackoffDurationStage3V2, this.nicotineAddictionBackoffDurationStage3V2) {
+			this._nicotineAddictionBackoffDurationStage3V2 = this.nicotineAddictionBackoffDurationStage3V2;
+			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage3V2");
 		}
 
-		if NotEquals(this._nicotineAddictionBackoffDurationStage4, this.nicotineAddictionBackoffDurationStage4) {
-			this._nicotineAddictionBackoffDurationStage4 = this.nicotineAddictionBackoffDurationStage4;
-			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage4");
+		if NotEquals(this._nicotineAddictionBackoffDurationStage4V2, this.nicotineAddictionBackoffDurationStage4V2) {
+			this._nicotineAddictionBackoffDurationStage4V2 = this.nicotineAddictionBackoffDurationStage4V2;
+			ArrayPush(changedSettings, "nicotineAddictionBackoffDurationStage4V2");
 		}
 
 		if NotEquals(this._narcoticAddictionEnabled, this.narcoticAddictionEnabled) {
@@ -741,29 +748,29 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "narcoticAddictionEnabled");
 		}
 
-		if NotEquals(this._narcoticAddictionStage1WithdrawalDurationInGameTimeHours, this.narcoticAddictionStage1WithdrawalDurationInGameTimeHours) {
-			this._narcoticAddictionStage1WithdrawalDurationInGameTimeHours = this.narcoticAddictionStage1WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "narcoticAddictionStage1WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2, this.narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2) {
+			this._narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2 = this.narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._narcoticAddictionStage2WithdrawalDurationInGameTimeHours, this.narcoticAddictionStage2WithdrawalDurationInGameTimeHours) {
-			this._narcoticAddictionStage2WithdrawalDurationInGameTimeHours = this.narcoticAddictionStage2WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "narcoticAddictionStage2WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2, this.narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2) {
+			this._narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2 = this.narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._narcoticAddictionStage3WithdrawalDurationInGameTimeHours, this.narcoticAddictionStage3WithdrawalDurationInGameTimeHours) {
-			this._narcoticAddictionStage3WithdrawalDurationInGameTimeHours = this.narcoticAddictionStage3WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "narcoticAddictionStage3WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2, this.narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2) {
+			this._narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2 = this.narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._narcoticAddictionStage4WithdrawalDurationInGameTimeHours, this.narcoticAddictionStage4WithdrawalDurationInGameTimeHours) {
-			this._narcoticAddictionStage4WithdrawalDurationInGameTimeHours = this.narcoticAddictionStage4WithdrawalDurationInGameTimeHours;
-			ArrayPush(changedSettings, "narcoticAddictionStage4WithdrawalDurationInGameTimeHours");
+		if NotEquals(this._narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2, this.narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2) {
+			this._narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2 = this.narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2");
 		}
 
-		if NotEquals(this._narcoticAddictionCessationDurationInGameTimeHours, this.narcoticAddictionCessationDurationInGameTimeHours) {
-			this._narcoticAddictionCessationDurationInGameTimeHours = this.narcoticAddictionCessationDurationInGameTimeHours;
-			ArrayPush(changedSettings, "narcoticAddictionCessationDurationInGameTimeHours");
+		if NotEquals(this._narcoticAddictionCessationDurationInGameTimeHoursV2, this.narcoticAddictionCessationDurationInGameTimeHoursV2) {
+			this._narcoticAddictionCessationDurationInGameTimeHoursV2 = this.narcoticAddictionCessationDurationInGameTimeHoursV2;
+			ArrayPush(changedSettings, "narcoticAddictionCessationDurationInGameTimeHoursV2");
 		}
 
 		if NotEquals(this._narcoticAddictionMinAmountStage1, this.narcoticAddictionMinAmountStage1) {
@@ -786,24 +793,24 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "narcoticAddictionMinAmountStage4");
 		}
 
-		if NotEquals(this._narcoticAddictionBackoffDurationStage1, this.narcoticAddictionBackoffDurationStage1) {
-			this._narcoticAddictionBackoffDurationStage1 = this.narcoticAddictionBackoffDurationStage1;
-			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage1");
+		if NotEquals(this._narcoticAddictionBackoffDurationStage1V2, this.narcoticAddictionBackoffDurationStage1V2) {
+			this._narcoticAddictionBackoffDurationStage1V2 = this.narcoticAddictionBackoffDurationStage1V2;
+			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage1V2");
 		}
 
-		if NotEquals(this._narcoticAddictionBackoffDurationStage2, this.narcoticAddictionBackoffDurationStage2) {
-			this._narcoticAddictionBackoffDurationStage2 = this.narcoticAddictionBackoffDurationStage2;
-			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage2");
+		if NotEquals(this._narcoticAddictionBackoffDurationStage2V2, this.narcoticAddictionBackoffDurationStage2V2) {
+			this._narcoticAddictionBackoffDurationStage2V2 = this.narcoticAddictionBackoffDurationStage2V2;
+			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage2V2");
 		}
 
-		if NotEquals(this._narcoticAddictionBackoffDurationStage3, this.narcoticAddictionBackoffDurationStage3) {
-			this._narcoticAddictionBackoffDurationStage3 = this.narcoticAddictionBackoffDurationStage3;
-			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage3");
+		if NotEquals(this._narcoticAddictionBackoffDurationStage3V2, this.narcoticAddictionBackoffDurationStage3V2) {
+			this._narcoticAddictionBackoffDurationStage3V2 = this.narcoticAddictionBackoffDurationStage3V2;
+			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage3V2");
 		}
 
-		if NotEquals(this._narcoticAddictionBackoffDurationStage4, this.narcoticAddictionBackoffDurationStage4) {
-			this._narcoticAddictionBackoffDurationStage4 = this.narcoticAddictionBackoffDurationStage4;
-			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage4");
+		if NotEquals(this._narcoticAddictionBackoffDurationStage4V2, this.narcoticAddictionBackoffDurationStage4V2) {
+			this._narcoticAddictionBackoffDurationStage4V2 = this.narcoticAddictionBackoffDurationStage4V2;
+			ArrayPush(changedSettings, "narcoticAddictionBackoffDurationStage4V2");
 		}
 
 		if NotEquals(this._injuryConditionEnabled, this.injuryConditionEnabled) {
@@ -814,6 +821,11 @@ public class DFSettings extends ScriptableSystem {
 		if NotEquals(this._humanityLossConditionEnabled, this.humanityLossConditionEnabled) {
 			this._humanityLossConditionEnabled = this.humanityLossConditionEnabled;
 			ArrayPush(changedSettings, "humanityLossConditionEnabled");
+		}
+
+		if NotEquals(this._biocorruptionConditionEnabled, this.biocorruptionConditionEnabled) {
+			this._biocorruptionConditionEnabled = this.biocorruptionConditionEnabled;
+			ArrayPush(changedSettings, "biocorruptionConditionEnabled");
 		}
 
 		if NotEquals(this._fastTravelSettingV2, this.fastTravelSettingV2) {
@@ -971,24 +983,24 @@ public class DFSettings extends ScriptableSystem {
 			ArrayPush(changedSettings, "humanityLossFuryAcceleratedPrevention");
 		}
 
-		if NotEquals(this._basicNeedThresholdValue1, this.basicNeedThresholdValue1) {
-			this._basicNeedThresholdValue1 = this.basicNeedThresholdValue1;
-			ArrayPush(changedSettings, "basicNeedThresholdValue1");
+		if NotEquals(this._basicNeedThresholdValue1V2, this.basicNeedThresholdValue1V2) {
+			this._basicNeedThresholdValue1V2 = this.basicNeedThresholdValue1V2;
+			ArrayPush(changedSettings, "basicNeedThresholdValue1V2");
 		}
 
-		if NotEquals(this._basicNeedThresholdValue2, this.basicNeedThresholdValue2) {
-			this._basicNeedThresholdValue2 = this.basicNeedThresholdValue2;
-			ArrayPush(changedSettings, "basicNeedThresholdValue2");
+		if NotEquals(this._basicNeedThresholdValue2V2, this.basicNeedThresholdValue2V2) {
+			this._basicNeedThresholdValue2V2 = this.basicNeedThresholdValue2V2;
+			ArrayPush(changedSettings, "basicNeedThresholdValue2V2");
 		}
 
-		if NotEquals(this._basicNeedThresholdValue3, this.basicNeedThresholdValue3) {
-			this._basicNeedThresholdValue3 = this.basicNeedThresholdValue3;
-			ArrayPush(changedSettings, "basicNeedThresholdValue3");
+		if NotEquals(this._basicNeedThresholdValue3V2, this.basicNeedThresholdValue3V2) {
+			this._basicNeedThresholdValue3V2 = this.basicNeedThresholdValue3V2;
+			ArrayPush(changedSettings, "basicNeedThresholdValue3V2");
 		}
 
-		if NotEquals(this._basicNeedThresholdValue4, this.basicNeedThresholdValue4) {
-			this._basicNeedThresholdValue4 = this.basicNeedThresholdValue4;
-			ArrayPush(changedSettings, "basicNeedThresholdValue4");
+		if NotEquals(this._basicNeedThresholdValue4V2, this.basicNeedThresholdValue4V2) {
+			this._basicNeedThresholdValue4V2 = this.basicNeedThresholdValue4V2;
+			ArrayPush(changedSettings, "basicNeedThresholdValue4V2");
 		}
 		
 		if ArraySize(changedSettings) > 0 {
@@ -1272,7 +1284,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "0.5")
 	@runtimeProperty("ModSettings.min", "0.0")
 	@runtimeProperty("ModSettings.max", "800.0")
-	public let energyLossRatePct: Float = 100.0;
+	public let energyLossRatePctV2: Float = 100.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
@@ -1316,20 +1328,12 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
 	@runtimeProperty("ModSettings.category.order", "50")
 	@runtimeProperty("ModSettings.dependency", "basicNeedsAdvancedSettings")
-	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingEnergyLossIsFatal")
-	@runtimeProperty("ModSettings.description", "DarkFutureSettingEnergyLossIsFatalDesc")
-	public let energyLossIsFatal: Bool = false;
-
-	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
-	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
-	@runtimeProperty("ModSettings.category.order", "50")
-	@runtimeProperty("ModSettings.dependency", "basicNeedsAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBasicNeedThresholdValue1")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingBasicNeedThresholdValue1Desc")
 	@runtimeProperty("ModSettings.step", "1.0")
 	@runtimeProperty("ModSettings.min", "4.0")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let basicNeedThresholdValue1: Float = 85.0;
+	public let basicNeedThresholdValue1V2: Float = 85.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
@@ -1340,7 +1344,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1.0")
 	@runtimeProperty("ModSettings.min", "3.0")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let basicNeedThresholdValue2: Float = 75.0;
+	public let basicNeedThresholdValue2V2: Float = 75.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
@@ -1351,7 +1355,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1.0")
 	@runtimeProperty("ModSettings.min", "2.0")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let basicNeedThresholdValue3: Float = 50.0;
+	public let basicNeedThresholdValue3V2: Float = 50.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
@@ -1362,7 +1366,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1.0")
 	@runtimeProperty("ModSettings.min", "1.0")
 	@runtimeProperty("ModSettings.max", "100.0")
-	public let basicNeedThresholdValue4: Float = 25.0;
+	public let basicNeedThresholdValue4V2: Float = 25.0;
 
 	// -------------------------------------------------------------------------
 	// Survival - Injury
@@ -1537,6 +1541,16 @@ public class DFSettings extends ScriptableSystem {
 	public let humanityLossFuryAcceleratedPrevention: Bool = true;
 
 	// -------------------------------------------------------------------------
+	// Survival - Biocorruption
+	// -------------------------------------------------------------------------
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayConditionBiocorruption")
+	@runtimeProperty("ModSettings.category.order", "57")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingBiocorruptionConditionEnabled")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingBiocorruptionConditionEnabledDesc")
+	public let biocorruptionConditionEnabled: Bool = true;
+
+	// -------------------------------------------------------------------------
 	// Survival - Alcohol Addiction
 	// -------------------------------------------------------------------------
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
@@ -1595,7 +1609,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let alcoholAddictionStage1WithdrawalDurationInGameTimeHours: Int32 = 12;
+	public let alcoholAddictionStage1WithdrawalDurationInGameTimeHoursV2: Int32 = 36;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1606,7 +1620,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let alcoholAddictionStage2WithdrawalDurationInGameTimeHours: Int32 = 24;
+	public let alcoholAddictionStage2WithdrawalDurationInGameTimeHoursV2: Int32 = 48;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1617,7 +1631,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let alcoholAddictionStage3WithdrawalDurationInGameTimeHours: Int32 = 36;
+	public let alcoholAddictionStage3WithdrawalDurationInGameTimeHoursV2: Int32 = 60;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1628,7 +1642,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let alcoholAddictionStage4WithdrawalDurationInGameTimeHours: Int32 = 48;
+	public let alcoholAddictionStage4WithdrawalDurationInGameTimeHoursV2: Int32 = 72;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1639,7 +1653,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let alcoholAddictionCessationDurationInGameTimeHours: Int32 = 24;
+	public let alcoholAddictionCessationDurationInGameTimeHoursV2: Int32 = 48;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1691,10 +1705,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "alcoholAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage1")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage1Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let alcoholAddictionBackoffDurationStage1: Float = 30.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let alcoholAddictionBackoffDurationStage1V2: Float = 12.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1702,10 +1716,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "alcoholAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage2")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage2Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let alcoholAddictionBackoffDurationStage2: Float = 22.5;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let alcoholAddictionBackoffDurationStage2V2: Float = 8.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1713,10 +1727,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "alcoholAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage3")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage3Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let alcoholAddictionBackoffDurationStage3: Float = 15.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let alcoholAddictionBackoffDurationStage3V2: Float = 6.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionAlcohol")
@@ -1724,10 +1738,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "alcoholAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage4")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage4Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let alcoholAddictionBackoffDurationStage4: Float = 10.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let alcoholAddictionBackoffDurationStage4V2: Float = 4.0;
 
 	// -------------------------------------------------------------------------
 	// Survival - Nicotine Addiction
@@ -1788,7 +1802,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let nicotineAddictionStage1WithdrawalDurationInGameTimeHours: Int32 = 12;
+	public let nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2: Int32 = 36;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1799,7 +1813,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let nicotineAddictionStage2WithdrawalDurationInGameTimeHours: Int32 = 24;
+	public let nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2: Int32 = 48;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1810,7 +1824,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let nicotineAddictionStage3WithdrawalDurationInGameTimeHours: Int32 = 36;
+	public let nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2: Int32 = 60;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1821,7 +1835,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let nicotineAddictionStage4WithdrawalDurationInGameTimeHours: Int32 = 48;
+	public let nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2: Int32 = 72;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1832,7 +1846,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let nicotineAddictionCessationDurationInGameTimeHours: Int32 = 24;
+	public let nicotineAddictionCessationDurationInGameTimeHoursV2: Int32 = 48;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1884,10 +1898,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "nicotineAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage1")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage1Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let nicotineAddictionBackoffDurationStage1: Float = 30.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let nicotineAddictionBackoffDurationStage1V2: Float = 12.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1895,10 +1909,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "nicotineAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage2")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage2Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let nicotineAddictionBackoffDurationStage2: Float = 22.5;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let nicotineAddictionBackoffDurationStage2V2: Float = 8.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1906,10 +1920,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "nicotineAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage3")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage3Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let nicotineAddictionBackoffDurationStage3: Float = 15.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let nicotineAddictionBackoffDurationStage3V2: Float = 6.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNicotine")
@@ -1917,10 +1931,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "nicotineAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage4")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage4Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let nicotineAddictionBackoffDurationStage4: Float = 10.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let nicotineAddictionBackoffDurationStage4V2: Float = 4.0;
 
 	// -------------------------------------------------------------------------
 	// Survival - Narcotic Addiction
@@ -1992,7 +2006,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let narcoticAddictionStage1WithdrawalDurationInGameTimeHours: Int32 = 12;
+	public let narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2: Int32 = 36;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2003,7 +2017,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let narcoticAddictionStage2WithdrawalDurationInGameTimeHours: Int32 = 24;
+	public let narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2: Int32 = 48;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2014,7 +2028,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let narcoticAddictionStage3WithdrawalDurationInGameTimeHours: Int32 = 36;
+	public let narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2: Int32 = 60;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2025,7 +2039,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let narcoticAddictionStage4WithdrawalDurationInGameTimeHours: Int32 = 48;
+	public let narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2: Int32 = 72;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2036,7 +2050,7 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.step", "1")
 	@runtimeProperty("ModSettings.min", "1")
 	@runtimeProperty("ModSettings.max", "72")
-	public let narcoticAddictionCessationDurationInGameTimeHours: Int32 = 24;
+	public let narcoticAddictionCessationDurationInGameTimeHoursV2: Int32 = 48;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2088,10 +2102,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "narcoticAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage1")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage1Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let narcoticAddictionBackoffDurationStage1: Float = 30.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let narcoticAddictionBackoffDurationStage1V2: Float = 12.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2099,10 +2113,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "narcoticAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage2")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage2Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let narcoticAddictionBackoffDurationStage2: Float = 22.5;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let narcoticAddictionBackoffDurationStage2V2: Float = 8.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2110,10 +2124,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "narcoticAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage3")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage3Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let narcoticAddictionBackoffDurationStage3: Float = 15.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let narcoticAddictionBackoffDurationStage3V2: Float = 6.0;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayAddictionNarcotic")
@@ -2121,10 +2135,10 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.dependency", "narcoticAddictionAdvancedSettings")
 	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingAddictionBackoffDurationStage4")
 	@runtimeProperty("ModSettings.description", "DarkFutureSettingAddictionBackoffDurationStage4Desc")
-	@runtimeProperty("ModSettings.step", "0.5")
-	@runtimeProperty("ModSettings.min", "0.5")
-	@runtimeProperty("ModSettings.max", "120.0")
-	public let narcoticAddictionBackoffDurationStage4: Float = 10.0;
+	@runtimeProperty("ModSettings.step", "1.0")
+	@runtimeProperty("ModSettings.min", "1.0")
+	@runtimeProperty("ModSettings.max", "24.0")
+	public let narcoticAddictionBackoffDurationStage4V2: Float = 4.0;
 
 	// -------------------------------------------------------------------------
 	// Interface
@@ -2211,6 +2225,25 @@ public class DFSettings extends ScriptableSystem {
 	@runtimeProperty("ModSettings.displayValues.Yellow", "DarkFutureColorThemeNameYellow")
 	@runtimeProperty("ModSettings.displayValues.White", "DarkFutureColorThemeNameWhite")
 	public let energyHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.PigeonPost;
+
+	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
+	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
+	@runtimeProperty("ModSettings.category.order", "110")
+	@runtimeProperty("ModSettings.displayName", "DarkFutureSettingConditionsIndicatorHUDUIColorTheme")
+	@runtimeProperty("ModSettings.description", "DarkFutureSettingConditionsIndicatorHUDUIColorThemeDesc")
+	@runtimeProperty("ModSettings.displayValues.Rose", "DarkFutureColorThemeNameRose")
+    @runtimeProperty("ModSettings.displayValues.HotPink", "DarkFutureColorThemeNameHotPink")
+	@runtimeProperty("ModSettings.displayValues.PanelRed", "DarkFutureColorThemeNamePanelRed")
+	@runtimeProperty("ModSettings.displayValues.MainRed", "DarkFutureColorThemeNameMainRed")
+	@runtimeProperty("ModSettings.displayValues.Magenta", "DarkFutureColorThemeNameMagenta")
+	@runtimeProperty("ModSettings.displayValues.PigeonPost", "DarkFutureColorThemeNamePigeonPost")
+    @runtimeProperty("ModSettings.displayValues.MainBlue", "DarkFutureColorThemeNameMainBlue")
+	@runtimeProperty("ModSettings.displayValues.Aqua", "DarkFutureColorThemeNameAqua")
+    @runtimeProperty("ModSettings.displayValues.SpringGreen", "DarkFutureColorThemeNameSpringGreen")
+    @runtimeProperty("ModSettings.displayValues.StreetCredGreen", "DarkFutureColorThemeNameStreetCredGreen")
+	@runtimeProperty("ModSettings.displayValues.Yellow", "DarkFutureColorThemeNameYellow")
+	@runtimeProperty("ModSettings.displayValues.White", "DarkFutureColorThemeNameWhite")
+	public let conditionsIndicatorHUDUIColorTheme: DFBarColorThemeName = DFBarColorThemeName.MainRed;
 
 	@runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
 	@runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")

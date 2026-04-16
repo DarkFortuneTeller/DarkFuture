@@ -27,7 +27,8 @@ import DarkFuture.Services.{
 	DFAudioCue,
 	DFNotification,
 	DFMessage,
-	DFMessageContext
+	DFMessageContext,
+	DFAddictionType
 }
 import DarkFuture.Needs.{
 	DFEnergySystem,
@@ -54,7 +55,7 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 	private let narcoticAddictionMaxStage: Int32 = 4;
 	private let narcoticAddictionStageAdvanceAmounts: array<Float>;
 	private let narcoticAddictionNerveLimits: array<Float>;
-	private let narcoticAddictionBackoffDurationsInRealTimeMinutesByStage: array<Float>;
+	private let narcoticAddictionBackoffDurationsInGameTimeSecondsByStage: array<Float>;
 	private let narcoticAddictionWithdrawalDurationsInGameTimeSeconds: array<Float>;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFNarcoticAddictionSystem> {
@@ -106,11 +107,11 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 		//DFProfile();
 		this.narcoticAddictionWithdrawalDurationsInGameTimeSeconds = [
 			0.0,
-			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage1WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage2WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage3WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage4WithdrawalDurationInGameTimeHours),
-			HoursToGameTimeSeconds(this.Settings.narcoticAddictionCessationDurationInGameTimeHours)
+			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.narcoticAddictionCessationDurationInGameTimeHoursV2)
 		];
 		this.narcoticAddictionStageAdvanceAmounts = [
 			this.Settings.narcoticAddictionMinAmountStage1,
@@ -120,30 +121,30 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 			-1.0
 		];
 		this.narcoticAddictionNerveLimits = [100.0, 80.0, 60.0, 40.0, 20.0, 80.0];
-		this.narcoticAddictionBackoffDurationsInRealTimeMinutesByStage = [
+		this.narcoticAddictionBackoffDurationsInGameTimeSecondsByStage = [
 			0.0,
-			this.Settings.narcoticAddictionBackoffDurationStage1,
-			this.Settings.narcoticAddictionBackoffDurationStage2,
-			this.Settings.narcoticAddictionBackoffDurationStage3,
-			this.Settings.narcoticAddictionBackoffDurationStage4
+			this.Settings.narcoticAddictionBackoffDurationStage1V2 * 3600.0,
+			this.Settings.narcoticAddictionBackoffDurationStage2V2 * 3600.0,
+			this.Settings.narcoticAddictionBackoffDurationStage3V2 * 3600.0,
+			this.Settings.narcoticAddictionBackoffDurationStage4V2 * 3600.0
 		];
 		this.UpdateNarcoticWithdrawalEffectDisplayData();
 	}
 
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
 		//DFProfile();
-		if ArrayContains(changedSettings, "narcoticAddictionStage1WithdrawalDurationInGameTimeHours") ||
-		   ArrayContains(changedSettings, "narcoticAddictionStage2WithdrawalDurationInGameTimeHours") || 
-		   ArrayContains(changedSettings, "narcoticAddictionStage3WithdrawalDurationInGameTimeHours") || 
-		   ArrayContains(changedSettings, "narcoticAddictionStage4WithdrawalDurationInGameTimeHours") || 
-		   ArrayContains(changedSettings, "narcoticAddictionCessationDurationInGameTimeHours") {
+		if ArrayContains(changedSettings, "narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2") ||
+		   ArrayContains(changedSettings, "narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "narcoticAddictionCessationDurationInGameTimeHoursV2") {
 			this.narcoticAddictionWithdrawalDurationsInGameTimeSeconds = [
 				0.0,
-				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage1WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage2WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage3WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage4WithdrawalDurationInGameTimeHours),
-				HoursToGameTimeSeconds(this.Settings.narcoticAddictionCessationDurationInGameTimeHours)
+				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage1WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage2WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage3WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.narcoticAddictionStage4WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.narcoticAddictionCessationDurationInGameTimeHoursV2)
 			];
 			this.UpdateNarcoticWithdrawalEffectDisplayData();
 			
@@ -174,22 +175,22 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 				}
 		}
 
-		if ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage1") || 
-			ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage2") || 
-			ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage3") || 
-			ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage4") {
+		if ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage1V2") || 
+			ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage2V2") || 
+			ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage3V2") || 
+			ArrayContains(changedSettings, "narcoticAddictionBackoffDurationStage4V2") {
 
-				this.narcoticAddictionBackoffDurationsInRealTimeMinutesByStage = [
+				this.narcoticAddictionBackoffDurationsInGameTimeSecondsByStage = [
 					0.0,
-					this.Settings.narcoticAddictionBackoffDurationStage1,
-					this.Settings.narcoticAddictionBackoffDurationStage2,
-					this.Settings.narcoticAddictionBackoffDurationStage3,
-					this.Settings.narcoticAddictionBackoffDurationStage4
+					this.Settings.narcoticAddictionBackoffDurationStage1V2 * 3600.0,
+					this.Settings.narcoticAddictionBackoffDurationStage2V2 * 3600.0,
+					this.Settings.narcoticAddictionBackoffDurationStage3V2 * 3600.0,
+					this.Settings.narcoticAddictionBackoffDurationStage4V2 * 3600.0
 				];
 
 				if IsSystemEnabledAndRunning(this) {
-					if this.remainingBackoffDurationInGameTimeSeconds > this.narcoticAddictionBackoffDurationsInRealTimeMinutesByStage[this.GetAddictionStage()] {
-						this.remainingBackoffDurationInGameTimeSeconds = (this.narcoticAddictionBackoffDurationsInRealTimeMinutesByStage[this.GetAddictionStage()] * this.Settings.timescale) * 60.0;
+					if this.remainingBackoffDurationInGameTimeSeconds > this.narcoticAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()] {
+						this.remainingBackoffDurationInGameTimeSeconds = this.narcoticAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()];
 					}
 				}
 		}
@@ -244,9 +245,9 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
         return this.narcoticAddictionNerveLimits;
     }
 
-	public func GetAddictionBackoffDurationsInRealTimeMinutesByStage() -> array<Float> {
+	public func GetAddictionBackoffDurationsInGameTimeSecondsByStage() -> array<Float> {
 		//DFProfile();
-        return this.narcoticAddictionBackoffDurationsInRealTimeMinutesByStage;
+        return this.narcoticAddictionBackoffDurationsInGameTimeSecondsByStage;
     }
 
 	public final func GetAddictionAmountLossPerDay() -> Float {
@@ -323,7 +324,7 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 
 			if IsSystemEnabledAndRunning(this.NerveSystem) && ArrayContains(effectGameplayTags, n"DarkFutureAddictionNarcoticStrong") {
 				if Equals(this.InteractionSystem.GetLastAttemptedChoiceCaption(), GetLocalizedTextByKey(this.InteractionSystem.locKey_Interaction_Q003TakeInhaler)) {
-					this.EnergySystem.TryToApplyEnergizedStacks(3u, DFTempEnergyItemType.Stimulant, true, false);
+					this.EnergySystem.TryToApplyTemporaryEnergy(3u, 0u, DFTempEnergyItemType.Stimulant, true, false);
 					
 					let changeNeedValueProps: DFChangeNeedValueProps;
 
@@ -406,6 +407,10 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
 	private final func GetSetTherapyAddictionStateIndexFactAction() -> CName {
         //DFProfile();
 		return n"df_fact_action_set_therapy_addiction_narcotics_state_index";
+    }
+
+	private final func GetAddictionType() -> DFAddictionType {
+		return DFAddictionType.Narcotic;
     }
 
     //

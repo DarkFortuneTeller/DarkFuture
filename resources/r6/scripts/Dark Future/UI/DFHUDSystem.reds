@@ -2,7 +2,7 @@
 // DFHUDSystem
 // -----------------------------------------------------------------------------
 //
-// - Manages the display of the HUD Meters.
+// - Manages the display of HUD elements.
 //
 
 module DarkFuture.UI
@@ -15,12 +15,15 @@ import DarkFuture.Main.DFTimeSkipData
 import DarkFuture.Utils.{
 	DFBarColorTheme,
 	DFBarColorThemeName,
-	GetDarkFutureBarColorTheme
+	GetDarkFutureBarColorTheme,
+	DFRunGuard
 }
-import DarkFuture.Needs.UpdateHUDUIEvent
+import DarkFuture.Needs.UpdateNeedsHUDUIEvent
+import DarkFuture.Conditions.UpdateConditionsHUDUIEvent
 import DarkFuture.Services.{
-	DisplayHUDUIEvent,
-	DFUIDisplay
+	DisplayNeedsHUDUIEvent,
+	DFBarUIDisplay,
+	DFSegmentedIndicatorUIDisplay
 }
 import DarkFuture.Settings.{
 	DFSettings,
@@ -137,6 +140,343 @@ protected cb func OnHoloAudioCallSpawned(widget: ref<inkWidget>, userData: ref<I
 	return val;
 }
 
+@addField(healthbarWidgetGameController)
+private let DarkFutureHUDSystem: ref<DFHUDSystem>;
+
+@wrapMethod(healthbarWidgetGameController)
+protected cb func OnInitialize() -> Bool {
+	wrappedMethod();
+	this.DarkFutureHUDSystem = DFHUDSystem.Get();
+	this.DarkFutureHUDSystem.SetHealthBarWidget(this);
+}
+
+@wrapMethod(healthbarWidgetGameController)
+protected cb func OnUninitialize() -> Bool {
+	wrappedMethod();
+	this.DarkFutureHUDSystem = null;
+}
+
+@wrapMethod(healthbarWidgetGameController)
+protected cb func OnUpdateHealthBarVisibility() -> Bool {
+    let r: Bool = wrappedMethod();
+
+    if IsDefined(this.DarkFutureHUDSystem) {
+		this.DarkFutureHUDSystem.RefreshHUDConditionsUIVisibilityFromHealthBar(this.m_moduleShown);
+	}
+
+    return r;
+}
+
+@addField(StaminabarWidgetGameController)
+private let DarkFutureHUDSystem: ref<DFHUDSystem>;
+
+@wrapMethod(StaminabarWidgetGameController)
+protected cb func OnInitialize() -> Bool {
+	wrappedMethod();
+	this.DarkFutureHUDSystem = DFHUDSystem.Get();
+	this.DarkFutureHUDSystem.SetStaminaBarWidget(this);
+}
+
+@wrapMethod(StaminabarWidgetGameController)
+protected cb func OnUninitialize() -> Bool {
+	wrappedMethod();
+	this.DarkFutureHUDSystem = null;
+}
+
+@wrapMethod(StaminabarWidgetGameController)
+public final func EvaluateStaminaBarVisibility() -> Void {
+	wrappedMethod();
+
+	if IsDefined(this.DarkFutureHUDSystem) {
+		this.DarkFutureHUDSystem.RefreshHUDConditionsUIVisibilityFromStaminaBar(this.m_RootWidget.IsVisible());
+	}
+}
+
+@wrapMethod(PlayerPuppet)
+private final func OnStatusEffectUsedHealingItemOrCyberwareApplied() -> Void {
+	wrappedMethod();
+
+	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
+	if DFRunGuard(HUDSystem) {
+		// Do nothing.
+	} else {
+		HUDSystem.conditionsIndicator.PulseInjurySegmentIfInjured();
+	}
+}
+
+@addField(RadialWheelController)
+private let DFCycleActiveEffectType: InputHintData;
+
+@wrapMethod(RadialWheelController)
+private final func CacheInputHintData() -> Void {
+	wrappedMethod();
+
+	let source: CName = n"RadialWheel";
+	this.DFCycleActiveEffectType.action = n"DFCycleActiveEffectType";
+	this.DFCycleActiveEffectType.source = source;
+	this.DFCycleActiveEffectType.queuePriority = 5;
+	this.DFCycleActiveEffectType.sortingPriority = 5;
+	this.DFCycleActiveEffectType.localizedLabel = "Cycle Status Effect Types";
+}
+
+@wrapMethod(RadialWheelController)
+private final func UpdateInputHints() -> Void {
+	wrappedMethod();
+	this.AddInputHint(this.DFCycleActiveEffectType, true);
+}
+
+@wrapMethod(RadialWheelController)
+protected cb func OnInitialize() -> Bool {
+	let r: Bool = wrappedMethod();
+
+	let playerControlledObject: ref<GameObject>;
+	if this.initialized {
+      	return false;
+    };
+	playerControlledObject = this.GetPlayerControlledObject();
+	playerControlledObject.RegisterInputListener(this, n"DFCycleActiveEffectType");
+
+	return r;
+}
+
+@wrapMethod(RadialWheelController)
+protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
+	let aName: CName = ListenerAction.GetName(action);
+	let aType: gameinputActionType = ListenerAction.GetType(action);
+	if !this.isActive {
+      	return false;
+    };
+
+	if Equals(aType, gameinputActionType.BUTTON_PRESSED) && Equals(aName, n"DFCycleActiveEffectType") {
+		DFHUDSystem.Get().CycleRadialMenuActiveEffectType();
+		return false;
+	} else {
+		return wrappedMethod(action, consumer);
+	}
+}
+
+@wrapMethod(RadialWheelController)
+protected cb func OnOpenWheelRequest(evt: ref<QuickSlotButtonHoldStartEvent>) -> Bool {
+	DFHUDSystem.Get().SetRadialMenuActiveEffectType(DFRadialMenuActiveEffectType.StatusEffects, true);
+	return wrappedMethod(evt);
+}
+
+@wrapMethod(inkCooldownGameController)
+protected cb func OnInitialize() -> Bool {
+	let r: Bool = wrappedMethod();
+
+	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
+
+	HUDSystem.SetCooldownController(this);
+
+	// Set the Title and List to be visible by default.
+	inkWidgetRef.SetVisible(this.m_cooldownTitle, true);
+	inkWidgetRef.SetVisible(this.m_cooldownContainer, true);
+
+	// Set up the new carousel.
+	let contentTabArray: array<DFRadialMenuActiveEffectTab>;
+	let rootWidget: ref<inkVerticalPanel> = (inkWidgetRef.Get(this.m_cooldownTitle).GetParentWidget() as inkVerticalPanel);
+	rootWidget.SetSize(Vector2(818.0, 900.0));
+	rootWidget.SetMargin(inkMargin(-15.0, 0.0, 0.0, 0.0));
+
+	let titleWidget: ref<inkText> = (inkWidgetRef.Get(this.m_cooldownTitle) as inkText);
+	titleWidget.SetHorizontalAlignment(textHorizontalAlignment.Center);
+
+	let carousel: ref<inkHorizontalPanel> = new inkHorizontalPanel();
+	carousel.SetName(n"carousel");
+	carousel.SetAnchor(inkEAnchor.TopLeft);
+	carousel.SetHAlign(inkEHorizontalAlign.Fill);
+	carousel.SetVAlign(inkEVerticalAlign.Fill);
+	carousel.SetSizeRule(inkESizeRule.Fixed);
+	carousel.SetMargin(0.0, 5.0, 0.0, 0.0);
+	carousel.SetSize(1.0, 1.0);
+	carousel.SetFitToContent(true);
+	carousel.Reparent(rootWidget);
+	rootWidget.ReorderChild(carousel, 1);
+
+	let leftLine: ref<inkRectangle> = new inkRectangle();
+	leftLine.SetName(n"leftLine");
+	leftLine.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
+	leftLine.BindProperty(n"tintColor", n"MainColors.PanelRed");
+	leftLine.SetOpacity(0.2);
+	leftLine.SetAnchor(inkEAnchor.TopLeft);
+	leftLine.SetAnchorPoint(Vector2(0.0, 0.0));
+	leftLine.SetHAlign(inkEHorizontalAlign.Fill);
+	leftLine.SetVAlign(inkEVerticalAlign.Bottom);
+	leftLine.SetMargin(0.0, 0.0, 5.0, 0.0);
+	leftLine.SetSizeRule(inkESizeRule.Stretch);
+	leftLine.SetSize(Vector2(2.0, 2.0));
+	leftLine.SetFitToContent(false);
+	leftLine.Reparent(carousel);
+
+	// Content Tabs Start
+	let tabOne: ref<inkRectangle> = new inkRectangle();
+	tabOne.SetName(n"tabOne");
+	tabOne.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
+	tabOne.BindProperty(n"tintColor", n"MainColors.PanelRed");
+	tabOne.SetOpacity(0.2);
+	tabOne.SetAnchor(inkEAnchor.TopLeft);
+	tabOne.SetAnchorPoint(Vector2(0.0, 0.0));
+	tabOne.SetHAlign(inkEHorizontalAlign.Fill);
+	tabOne.SetVAlign(inkEVerticalAlign.Bottom);
+	tabOne.SetMargin(5.0, 0.0, 5.0, 0.0);
+	tabOne.SetSizeRule(inkESizeRule.Stretch);
+	tabOne.SetSize(Vector2(2.0, 6.0));
+	tabOne.SetFitToContent(false);
+	tabOne.Reparent(carousel);
+
+	ArrayPush(contentTabArray, DFRadialMenuActiveEffectTab(DFRadialMenuActiveEffectType.StatusEffects, tabOne));
+
+	let tabTwo: ref<inkRectangle> = new inkRectangle();
+	tabTwo.SetName(n"tabTwo");
+	tabTwo.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
+	tabTwo.BindProperty(n"tintColor", n"MainColors.PanelRed");
+	tabTwo.SetOpacity(0.2);
+	tabTwo.SetAnchor(inkEAnchor.TopLeft);
+	tabTwo.SetAnchorPoint(Vector2(0.0, 0.0));
+	tabTwo.SetHAlign(inkEHorizontalAlign.Fill);
+	tabTwo.SetVAlign(inkEVerticalAlign.Bottom);
+	tabTwo.SetMargin(5.0, 0.0, 5.0, 0.0);
+	tabTwo.SetSizeRule(inkESizeRule.Stretch);
+	tabTwo.SetSize(Vector2(2.0, 6.0));
+	tabTwo.SetFitToContent(false);
+	tabTwo.Reparent(carousel);
+
+	ArrayPush(contentTabArray, DFRadialMenuActiveEffectTab(DFRadialMenuActiveEffectType.Conditions, tabTwo));
+
+	// Content Tabs End
+
+	let rightLine: ref<inkRectangle> = new inkRectangle();
+	rightLine.SetName(n"rightLine");
+	rightLine.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
+	rightLine.BindProperty(n"tintColor", n"MainColors.PanelRed");
+	rightLine.SetOpacity(0.2);
+	rightLine.SetAnchor(inkEAnchor.TopLeft);
+	rightLine.SetAnchorPoint(Vector2(0.0, 0.0));
+	rightLine.SetHAlign(inkEHorizontalAlign.Fill);
+	rightLine.SetVAlign(inkEVerticalAlign.Bottom);
+	rightLine.SetMargin(5.0, 0.0, 0.0, 0.0);
+	rightLine.SetSizeRule(inkESizeRule.Stretch);
+	rightLine.SetSize(Vector2(2.0, 2.0));
+	rightLine.SetFitToContent(false);
+	rightLine.Reparent(carousel);
+
+	HUDSystem.SetCooldownContentTabs(contentTabArray);
+
+	return r;
+}
+
+@addField(inkCooldownGameController)
+private let DarkFutureListFadeInAnimProxy: ref<inkAnimProxy>;
+
+@addField(inkCooldownGameController)
+private let DarkFutureListFadeInAnim: ref<inkAnimDef>;
+
+@addField(inkCooldownGameController)
+private let DarkFutureListFadeOutAnimProxy: ref<inkAnimProxy>;
+
+@addField(inkCooldownGameController)
+private let DarkFutureListFadeOutAnim: ref<inkAnimDef>;
+
+@addMethod(inkCooldownGameController)
+public final func DarkFutureFadeOutCooldownList() -> Void {
+	if IsDefined(this.DarkFutureListFadeOutAnimProxy) {
+        this.DarkFutureListFadeOutAnimProxy.Stop();
+    }
+	if IsDefined(this.DarkFutureListFadeInAnimProxy) {
+        this.DarkFutureListFadeInAnimProxy.Stop();
+    }
+	
+	this.DarkFutureListFadeOutAnim = new inkAnimDef();
+	let fadeOutInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
+	fadeOutInterp.SetStartTransparency(inkWidgetRef.GetOpacity(this.m_cooldownContainer));
+	fadeOutInterp.SetEndTransparency(0.0);
+	let duration: Float = 0.125;
+	fadeOutInterp.SetDuration(duration);
+	this.DarkFutureListFadeOutAnim.AddInterpolator(fadeOutInterp);
+	this.DarkFutureListFadeOutAnimProxy = inkWidgetRef.PlayAnimation(this.m_cooldownContainer, this.DarkFutureListFadeOutAnim);
+	this.DarkFutureListFadeOutAnimProxy.RegisterToCallback(inkanimEventType.OnFinish, DFHUDSystem.Get(), n"OnCooldownFadeOutComplete");
+}
+
+@addMethod(inkCooldownGameController)
+public final func DarkFutureFadeInCooldownList() -> Void {
+	if IsDefined(this.DarkFutureListFadeOutAnimProxy) {
+        this.DarkFutureListFadeOutAnimProxy.Stop();
+    }
+	if IsDefined(this.DarkFutureListFadeInAnimProxy) {
+        this.DarkFutureListFadeInAnimProxy.Stop();
+    }
+	
+	this.DarkFutureListFadeInAnim = new inkAnimDef();
+	let fadeInInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
+	fadeInInterp.SetStartTransparency(inkWidgetRef.GetOpacity(this.m_cooldownContainer));
+	fadeInInterp.SetEndTransparency(1.0);
+	let duration: Float = 0.125;
+	fadeInInterp.SetDuration(duration);
+	this.DarkFutureListFadeInAnim.AddInterpolator(fadeInInterp);
+	this.DarkFutureListFadeInAnimProxy = inkWidgetRef.PlayAnimation(this.m_cooldownContainer, this.DarkFutureListFadeInAnim);
+}
+
+/*NEW: inkHorizontalPanelWidget carousel
+				anchor topleft
+				halign fill
+				valign fill
+				size fixed
+				margin 0 5 0 0
+				size 1 1
+				fittocontent true
+
+				inkRectangleWidget leftLine
+					tint 1.176 0.381 0.348 1.0
+					opacity 0.1
+					anchor topleft
+					anchorpoint 0 0
+					halign fill
+					valign bottom
+					margin 0 0 5 0
+					sizerule stretch
+					size 2 2
+					fittocontent false
+				
+				inkRectangleWidget tabOne
+					tint 1.176 0.381 0.348 1.0
+					opacity 0.4
+					anchor topleft
+					anchorpoint 0 0
+					halign fill
+					valign bottom
+					margin 5 0 5 0
+					sizerule stretch
+					size 2 6
+					fittocontent false
+				
+				inkRectangleWidget tabTwo
+					tint 1.176 0.381 0.348 1.0
+					opacity 0.4
+					anchor topleft
+					anchorpoint 0 0
+					halign fill
+					valign bottom
+					margin 5 0 5 0
+					sizerule stretch
+					size 2 6
+					fittocontent false
+				
+				inkRectangleWidget rightLine
+					tint 1.176 0.381 0.348 1.0
+					opacity 0.1
+					anchor topleft
+					anchorpoint 0 0
+					halign fill
+					valign bottom
+					margin 5 0 0 0
+					sizerule stretch
+					size 2 2
+					fittocontent false*/
+
+@addField(inkCooldownGameController)
+public let DarkFutureActiveEffectType: DFRadialMenuActiveEffectType;
+
 //
 // Types
 //
@@ -148,6 +488,13 @@ public enum DFHUDBarType {
   Nerve = 4
 }
 
+public enum DFHUDSegmentedIndicatorSegmentType {
+	None = 0,
+	Injury = 1,
+	HumanityLoss = 2,
+	Biocorruption = 3
+}
+
 public struct DFNeedHUDUIUpdate {
 	public let bar: DFHUDBarType;
 	public let newValue: Float;
@@ -156,8 +503,24 @@ public struct DFNeedHUDUIUpdate {
 	public let instant: Bool;
 	public let forceBright: Bool;
 	public let momentaryDisplayIgnoresSceneTier: Bool;
-	public let fromInteraction: Bool;
+	public let isSoftCapRestrictedChange: Bool;
 	public let showLock: Bool;
+}
+
+public struct DFHUDSegmentedIndicatorUIUpdate {
+	public let segment: DFHUDSegmentedIndicatorSegmentType;
+	public let active: Bool;
+	public let pulse: Bool;
+}
+
+public enum DFRadialMenuActiveEffectType {
+	StatusEffects = 0,
+	Conditions = 1
+}
+
+public struct DFRadialMenuActiveEffectTab {
+	public let type: DFRadialMenuActiveEffectType;
+	public let widget: ref<inkRectangle>;
 }
 
 //
@@ -203,28 +566,41 @@ class DFHUDSystemEventListeners extends DFSystemEventListener {
 		//DFProfile();
 		super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Needs.UpdateHUDUIEvent", this, n"OnUpdateHUDUIEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DisplayHUDUIEvent", this, n"OnDisplayHUDUIEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<UpdateNeedsHUDUIEvent>(), this, n"OnUpdateNeedsHUDUIEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DisplayNeedsHUDUIEvent>(), this, n"OnDisplayNeedsHUDUIEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<UpdateConditionsHUDUIEvent>(), this, n"OnUpdateConditionsHUDUIEvent", true);
     }
 	
-	private cb func OnUpdateHUDUIEvent(event: ref<UpdateHUDUIEvent>) {
+	private cb func OnUpdateNeedsHUDUIEvent(event: ref<UpdateNeedsHUDUIEvent>) {
 		//DFProfile();
-		this.GetSystemInstance().UpdateUI(event.GetData());
+		this.GetSystemInstance().UpdateNeedsUI(event.GetData());
 	}
 
-	private cb func OnDisplayHUDUIEvent(event: ref<DisplayHUDUIEvent>) {
+	private cb func OnDisplayNeedsHUDUIEvent(event: ref<DisplayNeedsHUDUIEvent>) {
 		//DFProfile();
-		this.GetSystemInstance().DisplayUI(event.GetData());
+		this.GetSystemInstance().DisplayNeedsUI(event.GetData());
+	}
+
+	private cb func OnUpdateConditionsHUDUIEvent(event: ref<UpdateConditionsHUDUIEvent>) {
+		//DFProfile();
+		this.GetSystemInstance().UpdateConditionsUI(event.GetData());
 	}
 }
 
 public final class DFHUDSystem extends DFSystem {
-	private let widgetSlot: ref<inkCompoundWidget>;
+	private let DarkFutureWidgetSlot: ref<inkCompoundWidget>;
+	private let conditionsWidgetSlot: ref<inkCompoundWidget>;
 	private let virtualResolutionWatcher: ref<VirtualResolutionWatcher>;
 	private let hydrationBar: ref<DFNeedsHUDBar>;
 	private let nutritionBar: ref<DFNeedsHUDBar>;
 	private let energyBar: ref<DFNeedsHUDBar>;
 	public let nerveBar: ref<DFNeedsHUDBar>;
+	public let conditionsIndicator: ref<DFHUDSegmentedIndicator>;
+	public let healthBarController: ref<healthbarWidgetGameController>;
+	public let staminaBarController: ref<StaminabarWidgetGameController>;
+	public let cooldownController: ref<inkCooldownGameController>;
+	private let cooldownContentTabs: array<DFRadialMenuActiveEffectTab>;
+	private let cooldownEmptyText: ref<inkText>;
 
 	private let songbirdAudiocallWidget: ref<inkWidget>;
 	private let songbirdHolocallWidget: ref<inkWidget>;
@@ -287,37 +663,39 @@ public final class DFHUDSystem extends DFSystem {
 		//DFProfile();
 		let inkSystem: ref<inkSystem> = GameInstance.GetInkSystem();
 		let inkHUD: ref<inkCompoundWidget> = inkSystem.GetLayer(n"inkHUDLayer").GetVirtualWindow();
-		let fullScreenSlot: ref<inkCompoundWidget> = inkHUD.GetWidgetByPathName(n"Root/NeedBarFullScreenSlot") as inkCompoundWidget;
+		let fullScreenSlot: ref<inkCompoundWidget> = inkHUD.GetWidgetByPathName(n"Root/DarkFutureFullScreenSlot") as inkCompoundWidget;
 
 		if !IsDefined(fullScreenSlot) {
 			fullScreenSlot = this.CreateFullScreenSlot(inkHUD);
-			this.widgetSlot = this.CreateWidgetSlot(fullScreenSlot);
+			this.DarkFutureWidgetSlot = this.CreateWidgetSlot(fullScreenSlot, n"DarkFutureWidgetSlot");
 			this.UpdateHUDWidgetPositionAndScale();
-			this.CreateBars(this.widgetSlot, attachedPlayer);
+			this.CreateWidgets(this.DarkFutureWidgetSlot, attachedPlayer);
 
 			// Watch for changes to client resolution. Set the correct resolution now to scale all widgets.
 			this.virtualResolutionWatcher = new VirtualResolutionWatcher();
 			this.virtualResolutionWatcher.Initialize(GetGameInstance());
 			this.virtualResolutionWatcher.ScaleWidget(fullScreenSlot);
 
-			this.widgetSlot.SetVisible(this.Settings.mainSystemEnabled && this.Settings.showHUDUI);
+			this.DarkFutureWidgetSlot.SetVisible(this.Settings.mainSystemEnabled && this.Settings.showHUDUI);
 		}
 
 		this.UpdateAllBaseGameHUDWidgetPositions();
 		this.SendUpdateAllUIRequest();
+		//this.UpdateConditionsUIVisibility();
 	}
 
 	public func DoPostSuspendActions() -> Void {
 		//DFProfile();
 		this.HUDUIBlockedDueToMenuOpen = false;
 		this.HUDUIBlockedDueToCameraControl = false;
-		this.widgetSlot.SetVisible(false);
+		this.DarkFutureWidgetSlot.SetVisible(false);
+		this.conditionsWidgetSlot.SetVisible(false);
 		this.UpdateAllBaseGameHUDWidgetPositions();
 	}
 
 	public func DoPostResumeActions() -> Void {
 		//DFProfile();
-		this.widgetSlot.SetVisible(this.Settings.mainSystemEnabled && this.Settings.showHUDUI);
+		this.DarkFutureWidgetSlot.SetVisible(this.Settings.mainSystemEnabled && this.Settings.showHUDUI);
 		this.UpdateAllBaseGameHUDWidgetPositions();
 	}
 
@@ -344,9 +722,13 @@ public final class DFHUDSystem extends DFSystem {
 			this.energyBar.UpdateColorTheme(this.Settings.energyHUDUIColorTheme);
 		}
 
+		if ArrayContains(changedSettings, "conditionsIndicatorHUDUIColorTheme") && IsDefined(this.conditionsIndicator) {
+			this.conditionsIndicator.UpdateColorTheme(this.Settings.conditionsIndicatorHUDUIColorTheme);
+		}
+
 		if ArrayContains(changedSettings, "showHUDUI") {
-			if IsDefined(this.widgetSlot) {
-				this.widgetSlot.SetVisible(this.Settings.showHUDUI);
+			if IsDefined(this.DarkFutureWidgetSlot) {
+				this.DarkFutureWidgetSlot.SetVisible(this.Settings.showHUDUI);
 			}
 
 			this.UpdateAllBaseGameHUDWidgetPositions();
@@ -373,16 +755,17 @@ public final class DFHUDSystem extends DFSystem {
 			}
 		}
 
-		if ArrayContains(changedSettings, "compatibilityProjectE3HUD") && IsDefined(this.nerveBar) && IsDefined(this.hydrationBar) && IsDefined(this.nutritionBar) && IsDefined(this.energyBar) {
+		if ArrayContains(changedSettings, "compatibilityProjectE3HUD") {
 			let shouldShear: Bool = true;
 			if this.Settings.compatibilityProjectE3HUD {
 				shouldShear = false;
 			}
 
-			this.nerveBar.UpdateShear(shouldShear);
-			this.hydrationBar.UpdateShear(shouldShear);
-			this.nutritionBar.UpdateShear(shouldShear);
-			this.energyBar.UpdateShear(shouldShear);
+			if IsDefined(this.nerveBar) { this.nerveBar.UpdateShear(shouldShear); }
+			if IsDefined(this.nerveBar) { this.hydrationBar.UpdateShear(shouldShear); }
+			if IsDefined(this.nerveBar) { this.nutritionBar.UpdateShear(shouldShear); }
+			if IsDefined(this.nerveBar) { this.energyBar.UpdateShear(shouldShear); }
+			if IsDefined(this.conditionsIndicator) { this.conditionsIndicator.UpdateShear(shouldShear); }
 		}
 	}
 
@@ -392,7 +775,7 @@ public final class DFHUDSystem extends DFSystem {
 		// all of its contents and relative positions are also resized.
 
 		let fullScreenSlot: ref<inkCompoundWidget> = new inkCanvas();
-		fullScreenSlot.SetName(n"NeedBarFullScreenSlot");
+		fullScreenSlot.SetName(n"DarkFutureFullScreenSlot");
 		fullScreenSlot.SetSize(Vector2(3840.0, 2160.0));
 		fullScreenSlot.SetRenderTransformPivot(Vector2(0.0, 0.0));
 		fullScreenSlot.Reparent(inkHUD.GetWidgetByPathName(n"Root") as inkCompoundWidget);
@@ -400,11 +783,11 @@ public final class DFHUDSystem extends DFSystem {
 		return fullScreenSlot;
 	}
 
-	private final func CreateWidgetSlot(parent: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
+	private final func CreateWidgetSlot(parent: ref<inkCompoundWidget>, name: CName) -> ref<inkCompoundWidget> {
 		//DFProfile();
 		// Create the slot.
 		let widgetSlot: ref<inkCompoundWidget> = new inkCanvas();
-		widgetSlot.SetName(n"NeedBarWidgetSlot");
+		widgetSlot.SetName(name);
 		widgetSlot.SetFitToContent(true);
 		widgetSlot.Reparent(parent);
 
@@ -417,17 +800,50 @@ public final class DFHUDSystem extends DFSystem {
 		let posX: Float = this.Settings.hudUIPosX;
 		let posY: Float = this.Settings.hudUIPosY;
 
-		this.widgetSlot.SetScale(Vector2(scale, scale));
-		this.widgetSlot.SetTranslation(posX, posY);
+		this.DarkFutureWidgetSlot.SetScale(Vector2(scale, scale));
+		this.DarkFutureWidgetSlot.SetTranslation(posX, posY);
 	}
 
-	private final func CreateBars(slot: ref<inkCompoundWidget>, attachedPlayer: ref<PlayerPuppet>) -> Void {
+	// TODO - We don't need to rebuild all of the widgets, only Conditions.
+	public final func RebuildWidgets() -> Void {
+		this.CreateWidgets(this.DarkFutureWidgetSlot, this.player);
+		// TODO - Force re-appearance
+	}
+
+	private final func CreateWidgets(slot: ref<inkCompoundWidget>, attachedPlayer: ref<PlayerPuppet>) -> Void {
 		//DFProfile();
 		slot.RemoveAllChildren();
 
+		let conditionSegmentsData: array<DFHUDSegmentSetupDatum>;
+		if this.Settings.injuryConditionEnabled {
+			ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.Injury, n"DarkFutureConditionInjuryShort", n"DarkFutureConditionInjury"));
+		}
+		
+		if this.Settings.humanityLossConditionEnabled {
+			ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.HumanityLoss, n"DarkFutureConditionHumanityLossShort", n"DarkFutureConditionHumanityLoss"));
+		}
+		
+		if this.Settings.biocorruptionConditionEnabled {
+			ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.Biocorruption, n"DarkFutureConditionBiocorruptionShort", n"DarkFutureConditionBiocorruption"));
+		}
+		
+		if ArraySize(conditionSegmentsData) > 0 {
+			let conditionsIconPath: ResRef = r"darkfuture\\condition_images\\condition_assets.inkatlas";
+			let conditionsIconName: CName = n"ico_condition_outline";
+			let conditionWidgetSetupData: DFHUDSegmentedIndicatorSetupData = DFHUDSegmentedIndicatorSetupData(slot, n"conditionsIndicator", conditionsIconPath, conditionsIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PanelRed), 800.0, 705.0, 0.0, -41.0, conditionSegmentsData);
+			this.conditionsIndicator = new DFHUDSegmentedIndicator();
+			this.conditionsIndicator.Init(conditionWidgetSetupData);
+
+			// The Conditions Indicator is in its own Bar Group so that it can display independently.
+			let conditionsIndicatorGroup: ref<DFHUDSegmentedIndicatorGroup> = new DFHUDSegmentedIndicatorGroup();
+			conditionsIndicatorGroup.Init(attachedPlayer, false, false);
+			conditionsIndicatorGroup.AddBarToGroup(this.conditionsIndicator);
+			conditionsIndicatorGroup.BarGroupSetupDone();
+		}
+
 		let nerveIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let nerveIconName: CName = n"illegal";
-		let nerveBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"nerveBar", nerveIconPath, nerveIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.Rose), 800.0, 700.0, 0.0, 0.0, true, true, r"base\\gameplay\\gui\\common\\stamina_oxygen_bar\\stamina_oxygen_bar.inkatlas", n"ico_lock");
+		let nerveBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"nerveBar", nerveIconPath, nerveIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.Rose), 800.0, 700.0, 0.0, 0.0, true, true);
 		this.nerveBar = new DFNeedsHUDBar();
 		this.nerveBar.Init(nerveBarSetupData);
 		if this.Settings.nerveLossIsFatal {
@@ -442,27 +858,24 @@ public final class DFHUDSystem extends DFSystem {
 
 		let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let hydrationIconName: CName = n"bar";
-		let hydrationBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"hydrationBar", hydrationIconPath, hydrationIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 33.0, 41.0, false, false, r"", n"");
+		let hydrationBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"hydrationBar", hydrationIconPath, hydrationIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 33.0, 41.0, false, true);
 		this.hydrationBar = new DFNeedsHUDBar();
 		this.hydrationBar.Init(hydrationBarSetupData);
-		// TODO: If hydration loss is fatal...
 
 		let nutritionIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let nutritionIconName: CName = n"food_vendor";
-		let nutritionBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"nutritionBar", nutritionIconPath, nutritionIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 53.0 + 230.6, 41.0, false, false, r"", n"");
+		let nutritionBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"nutritionBar", nutritionIconPath, nutritionIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 53.0 + 230.6, 41.0, false, true);
 		this.nutritionBar = new DFNeedsHUDBar();
 		this.nutritionBar.Init(nutritionBarSetupData);
-		// TODO: If nutrition loss is fatal...
 
 		let energyIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let energyIconName: CName = n"wait";
-		let energyBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"energyBar", energyIconPath, energyIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 73.0 + 462.2, 41.0, false, false, r"", n"");
+		let energyBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"energyBar", energyIconPath, energyIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 73.0 + 462.2, 41.0, false, true);
 		this.energyBar = new DFNeedsHUDBar();
 		this.energyBar.Init(energyBarSetupData);
-		// TODO: If energy loss is fatal...
 
 		let physicalNeedsBarGroup: ref<DFNeedsHUDBarGroup> = new DFNeedsHUDBarGroup();
-		physicalNeedsBarGroup.Init(attachedPlayer, false, (this.Settings.hydrationLossIsFatal || this.Settings.nutritionLossIsFatal || this.Settings.energyLossIsFatal));
+		physicalNeedsBarGroup.Init(attachedPlayer, false, (this.Settings.hydrationLossIsFatal || this.Settings.nutritionLossIsFatal));
 		physicalNeedsBarGroup.AddBarToGroup(this.hydrationBar);
 		physicalNeedsBarGroup.AddBarToGroup(this.nutritionBar);
 		physicalNeedsBarGroup.AddBarToGroup(this.energyBar);
@@ -493,7 +906,12 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	public final func DisplayUI(uiToShow: DFUIDisplay) -> Void {
+	private final func GetHUDConditionsIndicator() -> ref<DFHUDSegmentedIndicator> {
+		//DFProfile();
+		return this.conditionsIndicator;
+	}
+
+	public final func DisplayNeedsUI(uiToShow: DFBarUIDisplay) -> Void {
 		//DFProfile();
 		let bar: ref<DFNeedsHUDBar> = this.GetHUDBarFromType(uiToShow.bar);
 
@@ -513,17 +931,67 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
+	public final func DisplayConditionsUI(uiToShow: DFSegmentedIndicatorUIDisplay) -> Void {
+		//DFProfile();
+		let indicator: ref<DFHUDSegmentedIndicator> = this.GetHUDConditionsIndicator();
+
+		if NotEquals(indicator, null) {
+			indicator.EvaluateSegmentedIndicatorGroupVisibility(true, uiToShow.ignoreSceneTier, this.healthBarController.m_moduleShown, this.staminaBarController.m_RootWidget.IsVisible());
+			
+			if uiToShow.pulse {
+				indicator.SetSegmentPulse(uiToShow.targetSegment, 0.3);
+			}
+		}
+	}
+
 	public final func RefreshHUDUIVisibility() -> Void {
 		//DFProfile();
 		this.hydrationBar.EvaluateBarGroupVisibility(false);
 	}
 
-	public final func UpdateUI(update: DFNeedHUDUIUpdate) -> Void {
+	public final func RefreshHUDConditionsUIVisibilityFromHealthBar(healthBarVisible: Bool) {
+		if DFRunGuard(this) { return; }
+
+		if IsDefined(this.staminaBarController) {
+			this.conditionsIndicator.EvaluateSegmentedIndicatorGroupVisibility(false, false, healthBarVisible, this.staminaBarController.m_RootWidget.IsVisible());
+		}
+	}
+
+	public final func RefreshHUDConditionsUIVisibilityFromStaminaBar(staminaBarVisible: Bool) {
+		if DFRunGuard(this) { return; }
+
+		if IsDefined(this.healthBarController) {
+			this.conditionsIndicator.EvaluateSegmentedIndicatorGroupVisibility(false, false, this.healthBarController.m_moduleShown, staminaBarVisible);
+		}
+	}
+
+	public final func RefreshHUDConditionsUIVisibilityFromNerve() {
+		if IsDefined(this.staminaBarController) && IsDefined(this.healthBarController) {
+			this.conditionsIndicator.EvaluateSegmentedIndicatorGroupVisibility(false, false, this.healthBarController.m_moduleShown, this.staminaBarController.m_RootWidget.IsVisible());
+		}
+	}
+
+	public final func UpdateNeedsUI(update: DFNeedHUDUIUpdate) -> Void {
 		//DFProfile();
 		let bar: ref<DFNeedsHUDBar> = this.GetHUDBarFromType(update.bar);
 	
 		this.UpdateBarLimit(bar, update.newLimitValue);
-		this.UpdateBar(bar, update.newValue, update.forceMomentaryDisplay, update.instant, update.forceBright, update.momentaryDisplayIgnoresSceneTier, update.fromInteraction, update.showLock);
+		this.UpdateBar(bar, update.newValue, update.forceMomentaryDisplay, update.instant, update.forceBright, update.momentaryDisplayIgnoresSceneTier, update.isSoftCapRestrictedChange, update.showLock);
+
+		// If this was the Nerve bar, also check if we should display Conditions based on Nerve Lock display.
+		if Equals(update.bar, DFHUDBarType.Nerve) {
+			this.RefreshHUDConditionsUIVisibilityFromNerve();
+		}
+	}
+
+	public final func UpdateConditionsUI(update: DFHUDSegmentedIndicatorUIUpdate) -> Void {
+		//DFProfile();
+
+		this.conditionsIndicator.SetActive(update.segment, update.active);
+
+		if update.pulse {
+			this.conditionsIndicator.SetSegmentPulse(update.segment, 0.3);
+		}
 	}
 
 	public final func SendUpdateAllUIRequest() -> Void {
@@ -537,12 +1005,12 @@ public final class DFHUDSystem extends DFSystem {
 		bar.SetPulse();
 	}
 
-	private final func UpdateBar(bar: ref<DFNeedsHUDBar>, newValue: Float, forceMomentaryDisplay: Bool, instant: Bool, forceBright: Bool, momentaryDisplayIgnoresSceneTier: Bool, fromInteraction: Bool, showLock: Bool) -> Void {
+	private final func UpdateBar(bar: ref<DFNeedsHUDBar>, newValue: Float, forceMomentaryDisplay: Bool, instant: Bool, forceBright: Bool, momentaryDisplayIgnoresSceneTier: Bool, isSoftCapRestrictedChange: Bool, showLock: Bool) -> Void {
 		//DFProfile();
 		bar.SetForceBright(instant || forceBright);
 
 		let needValuePct: Float = newValue / 100.0;
-		bar.SetProgress(needValuePct, forceMomentaryDisplay, instant, momentaryDisplayIgnoresSceneTier, fromInteraction);
+		bar.SetProgress(needValuePct, forceMomentaryDisplay, instant, momentaryDisplayIgnoresSceneTier, isSoftCapRestrictedChange);
 
 		if bar.HasLock() {
 			if showLock {
@@ -564,10 +1032,13 @@ public final class DFHUDSystem extends DFSystem {
 				// Force momentary display of UI when entering the Radial Wheel.
 				this.HUDUIBlockedDueToMenuOpen = false;
 
-				let uiToShow: DFUIDisplay;
-				uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
+				let barToShow: DFBarUIDisplay;
+				barToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
 
-				this.DisplayUI(uiToShow);
+				this.DisplayNeedsUI(barToShow);
+
+				let segmentedIndicatorToShow: DFSegmentedIndicatorUIDisplay;
+				this.DisplayConditionsUI(segmentedIndicatorToShow);
 			} else {
 				// A menu was opened, but it was not the Radial Menu. Block the HUD UI.
 				this.HUDUIBlockedDueToMenuOpen = true;
@@ -729,5 +1200,91 @@ public final class DFHUDSystem extends DFSystem {
 	private final func UnregisterForPhoneIconCheck() -> Void {
 		//DFProfile();
 		UnregisterDFDelayCallback(this.DelaySystem, this.phoneIconCheckDelayID);
+	}
+
+	public final func SetHealthBarWidget(healthBar: ref<healthbarWidgetGameController>) -> Void {
+		this.healthBarController = healthBar;
+	}
+
+	public final func SetStaminaBarWidget(staminaBar: ref<StaminabarWidgetGameController>) -> Void {
+		this.staminaBarController = staminaBar;
+	}
+
+	public final func IsNerveLockVisible() -> Bool {
+		return this.nerveBar.m_lockShown;
+	}
+
+	public final func SetCooldownController(cooldownController: ref<inkCooldownGameController>) -> Void {
+		this.cooldownController = cooldownController;
+	}
+
+	public final func CycleRadialMenuActiveEffectType() -> Void {
+		if IsDefined(this.cooldownController) {
+			// Set the active effect type.
+			if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+				this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.Conditions;
+			} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+				this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.StatusEffects;
+			}
+
+			this.UpdateRadialMenuActiveEffects();
+		}
+	}
+
+	public final func SetRadialMenuActiveEffectType(type: DFRadialMenuActiveEffectType, opt silent: Bool) {
+		if IsDefined(this.cooldownController) {
+			// Set the active effect type.
+			this.cooldownController.DarkFutureActiveEffectType = type;
+
+			this.UpdateRadialMenuActiveEffects(silent);
+		}
+	}
+
+	private final func UpdateRadialMenuActiveEffects(opt silent: Bool) -> Void {
+		if IsDefined(this.cooldownController) {
+			// Update the title text based on the new effect type.
+			if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+				(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedText("LocKey#51709"));
+
+			} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+				(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureConditionsMenuItem"));
+			}
+
+			// Update the tab highlighting.
+			for tab in this.cooldownContentTabs {
+				if Equals(tab.type, this.cooldownController.DarkFutureActiveEffectType) {
+					tab.widget.BindProperty(n"tintColor", n"MainColors.PanelBlue");
+					tab.widget.SetOpacity(1.0);
+				} else {
+					tab.widget.BindProperty(n"tintColor", n"MainColors.PanelRed");
+					tab.widget.SetOpacity(0.2);
+				}
+			}
+
+			// SFX
+			if !silent {
+				GameInstance.GetAudioSystem(GetGameInstance()).Play(n"ui_gui_tab_change");
+			}
+
+			let i: Int32 = 0;
+			while i < ArraySize(this.cooldownController.m_cooldownPool) {
+				this.cooldownController.m_cooldownPool[i].RemoveCooldown();
+				i += 1;
+			}
+
+			this.cooldownController.DarkFutureFadeOutCooldownList();
+		}
+	}
+
+	public final func SetCooldownContentTabs(tabs: script_ref<array<DFRadialMenuActiveEffectTab>>) -> Void {
+		this.cooldownContentTabs = Deref(tabs);
+	}
+
+	public cb func OnCooldownFadeOutComplete(proxy: ref<inkAnimProxy>) -> Void {
+		if IsDefined(this.cooldownController) {
+			let v: Variant;
+			this.cooldownController.OnEffectUpdate(v);
+			this.cooldownController.DarkFutureFadeInCooldownList();
+		}
 	}
 }

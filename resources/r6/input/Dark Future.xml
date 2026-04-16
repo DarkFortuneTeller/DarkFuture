@@ -14,6 +14,10 @@
         <action name="DFAnimatedConsumableManualChoiceAction" map="DFAnimatedConsumableManualChoiceMapping" />
     </context>
 
+	<context name="UI_DPad_Wheel" append="true" >
+		<action name="DFCycleActiveEffectType" map="DFCycleActiveEffectTypeMapping" />
+	</context>
+
 	<!-- Mappings -->
 	<mapping name="DFVehicleSleepMapping" type="Button" >
 		<button id="IK_X" overridableUI="DFVehicleSleepButtonMain" />
@@ -23,6 +27,11 @@
 	<mapping name="DFAnimatedConsumableManualChoiceMapping" type="Button" >
 		<button id="IK_R" overridableUI="consumableAnimationLootActionKeyKBM" />
 		<button id="IK_Pad_B_CIRCLE" overridableUI="consumableAnimationLootActionKeyControllerV2" />
+	</mapping>
+
+	<mapping name="DFCycleActiveEffectTypeMapping" type="Button" >
+		<button id="IK_Tab" /> <!-- overridableUI="consumableAnimationLootActionKeyKBM" /> -->
+		<button id="IK_Pad_LeftShoulder" /> <!-- overridableUI="consumableAnimationLootActionKeyControllerV2" /> -->
 	</mapping>
 
 	<!-- Hold Actions -->

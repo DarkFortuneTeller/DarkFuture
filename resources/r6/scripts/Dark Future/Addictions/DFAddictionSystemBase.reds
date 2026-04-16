@@ -41,9 +41,61 @@ import DarkFuture.Services.{
     DFCyberwareService,
     DFMessageContext,
     DFMessage,
-    DFNotification
+    DFNotification,
+    DFAddictionType
 }
 import DarkFuture.Needs.DFNerveSystem
+import DarkFuture.Conditions.DFBiocorruptionConditionSystem
+
+public enum DFAddictionEventType {
+    UpdateFromTime = 0,
+    UpdateFromTimeSkip = 1,
+    AddictiveItemConsumed = 2
+}
+
+public struct DFAddictionValueChangedEventDatum {
+	public let addictionType: DFAddictionType;
+    public let eventType: DFAddictionEventType;
+	public let amountChange: Float;
+	public let newAmount: Float;
+	public let stageChange: Int32;
+	public let newStage: Int32;
+}
+
+public class DFAddictionValueChangedEvent extends CallbackSystemEvent {
+	private let data: DFAddictionValueChangedEventDatum;
+
+	public func GetData() -> DFAddictionValueChangedEventDatum {
+		//DFProfile();
+        return this.data;
+    }
+
+    public static func Create(data: DFAddictionValueChangedEventDatum) -> ref<DFAddictionValueChangedEvent> {
+		//DFProfile();
+        let event = new DFAddictionValueChangedEvent();
+        event.data = data;
+        return event;
+    }
+}
+
+public class DFAddictionCurrentDayUpdateEvent extends Event {
+    private let AddictionSystem: ref<DFAddictionSystemBase>;
+
+    public func GetData() -> ref<DFAddictionSystemBase> {
+        return this.AddictionSystem;
+    }
+
+    public static func Create(addictionSystem: ref<DFAddictionSystemBase>) -> ref<DFAddictionCurrentDayUpdateEvent> {
+        let self: ref<DFAddictionCurrentDayUpdateEvent> = new DFAddictionCurrentDayUpdateEvent();
+        self.AddictionSystem = addictionSystem;
+        return self;
+    }
+}
+
+@addMethod(PlayerPuppet)
+private cb func OnDarkFutureAddictionCurrentDayUpdate(evt: ref<DFAddictionCurrentDayUpdateEvent>) -> Bool {
+    evt.GetData().OnDayUpdate();
+}
 
 public abstract class DFAddictionSystemEventListener extends DFSystemEventListener {
     //
@@ -59,14 +111,14 @@ public abstract class DFAddictionSystemEventListener extends DFSystemEventListen
         //DFProfile();
         super.OnLoad();
 
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DFGameStateServiceSceneTierChangedEvent", this, n"OnGameStateServiceSceneTierChangedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DFGameStateServiceFuryChangedEvent", this, n"OnGameStateServiceFuryChangedEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DFGameStateServiceCyberspaceChangedEvent", this, n"OnGameStateServiceCyberspaceChangedEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent", this, n"OnPlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.PlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent", this, n"OnPlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.PlayerStateServiceAddictionTreatmentEffectAppliedOrRemovedEvent", this, n"OnPlayerStateServiceAddictionTreatmentEffectAppliedOrRemovedEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.PlayerStateServiceAddictionPrimaryEffectAppliedEvent", this, n"OnPlayerStateServiceAddictionPrimaryEffectAppliedEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.PlayerStateServiceAddictionPrimaryEffectRemovedEvent", this, n"OnPlayerStateServiceAddictionPrimaryEffectRemovedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceSceneTierChangedEvent>(), this, n"OnGameStateServiceSceneTierChangedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceFuryChangedEvent>(), this, n"OnGameStateServiceFuryChangedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceCyberspaceChangedEvent>(), this, n"OnGameStateServiceCyberspaceChangedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent>(), this, n"OnPlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<PlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent>(), this, n"OnPlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<PlayerStateServiceAddictionTreatmentEffectAppliedOrRemovedEvent>(), this, n"OnPlayerStateServiceAddictionTreatmentEffectAppliedOrRemovedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<PlayerStateServiceAddictionPrimaryEffectAppliedEvent>(), this, n"OnPlayerStateServiceAddictionPrimaryEffectAppliedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<PlayerStateServiceAddictionPrimaryEffectRemovedEvent>(), this, n"OnPlayerStateServiceAddictionPrimaryEffectRemovedEvent", true);
     }
 
     private cb func OnGameStateServiceSceneTierChangedEvent(event: ref<DFGameStateServiceSceneTierChangedEvent>) {
@@ -132,6 +184,9 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     public let NotificationService: ref<DFNotificationService>;
     public let CyberwareService: ref<DFCyberwareService>;
     public let NerveSystem: ref<DFNerveSystem>;
+    public let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
+
+    private let dayTimeListener: Uint32;
 
     //
     //  DFSystem Required Methods
@@ -140,11 +195,20 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
     private func RegisterListeners() -> Void {
         this.therapySetAddictionStateIndexFactListener = this.QuestsSystem.RegisterListener(this.GetSetTherapyAddictionStateIndexFactAction(), this, n"OnSetTherapyAddictionStateIndexFactChanged");
+
+        // Update at midnight each day.
+        let now: GameTime = GetGameInstance().GetGameTime();
+        let dayTomorrow: Int32 = now.Days() + 1;
+        let midnightTomorrow: GameTime = GameTime.MakeGameTime(dayTomorrow, 0);
+        this.dayTimeListener = GameInstance.GetTimeSystem(GetGameInstance()).RegisterListener(this.player, DFAddictionCurrentDayUpdateEvent.Create(this), midnightTomorrow, 0);
     }
 
 	private func UnregisterListeners() -> Void {
         this.QuestsSystem.UnregisterListener(this.GetSetTherapyAddictionStateIndexFactAction(), this.therapySetAddictionStateIndexFactListener);
         this.therapySetAddictionStateIndexFactListener = 0u;
+
+        GameInstance.GetTimeSystem(GetGameInstance()).UnregisterListener(this.dayTimeListener);
+        this.dayTimeListener = 0u;
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
@@ -170,6 +234,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         this.NotificationService = DFNotificationService.GetInstance(gameInstance);
         this.CyberwareService = DFCyberwareService.GetInstance(gameInstance);
 		this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
+        this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     }
 
     public func DoPostSuspendActions() -> Void {
@@ -206,11 +271,38 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		DFLog(this, "OnUpdate");
 
 		if this.GameStateService.IsValidGameState(this, true) {
-			this.ReduceAddictionFromTime(gameTimeSecondsToReduce);
+            let addictionAmount: Float = this.GetAddictionAmount();
+            let addictionStage: Int32 = this.GetAddictionStage();
+            
             this.ReduceWithdrawalDuration(gameTimeSecondsToReduce);
             this.ReduceBackoffDuration(gameTimeSecondsToReduce);
+
+            let addictionAmountDelta: Float = 0.0;
+            let addictionStageDelta: Int32 = 0;
+
+            if this.GetAddictionStage() == 0 && addictionStage > 0 {
+                // This update cured the addiction, update the values.
+                // Averts a floating point imprecision error if doing math on floats that are very similar.
+                let newAddictionAmount: Float = this.GetAddictionAmount();
+                let newAddictionStage: Int32 = this.GetAddictionStage();
+                addictionAmountDelta = newAddictionAmount - addictionAmount;
+                addictionStageDelta = newAddictionStage - addictionStage;
+                addictionAmount = newAddictionAmount;
+                addictionStage = newAddictionStage;
+            }
+
+            this.DispatchAddictionValueChangedEvent(DFAddictionEventType.UpdateFromTime, addictionAmountDelta, addictionAmount, addictionStageDelta, addictionStage);
 		}
 	}
+
+    public func OnDayUpdate() -> Void {
+        if DFRunGuard(this) { return; }
+        DFLog(this, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ OnDayUpdate ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
+        if this.GameStateService.IsValidGameState(this, true) {
+            this.ReduceAddictionFromTime();
+        }
+    }
 
     public func OnAddictionTreatmentEffectAppliedOrRemoved() -> Void {
         //DFProfile();
@@ -249,14 +341,20 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		if DFRunGuard(this) { return; }
 		DFLog(this, "AddictionTreatmentDurationUpdateFromTimeSkipFinished");
 
+        let oldAddictionAmount: Float = this.currentAddictionAmount;
+        let oldStage: Int32 = this.currentAddictionStage;
+
         let updateDatum: DFAddictionUpdateDatum = this.GetSpecificAddictionUpdateData(addictionData);
-        this.SetAddictionAmount(updateDatum.addictionAmount);
+        //this.SetAddictionAmount(updateDatum.addictionAmount);
         this.SetAddictionStage(updateDatum.addictionStage);
         this.SetWithdrawalLevel(updateDatum.withdrawalLevel);
         this.SetRemainingBackoffDurationInGameTimeSeconds(updateDatum.remainingBackoffDuration);
         this.SetRemainingWithdrawalDurationInGameTimeSeconds(updateDatum.remainingWithdrawalDuration);
 
-        this.ReevaluateSystem();
+        this.ReevaluateSystem(); // This can mutate Withdrawal Level, Stage, and Addiction Amount!
+
+        let newAddictionAmount: Float = this.currentAddictionAmount;
+        this.DispatchAddictionValueChangedEvent(DFAddictionEventType.UpdateFromTimeSkip, newAddictionAmount - oldAddictionAmount, newAddictionAmount, updateDatum.addictionStage - oldStage, updateDatum.addictionStage);
 	}
 
     public func GetAddictionAmount() -> Float {
@@ -264,6 +362,20 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         if DFRunGuard(this) { return 0; }
 
         return this.currentAddictionAmount;
+    }
+
+    public func GetAddictionAmountAsPercentageToNextStage() -> Float {
+        if DFRunGuard(this) { return 0.0; }
+
+        let addictionStageAdvanceAmounts: array<Float> = this.GetAddictionStageAdvanceAmounts();
+        return this.currentAddictionAmount / addictionStageAdvanceAmounts[this.GetAddictionStage()];
+    }
+
+    public func GetAddictionAmountAsPercentageToNextStageInProvidedState(amount: Float, stage: Int32) -> Float {
+        if DFRunGuard(this) { return 0.0; }
+
+        let addictionStageAdvanceAmounts: array<Float> = this.GetAddictionStageAdvanceAmounts();
+        return amount / addictionStageAdvanceAmounts[stage];
     }
 
     public func SetAddictionAmount(value: Float) -> Void {
@@ -329,6 +441,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         this.lastWithdrawalLevel = this.currentWithdrawalLevel;
         this.currentWithdrawalLevel = Clamp(value, 0, 5);
         this.NerveSystem.ForceNeedMaxValueUpdate();
+        this.BiocorruptionConditionSystem.UpdateBiocorruptionState();
     }
 
     public func ModWithdrawalLevel(value: Int32) -> Int32 {
@@ -339,6 +452,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         this.currentWithdrawalLevel += value;
         this.currentWithdrawalLevel = Clamp(this.currentWithdrawalLevel, 0, 5);
         this.NerveSystem.ForceNeedMaxValueUpdate();
+        this.BiocorruptionConditionSystem.UpdateBiocorruptionState();
 
         return this.currentWithdrawalLevel;
     }
@@ -443,9 +557,9 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         return [];
     }
 
-	public func GetAddictionBackoffDurationsInRealTimeMinutesByStage() -> array<Float> {
+	public func GetAddictionBackoffDurationsInGameTimeSecondsByStage() -> array<Float> {
         //DFProfile();
-        this.LogMissingOverrideError("GetAddictionBackoffDurationsInRealTimeMinutesByStage");
+        this.LogMissingOverrideError("GetAddictionBackoffDurationsInGameTimeSecondsByStage");
         return [];
     }
 
@@ -582,6 +696,12 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		return n"";
     }
 
+    private func GetAddictionType() -> DFAddictionType {
+        //DFProfile();
+		this.LogMissingOverrideError("GetAddictionType");
+		return DFAddictionType.None;
+    }
+
     //
     //  System Methods
     //
@@ -590,14 +710,13 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		this.RefreshAddictionStatusEffects();
 	}
 
-    private final func ReduceAddictionFromTime(gameTimeSecondsToReduce: Float) -> Void {
-        //DFProfile();
-		let minutesPerUpdate: Float = gameTimeSecondsToReduce / 60.0;
-		let updatesPerDay: Float = (60.0 / minutesPerUpdate) * 24.0;
-		
-		let addictionAmountLossPerUpdate = this.GetAddictionAmountLossPerDay() / updatesPerDay;
-        this.ModAddictionAmount(-addictionAmountLossPerUpdate);
-
+    // TODO - Make this once a day to help prevent message spam on Biocorruption
+    // TODO - Do we need to reregister?
+    private final func ReduceAddictionFromTime() -> Void {
+        //DFProfile();		
+		let addictionAmountLoss = this.GetAddictionAmountLossPerDay();
+        this.ModAddictionAmount(-addictionAmountLoss);
+        this.DispatchAddictionValueChangedEvent(DFAddictionEventType.UpdateFromTime, -addictionAmountLoss, this.currentAddictionAmount, 0, this.GetAddictionStage());
 		DFLog(this, "ReduceAddictionFromTime currentAddictionAmount = " + ToString(this.currentAddictionAmount));
 	}
 
@@ -631,7 +750,10 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         //DFProfile();
         if DFRunGuard(this) { return; }
         
-        let currentAddictionStage = this.GetAddictionStage();
+        let oldAddictionAmount: Float = this.GetAddictionAmount();
+        let oldAddictionStage: Int32 = this.GetAddictionStage();
+
+        let currentAddictionStage = oldAddictionStage;
 		if currentAddictionStage < this.GetAddictionMaxStage() {
 			// Roll to check for addiction advancement.
 			let progressionAttempt: Float = RandRangeF(0.0, 100.0);
@@ -665,6 +787,8 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		} else {
 			DFLog(this, "TryToAdvanceAddiction Player already at max addiction stage.");
 		}
+
+        this.DispatchAddictionValueChangedEvent(DFAddictionEventType.AddictiveItemConsumed, this.currentAddictionAmount - oldAddictionAmount, this.currentAddictionAmount, currentAddictionStage - oldAddictionStage, currentAddictionStage);
 	}
 
     private final func AdvanceWithdrawal() -> Void {
@@ -685,7 +809,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
 		if withdrawalLevel > 0 {
             if withdrawalLevel < this.GetAddictionStage() {
-                this.SetRemainingWithdrawalDurationInGameTimeSeconds(HoursToGameTimeSeconds(1));
+                this.SetRemainingWithdrawalDurationInGameTimeSeconds(HoursToGameTimeSeconds(2));
             } else {
                 let durations: array<Float> = this.GetAddictionWithdrawalDurationsInGameTimeSeconds();
                 this.SetRemainingWithdrawalDurationInGameTimeSeconds(durations[withdrawalLevel]);
@@ -802,8 +926,8 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 		DFLog(this, "StartBackoffDuration");
 		let currentAddictionStage: Int32 = this.GetAddictionStage();
 		if currentAddictionStage > 0 {
-            let backoffDurations: array<Float> = this.GetAddictionBackoffDurationsInRealTimeMinutesByStage();
-			this.SetRemainingBackoffDurationInGameTimeSeconds((backoffDurations[currentAddictionStage] * this.Settings.timescale) * 60.0);
+            let backoffDurations: array<Float> = this.GetAddictionBackoffDurationsInGameTimeSecondsByStage();
+			this.SetRemainingBackoffDurationInGameTimeSeconds(backoffDurations[currentAddictionStage]);
 		}
 	}
 
@@ -885,5 +1009,14 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 				this.QuestsSystem.SetFact(this.GetAddictionTherapyResponseIndexFact(), 0);
 			}
 		}
+    }
+
+    //
+    //  Events for Dark Future Add-Ons and Mods
+    //
+    public final func DispatchAddictionValueChangedEvent(eventType: DFAddictionEventType, amountChange: Float, newAmount: Float, stageChange: Int32, newStage: Int32) -> Void {
+		//DFProfile();
+		let data = DFAddictionValueChangedEventDatum(this.GetAddictionType(), eventType, amountChange, newAmount, stageChange, newStage);
+        GameInstance.GetCallbackSystem().DispatchEvent(DFAddictionValueChangedEvent.Create(data));
     }
 }

@@ -35,7 +35,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_Cessation_UIData:
   floatValues: []
   intValues:
     - 80
-    - 24
+    - 48
   nameValues: []
   stats: []
 
@@ -62,7 +62,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_Cessation:
     - AddictionWithdrawalCessation
     - AddictionWithdrawalCessationNarcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -84,7 +83,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression_UIData:
   floatValues: []
   intValues:
     - 80
-    - 12
+    - 36
   nameValues: []
   stats: []
 
@@ -111,7 +110,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Narcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -133,7 +131,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression_UIData:
   floatValues: []
   intValues:
     - 80
-    - 1
+    - 2
   nameValues: []
   stats: []
 
@@ -160,7 +158,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression:
     - AddictionWithdrawalStage1
     - AddictionWithdrawalStage1Narcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -182,7 +179,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression_UIData:
   floatValues: []
   intValues:
     - 60
-    - 12
+    - 48
   nameValues: []
   stats: []
 
@@ -209,7 +206,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Narcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -231,7 +227,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression_UIData:
   floatValues: []
   intValues:
     - 60
-    - 1
+    - 2
   nameValues: []
   stats: []
 
@@ -258,7 +254,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression:
     - AddictionWithdrawalStage2
     - AddictionWithdrawalStage2Narcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -280,7 +275,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression_UIData:
   floatValues: []
   intValues:
     - 40
-    - 24
+    - 60
   nameValues: []
   stats: []
 
@@ -307,7 +302,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Narcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -329,7 +323,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression_UIData:
   floatValues: []
   intValues:
     - 40
-    - 1
+    - 2
   nameValues: []
   stats: []
 
@@ -356,7 +350,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression:
     - AddictionWithdrawalStage3
     - AddictionWithdrawalStage3Narcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []
@@ -378,7 +371,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression_UIData:
   floatValues: []
   intValues:
     - 20
-    - 24
+    - 72
   nameValues: []
   stats: []
 
@@ -405,7 +398,6 @@ DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression:
     - AddictionWithdrawalStage4
     - AddictionWithdrawalStage4Narcotic
     - DarkFutureInfiniteDurationEffect
-    - DarkFutureCanHideOnBuffBar
   immunityStats: []
   packages: []
   SFX: []

@@ -67,6 +67,7 @@ public struct DFQueuedNeedValueChange {
 	public let forceMomentaryUIDisplay: Bool;
 	public let isSoftCapRestrictedChange: Bool;
 	public let effectToApplyAfterValueChange: TweakDBID;
+	public let isFromBlackout: Bool;
 }
 
 public struct DFNeedValueChangedEventDatum {
@@ -86,6 +87,7 @@ public struct DFChangeNeedValueProps {
 	public let fromDanger: Bool;
 	public let doNotUpdateUIIfNoChange: Bool;
 	public let skipFX: Bool;
+	public let delayPercent: Float;
 }
 
 public class NeedUpdateDelayCallback extends DFDelayCallback {
@@ -260,7 +262,7 @@ public class StatusEffectRefreshDebounceCallback extends DFDelayCallback {
 	}
 }
 
-public class UpdateHUDUIEvent extends CallbackSystemEvent {
+public class UpdateNeedsHUDUIEvent extends CallbackSystemEvent {
     private let data: DFNeedHUDUIUpdate;
 
     public func GetData() -> DFNeedHUDUIUpdate {
@@ -268,9 +270,9 @@ public class UpdateHUDUIEvent extends CallbackSystemEvent {
         return this.data;
     }
 
-    public static func Create(data: DFNeedHUDUIUpdate) -> ref<UpdateHUDUIEvent> {
+    public static func Create(data: DFNeedHUDUIUpdate) -> ref<UpdateNeedsHUDUIEvent> {
 		//DFProfile();
-        let event = new UpdateHUDUIEvent();
+        let event = new UpdateNeedsHUDUIEvent();
         event.data = data;
         return event;
     }
@@ -348,11 +350,11 @@ public abstract class DFNeedSystemEventListener extends DFSystemEventListener {
 		//DFProfile();
 		super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemItemConsumedEvent", this, n"OnMainSystemItemConsumedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DFGameStateServiceSceneTierChangedEvent", this, n"OnGameStateServiceSceneTierChangedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DFGameStateServiceFuryChangedEvent", this, n"OnGameStateServiceFuryChangedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.DFGameStateServiceCyberspaceChangedEvent", this, n"OnGameStateServiceCyberspaceChangedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.UI.HUDSystemUpdateUIRequestEvent", this, n"OnHUDSystemUpdateUIRequestEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceSceneTierChangedEvent>(), this, n"OnGameStateServiceSceneTierChangedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceFuryChangedEvent>(), this, n"OnGameStateServiceFuryChangedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceCyberspaceChangedEvent>(), this, n"OnGameStateServiceCyberspaceChangedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<HUDSystemUpdateUIRequestEvent>(), this, n"OnHUDSystemUpdateUIRequestEvent", true);
     }
 
 	private cb func OnMainSystemItemConsumedEvent(event: ref<MainSystemItemConsumedEvent>) {
@@ -383,6 +385,8 @@ public abstract class DFNeedSystemEventListener extends DFSystemEventListener {
 
 public abstract class DFNeedSystemBase extends DFSystem {
     public persistent let needValue: Float = 100.0;
+	public persistent let currentDelayedNeedLoss: Float = 0.0;
+	public persistent let blackoutNeedChangePending: Bool = false;   // Used by DFNeedSystemEnergy
 	
 	private let MainSystem: ref<DFMainSystem>;
 	private let InteractionSystem: ref<DFInteractionSystem>;
@@ -431,10 +435,10 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	public func SetupData() -> Void {
 		//DFProfile();
 		this.needStageThresholdDeficits = [
-			100.0 - this.Settings.basicNeedThresholdValue1,
-			100.0 - this.Settings.basicNeedThresholdValue2,
-			100.0 - this.Settings.basicNeedThresholdValue3,
-			100.0 - this.Settings.basicNeedThresholdValue4,
+			100.0 - this.Settings.basicNeedThresholdValue1V2,
+			100.0 - this.Settings.basicNeedThresholdValue2V2,
+			100.0 - this.Settings.basicNeedThresholdValue3V2,
+			100.0 - this.Settings.basicNeedThresholdValue4V2,
 			100.0
 		];
 	}
@@ -555,10 +559,10 @@ public abstract class DFNeedSystemBase extends DFSystem {
 			this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
 		}
 
-		if ArrayContains(changedSettings, "basicNeedThresholdValue1") ||
-           ArrayContains(changedSettings, "basicNeedThresholdValue2") ||
-           ArrayContains(changedSettings, "basicNeedThresholdValue3") ||
-           ArrayContains(changedSettings, "basicNeedThresholdValue4") {
+		if ArrayContains(changedSettings, "basicNeedThresholdValue1V2") ||
+           ArrayContains(changedSettings, "basicNeedThresholdValue2V2") ||
+           ArrayContains(changedSettings, "basicNeedThresholdValue3V2") ||
+           ArrayContains(changedSettings, "basicNeedThresholdValue4V2") {
 
             this.SetupData();
 			this.ReevaluateSystem();
@@ -651,6 +655,11 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		this.LogMissingOverrideError("GetNeedDeathSettingValue");
 	}
 
+	private func GetNeedSoftCapValue() -> Float {
+		//DFProfile();
+		this.LogMissingOverrideError("GetNeedSoftCapValue");
+	}
+
 	//
 	//	RunGuard Protected Methods
 	//
@@ -731,6 +740,13 @@ public abstract class DFNeedSystemBase extends DFSystem {
         return this.needValue;
     }
 
+	public final func GetAccumulatedDelayedNeedLoss() -> Float {
+		//DFProfile();
+		if DFRunGuard(this) { return 0.0; }
+
+		return this.currentDelayedNeedLoss;
+	}
+
     public final func GetNeedMax() -> Float {
 		//DFProfile();
 		if DFRunGuard(this) { return -1.0; }
@@ -738,30 +754,72 @@ public abstract class DFNeedSystemBase extends DFSystem {
         return this.needMax;
     }
 
+	//
+	//	RunGuard Protected Methods
+	//
     public func ChangeNeedValue(amount: Float, opt changeValueProps: DFChangeNeedValueProps) -> Void {
 		//DFProfile();
 		if DFRunGuard(this) { return; }
 		DFLog(this, "ChangeNeedValue: amount = " + ToString(amount) + ", changeValueProps = " + ToString(changeValueProps));
-		
-		let needMax: Float = this.GetNeedMax();
-		this.needMax = needMax;
 
+		let needMax: Float = changeValueProps.maxOverride > 0.0 ? changeValueProps.maxOverride : this.GetCalculatedNeedMax();
 		let oldValue: Float = this.needValue;
-		let newValue: Float = ClampF(this.needValue + amount, 0.0, needMax);
+		let softCap: Float = this.GetNeedSoftCapValue();
+		let newValue: Float;
+
+		if amount > 0.0 && changeValueProps.isSoftCapRestrictedChange {
+			if oldValue < softCap {
+				// Clamp to the lowest cap. This will either increase the value (up to the soft cap), or lower it (to the max).
+				let lowestCap: Float = MinF(softCap, needMax);
+				newValue = ClampF(this.needValue + amount, 0.0, lowestCap);
+			} else {
+				// We are increasing, this is a soft cap restricted change, and we are already at or above the soft cap. Clamp to only the max while retaining the current value.
+				newValue = ClampF(this.needValue, 0.0, needMax);
+			}
+			
+		} else {
+			// We are not increasing, or we are increasing, but this is not a soft cap restricted change. Change the value clamped to the max.
+
+			// Delayed Needs handling
+			if amount < 0.0 && changeValueProps.delayPercent > 0.0 {
+				let delayedAmount: Float = amount * changeValueProps.delayPercent;
+				let totalLoss = amount - delayedAmount;
+				newValue = ClampF(this.needValue + totalLoss, 0.0, needMax);
+				this.currentDelayedNeedLoss += delayedAmount;
+			} else {
+				newValue = ClampF(this.needValue + amount, 0.0, needMax);
+			}
+		}
+			
 		let change: Float = newValue - oldValue;
 		this.needValue = newValue;
 
-		let uiFlags = changeValueProps.uiFlags;
-		this.UpdateNeedHUDUI(uiFlags.forceMomentaryUIDisplay, uiFlags.instantUIChange, uiFlags.forceBright, uiFlags.momentaryDisplayIgnoresSceneTier);
+		this.needMax = needMax;
+
+		if changeValueProps.doNotUpdateUIIfNoChange && oldValue == newValue {
+			// Skip the HUD UI update. Allows the bar to fade out.
+
+		} else if amount > 0.0 && changeValueProps.isSoftCapRestrictedChange && newValue >= softCap {
+			// We are restoring the Need from a soft cap restricted change, and are at the soft cap. Full bright the UI and display the lock (if softCap below 100) regardless of flag settings.
+			let uiFlags = changeValueProps.uiFlags;
+			this.UpdateNeedHUDUI(true, uiFlags.instantUIChange, true, true, true, softCap < 100.0);
+
+		} else {
+			let uiFlags = changeValueProps.uiFlags;
+			this.UpdateNeedHUDUI(uiFlags.forceMomentaryUIDisplay, uiFlags.instantUIChange, uiFlags.forceBright, uiFlags.momentaryDisplayIgnoresSceneTier, changeValueProps.isSoftCapRestrictedChange, false);
+		}
 
 		let stage: Int32 = this.GetNeedStage();
 		if NotEquals(stage, this.lastNeedStage) {
 			DFLog(this, "ChangeNeedValue: Last Need stage (" + ToString(this.lastNeedStage) + ") != current stage (" + ToString(stage) + "). Refreshing status effects and FX.");
 			this.RegisterStatusEffectRefreshDebounceCallback();
-			this.UpdateNeedFX();
+
+			if !changeValueProps.skipFX {
+				this.UpdateNeedFX(changeValueProps.suppressRecoveryNotification);
+			}
 		}
 
-		if stage > this.lastNeedStage && this.lastNeedStage < 4 && stage >= 4 {
+		if stage > this.lastNeedStage && this.lastNeedStage < 4 && stage == 4 {
 			this.QueueSevereNeedMessage();
 		}
 
@@ -771,10 +829,16 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		
 		this.lastNeedStage = stage;
 
-		this.DispatchNeedValueChangedEvent(change, newValue, changeValueProps.isMaxValueUpdate);
+		// TODOFUTURE: Removing this check crashes the game. Investigate.
+		if !changeValueProps.isMaxValueUpdate {
+			this.DispatchNeedValueChangedEvent(change, newValue, changeValueProps.isMaxValueUpdate, changeValueProps.fromDanger);
+		}
 		DFLog(this, "ChangeNeedValue: change: " + ToString(change) + ", newValue = " + ToString(newValue));
 	}
 
+	//
+    //  System-Specific Methods
+    //
     public final func GetNeedStage() -> Int32 {
 		//DFProfile();
 		if DFRunGuard(this) { return -1; }
@@ -828,13 +892,13 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		}
 	}
 
-    public final func QueueContextuallyDelayedNeedValueChange(value: Float, opt forceMomentaryUIDisplay: Bool, opt isSoftCapRestrictedChange: Bool, opt effectToApplyAfterValueChange: TweakDBID) -> Void {
+    public final func QueueContextuallyDelayedNeedValueChange(value: Float, opt forceMomentaryUIDisplay: Bool, opt isSoftCapRestrictedChange: Bool, opt effectToApplyAfterValueChange: TweakDBID, opt isFromBlackout: Bool) -> Void {
 		//DFProfile();
 		if DFRunGuard(this) { return; }
 
 		DFLog(this, "QueueContextuallyDelayedNeedValueChange value: " + ToString(value));
 		
-		let queuedNeedValueChange: DFQueuedNeedValueChange = DFQueuedNeedValueChange(value, forceMomentaryUIDisplay, isSoftCapRestrictedChange, effectToApplyAfterValueChange);
+		let queuedNeedValueChange: DFQueuedNeedValueChange = DFQueuedNeedValueChange(value, forceMomentaryUIDisplay, isSoftCapRestrictedChange, effectToApplyAfterValueChange, isFromBlackout);
 		ArrayPush(this.queuedContextuallyDelayedNeedValueChange, queuedNeedValueChange);
 		this.RegisterContextuallyDelayedNeedValueChange();
 	}
@@ -867,6 +931,11 @@ public abstract class DFNeedSystemBase extends DFSystem {
 				if NotEquals(queuedChange.effectToApplyAfterValueChange, t"") {
 					StatusEffectHelper.ApplyStatusEffect(this.player, queuedChange.effectToApplyAfterValueChange);
 				}
+
+				if queuedChange.isFromBlackout {
+					// Energy: Now that the Need has been changed, clearing this flag allows a Blackout to occur again.
+					this.blackoutNeedChangePending = false;
+				}
 			}
 			this.ResetContextuallyDelayedNeedValueChange();
 
@@ -874,6 +943,10 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		} else if Equals(gs, GameState.TemporarilyInvalid) {
 			this.RegisterContextuallyDelayedNeedValueChange();
 		}
+	}
+
+	public final func ApplyDelayedNeedLoss() -> Void {
+		this.QueueContextuallyDelayedNeedValueChange(this.GetAccumulatedDelayedNeedLoss());
 	}
 
 	public final func OnSceneTierChangedCheckFXCallback() -> Void {
@@ -946,9 +1019,13 @@ public abstract class DFNeedSystemBase extends DFSystem {
         }
     }
 
+	private func GetCalculatedNeedMax() -> Float {
+		return 100.0;
+	}
+
     //  UI
     //
-    public final func UpdateNeedHUDUI(opt forceMomentaryDisplay: Bool, opt instantUIChange: Bool, opt forceBright: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt fromInteraction: Bool, opt showLock: Bool) -> Void {
+    public final func UpdateNeedHUDUI(opt forceMomentaryDisplay: Bool, opt instantUIChange: Bool, opt forceBright: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt isSoftCapRestrictedChange: Bool, opt showLock: Bool) -> Void {
 		//DFProfile();
         let update: DFNeedHUDUIUpdate;
 		update.bar = this.GetNeedHUDBarType();
@@ -958,12 +1035,12 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		update.instant = instantUIChange;
 		update.forceBright = forceBright;
 		update.momentaryDisplayIgnoresSceneTier = momentaryDisplayIgnoresSceneTier;
-		update.fromInteraction = fromInteraction;
+		update.isSoftCapRestrictedChange = isSoftCapRestrictedChange;
 		update.showLock = showLock;
 
 		DFLog(this, "UpdateNeedHUDUI newValue: " + ToString(update.newValue) + ", forceMomentaryDisplay: " + ToString(update.forceMomentaryDisplay) + ", instant: " + ToString(update.instant) + ", forceBright: " + ToString(update.forceBright));
 
-		GameInstance.GetCallbackSystem().DispatchEvent(UpdateHUDUIEvent.Create(update));
+		GameInstance.GetCallbackSystem().DispatchEvent(UpdateNeedsHUDUIEvent.Create(update));
     }
 
 	public final func TryToShowTutorial() -> Void {
@@ -1062,14 +1139,15 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	public func CheckForCriticalNeed() -> Void {
 		//DFProfile();
 		if this.inDeathState { return; }
-		
+		if !this.GetNeedDeathSettingValue() { return; }
+
 		if this.GameStateService.IsValidGameState(this) {
 			if this.GetNeedValue() <= 0.0 && this.GetNeedDeathSettingValue() {
 				// Kill the player.
 				this.QueuePlayerDeath();
 			}
 		}
-
+		
 		this.PlayerStateService.UpdateCriticalNeedEffects();
 
 		if this.GameStateService.IsValidGameState(this, true) {

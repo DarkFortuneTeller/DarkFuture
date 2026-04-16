@@ -48,11 +48,11 @@ public abstract class DFSystemEventListener extends ScriptableService {
 
 	public cb func OnLoad() {
         //DFProfile();
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemPlayerDeathEvent", this, n"OnMainSystemPlayerDeathEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemTimeSkipStartEvent", this, n"OnMainSystemTimeSkipStartEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemTimeSkipCancelledEvent", this, n"OnMainSystemTimeSkipCancelledEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Main.MainSystemTimeSkipFinishedEvent", this, n"OnMainSystemTimeSkipFinishedEvent", true);
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Settings.SettingChangedEvent", this, n"OnSettingChangedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemPlayerDeathEvent>(), this, n"OnMainSystemPlayerDeathEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipStartEvent>(), this, n"OnMainSystemTimeSkipStartEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipCancelledEvent>(), this, n"OnMainSystemTimeSkipCancelledEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipFinishedEvent>(), this, n"OnMainSystemTimeSkipFinishedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<SettingChangedEvent>(), this, n"OnSettingChangedEvent", true);
     }
 
 	private cb func OnMainSystemPlayerDeathEvent(event: ref<MainSystemPlayerDeathEvent>) {

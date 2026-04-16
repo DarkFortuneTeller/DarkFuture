@@ -32,8 +32,6 @@ public struct DFNeedsHUDBarSetupData {
     public let translationY: Float;
     public let showEmptyBar: Bool;
     public let hasLock: Bool;
-    public let lockIconPath: ResRef;
-    public let lockIconName: CName;
 }
 
 public class DFNeedsHUDBarGroupFadeOutDelayCallback extends DFDelayCallback {
@@ -102,7 +100,7 @@ public class DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback exten
 }
 
 public class DFNeedsHUDBarGroup {
-    private let debugEnabled: Bool = false;
+    public let debugEnabled: Bool = false;
 
     /*
      *  A class that collects a group of Needs Bars.
@@ -116,14 +114,14 @@ public class DFNeedsHUDBarGroup {
      *  when the Physical Needs Bar Group (parent) is displayed,
      *  to avoid strange-looking negative space in the UI.
      */
-    private let needsBars: array<ref<DFNeedsHUDBar>>;
-    private let needsBarGroupChildren: array<ref<DFNeedsHUDBarGroup>>;
+    public let needsBars: array<ref<DFNeedsHUDBar>>;
+    public let needsBarGroupChildren: array<ref<DFNeedsHUDBarGroup>>;
     public let needsBarGroupParent: ref<DFNeedsHUDBarGroup>;
     public let displayManagedByParentGroup: Bool = false;
     private let alwaysVisibleInDanger: Bool;
     private let visibleInDangerAtCriticalThreshold: Bool;
-    private let GameStateService: ref<DFGameStateService>;
-    private let HUDSystem: ref<DFHUDSystem>;
+    public let GameStateService: ref<DFGameStateService>;
+    public let HUDSystem: ref<DFHUDSystem>;
     public let DelaySystem: ref<DelaySystem>;
     private let PlayerStateService: wref<DFPlayerStateService>;
     private let Settings: ref<DFSettings>;
@@ -134,7 +132,7 @@ public class DFNeedsHUDBarGroup {
     public let m_displayRecheckAfterForceBrightDelayID: DelayID;
     private let m_displayRecheckAfterForceBrightDelayInterval: Float = 2.5;
 
-    private let m_groupBeingDisplayedAndIgnoringSceneTier: Bool = false;
+    public let m_groupBeingDisplayedAndIgnoringSceneTier: Bool = false;
 
     public final func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool, visibleInDangerAtCriticalThreshold: Bool) -> Void {
         //DFProfile();
@@ -148,7 +146,7 @@ public class DFNeedsHUDBarGroup {
         this.visibleInDangerAtCriticalThreshold = visibleInDangerAtCriticalThreshold;
     }
 
-    private final func GetPSMBlackboard(player: ref<PlayerPuppet>) -> ref<IBlackboard> {
+    public final func GetPSMBlackboard(player: ref<PlayerPuppet>) -> ref<IBlackboard> {
         //DFProfile();
         return GameInstance.GetBlackboardSystem(GetGameInstance()).GetLocalInstanced(player.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
     }
@@ -177,7 +175,7 @@ public class DFNeedsHUDBarGroup {
         this.EvaluateAllBarVisibility(false);
     }
 
-    public final func EvaluateAllBarVisibility(forceMomentaryDisplay: Bool, opt fromParentUpdate: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt fromInteraction: Bool) -> Void {
+    public func EvaluateAllBarVisibility(forceMomentaryDisplay: Bool, opt fromParentUpdate: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt isSoftCapRestrictedChange: Bool) -> Void {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility forceMomentaryDisplay: " + ToString(forceMomentaryDisplay));
         if this.displayManagedByParentGroup {
@@ -203,15 +201,15 @@ public class DFNeedsHUDBarGroup {
         // If Dark Future Updates aren't currently allowed, or if menus are blocking display, bail out.
         // SetAllDisplayContinuous() or SetAllDisplayMomentary() must be called in order for the bar to remain visible. If neither qualify, we hide them.
         if this.GameStateService.IsValidGameState(this, true) && !this.HUDSystem.HUDUIBlockedDueToMenuOpen && !this.HUDSystem.HUDUIBlockedDueToCameraControl {
-            if !fromInteraction && this.ShouldDisplayContinuously(lowestValueInGroup, currentSceneTier) {
-                this.SetAllDisplayContinuous(lowestValueInGroup);
+            if !isSoftCapRestrictedChange && this.ShouldDisplayContinuously(lowestValueInGroup, currentSceneTier) {
+                this.SetAllDisplayContinuous();
 
             // We ignore parent updates that might qualify for momentary display in order to avoid doubling up on momentary display lengths. See: OnFadeOutStart()
             } else if !fromParentUpdate {
                 let ignoreSceneTier: Bool = this.m_groupBeingDisplayedAndIgnoringSceneTier || momentaryDisplayIgnoresSceneTier;
                 let forceDisplay: Bool = this.m_groupBeingDisplayedAndIgnoringSceneTier || forceMomentaryDisplay;
                 if this.ShouldDisplayMomentarily(forceDisplay, currentSceneTier, ignoreSceneTier) {
-                    this.SetAllDisplayMomentary(lowestValueInGroup, momentaryDisplayIgnoresSceneTier);
+                    this.SetAllDisplayMomentary(momentaryDisplayIgnoresSceneTier);
                 
                 } else {
                     this.SetAllFadeOut();
@@ -229,7 +227,7 @@ public class DFNeedsHUDBarGroup {
         this.NormalizeAllPreviousValues();
     }
 
-    private final func NormalizeAllPreviousValues() -> Void {
+    private func NormalizeAllPreviousValues() -> Void {
         //DFProfile();
         for bar in this.needsBars {
             bar.m_previousValue = bar.m_currentValue;
@@ -242,7 +240,7 @@ public class DFNeedsHUDBarGroup {
         }
     }
 
-    private final func ShouldDisplayContinuously(lowestValueInGroup: Float, currentSceneTier: GameplayTier) -> Bool {
+    private func ShouldDisplayContinuously(lowestValueInGroup: Float, currentSceneTier: GameplayTier) -> Bool {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "ShouldDisplayContinuously lowestValueInGroup " + ToString(lowestValueInGroup) + ", currentSceneTier " + ToString(currentSceneTier));
 
@@ -282,8 +280,8 @@ public class DFNeedsHUDBarGroup {
                 return true;
             }
             for bar in this.needsBars {
-                let basicNeedThresholdValue1Mult: Float = this.Settings.basicNeedThresholdValue1 / 100.0;
-                if bar.m_previousValue > basicNeedThresholdValue1Mult && bar.m_currentValue <= basicNeedThresholdValue1Mult {
+                let basicNeedThresholdValue1V2Mult: Float = this.Settings.basicNeedThresholdValue1V2 / 100.0;
+                if bar.m_previousValue > basicNeedThresholdValue1V2Mult && bar.m_currentValue <= basicNeedThresholdValue1V2Mult {
                     return true;
                 
                 } else if AbsF(bar.m_previousValue - bar.m_currentValue) > 0.01 {
@@ -296,9 +294,9 @@ public class DFNeedsHUDBarGroup {
         return false;
     }
 
-    private final func SetAllDisplayContinuous(lowestValueInGroup: Float) -> Void {
+    private func SetAllDisplayContinuous() -> Void {
         //DFProfile();
-        DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayContinuous lowestValueInGroup: " + ToString(lowestValueInGroup));
+        DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayContinuous");
         for bar in this.needsBars {
             bar.SetFadeIn(false);
         }
@@ -313,9 +311,9 @@ public class DFNeedsHUDBarGroup {
         }
     }
 
-    private final func SetAllDisplayMomentary(lowestValueInGroup: Float, opt momentaryDisplayIgnoresSceneTier: Bool) -> Void {
+    public final func SetAllDisplayMomentary(opt momentaryDisplayIgnoresSceneTier: Bool) -> Void {
         //DFProfile();
-        DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayMomentary lowestValueInGroup: " + ToString(lowestValueInGroup));
+        DFLogNoSystem(this.debugEnabled, this, "SetAllDisplayMomentary");
         
         // If displaying momentarily regardless of scene tier, set a flag that lets subsequent display calls know
         // that the bar shouldn't be immediately hidden again due to a scene tier change.
@@ -337,25 +335,27 @@ public class DFNeedsHUDBarGroup {
         }
     }
 
-    private final func SetAllFadeOut() -> Void {
+    public func SetAllFadeOut(opt instant: Bool) -> Void {
         //DFProfile();
         if this.m_fadeOutDelayID != GetInvalidDelayID() {
-            if this.HUDSystem.HUDUIBlockedDueToMenuOpen || this.HUDSystem.HUDUIBlockedDueToCameraControl {
+            if instant || this.HUDSystem.HUDUIBlockedDueToMenuOpen || this.HUDSystem.HUDUIBlockedDueToCameraControl {
                 // If we are already registered for a pending fade out, and the HUD UI is blocked due to 
-                // menus or camera control, unregister the pending fade out request and allow the bars to fade out.
+                // menus or camera control, or the instant flag is set,  unregister the pending fade out 
+                // request and allow the bars to fade out.
                 this.UnregisterForFadeOut();
                 
                 // If currently being displayed regardless of scene tier, clear that flag.
                 this.m_groupBeingDisplayedAndIgnoringSceneTier = false;
+
             } else {
                 // For any other reason, ignore this request.
                 return;
             }
         }
 
-        DFLogNoSystem(this.debugEnabled, this, "SetAllFadeOut");
+        DFLogNoSystem(this.debugEnabled, this, "SetAllFadeOut, instant: " + ToString(instant));
         for bar in this.needsBars {
-            bar.SetFadeOut();
+            bar.SetFadeOut(instant);
         }
 
         for child in this.needsBarGroupChildren {
@@ -373,12 +373,12 @@ public class DFNeedsHUDBarGroup {
         }
     }
 
-    private final func RegisterForFadeOut(opt fromParent: Bool) -> Void {
+    public final func RegisterForFadeOut(opt fromParent: Bool) -> Void {
         //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, DFNeedsHUDBarGroupFadeOutDelayCallback.Create(this, fromParent), this.m_fadeOutDelayID, this.m_fadeOutDelayInterval, true);
     }
 
-    private final func UnregisterForFadeOut() -> Void {
+    public final func UnregisterForFadeOut() -> Void {
         //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.m_fadeOutDelayID);
     }
@@ -403,12 +403,18 @@ public class DFNeedsHUDBarGroup {
         for bar in this.needsBars {
             bar.m_fadeInTargetTransparency = 0.0;
             bar.SetForceBright(false);
+
+            // Also hide the Lock.
+            bar.SetHideLock();
         }
 
         for child in this.needsBarGroupChildren {
             for bar in child.needsBars {
                 bar.m_fadeInTargetTransparency = 0.0;
                 bar.SetForceBright(false);
+
+                // Also hide the Lock.
+                bar.SetHideLock();
             }
         }
         
@@ -422,7 +428,7 @@ public class DFNeedsHUDBarGroup {
         }
     }
 
-    public final func OnFadeOutStart(fromParent: Bool) -> Void {
+    public func OnFadeOutStart(fromParent: Bool) -> Void {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "OnFadeOutStart fromParent: " + ToString(fromParent));
 
@@ -443,20 +449,20 @@ public class DFNeedsHUDBarGroup {
 }
 
 public class DFNeedsHUDBar extends inkCanvas {
-    private let debugEnabled: Bool = false;
+    public let debugEnabled: Bool = false;
 
     public let m_setupData: DFNeedsHUDBarSetupData;
     public let m_barGroup: ref<DFNeedsHUDBarGroup>;
 
-    private let m_width: Float;
-    private let m_height: Float;
-    private let m_hasLock: Bool;
+    public let m_width: Float;
+    public let m_height: Float;
+    public let m_hasLock: Bool;
 
-    private let m_rootWidget: ref<inkCanvas>;
-    private let m_icon: ref<inkImage>;
+    public let m_rootWidget: ref<inkCanvas>;
+    public let m_icon: ref<inkImage>;
     private let m_bg: ref<inkRectangle>;
     private let m_border: ref<inkBorderConcrete>;
-    private let m_barMain: ref<inkFlex>;
+    public let m_barMain: ref<inkFlex>;
     private let m_fullBar: ref<inkRectangle>;
     private let m_emptyBar: ref<inkRectangle>;
     private let m_barcap: ref<inkRectangle>;
@@ -471,12 +477,12 @@ public class DFNeedsHUDBar extends inkCanvas {
     private let m_changePositive_anim: ref<inkAnimDef>;
     private let m_changeNegative_anim_proxy: ref<inkAnimProxy>;
     private let m_changeNegative_anim: ref<inkAnimDef>;
-    private let m_fadeIn_anim_proxy: ref<inkAnimProxy>;
-    private let m_fadeIn_anim: ref<inkAnimDef>;
+    public let m_fadeIn_anim_proxy: ref<inkAnimProxy>;
+    public let m_fadeIn_anim: ref<inkAnimDef>;
     private let m_fadeOut_anim_proxy: ref<inkAnimProxy>;
     private let m_fadeOut_anim: ref<inkAnimDef>;
-    private let m_pulse_anim: ref<PulseAnimation>;
-    private let m_pulsing: Bool = false;
+    public let m_pulse_anim: ref<PulseAnimation>;
+    public let m_pulsing: Bool = false;
     private let m_showLock_anim: ref<inkAnimDef>;
     private let m_showLock_lock_anim_proxy: ref<inkAnimProxy>;
     private let m_showLock_shadow_anim_proxy: ref<inkAnimProxy>;
@@ -490,14 +496,14 @@ public class DFNeedsHUDBar extends inkCanvas {
     private let m_MaxChangeNegativeBarFlashSize: Float = 500.0;
     private let m_animDuration: Float = 2.0;
     private let m_inDanger: Bool = false;
-    private let m_lockShown: Bool = false;
+    public let m_lockShown: Bool = false;
 
     public let m_pulseStopDelayID: DelayID;
     private let m_pulseStopDelayInterval: Float = 3.0;
     private let m_continuousPulseAtLowThresholdInCombat: Bool = false;
     private let m_continuousPulseThreshold: Float = 0.0;
 
-    private let m_shouldForceBrightOnNextFadeIn: Bool = false;
+    public let m_shouldForceBrightOnNextFadeIn: Bool = false;
 
     public final func Init(setupData: DFNeedsHUDBarSetupData) -> Void {
         //DFProfile();
@@ -556,8 +562,8 @@ public class DFNeedsHUDBar extends inkCanvas {
             lock.SetOpacity(0.0);
             lock.SetTintColor(this.m_setupData.colorTheme.MainColor);
             lock.SetSize(Vector2(100.0, 32.0));
-            lock.SetAtlasResource(this.m_setupData.lockIconPath);
-            lock.SetTexturePart(this.m_setupData.lockIconName);
+            lock.SetAtlasResource(r"base\\gameplay\\gui\\common\\stamina_oxygen_bar\\stamina_oxygen_bar.inkatlas");
+            lock.SetTexturePart(n"ico_lock");
             lock.Reparent(canvas);
             this.m_lock = lock;
 
@@ -709,7 +715,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         return canvas;
     }
 
-    public final func UpdateColorTheme(themeName: DFBarColorThemeName) {
+    public func UpdateColorTheme(themeName: DFBarColorThemeName) {
         //DFProfile();
         let newColorTheme: DFBarColorTheme = GetDarkFutureBarColorTheme(themeName);
         if this.HasLock() {
@@ -724,7 +730,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_changeNegativeBar.SetTintColor(newColorTheme.ChangeNegativeColor);
     }
 
-    public final func UpdateShear(shouldShear: Bool) {
+    public func UpdateShear(shouldShear: Bool) {
         //DFProfile();
         let shear: Float = 0.0;
         if shouldShear {
@@ -740,7 +746,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_changeNegativeBar.SetShear(Vector2(shear, 0.0));
     }
 
-    private final func StopAnimProxyIfDefined(animProxy: ref<inkAnimProxy>) -> Void {
+    public final func StopAnimProxyIfDefined(animProxy: ref<inkAnimProxy>) -> Void {
         //DFProfile();
         if IsDefined(animProxy) {
             animProxy.Stop();
@@ -752,7 +758,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_shouldForceBrightOnNextFadeIn = forceBright;
     }
 
-    public final func SetProgress(newValue: Float, forceMomentaryDisplay: Bool, instant: Bool, momentaryDisplayIgnoresSceneTier: Bool, fromInteraction: Bool) -> Void {
+    public final func SetProgress(newValue: Float, forceMomentaryDisplay: Bool, instant: Bool, momentaryDisplayIgnoresSceneTier: Bool, isSoftCapRestrictedChange: Bool) -> Void {
         //DFProfile();
         let barSize: Vector2;
         let fullBarSize: Vector2;
@@ -859,7 +865,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_changeNegativeBar.SetMargin(negativeMargin);
 
         DFLogNoSystem(this.debugEnabled, this, "SetProgress m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
-        this.EvaluateBarGroupVisibility(forceMomentaryDisplay, momentaryDisplayIgnoresSceneTier, fromInteraction);
+        this.EvaluateBarGroupVisibility(forceMomentaryDisplay, momentaryDisplayIgnoresSceneTier, isSoftCapRestrictedChange);
     }
 
     public final func SetProgressEmpty(newValue: Float) {
@@ -902,19 +908,19 @@ public class DFNeedsHUDBar extends inkCanvas {
         }
     }
 
-    public final func EvaluateBarGroupVisibility(forceMomentaryDisplay: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt fromInteraction: Bool) -> Void {
+    public final func EvaluateBarGroupVisibility(forceMomentaryDisplay: Bool, opt momentaryDisplayIgnoresSceneTier: Bool, opt isSoftCapRestrictedChange: Bool) -> Void {
         //DFProfile();
         if IsDefined(this.m_barGroup) {
             if this.m_barGroup.displayManagedByParentGroup && IsDefined(this.m_barGroup.needsBarGroupParent) {
-                if fromInteraction {
+                if isSoftCapRestrictedChange {
                     // Dirty Hack - Don't reroute this to the parent group. Allow Nerve Bar to stay visible even when Basic Needs bars fade.
                     this.m_barGroup.displayManagedByParentGroup = false;
-                    this.m_barGroup.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, fromInteraction);    
+                    this.m_barGroup.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, isSoftCapRestrictedChange);    
                 } else {
-                    this.m_barGroup.needsBarGroupParent.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, fromInteraction);
+                    this.m_barGroup.needsBarGroupParent.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, isSoftCapRestrictedChange);
                 }
             } else {
-                this.m_barGroup.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, fromInteraction);
+                this.m_barGroup.EvaluateAllBarVisibility(forceMomentaryDisplay, false, momentaryDisplayIgnoresSceneTier, isSoftCapRestrictedChange);
             }
         }
     }
@@ -925,7 +931,7 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     public let m_fadeInTargetTransparency: Float;
-    public final func SetFadeIn(fromParent: Bool) -> Void {
+    public func SetFadeIn(fromParent: Bool) -> Void {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "SetFadeIn name: " + ToString(this.m_setupData.widgetName) + " m_shouldForceBrightOnNextFadeIn: " + ToString(this.m_shouldForceBrightOnNextFadeIn));
         if IsDefined(this.m_barGroup) && this.m_barGroup.displayManagedByParentGroup && !fromParent {
@@ -956,7 +962,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_fadeIn_anim_proxy = this.m_rootWidget.PlayAnimation(this.m_fadeIn_anim);
     }
 
-    public final func SetFadeOut() -> Void {
+    public func SetFadeOut(opt instant: Bool) -> Void {
         //DFProfile();
         if this.m_lockShown {
             this.SetHideLock();
@@ -964,17 +970,18 @@ public class DFNeedsHUDBar extends inkCanvas {
 
         this.StopAnimProxyIfDefined(this.m_fadeOut_anim_proxy);
         this.StopAnimProxyIfDefined(this.m_fadeIn_anim_proxy);
-
+        
         this.m_fadeOut_anim = new inkAnimDef();
         let fadeOutInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
         fadeOutInterp.SetStartTransparency(this.m_rootWidget.GetOpacity());
         fadeOutInterp.SetEndTransparency(0.0);
-        fadeOutInterp.SetDuration(0.5);
+        let duration: Float = instant ? 0.01 : 0.5;
+        fadeOutInterp.SetDuration(duration);
         this.m_fadeOut_anim.AddInterpolator(fadeOutInterp);
         this.m_fadeOut_anim_proxy = this.m_rootWidget.PlayAnimation(this.m_fadeOut_anim);
     }
 
-    private final func CreateAnimations() -> Void {
+    public final func CreateAnimations() -> Void {
         //DFProfile();
         this.m_pulse_anim = new PulseAnimation();
     }
@@ -986,7 +993,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_pulsing = false;
     }
 
-    private final func RegisterForPulseStop() -> Void {
+    public final func RegisterForPulseStop() -> Void {
         //DFProfile();
         RegisterDFDelayCallback(this.m_barGroup.DelaySystem, DFNeedsHUDBarPulseStopDelayCallback.Create(this), this.m_pulseStopDelayID, this.m_pulseStopDelayInterval);
     }

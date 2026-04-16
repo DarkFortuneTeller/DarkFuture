@@ -28,7 +28,8 @@ import DarkFuture.UI.{
     DFConditionType,
     DFConditionArea,
     DFAreaDisplayData,
-    DFConditionEffectDisplayData
+    DFConditionEffectDisplayData,
+    DFHUDSegmentedIndicatorSegmentType
 }
 
 
@@ -42,7 +43,7 @@ class DFInjuryConditionSystemEventListener extends DFConditionSystemEventListene
         //DFProfile();
         super.OnLoad();
 
-        GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Services.PlayerStateServiceOnDamageReceivedEvent", this, n"OnPlayerStateServiceDamageReceivedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<PlayerStateServiceOnDamageReceivedEvent>(), this, n"OnPlayerStateServiceDamageReceivedEvent", true);
     }
 
     private cb func OnPlayerStateServiceDamageReceivedEvent(event: ref<PlayerStateServiceOnDamageReceivedEvent>) {
@@ -234,6 +235,11 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
         //DFProfile();
 		return n"DarkFutureConditionInjury";
 	}
+
+    public final func GetHUDSegmentedIndicatorSegmentType() -> DFHUDSegmentedIndicatorSegmentType {
+        //DFProfile();
+        return DFHUDSegmentedIndicatorSegmentType.Injury;
+    }
 
     //
     //  System-Specific Functions

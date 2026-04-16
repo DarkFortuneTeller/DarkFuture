@@ -1,0 +1,286 @@
+#
+#
+# Common Records
+#
+#
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
+DarkFutureStatusEffect.NoDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.1
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.NoDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NoDuration_StatModifier
+
+DarkFutureStatusEffectTypes.Biocorruption:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Biocorruption
+
+UIIcon.DarkFutureBiocorruptionCrash:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ico_condition_biocorruption
+  atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
+
+#
+#
+# Biocorruption 01
+#
+#
+DarkFutureStatusEffect.Biocorruption01_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureBiocorruptionAllDesc"
+  displayName: l"DarkFutureBiocorruption01Name"
+  fluffText: ''
+  iconPath: DarkFutureBiocorruptionCrash
+  priority: -11
+  floatValues: []
+  intValues:
+    - 100
+    - 12
+    - 80
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Biocorruption01:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Biocorruption
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Biocorruption01_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionBiocorruption
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Biocorruption 02
+#
+#
+DarkFutureStatusEffect.Biocorruption02_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureBiocorruptionAllDesc"
+  displayName: l"DarkFutureBiocorruption02Name"
+  fluffText: ''
+  iconPath: DarkFutureBiocorruptionCrash
+  priority: -11
+  floatValues: []
+  intValues:
+    - 100
+    - 24
+    - 60
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Biocorruption02:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Biocorruption
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Biocorruption02_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionBiocorruption
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Biocorruption 03
+#
+#
+DarkFutureStatusEffect.Biocorruption03_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureBiocorruptionAllDesc"
+  displayName: l"DarkFutureBiocorruption03Name"
+  fluffText: ''
+  iconPath: DarkFutureBiocorruptionCrash
+  priority: -11
+  floatValues: []
+  intValues:
+    - 100
+    - 36
+    - 40
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Biocorruption03:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Biocorruption
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Biocorruption03_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionBiocorruption
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Biocorruption 04 (Female)
+#
+#
+DarkFutureStatusEffect.Biocorruption04Female_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureBiocorruptionAllDesc"
+  displayName: l"DarkFutureBiocorruption04FemaleName"
+  fluffText: ''
+  iconPath: DarkFutureBiocorruptionCrash
+  priority: -11
+  floatValues: []
+  intValues:
+    - 100
+    - 48
+    - 20
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Biocorruption04Female:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Biocorruption
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Biocorruption04Female_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionBiocorruption
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Biocorruption 04 (Male)
+#
+#
+DarkFutureStatusEffect.Biocorruption04Male_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureBiocorruptionAllDesc"
+  displayName: l"DarkFutureBiocorruption04MaleName"
+  fluffText: ''
+  iconPath: DarkFutureBiocorruptionCrash
+  priority: -11
+  floatValues: []
+  intValues:
+    - 100
+    - 48
+    - 25
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Biocorruption04Male:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Biocorruption
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Biocorruption04Male_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Debuff
+    - DarkFutureCondition
+    - DarkFutureConditionBiocorruption
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureAllowBuffBarHide
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []

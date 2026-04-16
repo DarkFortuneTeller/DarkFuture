@@ -172,7 +172,8 @@ public func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -> DFNeedsDatu
 	// you've gotten the Alcohol status effect.) These Nerve changes occur in
 	// addition to the +5 change in order to reflect the effect magnitude 
 	// listed on the item.
-	let AlcoholStacksToApply: Float = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholStrong") ? 3.0 : 1.0;
+	let hasStrongAlcoholTag: Bool = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholStrong");
+	let AlcoholStacksToApply: Float = hasStrongAlcoholTag ? 3.0 : 1.0;
 	let AlcoholNerveOnStatusEffectApply: Float = Settings.nerveAlcoholTier1Rev2;
 
 	let AlcoholNerveTier1: Float = 0.0;

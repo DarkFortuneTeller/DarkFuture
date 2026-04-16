@@ -58,7 +58,8 @@ import DarkFuture.UI.{
     DFConditionType,
     DFConditionArea,
     DFAreaDisplayData,
-    DFConditionEffectDisplayData
+    DFConditionEffectDisplayData,
+    DFHUDSegmentedIndicatorSegmentType
 }
 
 public struct DFCyberpsychosisChanceData {
@@ -271,7 +272,7 @@ class DFHumanityLossConditionSystemEventListener extends DFConditionSystemEventL
         //DFProfile();
         super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(n"DarkFuture.Needs.DFNeedValueChangedEvent", this, n"OnNeedValueChangedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFNeedValueChangedEvent>(), this, n"OnNeedValueChangedEvent", true);
     }
 
 	private cb func OnNeedValueChangedEvent(event: ref<DFNeedValueChangedEvent>) {
@@ -698,6 +699,11 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 		return n"DarkFutureConditionHumanityLoss";
 	}
 
+    public final func GetHUDSegmentedIndicatorSegmentType() -> DFHUDSegmentedIndicatorSegmentType {
+        //DFProfile();
+        return DFHUDSegmentedIndicatorSegmentType.HumanityLoss;
+    }
+
     //
     //  System-Specific Functions
     //
@@ -1086,11 +1092,6 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public final func GetLastKnownCyberpsychosisStackCount() -> Uint32 {
         //DFProfile();
         return this.lastKnownCyberpsychosisStackCount;
-    }
-
-    public final func GetConditionNerveSoftCaps() -> array<Float> {
-        //DFProfile();
-        return this.conditionNerveSoftCaps;
     }
 
     public final func GetCurrentNerveSoftCapFromHumanityLoss() -> Float {
