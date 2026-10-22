@@ -679,6 +679,8 @@ public final class DFVehicleSummonSystem extends DFSystem {
 		this.RegisterForSummonCooldown();
 	}
 
+    public func OnTimeSkipBegin() -> Void {}
+
     public final func OnTimeSkipFinished(data: DFTimeSkipData) {
         //DFProfile();
         if DFRunGuard(this) { return; }

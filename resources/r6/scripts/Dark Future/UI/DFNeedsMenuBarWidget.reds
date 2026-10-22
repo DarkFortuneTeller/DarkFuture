@@ -25,6 +25,7 @@ public struct DFNeedsMenuBarSetupData {
     public let translationY: Float;
     public let showEmptyBar: Bool;
     public let hasLock: Bool;
+    public let overchargeLabel: String;
 }
 
 public class DFNeedsMenuBar extends inkCanvas {
@@ -42,6 +43,7 @@ public class DFNeedsMenuBar extends inkCanvas {
     private let m_border: ref<inkBorderConcrete>;
     private let m_fullBar: ref<inkRectangle>;
     private let m_emptyBar: ref<inkRectangle>;
+    private let m_overchargeBar: ref<inkRectangle>;
     private let m_changeBar: ref<inkRectangle>;
     private let m_valueLabel: ref<inkText>;
     private let m_lock: ref<inkImage>;
@@ -61,8 +63,12 @@ public class DFNeedsMenuBar extends inkCanvas {
     private let m_currentValue: Float = 1.0;
     private let m_previousValue: Float = 1.0;
     private let m_lockShown: Bool = false;
+    private let m_lastStateWasOvercharge: Bool = false;
 
     private let m_barContentHeight: Float = 8.0;
+
+    private let m_overchargeIcon_anim_proxy: ref<inkAnimProxy>;
+    private let m_overchargeIcon_anim: ref<inkAnimDef>;
 
     public final func Init(setupData: DFNeedsMenuBarSetupData) -> Void {
         //DFProfile();
@@ -219,6 +225,25 @@ public class DFNeedsMenuBar extends inkCanvas {
         bg.Reparent(wrapper);
         this.m_bg = bg;
 
+        let logic: ref<inkHorizontalPanel> = new inkHorizontalPanel();
+        logic.SetName(n"logic");
+        logic.SetHAlign(inkEHorizontalAlign.Left);
+        logic.SetVAlign(inkEVerticalAlign.Center);
+        logic.SetMargin(inkMargin(-1.0, 0.0, 0.0, 0.0));
+        logic.SetSize(240.0, 28.0);
+        logic.Reparent(wrapper);
+
+        let overcharge: ref<inkRectangle> = new inkRectangle();
+        overcharge.SetName(n"overcharge");
+        overcharge.SetHAlign(inkEHorizontalAlign.Left);
+        overcharge.SetVAlign(inkEVerticalAlign.Center);
+        overcharge.SetShear(Vector2(0.5, 0.0));
+        overcharge.SetTranslation(6.0, 0.0);
+        overcharge.SetSize(Vector2(0.0, this.m_barContentHeight));
+        overcharge.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActiveMagenta));
+        overcharge.Reparent(wrapper);
+        this.m_overchargeBar = overcharge;
+
         let border: ref<inkBorderConcrete> = new inkBorderConcrete();
         border.SetName(n"border");
         border.SetMargin(inkMargin(5.0, 0.0, 0.0, 0.0));
@@ -231,26 +256,6 @@ public class DFNeedsMenuBar extends inkCanvas {
         border.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
         border.Reparent(wrapper);
         this.m_border = border;
-
-        let logic: ref<inkHorizontalPanel> = new inkHorizontalPanel();
-        logic.SetName(n"logic");
-        logic.SetHAlign(inkEHorizontalAlign.Left);
-        logic.SetVAlign(inkEVerticalAlign.Center);
-        logic.SetMargin(inkMargin(-1.0, 0.0, 0.0, 0.0));
-        logic.SetSize(240.0, 28.0);
-        logic.Reparent(wrapper);
-
-        let empty: ref<inkRectangle> = new inkRectangle();
-        empty.SetName(n"empty");
-        empty.SetHAlign(inkEHorizontalAlign.Right);
-        empty.SetVAlign(inkEVerticalAlign.Center);
-        empty.SetShear(Vector2(0.5, 0.0));
-        empty.SetSize(Vector2(0.0, 8.0));
-        empty.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
-        empty.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.Rose));
-        empty.SetVisible(this.m_setupData.showEmptyBar);
-        empty.Reparent(wrapper);
-        this.m_emptyBar = empty;
 
         let fullBar: ref<inkRectangle> = new inkRectangle();
         fullBar.SetName(n"fullBar");
@@ -275,24 +280,41 @@ public class DFNeedsMenuBar extends inkCanvas {
         changeBar.Reparent(wrapper);
         this.m_changeBar = changeBar;
 
+        let empty: ref<inkRectangle> = new inkRectangle();
+        empty.SetName(n"empty");
+        empty.SetHAlign(inkEHorizontalAlign.Right);
+        empty.SetVAlign(inkEVerticalAlign.Center);
+        empty.SetShear(Vector2(0.5, 0.0));
+        empty.SetSize(Vector2(0.0, 8.0));
+        empty.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
+        empty.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.Rose));
+        empty.SetVisible(this.m_setupData.showEmptyBar);
+        empty.Reparent(wrapper);
+        this.m_emptyBar = empty;
+
         return canvas;
     }
 
     public final func SetOriginalValue(value: Float) -> Void {
         //DFProfile();
         this.m_originalValue = ClampF(value, 0.0, 100.0);
+        this.m_currentValue = this.m_originalValue;
     }
 
-    public final func SetUpdatedValue(newValue: Float, max: Float, opt showLock: Bool) -> Void {
+    public final func SetUpdatedValue(newValue: Float, max: Float, opt showLock: Bool, opt showIndeterminateValue: Bool) -> Void {
         //DFProfile();
-        this.m_valueLabel.SetText(ToString(Cast<Int32>(ClampF(newValue, 0.0, max))));
+        if showIndeterminateValue {
+            this.m_valueLabel.SetText("??");
+        } else {
+            this.m_valueLabel.SetText(ToString(Cast<Int32>(ClampF(newValue, 0.0, max))));
+        }
 
         let negativeMargin: inkMargin;
 
         this.m_previousValue = this.m_originalValue / 100.0;
         this.m_currentValue = ClampF(newValue, 0.0, max) / 100.0;
 
-        if this.m_previousValue < this.m_currentValue && this.m_currentValue - this.m_previousValue >= 0.01 {
+        if showIndeterminateValue || (this.m_previousValue < this.m_currentValue && this.m_currentValue - this.m_previousValue >= 0.01) {
             this.m_changeBar.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.MainBlue));
             this.m_valueLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.MainBlue));
             this.m_fullBar.SetSize(Vector2((this.m_width * this.m_previousValue) - 2.0, this.m_barContentHeight));
@@ -327,6 +349,77 @@ public class DFNeedsMenuBar extends inkCanvas {
         this.m_emptyBar.SetMargin(inkMargin(0.0, 0.0, 3.0, 0.0));
     }
 
+    public final func SetProgressOvercharge(newValue: Float) {
+        //DFProfile();
+        this.m_overchargeBar.SetSize(Vector2(this.m_width * newValue, this.m_barContentHeight));
+    }
+
+    public final func UpdateOverchargeAppearance(newOverchargeValue: Float, useProjectE3UI: Bool, opt canAnimate: Bool, opt showIndeterminateValue: Bool) {
+        let iconColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.MildWhite) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
+        let tintColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.White) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
+        let barLabelColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.MildWhite) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
+
+        if newOverchargeValue > 0.0 {
+            this.m_barLabel.SetText(this.m_setupData.overchargeLabel);
+            this.m_barLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.Magenta));
+
+            this.m_valueLabel.SetText(ToString(Cast<Int32>(ClampF(newOverchargeValue, 0.0, 100.0))));
+            this.m_valueLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.Magenta));
+            this.m_originalValueLabelTintColor = GetDarkFutureHDRColor(DFHDRColor.Magenta);
+
+            this.m_icon.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActiveMagenta));
+            this.m_border.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.Magenta));
+
+            if !this.m_lastStateWasOvercharge && canAnimate {
+                this.m_lastStateWasOvercharge = true;
+                
+                this.PlayOverchargeIconAnim();
+            }
+            
+        } else {
+            this.m_barLabel.SetText(this.m_setupData.barLabel);
+            this.m_barLabel.SetTintColor(barLabelColor);
+
+            if showIndeterminateValue {
+                this.m_valueLabel.SetText("??");
+                this.m_valueLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.MainBlue));
+            } else {
+                this.m_valueLabel.SetText(ToString(Cast<Int32>(ClampF(this.m_currentValue * 100.0, 0.0, 100.0))));
+                this.m_valueLabel.SetTintColor(tintColor);
+            }
+            this.m_originalValueLabelTintColor = tintColor;
+
+            this.m_icon.SetTintColor(iconColor);
+            this.m_border.SetTintColor(tintColor);
+
+            this.m_lastStateWasOvercharge = false;
+        }   
+    }
+
+    private final func PlayOverchargeIconAnim() -> Void {
+        this.StopAnimProxyIfDefined(this.m_overchargeIcon_anim_proxy);
+
+        this.m_overchargeIcon_anim = new inkAnimDef();
+        
+        let fadeInInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
+        fadeInInterp.SetStartTransparency(0.0);
+        fadeInInterp.SetEndTransparency(1.0);
+        fadeInInterp.SetMode(inkanimInterpolationMode.EasyIn);
+        fadeInInterp.SetType(inkanimInterpolationType.Linear);
+        fadeInInterp.SetDuration(0.6);
+        this.m_overchargeIcon_anim.AddInterpolator(fadeInInterp);
+        
+        let scaleInterp: ref<inkAnimScale> = new inkAnimScale();
+        scaleInterp.SetStartScale(Vector2(1.8, 1.8));
+        scaleInterp.SetEndScale(Vector2(1.0, 1.0));
+        scaleInterp.SetMode(inkanimInterpolationMode.EasyIn);
+        scaleInterp.SetType(inkanimInterpolationType.Quartic);
+        scaleInterp.SetDuration(0.6);
+        this.m_overchargeIcon_anim.AddInterpolator(scaleInterp);
+        
+        this.m_overchargeIcon_anim_proxy = this.m_icon.PlayAnimation(this.m_overchargeIcon_anim);
+    }
+
     public final func GetFullSize() -> Vector2 {
         //DFProfile();
         return Vector2(this.m_width, this.m_height);
@@ -359,6 +452,7 @@ public class DFNeedsMenuBar extends inkCanvas {
 
         this.m_emptyBar.SetShear(Vector2(shear, 0.0));
         this.m_changeBar.SetShear(Vector2(shear, 0.0));
+        this.m_overchargeBar.SetShear(Vector2(shear, 0.0));
     }
 
     private final func StopAnimProxyIfDefined(animProxy: ref<inkAnimProxy>) -> Void {

@@ -1,0 +1,335 @@
+# Root Menu
+#
+DarkFutureChoiceIcons.MedicateIcon:
+  atlasPartName: health
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+  $type: gamedataUIIcon_Record
+
+DarkFutureChoiceCaptionParts.MedicateIcon:
+  comment: ''
+  enumName: DarkFutureUnwind
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.MedicateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.UnwindIcon:
+  comment: ''
+  enumName: DarkFutureUnwind
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.DrinkIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceIcons.HydrateIcon:
+  atlasPartName: hydrated
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
+  $type: gamedataUIIcon_Record
+
+DarkFutureChoiceCaptionParts.HydrateIcon:
+  comment: ''
+  enumName: DarkFutureHydrate
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.HydrateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceIcons.NarcoticIcon:
+  atlasPartName: drugged_icon
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
+  $type: gamedataUIIcon_Record
+
+DarkFutureChoiceCaptionParts.NarcoticIcon:
+  comment: ''
+  enumName: DarkFutureNarcotic
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.NarcoticIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceIcons.CigaretteIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ico_status_smoking
+  atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
+
+DarkFutureChoiceCaptionParts.SmokeIcon:
+  comment: ''
+  enumName: DarkFutureCigarette
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.CigaretteIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+## Choice Detection
+#
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_SpecialFood:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseSpecialFood
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.FoodVendorIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Meal:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseMeal
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.FoodVendorIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Snack:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseSnack
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.FoodVendorIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_JunkFood:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseJunkFood
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.FoodVendorIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_SpecialDrink:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseSpecialDrink
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.HydrateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Water:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseWater
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.HydrateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_TeaDecaf:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseTeaDecaf
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.HydrateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Coffee:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseCoffee
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.HydrateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_EnergyDrink:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseEnergyDrink
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.HydrateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Soda:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseSoda
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.HydrateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Cigarette:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseCigarette
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.CigaretteIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_SpecialAlcohol:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseSpecialAlcohol
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.DrinkIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Liquor:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseLiquor
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.DrinkIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Wine:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseWine
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.DrinkIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Cocktail:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseCocktail
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.DrinkIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Beer:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseBeer
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.DrinkIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_MrWhitey:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseMrWhitey
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.NarcoticIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_BlackLace:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseBlackLace
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.NarcoticIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Glitter:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseGlitter
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.NarcoticIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Vanitol:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseVanitol
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.NarcoticIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Compat_Juice:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseCompatibilityJuice
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.NarcoticIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_OlDonkey:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseOlDonkey
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.MedicineIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_AssKick:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseAssKick
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.MedicineIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Jellytricity:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseJellytricity
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.MedicineIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_RAMNugs:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseRAMNugs
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.MedicineIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_CapacityBooster:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseCapacityBooster
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.MedicineIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_StaminaBooster:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseStaminaBooster
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.MedicineIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_MemoryBooster:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseMemoryBooster
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: ChoiceIcons.MedicineIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_TraumaKit:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseTraumaKit
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.MedicateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Immunosuppressant:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseImmunosuppressant
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.MedicateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Excelafin:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseExcelafin
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.MedicateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Addiquit:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseAddiquit
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.MedicateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_EmergencyCardioregulator:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseEmergencyCardioregulator
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.MedicateIcon
+  $type: gamedataChoiceCaptionIconPart_Record
+
+DarkFutureChoiceCaptionParts.DetectableCaptionIcon_Endotrisine:
+  comment: ''
+  enumName: DarkFutureRelaxActionItemUseEndotrisine
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+  texturePartID: DarkFutureChoiceIcons.MedicateIcon
+  $type: gamedataChoiceCaptionIconPart_Record

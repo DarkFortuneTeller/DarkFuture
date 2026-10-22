@@ -12,6 +12,7 @@ import DarkFuture.System.*
 import DarkFuture.DelayHelper.*
 import DarkFuture.Utils.IsCoinFlipSuccessful
 import DarkFuture.Main.DFTimeSkipData
+import DarkFuture.Needs.DFEnergySystem
 import DarkFuture.UI.{
 	DFHUDBarType,
 	DFHUDSegmentedIndicatorSegmentType,
@@ -51,7 +52,9 @@ public enum DFMessageContext {
 	InjuryCondition = 6,
 	HumanityLossCondition = 7,
 	Cyberpsychosis = 8,
-	BiocorruptionCondition = 9
+	BiocorruptionCondition = 9,
+	Overdose = 10,
+	EuphoriaAddiction = 11
 }
 
 public struct DFAudioCue {
@@ -266,11 +269,14 @@ public final class DFNotificationService extends DFSystem {
 	private let BlackboardSystem: ref<BlackboardSystem>;
 	private let ItemsNotificationQueue: ref<ItemsNotificationQueue>;
 	private let QuestsSystem: ref<QuestsSystem>;
+	private let EnergySystem: ref<DFEnergySystem>;
 	private let GameStateService: ref<DFGameStateService>;
 	private let PlayerStateService: ref<DFPlayerStateService>;
 	private let InjuryConditionSystem: ref<DFInjuryConditionSystem>;
 	private let HumanityLossConditionSystem: ref<DFHumanityLossConditionSystem>;
 	private let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
+
+	public let backpackController: ref<BackpackMainGameController>;
 	
 	private let inCombatNotificationQueue: array<DFNotification>;
     private let outOfCombatNotificationQueue: array<DFNotification>;
@@ -305,21 +311,13 @@ public final class DFNotificationService extends DFSystem {
 	//
 	public func DoPostResumeActions() -> Void {}
 	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-	
-	public func SetupData() -> Void {
-		//DFProfile();
-		// Extend the base game gamedataProficiencyType enum.
-		let largestConst: Int64 = EnumGetMax(n"gamedataProficiencyType");
-		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureHumanityLoss", largestConst + Cast<Int64>(1));
-		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureInjury", largestConst + Cast<Int64>(2));
-		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureBiocorruption", largestConst + Cast<Int64>(3));
-	}
-
+	public func SetupData() -> Void {}
 	private func RegisterListeners() -> Void {}
 	private func RegisterAllRequiredDelayCallbacks() -> Void {}
 	private func UnregisterListeners() -> Void {}
 	public func OnTimeSkipStart() -> Void {}
 	public func OnTimeSkipCancelled() -> Void {}
+	public func OnTimeSkipBegin() -> Void {}
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
@@ -350,6 +348,7 @@ public final class DFNotificationService extends DFSystem {
 		let gameInstance = GetGameInstance();
 		this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
 		this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
+		this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
 		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
 		this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
 		this.InjuryConditionSystem = DFInjuryConditionSystem.GetInstance(gameInstance);
@@ -372,7 +371,7 @@ public final class DFNotificationService extends DFSystem {
 	//
 	//  Notifications
 	//
-	private final func ClearAllNotificationQueues() -> Void {
+	public final func ClearAllNotificationQueues() -> Void {
 		//DFProfile();
 		ArrayClear(this.inCombatNotificationQueue);
 		ArrayClear(this.outOfCombatNotificationQueue);
@@ -381,10 +380,12 @@ public final class DFNotificationService extends DFSystem {
 
 	public final func ClearOutOfCombatAudioNotifications() -> Void {
 		//DFProfile();
-		for notification in this.outOfCombatNotificationQueue {
-			if NotEquals(notification.sfx.audio, n"") {
-				ArrayRemove(this.outOfCombatNotificationQueue, notification);
+		let i: Int32 = ArraySize(this.outOfCombatNotificationQueue) - 1;
+		while i >= 0 {
+			if NotEquals(this.outOfCombatNotificationQueue[i].sfx.audio, n"") {
+				ArrayErase(this.outOfCombatNotificationQueue, i);
 			}
+			i -= 1;
 		}
 	}
 
@@ -524,15 +525,15 @@ public final class DFNotificationService extends DFSystem {
 
 			// Progression
 			if NotEquals(notification.progression.titleKey, n"") {
-				if Equals(EnumInt<gamedataProficiencyType>(notification.progression.type), Cast<Int32>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureInjury"))) {
+				if Equals(notification.progression.type, DFEnum_gamedataProficiencyType(n"DarkFutureInjury")) {
 					if notification.progression.currentLevel > progressionsToShow.injury.currentLevel || (notification.progression.currentLevel == progressionsToShow.injury.currentLevel && notification.progression.value > progressionsToShow.injury.value) {
 						progressionsToShow.injury = notification.progression;
 					}
-				} else if Equals(EnumInt<gamedataProficiencyType>(notification.progression.type), Cast<Int32>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureHumanityLoss"))) {
+				} else if Equals(notification.progression.type, DFEnum_gamedataProficiencyType(n"DarkFutureHumanityLoss")) {
 					if notification.progression.currentLevel > progressionsToShow.humanityLoss.currentLevel || (notification.progression.currentLevel == progressionsToShow.humanityLoss.currentLevel && notification.progression.value > progressionsToShow.humanityLoss.value) {
 						progressionsToShow.humanityLoss = notification.progression;
 					}
-				} else if Equals(EnumInt<gamedataProficiencyType>(notification.progression.type), Cast<Int32>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureBiocorruption"))) {
+				} else if Equals(notification.progression.type, DFEnum_gamedataProficiencyType(n"DarkFutureBiocorruption")) {
 					if notification.progression.currentLevel > progressionsToShow.biocorruption.currentLevel || (notification.progression.currentLevel == progressionsToShow.biocorruption.currentLevel && notification.progression.value > progressionsToShow.biocorruption.value) {
 						progressionsToShow.biocorruption = notification.progression;
 					}
@@ -587,15 +588,15 @@ public final class DFNotificationService extends DFSystem {
 		DFLog(this, "PlayNotificationPlaybackSet nps: " + ToString(nps));
 
 		// Play the audio cue.
-        if NotEquals(nps.sfxToPlay.audio, n"") {
-            let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
+		if NotEquals(nps.sfxToPlay.audio, n"") {
+			let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
 			evt.soundName = nps.sfxToPlay.audio;
 			this.player.QueueEvent(evt);
-        }
+		}
 
         // Play all VFX.
         for vfx in nps.vfxToPlay {
-            GameObjectEffectHelper.StartEffectEvent(this.player, vfx.visualEffect, false, null, true);
+            GameObjectEffectHelper.StartEffectEvent(this.player, vfx.visualEffect, false, null, false);
             if vfx.stopCallback != null {
                 vfx.stopCallback.Callback();
             }
@@ -797,6 +798,29 @@ public final class DFNotificationService extends DFSystem {
 		// q304_sc_01_briefing_load
 		// q304_sc_01_briefing_somi_glitch
 		// q001_sc_01_biomon_close
+	}
+
+	//
+	//	Overdose
+	//
+	public final func ClearOverdoseNotification() -> Void {
+		let i: Int32 = ArraySize(this.inCombatNotificationQueue);
+		while i >= 0 {
+			if Equals(this.inCombatNotificationQueue[i].message.context, DFMessageContext.Overdose) {
+				ArrayRemove(this.inCombatNotificationQueue, this.inCombatNotificationQueue[i]);
+			}
+
+			i -= 1;
+		}
+
+		let i: Int32 = ArraySize(this.outOfCombatNotificationQueue);
+		while i >= 0 {
+			if Equals(this.outOfCombatNotificationQueue[i].message.context, DFMessageContext.Overdose) {
+				ArrayRemove(this.outOfCombatNotificationQueue, this.outOfCombatNotificationQueue[i]);
+			}
+
+			i -= 1;
+		}
 	}
 
 	//

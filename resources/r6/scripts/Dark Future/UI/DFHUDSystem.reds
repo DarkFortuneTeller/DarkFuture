@@ -205,24 +205,35 @@ private final func OnStatusEffectUsedHealingItemOrCyberwareApplied() -> Void {
 }
 
 @addField(RadialWheelController)
-private let DFCycleActiveEffectType: InputHintData;
+private let DFPrevActiveEffectType: InputHintData;
+
+@addField(RadialWheelController)
+private let DFNextActiveEffectType: InputHintData;
 
 @wrapMethod(RadialWheelController)
 private final func CacheInputHintData() -> Void {
 	wrappedMethod();
 
 	let source: CName = n"RadialWheel";
-	this.DFCycleActiveEffectType.action = n"DFCycleActiveEffectType";
-	this.DFCycleActiveEffectType.source = source;
-	this.DFCycleActiveEffectType.queuePriority = 5;
-	this.DFCycleActiveEffectType.sortingPriority = 5;
-	this.DFCycleActiveEffectType.localizedLabel = "Cycle Status Effect Types";
+
+	this.DFNextActiveEffectType.action = n"DFNextActiveEffectType";
+	this.DFNextActiveEffectType.source = source;
+	this.DFNextActiveEffectType.queuePriority = 5;
+	this.DFNextActiveEffectType.sortingPriority = 5;
+	this.DFNextActiveEffectType.localizedLabel = GetLocalizedTextByKey(n"DarkFutureRadialWheelNextEffectType");
+
+	this.DFPrevActiveEffectType.action = n"DFPrevActiveEffectType";
+	this.DFPrevActiveEffectType.source = source;
+	this.DFPrevActiveEffectType.queuePriority = 6;
+	this.DFPrevActiveEffectType.sortingPriority = 6;
+	this.DFPrevActiveEffectType.localizedLabel = GetLocalizedTextByKey(n"DarkFutureRadialWheelPrevEffectType");
 }
 
 @wrapMethod(RadialWheelController)
 private final func UpdateInputHints() -> Void {
 	wrappedMethod();
-	this.AddInputHint(this.DFCycleActiveEffectType, true);
+	this.AddInputHint(this.DFNextActiveEffectType, true);
+	this.AddInputHint(this.DFPrevActiveEffectType, true);
 }
 
 @wrapMethod(RadialWheelController)
@@ -234,7 +245,8 @@ protected cb func OnInitialize() -> Bool {
       	return false;
     };
 	playerControlledObject = this.GetPlayerControlledObject();
-	playerControlledObject.RegisterInputListener(this, n"DFCycleActiveEffectType");
+	playerControlledObject.RegisterInputListener(this, n"DFNextActiveEffectType");
+	playerControlledObject.RegisterInputListener(this, n"DFPrevActiveEffectType");
 
 	return r;
 }
@@ -247,8 +259,11 @@ protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsu
       	return false;
     };
 
-	if Equals(aType, gameinputActionType.BUTTON_PRESSED) && Equals(aName, n"DFCycleActiveEffectType") {
+	if Equals(aType, gameinputActionType.BUTTON_PRESSED) && Equals(aName, n"DFNextActiveEffectType") {
 		DFHUDSystem.Get().CycleRadialMenuActiveEffectType();
+		return false;
+	} else if Equals(aType, gameinputActionType.BUTTON_PRESSED) && Equals(aName, n"DFPrevActiveEffectType") {
+		DFHUDSystem.Get().CycleRadialMenuActiveEffectType(true);
 		return false;
 	} else {
 		return wrappedMethod(action, consumer);
@@ -342,7 +357,24 @@ protected cb func OnInitialize() -> Bool {
 	tabTwo.SetFitToContent(false);
 	tabTwo.Reparent(carousel);
 
-	ArrayPush(contentTabArray, DFRadialMenuActiveEffectTab(DFRadialMenuActiveEffectType.Conditions, tabTwo));
+	ArrayPush(contentTabArray, DFRadialMenuActiveEffectTab(DFRadialMenuActiveEffectType.LongTermEffects, tabTwo));
+
+	let tabThree: ref<inkRectangle> = new inkRectangle();
+	tabThree.SetName(n"tabThree");
+	tabThree.SetStyle(r"base\\gameplay\\gui\\common\\main_colors.inkstyle");
+	tabThree.BindProperty(n"tintColor", n"MainColors.PanelRed");
+	tabThree.SetOpacity(0.2);
+	tabThree.SetAnchor(inkEAnchor.TopLeft);
+	tabThree.SetAnchorPoint(Vector2(0.0, 0.0));
+	tabThree.SetHAlign(inkEHorizontalAlign.Fill);
+	tabThree.SetVAlign(inkEVerticalAlign.Bottom);
+	tabThree.SetMargin(5.0, 0.0, 5.0, 0.0);
+	tabThree.SetSizeRule(inkESizeRule.Stretch);
+	tabThree.SetSize(Vector2(2.0, 6.0));
+	tabThree.SetFitToContent(false);
+	tabThree.Reparent(carousel);
+
+	ArrayPush(contentTabArray, DFRadialMenuActiveEffectTab(DFRadialMenuActiveEffectType.Conditions, tabThree));
 
 	// Content Tabs End
 
@@ -417,65 +449,11 @@ public final func DarkFutureFadeInCooldownList() -> Void {
 	this.DarkFutureListFadeInAnimProxy = inkWidgetRef.PlayAnimation(this.m_cooldownContainer, this.DarkFutureListFadeInAnim);
 }
 
-/*NEW: inkHorizontalPanelWidget carousel
-				anchor topleft
-				halign fill
-				valign fill
-				size fixed
-				margin 0 5 0 0
-				size 1 1
-				fittocontent true
-
-				inkRectangleWidget leftLine
-					tint 1.176 0.381 0.348 1.0
-					opacity 0.1
-					anchor topleft
-					anchorpoint 0 0
-					halign fill
-					valign bottom
-					margin 0 0 5 0
-					sizerule stretch
-					size 2 2
-					fittocontent false
-				
-				inkRectangleWidget tabOne
-					tint 1.176 0.381 0.348 1.0
-					opacity 0.4
-					anchor topleft
-					anchorpoint 0 0
-					halign fill
-					valign bottom
-					margin 5 0 5 0
-					sizerule stretch
-					size 2 6
-					fittocontent false
-				
-				inkRectangleWidget tabTwo
-					tint 1.176 0.381 0.348 1.0
-					opacity 0.4
-					anchor topleft
-					anchorpoint 0 0
-					halign fill
-					valign bottom
-					margin 5 0 5 0
-					sizerule stretch
-					size 2 6
-					fittocontent false
-				
-				inkRectangleWidget rightLine
-					tint 1.176 0.381 0.348 1.0
-					opacity 0.1
-					anchor topleft
-					anchorpoint 0 0
-					halign fill
-					valign bottom
-					margin 5 0 0 0
-					sizerule stretch
-					size 2 2
-					fittocontent false*/
-
 @addField(inkCooldownGameController)
 public let DarkFutureActiveEffectType: DFRadialMenuActiveEffectType;
+
+@addField(inkCooldownGameController)
+public let DarkFutureOpening: Bool = false;
 
 //
 // Types
@@ -499,6 +477,7 @@ public struct DFNeedHUDUIUpdate {
 	public let bar: DFHUDBarType;
 	public let newValue: Float;
 	public let newLimitValue: Float;
+	public let newOverchargeValue: Float;
 	public let forceMomentaryDisplay: Bool;
 	public let instant: Bool;
 	public let forceBright: Bool;
@@ -515,7 +494,8 @@ public struct DFHUDSegmentedIndicatorUIUpdate {
 
 public enum DFRadialMenuActiveEffectType {
 	StatusEffects = 0,
-	Conditions = 1
+	LongTermEffects = 1,
+	Conditions = 2
 }
 
 public struct DFRadialMenuActiveEffectTab {
@@ -589,7 +569,6 @@ class DFHUDSystemEventListeners extends DFSystemEventListener {
 
 public final class DFHUDSystem extends DFSystem {
 	private let DarkFutureWidgetSlot: ref<inkCompoundWidget>;
-	private let conditionsWidgetSlot: ref<inkCompoundWidget>;
 	private let virtualResolutionWatcher: ref<VirtualResolutionWatcher>;
 	private let hydrationBar: ref<DFNeedsHUDBar>;
 	private let nutritionBar: ref<DFNeedsHUDBar>;
@@ -657,6 +636,7 @@ public final class DFHUDSystem extends DFSystem {
 	
 	public func OnTimeSkipStart() -> Void {}
 	public func OnTimeSkipCancelled() -> Void {}
+	public func OnTimeSkipBegin() -> Void {}
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
 
 	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -681,6 +661,7 @@ public final class DFHUDSystem extends DFSystem {
 
 		this.UpdateAllBaseGameHUDWidgetPositions();
 		this.SendUpdateAllUIRequest();
+		// TODO ?
 		//this.UpdateConditionsUIVisibility();
 	}
 
@@ -689,7 +670,6 @@ public final class DFHUDSystem extends DFSystem {
 		this.HUDUIBlockedDueToMenuOpen = false;
 		this.HUDUIBlockedDueToCameraControl = false;
 		this.DarkFutureWidgetSlot.SetVisible(false);
-		this.conditionsWidgetSlot.SetVisible(false);
 		this.UpdateAllBaseGameHUDWidgetPositions();
 	}
 
@@ -732,6 +712,19 @@ public final class DFHUDSystem extends DFSystem {
 			}
 
 			this.UpdateAllBaseGameHUDWidgetPositions();
+		}
+
+		if ArrayContains(changedSettings, "showConditionsIndicatorHUDUI") {
+			if IsDefined(this.conditionsIndicator) {
+				this.conditionsIndicator.SetVisible(this.Settings.showConditionsIndicatorHUDUI);
+				this.conditionsIndicator.EvaluateBarGroupVisibility(false);
+			}
+		}
+
+		if ArrayContains(changedSettings, "syncConditionsUIWithHealthStamina") {
+			if IsDefined(this.conditionsIndicator) {
+				this.conditionsIndicator.EvaluateBarGroupVisibility(false);
+			}
 		}
 
 		if ArrayContains(changedSettings, "hudUIScale") || ArrayContains(changedSettings, "hudUIPosX") || ArrayContains(changedSettings, "hudUIPosY") {
@@ -823,14 +816,14 @@ public final class DFHUDSystem extends DFSystem {
 			ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.HumanityLoss, n"DarkFutureConditionHumanityLossShort", n"DarkFutureConditionHumanityLoss"));
 		}
 		
-		if this.Settings.biocorruptionConditionEnabled {
+		if this.Settings.biocorruptionConditionEnabled && this.Settings.addictionEnabled {
 			ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.Biocorruption, n"DarkFutureConditionBiocorruptionShort", n"DarkFutureConditionBiocorruption"));
 		}
 		
 		if ArraySize(conditionSegmentsData) > 0 {
 			let conditionsIconPath: ResRef = r"darkfuture\\condition_images\\condition_assets.inkatlas";
 			let conditionsIconName: CName = n"ico_condition_outline";
-			let conditionWidgetSetupData: DFHUDSegmentedIndicatorSetupData = DFHUDSegmentedIndicatorSetupData(slot, n"conditionsIndicator", conditionsIconPath, conditionsIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PanelRed), 800.0, 705.0, 0.0, -41.0, conditionSegmentsData);
+			let conditionWidgetSetupData: DFHUDSegmentedIndicatorSetupData = DFHUDSegmentedIndicatorSetupData(slot, n"conditionsIndicator", conditionsIconPath, conditionsIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.MainRed), 800.0, 705.0, 0.0, -41.0, conditionSegmentsData);
 			this.conditionsIndicator = new DFHUDSegmentedIndicator();
 			this.conditionsIndicator.Init(conditionWidgetSetupData);
 
@@ -852,30 +845,30 @@ public final class DFHUDSystem extends DFSystem {
 
 		// The Nerve Bar is in its own Bar Group so that it can display independently.
 		let nerveBarGroup: ref<DFNeedsHUDBarGroup> = new DFNeedsHUDBarGroup();
-		nerveBarGroup.Init(attachedPlayer, true, this.Settings.nerveLossIsFatal);
+		nerveBarGroup.Init(attachedPlayer, true, this.Settings.nerveLossIsFatal, true);
 		nerveBarGroup.AddBarToGroup(this.nerveBar);
 		nerveBarGroup.BarGroupSetupDone();
 
-		let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
-		let hydrationIconName: CName = n"bar";
-		let hydrationBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"hydrationBar", hydrationIconPath, hydrationIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 33.0, 41.0, false, true);
+		let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\widgets\\healthbar\\atlas_buffinfo.inkatlas";
+		let hydrationIconName: CName = n"hydrated";
+		let hydrationBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"hydrationBar", hydrationIconPath, hydrationIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 33.0, 41.0, true, false);
 		this.hydrationBar = new DFNeedsHUDBar();
 		this.hydrationBar.Init(hydrationBarSetupData);
 
 		let nutritionIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let nutritionIconName: CName = n"food_vendor";
-		let nutritionBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"nutritionBar", nutritionIconPath, nutritionIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 53.0 + 230.6, 41.0, false, true);
+		let nutritionBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"nutritionBar", nutritionIconPath, nutritionIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 53.0 + 230.6, 41.0, true, false);
 		this.nutritionBar = new DFNeedsHUDBar();
 		this.nutritionBar.Init(nutritionBarSetupData);
 
 		let energyIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
 		let energyIconName: CName = n"wait";
-		let energyBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"energyBar", energyIconPath, energyIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 73.0 + 462.2, 41.0, false, true);
+		let energyBarSetupData: DFNeedsHUDBarSetupData = DFNeedsHUDBarSetupData(slot, n"energyBar", energyIconPath, energyIconName, GetDarkFutureBarColorTheme(DFBarColorThemeName.PigeonPost), 231.6, 198.3, 73.0 + 462.2, 41.0, true, true);
 		this.energyBar = new DFNeedsHUDBar();
 		this.energyBar.Init(energyBarSetupData);
 
 		let physicalNeedsBarGroup: ref<DFNeedsHUDBarGroup> = new DFNeedsHUDBarGroup();
-		physicalNeedsBarGroup.Init(attachedPlayer, false, (this.Settings.hydrationLossIsFatal || this.Settings.nutritionLossIsFatal));
+		physicalNeedsBarGroup.Init(attachedPlayer, false, false);
 		physicalNeedsBarGroup.AddBarToGroup(this.hydrationBar);
 		physicalNeedsBarGroup.AddBarToGroup(this.nutritionBar);
 		physicalNeedsBarGroup.AddBarToGroup(this.energyBar);
@@ -976,6 +969,7 @@ public final class DFHUDSystem extends DFSystem {
 		let bar: ref<DFNeedsHUDBar> = this.GetHUDBarFromType(update.bar);
 	
 		this.UpdateBarLimit(bar, update.newLimitValue);
+		this.UpdateBarOvercharge(bar, update.newOverchargeValue);
 		this.UpdateBar(bar, update.newValue, update.forceMomentaryDisplay, update.instant, update.forceBright, update.momentaryDisplayIgnoresSceneTier, update.isSoftCapRestrictedChange, update.showLock);
 
 		// If this was the Nerve bar, also check if we should display Conditions based on Nerve Lock display.
@@ -987,7 +981,7 @@ public final class DFHUDSystem extends DFSystem {
 	public final func UpdateConditionsUI(update: DFHUDSegmentedIndicatorUIUpdate) -> Void {
 		//DFProfile();
 
-		this.conditionsIndicator.SetActive(update.segment, update.active);
+		this.conditionsIndicator.SetSegmentActive(update.segment, update.active);
 
 		if update.pulse {
 			this.conditionsIndicator.SetSegmentPulse(update.segment, 0.3);
@@ -1023,6 +1017,12 @@ public final class DFHUDSystem extends DFSystem {
 		//DFProfile();
 		let currentLimitPct: Float = 1.0 - (newLimitValue / 100.0);
 		bar.SetProgressEmpty(currentLimitPct);
+	}
+
+	private final func UpdateBarOvercharge(bar: ref<DFNeedsHUDBar>, newOverchargeValue: Float) -> Void {
+		//DFProfile();
+		let currentOverchargePct: Float = newOverchargeValue / 100.0;
+		bar.SetProgressOvercharge(currentOverchargePct);
 	}
 
 	public final func UpdateAllHUDUIFromUIContextChange(menuOpen: Bool, opt context: UIGameContext) -> Void {
@@ -1218,13 +1218,26 @@ public final class DFHUDSystem extends DFSystem {
 		this.cooldownController = cooldownController;
 	}
 
-	public final func CycleRadialMenuActiveEffectType() -> Void {
+	public final func CycleRadialMenuActiveEffectType(opt reverse: Bool) -> Void {
 		if IsDefined(this.cooldownController) {
 			// Set the active effect type.
-			if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
-				this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.Conditions;
-			} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
-				this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.StatusEffects;
+
+			if reverse {
+				if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+					this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.Conditions;
+				} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+					this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.LongTermEffects;
+				} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.LongTermEffects) {
+					this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.StatusEffects;
+				}
+			} else {
+				if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+					this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.LongTermEffects;
+				} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.LongTermEffects) {
+					this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.Conditions;
+				} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+					this.cooldownController.DarkFutureActiveEffectType = DFRadialMenuActiveEffectType.StatusEffects;
+				}
 			}
 
 			this.UpdateRadialMenuActiveEffects();
@@ -1233,6 +1246,8 @@ public final class DFHUDSystem extends DFSystem {
 
 	public final func SetRadialMenuActiveEffectType(type: DFRadialMenuActiveEffectType, opt silent: Bool) {
 		if IsDefined(this.cooldownController) {
+			this.cooldownController.DarkFutureOpening = true;
+
 			// Set the active effect type.
 			this.cooldownController.DarkFutureActiveEffectType = type;
 
@@ -1240,24 +1255,56 @@ public final class DFHUDSystem extends DFSystem {
 		}
 	}
 
-	private final func UpdateRadialMenuActiveEffects(opt silent: Bool) -> Void {
+	public final func ForceRadialMenuActiveEffectTitle(type: DFRadialMenuActiveEffectType) -> Void {
 		if IsDefined(this.cooldownController) {
 			// Update the title text based on the new effect type.
-			if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
-				(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedText("LocKey#51709"));
+			if Equals(type, DFRadialMenuActiveEffectType.StatusEffects) {
+				(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureShortTermEffectsTitle"));
+			
+			} else if Equals(type, DFRadialMenuActiveEffectType.LongTermEffects) {
+				(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureLongTermEffectsTitle"));
 
-			} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+			} else if Equals(type, DFRadialMenuActiveEffectType.Conditions) {
 				(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureConditionsMenuItem"));
 			}
+		}
 
-			// Update the tab highlighting.
-			for tab in this.cooldownContentTabs {
-				if Equals(tab.type, this.cooldownController.DarkFutureActiveEffectType) {
-					tab.widget.BindProperty(n"tintColor", n"MainColors.PanelBlue");
-					tab.widget.SetOpacity(1.0);
-				} else {
-					tab.widget.BindProperty(n"tintColor", n"MainColors.PanelRed");
-					tab.widget.SetOpacity(0.2);
+		// Update the tab highlighting.
+		for tab in this.cooldownContentTabs {
+			if Equals(tab.type, this.cooldownController.DarkFutureActiveEffectType) {
+				tab.widget.BindProperty(n"tintColor", n"MainColors.PanelBlue");
+				tab.widget.SetOpacity(1.0);
+			} else {
+				tab.widget.BindProperty(n"tintColor", n"MainColors.PanelRed");
+				tab.widget.SetOpacity(0.2);
+			}
+		}
+	}
+
+	private final func UpdateRadialMenuActiveEffects(opt silent: Bool) -> Void {
+		if IsDefined(this.cooldownController) {
+
+			if !this.cooldownController.DarkFutureOpening {
+				// Update the title text based on the new effect type.
+				if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+					(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureShortTermEffectsTitle"));
+				
+				} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.LongTermEffects) {
+					(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureLongTermEffectsTitle"));
+
+				} else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+					(inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureConditionsMenuItem"));
+				}
+
+				// Update the tab highlighting.
+				for tab in this.cooldownContentTabs {
+					if Equals(tab.type, this.cooldownController.DarkFutureActiveEffectType) {
+						tab.widget.BindProperty(n"tintColor", n"MainColors.PanelBlue");
+						tab.widget.SetOpacity(1.0);
+					} else {
+						tab.widget.BindProperty(n"tintColor", n"MainColors.PanelRed");
+						tab.widget.SetOpacity(0.2);
+					}
 				}
 			}
 

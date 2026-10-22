@@ -84,6 +84,7 @@ DarkFutureStatusEffect.EnergyPenalty_01:
   uiData: DarkFutureStatusEffect.EnergyPenalty_01_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedEnergy
     - DarkFutureInfiniteDurationEffect
@@ -191,6 +192,7 @@ DarkFutureStatusEffect.EnergyPenalty_02:
   uiData: DarkFutureStatusEffect.EnergyPenalty_02_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedEnergy
     - DarkFutureInfiniteDurationEffect
@@ -299,6 +301,7 @@ DarkFutureStatusEffect.EnergyPenalty_03:
   uiData: DarkFutureStatusEffect.EnergyPenalty_03_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedEnergy
     - DarkFutureInfiniteDurationEffect
@@ -407,6 +410,7 @@ DarkFutureStatusEffect.EnergyPenalty_04:
   uiData: DarkFutureStatusEffect.EnergyPenalty_04_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedEnergy
     - DarkFutureInfiniteDurationEffect

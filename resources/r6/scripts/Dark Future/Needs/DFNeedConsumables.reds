@@ -11,19 +11,29 @@ import DarkFuture.Main.{
 	DFNeedsDatum,
 	DFNeedChangeDatum
 }
-import DarkFuture.Needs.DFNerveSystem
+import DarkFuture.Needs.{
+	DFNerveSystem
+}
+import DarkFuture.Conditions.{
+	DFBiocorruptionConditionSystem
+}
+import DarkFuture.Services.{
+	DFNotificationService,
+	DFPlayerStateService
+}
 import DarkFuture.Settings.*
 import DarkFuture.Logging.*
 
 // Allow certain types of consumables (Black Lace, etc) to be used in combat.
 // Fix a base game bug that prevented Inhalers and Injectors from being swapped between in the Backpack Inventory (but not
 // in Quick Access or the Radial Menu).
-// Disallow the use of food and drink outside of combat based on Nerve.
+// Disallow the use of food outside of combat based on Nerve.
 @replaceMethod(InventoryGPRestrictionHelper)
 public final static func CanUse(const itemData: script_ref<InventoryItemData>, playerPuppet: wref<PlayerPuppet>) -> Bool {
 	//DFProfile();
 	let bb: ref<IBlackboard>;
 	let canUse: Bool = InventoryGPRestrictionHelper.CanInteractByEquipmentArea(itemData, playerPuppet);
+
 	// Edit Start
 	if Equals(Deref(itemData).ItemType, gamedataItemType.Prt_Program) {
 		bb = GameInstance.GetBlackboardSystem(GetGameInstance()).GetLocalInstanced(playerPuppet.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
@@ -32,7 +42,16 @@ public final static func CanUse(const itemData: script_ref<InventoryItemData>, p
 		}
 	} else if Equals(Deref(itemData).EquipmentArea, gamedataEquipmentArea.Consumable) {
 		bb = GameInstance.GetBlackboardSystem(GetGameInstance()).GetLocalInstanced(playerPuppet.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
-		if bb.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Combat) == 1 {
+		// TODO - Cannot use with Addiquit?
+		let inOverdose: Bool = DFPlayerStateService.Get().GetInOverdose();
+		if inOverdose && (Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableAlcohol") || 
+						  Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableNicotine") || 
+						  Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableNarcotic")) {
+			
+			DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseOverdose;
+			canUse = false;
+
+		} else if bb.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Combat) == 1 {
 			// Allow the use of inhalers, injectors, and any items with Combat Use Allowed tag while in combat.
 			let itemType: gamedataItemType = Deref(itemData).GameItemData.GetItemType();
 			if Equals(itemType, gamedataItemType.Con_Inhaler) || Equals(itemType, gamedataItemType.Con_Injector) {
@@ -42,10 +61,16 @@ public final static func CanUse(const itemData: script_ref<InventoryItemData>, p
 			} else {
 				canUse = false;
 			}
+
       	} else {
-			// Disallow the use of food and drink outside of combat based on Nerve.
-			if DFNerveSystem.Get().GetHasNausea() && (Deref(itemData).GameItemData.HasTag(n"Food") || Deref(itemData).GameItemData.HasTag(n"Drink")) {
+			// Disallow the use of food and drinks outside of combat based on Nerve.
+			// Dark Future 3.0 - Simplification, only block eating when Nauseous, to avoid needing to support vomiting due to world interactions
+			// when drinking.
+			let isFood: Bool = Deref(itemData).GameItemData.HasTag(n"Food");
+			if isFood && DFNerveSystem.Get().GetHasNausea() {
+				DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseNausea;
 				canUse = false;
+				
 			} else {
 				canUse = true;
 			}
@@ -58,7 +83,7 @@ public final static func CanUse(const itemData: script_ref<InventoryItemData>, p
 // Allow certain types of consumables (Black Lace, etc) to be used in combat.
 // Fix a base game bug that prevented Inhalers and Injectors from being swapped between in the Backpack Inventory (but not
 // in Quick Access or the Radial Menu).
-// Disallow the use of food and drink outside of combat based on Nerve.
+// Disallow the use of food outside of combat based on Nerve and Crash status.
 @replaceMethod(InventoryGPRestrictionHelper)
 public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: wref<PlayerPuppet>) -> Bool {
 	//DFProfile();
@@ -71,7 +96,16 @@ public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: w
 		}
 	} else if Equals(itemData.GetItemRecord().ItemCategory().Type(), gamedataItemCategory.Consumable) {
 		bb = GameInstance.GetBlackboardSystem(GetGameInstance()).GetLocalInstanced(playerPuppet.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
-		if bb.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Combat) == 1 {
+		// TODO - Cannot use with Addiquit?
+		let inOverdose: Bool = DFPlayerStateService.Get().GetInOverdose();
+		if inOverdose && (itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableAlcohol") || 
+						  itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableNicotine") || 
+						  itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableNarcotic")) {
+			
+			DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseOverdose;
+			canUse = false;
+
+		} else if bb.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Combat) == 1 {
 			// Allow the use of inhalers, injectors, and any items with Combat Use Allowed tag while in combat.
 			let itemType: gamedataItemType = itemData.m_realItemData.GetItemType();
 			if Equals(itemType, gamedataItemType.Con_Inhaler) || Equals(itemType, gamedataItemType.Con_Injector) {
@@ -81,10 +115,16 @@ public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: w
 			} else {
 				canUse = false;
 			}
+
       	} else {
-			// Disallow the use of food and drink outside of combat based on Nerve.
-			if DFNerveSystem.Get().GetHasNausea() && (itemData.m_realItemData.HasTag(n"Food") || itemData.m_realItemData.HasTag(n"Drink")) {
+			// Disallow the use of food outside of combat based on Nerve.
+			// Dark Future 3.0 - Simplification, only block eating when Nauseous, to avoid needing to support vomiting due to world interactions
+			// when drinking.
+			let isFood: Bool = itemData.m_realItemData.HasTag(n"Food");
+			if isFood && DFNerveSystem.Get().GetHasNausea() {
+				DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseNausea;
 				canUse = false;
+				
 			} else {
 				canUse = true;
 			}
@@ -94,15 +134,99 @@ public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: w
 	return canUse;
 }
 
-//	ConsumeAction - If the player's Nerve is too low, disallow consuming food and drink when activated
-//	in the world.
+public enum DFBackpackNotificationType {
+	None = 0,
+	CannotUseNausea = 1,
+	CannotUseOverdose = 2
+}
+
+@addField(BackpackMainGameController)
+public let DarkFutureCustomBackpackNotificationOverride: DFBackpackNotificationType = DFBackpackNotificationType.None;
+
+@wrapMethod(BackpackMainGameController)
+protected cb func OnInitialize() -> Bool {
+	let r: Bool = wrappedMethod();
+
+	DFNotificationService.Get().backpackController = this;
+
+	return r;
+}
+
+@wrapMethod(BackpackMainGameController)
+protected cb func OnUninitialize() -> Bool {
+	let r: Bool = wrappedMethod();
+
+	DFNotificationService.Get().backpackController = null;
+
+	return r;
+}
+
+// TODO - Same for Revised Backpack
+@wrapMethod(BackpackMainGameController)
+private final func ShowNotification(gameInstance: GameInstance, type: UIMenuNotificationType) -> Void {
+	if NotEquals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.None) {
+		if Equals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.CannotUseNausea) {
+			this.DarkFutureShowCustomNotification(gameInstance, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseNausea"));
+		
+		} else if Equals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.CannotUseOverdose) {
+			this.DarkFutureShowCustomNotification(gameInstance, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseOverdose"));
+		}
+	} else {
+		wrappedMethod(gameInstance, type);
+	}
+}
+
+@addMethod(BackpackMainGameController)
+private final func DarkFutureShowCustomNotification(gameInstance: GameInstance, type: UIMenuNotificationType) -> Void {
+	// Clear the override.
+	this.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.None;
+
+	// Send a custom notification.
+	let inventoryNotification: ref<UIMenuNotificationEvent> = new UIMenuNotificationEvent();
+	inventoryNotification.m_notificationType = type;
+	GameInstance.GetUISystem(gameInstance).QueueEvent(inventoryNotification);
+}
+
+@wrapMethod(UIMenuNotificationQueue)
+protected cb func OnUINotification(evt: ref<UIMenuNotificationEvent>) -> Bool {
+	let useCustomNotification: Bool = false;
+	let notificationData: gameuiGenericNotificationData;
+	let userData: ref<UIMenuNotificationViewData> = new UIMenuNotificationViewData();
+	if Equals(evt.m_notificationType, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseNausea")) {
+		useCustomNotification = true;
+		userData.title = GetLocalizedTextByKey(n"DarkFutureNauseaNerveNoFoodUseNotification");
+	
+	} else if Equals(evt.m_notificationType, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseMaxStacks")) {
+		useCustomNotification = true;
+		userData.title = GetLocalizedTextByKey(n"DarkFutureMaxStacksNoUseNotification");
+	
+	} else if Equals(evt.m_notificationType, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseOverdose")) {
+		useCustomNotification = true;
+		userData.title = GetLocalizedTextByKey(n"DarkFutureOverdoseNoUseNotification");
+	
+	} else {
+		return wrappedMethod(evt);
+	}
+
+	if useCustomNotification {
+		userData.soundEvent = n"QuestSuccessPopup";
+		userData.soundAction = n"OnOpen";
+		userData.animContainer = evt.m_animContainer;
+		userData.notificationType = evt.m_notificationType;
+		notificationData.time = this.m_duration;
+		notificationData.widgetLibraryItemName = n"popups_side";
+		notificationData.notificationData = userData;
+		this.AddNewNotificationData(notificationData);
+	}
+}
+
+//	ConsumeAction - If the player's Nerve is too low, disallow consuming food when activated in the world.
 //
 @wrapMethod(ConsumeAction)
 public func IsVisible(const context: script_ref<GetActionsContext>, objectActionsCallbackController: wref<gameObjectActionsCallbackController>) -> Bool {
 	//DFProfile();
-	let NerveSystem: wref<DFNerveSystem> = DFNerveSystem.Get();
 
-	if NerveSystem.GetHasNausea() && (this.GetItemData().HasTag(n"Food") || this.GetItemData().HasTag(n"Drink")) {
+	if DFPlayerStateService.Get().GetInOverdose() || (DFNerveSystem.Get().GetHasNausea() && this.GetItemData().HasTag(n"Food")) {
 		return false;
 	}
 
@@ -160,38 +284,9 @@ public func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -> DFNeedsDatu
 	let BoosterPenaltyTier1: Float = -15.0;
 	let BoosterPenaltyTier2: Float = -25.0;
 
-	let CigarettesNerve: Float = Settings.nerveCigarettes;
-	let WeakNarcoticsNerve: Float = Settings.nerveWeakNarcoticsRev2;
-	let StrongNarcoticsNerve: Float = Settings.nerveStrongNarcoticsRev2;
-
-	// When the Alcohol Status is applied, it restores 5 Nerve in order
-	// for [Drink] dialogue choices to restore Nerve outside of consuming
-	// items. (It may take several "sips" when drinking in a cinematic
-	// to obtain the Alcohol effect application, which is outside the control
-	// of this mod. Therefore, we only "count" the drink and grant Nerve once
-	// you've gotten the Alcohol status effect.) These Nerve changes occur in
-	// addition to the +5 change in order to reflect the effect magnitude 
-	// listed on the item.
-	let hasStrongAlcoholTag: Bool = itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholStrong");
-	let AlcoholStacksToApply: Float = hasStrongAlcoholTag ? 3.0 : 1.0;
-	let AlcoholNerveOnStatusEffectApply: Float = Settings.nerveAlcoholTier1Rev2;
-
-	let AlcoholNerveTier1: Float = 0.0;
-	let AlcoholNerveTier2: Float = Settings.nerveAlcoholTier2Rev2 - Settings.nerveAlcoholTier1Rev2;
-	let AlcoholNerveTier3: Float = Settings.nerveAlcoholTier3Rev2 - Settings.nerveAlcoholTier1Rev2;
-
-	// Nerve Penalties are always 40% of benefit on low-quality consumables.
-	let NervePenaltyDrinkTier1: Float = Cast<Float>(-1 * CeilF(Settings.hydrationTier1 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
-	let NervePenaltyFoodTier1: Float = Cast<Float>(-1 * CeilF(Settings.nutritionTier1 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
-	let NervePenaltyFoodTier2: Float = Cast<Float>(-1 * CeilF(Settings.nutritionTier2 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
-	let NervePenaltyFoodTier3: Float = Cast<Float>(-1 * CeilF(Settings.nutritionTier3 * Settings.GetLowQualityConsumablePenaltyFactorAsPercentage()));
-
 	let NervePenaltyDeathTest: Float = -95.0;
 
-	let DrugNerveAmount: Float = 30.0;
 	let DrugEnergyPenalty: Float = -40.0;
-
-	let LowQualityConsumableNerveLossLimit: Float = Settings.nerveLowQualityConsumablePenaltyLimit;
 
 	let consumableBasicNeedsData: DFNeedsDatum;
 
@@ -240,53 +335,8 @@ public func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -> DFNeedsDatu
 		}
 	}
 
-	// Energy (Positive values)
-	// Handled in: DFEnergySystem TryToApplyEnergizedStacks()
-
-	// Nerve
-	if itemRecord.TagsContains(n"DarkFutureConsumableNerve") {
-		if itemRecord.TagsContains(n"DarkFutureConsumableCigarettesNerve") {
-			consumableBasicNeedsData.nerve.value = CigarettesNerve;
-		
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier1") {
-			consumableBasicNeedsData.nerve.value = AlcoholNerveTier1 * AlcoholStacksToApply;
-			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply * AlcoholStacksToApply;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier2") {
-			consumableBasicNeedsData.nerve.value = AlcoholNerveTier2 * AlcoholStacksToApply;
-			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply * AlcoholStacksToApply;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableAlcoholNerveTier3") {
-			consumableBasicNeedsData.nerve.value = AlcoholNerveTier3 * AlcoholStacksToApply;
-			consumableBasicNeedsData.nerve.valueOnStatusEffectApply = AlcoholNerveOnStatusEffectApply * AlcoholStacksToApply;
-		
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableWeakNarcoticsNerve") {
-			consumableBasicNeedsData.nerve.value = WeakNarcoticsNerve;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableStrongNarcoticsNerve") {
-			consumableBasicNeedsData.nerve.value = StrongNarcoticsNerve;
-		}
-	}
-
-	// Nerve Penalty from lower-quality consumables
-	if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyOnConsume") {
-		if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyDrinkOnConsumeTier1") {
-			consumableBasicNeedsData.nerve.value = NervePenaltyDrinkTier1;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier1") {
-			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier1;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier2") {
-			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier2;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableNervePenaltyFoodOnConsumeTier3") {
-			consumableBasicNeedsData.nerve.value = NervePenaltyFoodTier3;
-		}
-		consumableBasicNeedsData.nerve.floor = LowQualityConsumableNerveLossLimit;
-	}
-
-	// Nerve Restore Drug
-	if itemRecord.TagsContains(n"DarkFutureConsumableNerveRestoreDrug") {
-		consumableBasicNeedsData.nerve.value = DrugNerveAmount;
-		consumableBasicNeedsData.energy.value = DrugEnergyPenalty;
-	}
-
-	// Addiction Treatment Drug
-	if itemRecord.TagsContains(n"DarkFutureConsumableAddictionTreatmentDrug") {
+	// Addiction Treatment / Overdose Cure Drug
+	if itemRecord.TagsContains(n"DarkFutureConsumableAddictionTreatmentDrug") || itemRecord.TagsContains(n"DarkFutureConsumableOverdoseCureDrug") {
 		consumableBasicNeedsData.energy.value = DrugEnergyPenalty;
 	}
 

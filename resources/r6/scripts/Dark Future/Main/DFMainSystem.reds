@@ -6,39 +6,8 @@
 // - Handles mod-wide system startup and shutdown.
 //
 
-// BUG: Smoking in the japantown apartment makes a UI notification noise with Dark Future installed
-// BUG: Multiple addiction reductions at midnight cause multiple Biocorruption notifications
-// TEST: Energized lasts for X minutes. When it expires, all stacks and temporary Energy is removed at once.
-// TEST: Biocorruption mechanics
-// DONE: Alcohol stack rework
-// TEST: Narcotics stack rework
-// DONE: Withdrawal Nerve limits have been rebalanced; Nicotine addiction withdrawal can no longer interrupt sleep
-// DONE: Withdrawal animations are now triggered based on the withdrawal with the most severe Nerve limit, not the most advanced addiction
-// BUG: Energy lock appearance value in time skip appears to be wrong when biocorruption level changes during sleep
-// TODO: Rebalance Energy debuffs
-// TODO: Block anims against fx as well
-// TODO: When drinking would cause Energy to fall to 0, you immediately collapse instead of playing the drinking animation
-// TEST: Rebalance addiction withdrawal timelines
-// TODO: 24 hour crash timer
-// TODO: Real passage of time does not trigger delayed need loss application from Crash
-// TODO: No smoking option in the world. Missing metadata?
-// TODO: Hangout Romances, Hangout Romances add-on, Romance Hangouts Enhanced breaking HL restore on sleep
-
-// FUTURE: TEST: Don't repeat SFX / VFX if at the max of a value (Nerve) if that value is capped
-// FUTURE: TEST: add vfx_fullscreen_drugged_start, vfx_fullscreen_drugged_stop to drugged vfx
-// FUTURE: Night City Immersive Debris incompatibility?
-// FUTURE: HQ Fast Food compatibility
-// FUTURE: Glitter slow time passing duration while in menus
-// FUTURE: Vendors.sts_ep1_06_drug_dealer - Identify and add drugs to this NPC
-// FUTURE: Vendors.sts_ep1_01_odel - Identify and add drugs to this NPC
-// FUTURE: NCPD can now spawn if car is stolen
-// FUTURE: Locomotion and "tiredness" changes
-// FUTURE: Car hacking changes
-// FUTURE: Cat bench "relax" restore Nerve
-// FUTURE: Allow TV to restore Nerve
-// FUTURE: Hotscene Support from Native UI (fix crash)
-// FUTURE: TODO: Very spammy Game State Service call failure from PlayerPuppet when interacting with Metro Line UI
-// FUTURE: Pet your cat Humanity Loss restoration
+// DONE: Reduce in-game time to first Energy penalty to 12 hours (was 16 hours)
+// DONE: Relax menu
 
 module DarkFuture.Main
 
@@ -60,7 +29,9 @@ import DarkFuture.Gameplay.{
     DFVehicleSummonSystem,
     DFRandomEncounterSystem,
     DFStashCraftingSystem,
-    DFModCompatSystem
+    DFModCompatSystem,
+    DFImpairedDrivingSystem,
+    DFRelaxActionSystem
 }
 import DarkFuture.Needs.{
     DFHydrationSystem,
@@ -76,8 +47,7 @@ import DarkFuture.Addictions.{
 import DarkFuture.Conditions.{
     DFInjuryConditionSystem,
     DFHumanityLossConditionSystem,
-    DFBiocorruptionConditionSystem,
-    DFBiocorruptionConditionState
+    DFBiocorruptionConditionSystem
 }
 import DarkFuture.UI.{
     DFHUDSystem,
@@ -90,8 +60,19 @@ public struct DFNeedChangeDatum {
     public let delayedValue: Float;
 	public let floor: Float;
 	public let ceiling: Float;
-    public let valueOnStatusEffectApply: Float;
     public let showLock: Bool;
+    public let overcharge: Float;
+}
+
+public struct DFEnergyChangePreview {
+    public let change: Float;
+    public let wouldCrash: Bool;
+    public let indeterminate: Bool;
+}
+
+public struct DFNerveChangePreview {
+    public let change: Float;
+    public let indeterminate: Bool;
 }
 
 public struct DFNeedsDatum {
@@ -123,10 +104,20 @@ public struct DFHumanityLossDatum {
     public let newEndotrisineDuration: Float;
 }
 
+public struct DFBiocorruptionDatum {
+    public let newCrashDuration: Float;
+    public let newCrashStackCount: Uint32;
+    public let highestCrashStackCount: Uint32;
+    public let newTimeUntilRestless: Float;
+    public let isRestless: Bool;
+    public let crashOccuredDuringTimeskip: Bool;
+}
+
 public struct DFFutureHoursData {
     public let futureNeedsData: array<DFNeedsDatum>;
     public let futureAddictionData: array<DFAddictionDatum>;
     public let futureHumanityLossData: array<DFHumanityLossDatum>;
+    public let futureBiocorruptionData: array<DFBiocorruptionDatum>;
 }
 
 public enum DFTimeSkipType {
@@ -141,15 +132,17 @@ public struct DFTimeSkipData {
     public let targetNeedValues: DFNeedsDatum;
     public let targetAddictionValues: DFAddictionDatum;
     public let targetHumanityLossValues: DFHumanityLossDatum;
+    public let targetBiocorruptionValues: DFBiocorruptionDatum;
     public let hoursSkipped: Int32;
     public let timeSkipType: DFTimeSkipType;
+    public let skipSevereNeedMessage: Bool;
 }
 
-public enum DFTempEnergyItemType {
-    Caffeine = 0,
-    Stimulant = 1,
-    WeakAlcohol = 2,
-    StrongAlcohol = 3
+public enum DFAddictionProxyEffectType {
+    Invalid = 0,
+    Nicotine = 1,
+    Alcohol = 2,
+    Narcotic = 3
 }
 
 @wrapMethod(RadialWheelController)
@@ -185,7 +178,7 @@ private final const func ModifyProficiencyLevel(proficiencyIndex: Int32, isDebug
 
     let strengthSkillIndex: Int32 = this.GetProficiencyIndexByType(gamedataProficiencyType.StrengthSkill);
     if Equals(strengthSkillIndex, proficiencyIndex) {
-        DFLogNoSystem(true, this, "ModifyProficiencyLevel: Updating Strength Skill Proficiency Carry Weight bonus.");
+        DFLogNoSystem(DFSystemlessDebugEnabled(), this, "ModifyProficiencyLevel: Updating Strength Skill Proficiency Carry Weight bonus.");
         DFMainSystem.Get().UpdateStrengthSkillBonuses();
     }
 }
@@ -208,6 +201,13 @@ public class MainSystemTimeSkipCancelledEvent extends CallbackSystemEvent {
     public static func Create() -> ref<MainSystemTimeSkipCancelledEvent> {
         //DFProfile();
         return new MainSystemTimeSkipCancelledEvent();
+    }
+}
+
+public class MainSystemTimeSkipBeginEvent extends CallbackSystemEvent {
+    public static func Create() -> ref<MainSystemTimeSkipBeginEvent> {
+        //DFProfile();
+        return new MainSystemTimeSkipBeginEvent();
     }
 }
 
@@ -319,7 +319,7 @@ class DFMainSystemEventListeners extends ScriptableService {
 public final class DFMainSystem extends ScriptableSystem {
     private let debugEnabled: Bool = false;
 
-    private let player: ref<PlayerPuppet>;
+    public let player: ref<PlayerPuppet>;
 
     // Callback Handles
     private let playerAttachedCallbackID: Uint32;
@@ -327,10 +327,11 @@ public final class DFMainSystem extends ScriptableSystem {
     private let lateInitDone: Bool = false;
 
     // Version tracking
-    private const let version: Float = 2.0;
+    private const let version: Float = 3.0;
     private persistent let lastKnownVersion: Float = 0.0;
     private persistent let hasShownActivationMessage: Bool = false;
     private persistent let hasShownUpgradeMessage_20: Bool = false;
+    private persistent let hasShownUpgradeMessage_30: Bool = false;
 
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFMainSystem> {
@@ -380,7 +381,7 @@ public final class DFMainSystem extends ScriptableSystem {
         //DFProfile();
         let gameInstance = GetGameInstance();
         if !IsDefined(this.player) {
-            DFLogNoSystem(true, this, "ERROR: PLAYER NOT DEFINED ON DFMainSystem:StartAll()", DFLogLevel.Error);
+            DFLogNoSystem(DFSystemlessDebugEnabled(), this, "ERROR: PLAYER NOT DEFINED ON DFMainSystem:StartAll()", DFLogLevel.Error);
             return;
         }
         DFLogNoSystem(this.debugEnabled, this, "!!!!! DFMainSystem:StartAll !!!!!");
@@ -390,6 +391,9 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // Lifecycle Hook - Start
         this.DispatchLifecycleInitEvent();
+
+        // Perform pre-start tasks.
+        this.DoPreStartUpTasks();
 
         // Services
         DFGameStateService.GetInstance(gameInstance).Init(this.player);
@@ -403,11 +407,15 @@ public final class DFMainSystem extends ScriptableSystem {
         DFInteractionSystem.GetInstance(gameInstance).Init(this.player);
         DFStashCraftingSystem.GetInstance(gameInstance).Init(this.player);
         DFRandomEncounterSystem.GetInstance(gameInstance).Init(this.player);
+        DFRelaxActionSystem.GetInstance(gameInstance).Init(this.player);
 
         // Basic Needs
         DFHydrationSystem.GetInstance(gameInstance).Init(this.player);
         DFNutritionSystem.GetInstance(gameInstance).Init(this.player);
         DFEnergySystem.GetInstance(gameInstance).Init(this.player);
+
+        // Impaired Driving (Depends on Energy System start-up)
+        DFImpairedDrivingSystem.GetInstance(gameInstance).Init(this.player);
 
         // Addictions
         DFAlcoholAddictionSystem.GetInstance(gameInstance).Init(this.player);
@@ -456,7 +464,13 @@ public final class DFMainSystem extends ScriptableSystem {
             this.TryToInfer20Upgrade();
         }
 
+        if this.lastKnownVersion < 3.0 {
+            this.Perform30UpgradeTasks();
+        }
+
         this.lastKnownVersion = this.version;
+
+        GameInstance.GetQuestsSystem(gameInstance).SetFact(n"dark_future_enabled", 1);
     }
 
     private final func ResumeAll() -> Void {
@@ -479,11 +493,15 @@ public final class DFMainSystem extends ScriptableSystem {
         DFInteractionSystem.GetInstance(gameInstance).Resume();
         DFStashCraftingSystem.GetInstance(gameInstance).Resume();
         DFRandomEncounterSystem.GetInstance(gameInstance).Resume();
+        DFRelaxActionSystem.GetInstance(gameInstance).Resume();
 
         // Basic Needs
         DFHydrationSystem.GetInstance(gameInstance).Resume();
         DFNutritionSystem.GetInstance(gameInstance).Resume();
         DFEnergySystem.GetInstance(gameInstance).Resume();
+
+        // Impaired Driving (Depends on Energy System start-up)
+        DFImpairedDrivingSystem.GetInstance(gameInstance).Resume();
 
         // Addictions
         DFAlcoholAddictionSystem.GetInstance(gameInstance).Resume();
@@ -513,6 +531,8 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // Invalid Config Check
         this.CheckForInvalidConfiguration();
+
+        GameInstance.GetQuestsSystem(gameInstance).SetFact(n"dark_future_enabled", 1);
     }
 
     private final func SuspendAll() -> Void {
@@ -546,13 +566,17 @@ public final class DFMainSystem extends ScriptableSystem {
         DFNarcoticAddictionSystem.GetInstance(gameInstance).Suspend();
         DFNicotineAddictionSystem.GetInstance(gameInstance).Suspend();
         DFAlcoholAddictionSystem.GetInstance(gameInstance).Suspend();
+
+        // Impaired Driving
+        DFImpairedDrivingSystem.GetInstance(gameInstance).Suspend();
         
         // Basic Needs
         DFEnergySystem.GetInstance(gameInstance).Suspend();
         DFNutritionSystem.GetInstance(gameInstance).Suspend();
         DFHydrationSystem.GetInstance(gameInstance).Suspend();
         
-        // Gameplay Systems
+        // Gameplay Systemss
+        DFRelaxActionSystem.GetInstance(gameInstance).Suspend();
         DFRandomEncounterSystem.GetInstance(gameInstance).Suspend();
         DFStashCraftingSystem.GetInstance(gameInstance).Suspend();
         DFInteractionSystem.GetInstance(gameInstance).Suspend();
@@ -567,20 +591,16 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // Lifecycle Hook - Done
         this.DispatchLifecycleSuspendDoneEvent();
+
+        GameInstance.GetQuestsSystem(gameInstance).SetFact(n"dark_future_enabled", 0);
     }
 
     private final func RefreshAlwaysOnEffects() -> Void {
         //DFProfile();
         let settings: ref<DFSettings> = DFSettings.Get();
         if settings.mainSystemEnabled {
-            if settings.increasedStaminaRecoveryTime {
-                if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen") {
-                    StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");
-                }
-            } else {
-                StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");
-            }
-			
+            StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");
+            
             if Equals(settings.reducedCarryWeight, DFReducedCarryWeightAmount.Full) {
                 if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull") {
                     StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull");
@@ -598,7 +618,6 @@ public final class DFMainSystem extends ScriptableSystem {
             }
 
 		} else {
-            StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");
             StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity");
         }
 
@@ -608,7 +627,7 @@ public final class DFMainSystem extends ScriptableSystem {
     public final func OnSettingChanged(changedSettings: array<String>) -> Void {
         //DFProfile();
         let settings: ref<DFSettings> = DFSettings.Get();
-        if ArrayContains(changedSettings, "increasedStaminaRecoveryTime") || ArrayContains(changedSettings, "reducedCarryWeight") {
+        if ArrayContains(changedSettings, "reducedCarryWeight") {
             this.RefreshAlwaysOnEffects();
         }
 
@@ -686,6 +705,7 @@ public final class DFMainSystem extends ScriptableSystem {
         let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(gameInstance);
         let injuryConditionSystemEnabled: Bool = DFInjuryConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();
         let humanityLossConditionSystemEnabled: Bool = DFHumanityLossConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();
+        let biocorruptionConditionSystemEnabled: Bool = DFBiocorruptionConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();        
         let Settings: ref<DFSettings> = DFSettings.GetInstance(gameInstance);
 
         // Always on.
@@ -702,6 +722,7 @@ public final class DFMainSystem extends ScriptableSystem {
         let injuryCodexState: gameJournalEntryState = injuryConditionSystemEnabled ? gameJournalEntryState.Active : gameJournalEntryState.Inactive;
         let humanityLossCodexState: gameJournalEntryState = humanityLossConditionSystemEnabled ? gameJournalEntryState.Active : gameJournalEntryState.Inactive;
         let cyberpsychosisCodexState: gameJournalEntryState = (humanityLossConditionSystemEnabled && Settings.humanityLossCyberpsychosisEnabled) ? gameJournalEntryState.Active : gameJournalEntryState.Inactive;
+        let biocorruptionCodexState: gameJournalEntryState = biocorruptionConditionSystemEnabled ? gameJournalEntryState.Active : gameJournalEntryState.Inactive;
         
         journalManager.ChangeEntryState("codex/tutorials/playercharacter/addiction", "gameJournalCodexEntry", addictionCodexState, JournalNotifyOption.Notify);
         journalManager.ChangeEntryState("codex/tutorials/playercharacter/addiction/desc", "gameJournalCodexDescription", addictionCodexState, JournalNotifyOption.Notify);
@@ -717,6 +738,15 @@ public final class DFMainSystem extends ScriptableSystem {
 
         journalManager.ChangeEntryState("codex/tutorials/playercharacter/cyberpsychosis", "gameJournalCodexEntry", cyberpsychosisCodexState, JournalNotifyOption.Notify);
         journalManager.ChangeEntryState("codex/tutorials/playercharacter/cyberpsychosis/desc", "gameJournalCodexDescription", cyberpsychosisCodexState, JournalNotifyOption.Notify);
+
+        journalManager.ChangeEntryState("codex/tutorials/playercharacter/biocorruption", "gameJournalCodexEntry", biocorruptionCodexState, JournalNotifyOption.Notify);
+        journalManager.ChangeEntryState("codex/tutorials/playercharacter/biocorruption/desc", "gameJournalCodexDescription", biocorruptionCodexState, JournalNotifyOption.Notify);
+
+        journalManager.ChangeEntryState("codex/tutorials/playercharacter/biocorruption_crash", "gameJournalCodexEntry", biocorruptionCodexState, JournalNotifyOption.Notify);
+        journalManager.ChangeEntryState("codex/tutorials/playercharacter/biocorruption_crash/desc", "gameJournalCodexDescription", biocorruptionCodexState, JournalNotifyOption.Notify);
+
+        journalManager.ChangeEntryState("codex/tutorials/playercharacter/biocorruption_restless", "gameJournalCodexEntry", biocorruptionCodexState, JournalNotifyOption.Notify);
+        journalManager.ChangeEntryState("codex/tutorials/playercharacter/biocorruption_restless/desc", "gameJournalCodexDescription", biocorruptionCodexState, JournalNotifyOption.Notify);
 
         // Base Game - Fast Travel
         if Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.Enabled) {
@@ -741,9 +771,60 @@ public final class DFMainSystem extends ScriptableSystem {
         }
     }
 
+    private final func DoPreStartUpTasks() -> Void {
+        this.UpdateEnums();
+    }
+
+    private final func UpdateEnums() -> Void {
+        // Extend the base game gamedataProficiencyType enum.
+		let largestConst: Int64 = EnumGetMax(n"gamedataProficiencyType");
+		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureHumanityLoss", largestConst + Cast<Int64>(1));
+		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureInjury", largestConst + Cast<Int64>(2));
+		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureBiocorruption", largestConst + Cast<Int64>(3));
+
+        // Extend the base game UIInventoryItemWeaponBarsType enum.
+        largestConst = EnumGetMax(n"UIInventoryItemWeaponBarsType");
+        Reflection.GetEnum(n"UIInventoryItemWeaponBarsType").AddConstant(n"DarkFutureAlcohol", largestConst + Cast<Int64>(1));
+        Reflection.GetEnum(n"UIInventoryItemWeaponBarsType").AddConstant(n"DarkFutureNicotine", largestConst + Cast<Int64>(2));
+        Reflection.GetEnum(n"UIInventoryItemWeaponBarsType").AddConstant(n"DarkFutureCaffeinated", largestConst + Cast<Int64>(3));
+        Reflection.GetEnum(n"UIInventoryItemWeaponBarsType").AddConstant(n"DarkFutureNarcotic", largestConst + Cast<Int64>(4));
+        Reflection.GetEnum(n"UIInventoryItemWeaponBarsType").AddConstant(n"DarkFutureInjuryCure", largestConst + Cast<Int64>(5));
+
+        // Extend the base game WeaponBarType enum.
+        largestConst = EnumGetMax(n"WeaponBarType");
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureAlcoholStacks", largestConst + Cast<Int64>(1));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureNicotineStacks", largestConst + Cast<Int64>(2));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureCaffeinatedStacks", largestConst + Cast<Int64>(3));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureNarcoticStacks", largestConst + Cast<Int64>(4));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureEuphoriaBuildUpStacksAlcohol", largestConst + Cast<Int64>(5));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureEuphoriaBuildUpStacksNarcotic", largestConst + Cast<Int64>(6));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureInjuryProgress", largestConst + Cast<Int64>(7));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureAlcoholTolerance", largestConst + Cast<Int64>(8));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureNicotineTolerance", largestConst + Cast<Int64>(9));
+        Reflection.GetEnum(n"WeaponBarType").AddConstant(n"DarkFutureNarcoticTolerance", largestConst + Cast<Int64>(10));
+
+        // Extend the base game UIMenuNotificationType enum.
+        largestConst = EnumGetMax(n"UIMenuNotificationType");
+        Reflection.GetEnum(n"UIMenuNotificationType").AddConstant(n"DarkFutureCannotUseNausea", largestConst + Cast<Int64>(1));
+        Reflection.GetEnum(n"UIMenuNotificationType").AddConstant(n"DarkFutureCannotUseOverdose", largestConst + Cast<Int64>(2));
+    }
+
     private final func DoStartUpMaintenanceTasks() -> Void {
         // Dark Future 2.0 Preview Release Fix: Remove the consolidated Condition Icon.
         StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureBuffBarConditionIndicator");
+    }
+    
+    private final func TryToInfer20Upgrade() -> Void {
+        // Infer whether or not this is a clean installation, or an upgrade from legacy 1.x.
+        // If a clean install, only show the activation message unless settings specify otherwise.
+        // If an upgrade, show the 2.0 Upgrade message.
+        
+        /*let Settings: ref<DFSettings> = DFSettings.Get();
+        if (DFGameStateService.Get().hasShownActivationMessage && Settings.upgradeMessagesEnabled) ||
+           (Settings.forceShowUpgradeMessageOnNewGame && this.lastKnownVersion < 2.0) {
+            // This is an upgrade! Show the 2.0 Upgrade message.
+            this.TryToShowUpgradeMessage_20();
+        }*/
     }
 
     private final func Perform20UpgradeTasks() -> Void {
@@ -751,16 +832,12 @@ public final class DFMainSystem extends ScriptableSystem {
         FastTravelSystem.RemoveFastTravelLock(n"DarkFuture", GetGameInstance());
     }
 
-    private final func TryToInfer20Upgrade() -> Void {
-        // Infer whether or not this is a clean installation, or an upgrade from legacy 1.x.
-        // If a clean install, only show the activation message unless settings specify otherwise.
-        // If an upgrade, show the 2.0 Upgrade message.
-        
+    private final func Perform30UpgradeTasks() -> Void {
         let Settings: ref<DFSettings> = DFSettings.Get();
         if (DFGameStateService.Get().hasShownActivationMessage && Settings.upgradeMessagesEnabled) ||
-           (Settings.forceShowUpgradeMessageOnNewGame && this.lastKnownVersion < 2.0) {
-            // This is an upgrade! Show the 2.0 Upgrade message.
-            this.TryToShowUpgradeMessage_20();
+           (Settings.forceShowUpgradeMessageOnNewGame && this.lastKnownVersion < 3.0) {
+            // This is an upgrade! Show the 3.0 Upgrade message.
+            this.TryToShowUpgradeMessage_30();
         }
     }
 
@@ -778,6 +855,11 @@ public final class DFMainSystem extends ScriptableSystem {
     public final func DispatchTimeSkipCancelledEvent() -> Void {
         //DFProfile();
         GameInstance.GetCallbackSystem().DispatchEvent(MainSystemTimeSkipCancelledEvent.Create());
+    }
+
+    public final func DispatchTimeSkipBeginEvent() -> Void {
+        //DFProfile();
+        GameInstance.GetCallbackSystem().DispatchEvent(MainSystemTimeSkipBeginEvent.Create());
     }
 
     public final func DispatchTimeSkipFinishedEvent(data: DFTimeSkipData) -> Void {
@@ -865,6 +947,19 @@ public final class DFMainSystem extends ScriptableSystem {
                 n"DarkFutureTutorialActivate_V20",
                 t"",
                 r"darkfuture\\movies\\dark_future_update_2_0.bk2"
+            );
+		}
+	}
+
+    private final func TryToShowUpgradeMessage_30() -> Void {
+        //DFProfile();
+        if !this.hasShownUpgradeMessage_30 {
+			this.hasShownUpgradeMessage_30 = true;
+			this.ShowSystemMessage(
+                n"DarkFutureTutorialActivateUpdateTitle", 
+                n"DarkFutureTutorialActivate_V30",
+                t"",
+                r"darkfuture\\movies\\dark_future_update_3_0.bk2"
             );
 		}
 	}

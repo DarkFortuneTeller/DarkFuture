@@ -20,8 +20,18 @@ import DarkFuture.Needs.{
     DFHydrationSystem,
     DFNutritionSystem
 }
+import DarkFuture.Services.{
+    DFPlayerStateService,
+    DFGameStateService,
+    DFManagedEffectPipelineResult
+}
 import DarkFuture.Gameplay.DFInteractionSystem
 import DarkFuture.Utils.DFRunGuard
+
+@if(ModuleExists("ConsumableAnimations.Settings"))
+import ConsumableAnimations.Settings.{
+    CASettings
+}
 
 class DFModCompatSystemEventListener extends DFSystemEventListener {
 	private func GetSystemInstance() -> wref<DFModCompatSystem> {
@@ -38,6 +48,8 @@ public final class DFModCompatSystem extends DFSystem {
     private let HydrationSystem: ref<DFHydrationSystem>;
     private let NutritionSystem: ref<DFNutritionSystem>;
     private let InteractionSystem: ref<DFInteractionSystem>;
+    private let PlayerStateService: ref<DFPlayerStateService>;
+    private let GameStateService: ref<DFGameStateService>;
 
     // Idle Anywhere
     private let IAEatFactListener: Uint32;
@@ -51,6 +63,7 @@ public final class DFModCompatSystem extends DFSystem {
     private let IADrinkFactLastValue: Int32 = 0;
     private let IAAlcoholFactLastValue: Int32 = 0;
     private let IASmokeFactLastValue: Int32 = 0;
+    private let IATriggerFactLastValue: Int32 = 0;
     private let IFVEatDrinkFactLastValue: Int32 = 0;
     private let IBTDrinkFactLastValue: Int32 = 0;
 
@@ -83,8 +96,19 @@ public final class DFModCompatSystem extends DFSystem {
         return "INVALID";
     }
 
-    public func DoPostSuspendActions() -> Void {}
-    public func DoPostResumeActions() -> Void {}
+    public func DoPostSuspendActions() -> Void {
+        // Consumable Animations - Ensure that it is enabled, if installed.
+        if this.IsConsumableAnimationsInstalled() {
+            this.ToggleConsumableAnimationsOn();
+        }
+    }
+
+    public func DoPostResumeActions() -> Void {
+        // Consumable Animations - Ensure that it is disabled if Dark Future is installed.
+        if this.IsConsumableAnimationsInstalled() {
+            this.ToggleConsumableAnimationsOff();
+        }
+    }
     
     public func GetSystems() -> Void {
         //DFProfile();
@@ -96,6 +120,8 @@ public final class DFModCompatSystem extends DFSystem {
         this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
         this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
         this.InteractionSystem = DFInteractionSystem.GetInstance(gameInstance);
+        this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
+        this.GameStateService = DFGameStateService.GetInstance(gameInstance);
     }
     
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
@@ -106,6 +132,7 @@ public final class DFModCompatSystem extends DFSystem {
         this.IADrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_drink");
         this.IAAlcoholFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_alco");
         this.IASmokeFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_smoke");
+        this.IATriggerFactLastValue = this.QuestsSystem.GetFact(n"deceptious_idle");
         this.IFVEatDrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_foodvendor");
         this.IBTDrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_bartender");
     }
@@ -126,7 +153,13 @@ public final class DFModCompatSystem extends DFSystem {
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
-    public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
+
+    public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+        // Consumable Animations - Ensure that it is disabled if Dark Future is installed.
+        if this.IsConsumableAnimationsInstalled() {
+            this.ToggleConsumableAnimationsOff();
+        }
+    }
     
     private func UnregisterListeners() -> Void {  
         //DFProfile();
@@ -152,6 +185,7 @@ public final class DFModCompatSystem extends DFSystem {
     public func UnregisterAllDelayCallbacks() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
+    public func OnTimeSkipBegin() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
@@ -188,18 +222,14 @@ public final class DFModCompatSystem extends DFSystem {
 
         DFLog(this, "OnIADrinkFactChanged: value = " + ToString(value));
         if Equals(this.IADrinkFactLastValue, -1) && value >= 0 { // -1 == Ready, >= 0 == Drink Consumed
-            if this.NerveSystem.GetHasNausea() {
-                this.InteractionSystem.QueueVomitFromInteractionChoice();
-            } else {
-                let drinkTDBID: TweakDBID = GetDrinkRecordFromIdleAnywhereFactValue(value);
-                if NotEquals(drinkTDBID, t"") {
-                    let drinkRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(drinkTDBID);
-                    if IsDefined(drinkRecord) {
-                        this.MainSystem.DispatchItemConsumedEvent(drinkRecord, true, true);
+            let drinkTDBID: TweakDBID = GetDrinkRecordFromIdleAnywhereFactValue(value);
+            if NotEquals(drinkTDBID, t"") {
+                let drinkRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(drinkTDBID);
+                if IsDefined(drinkRecord) {
+                    this.MainSystem.DispatchItemConsumedEvent(drinkRecord, true, true);
 
-                        if drinkRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
-                            StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Sated");
-                        }
+                    if drinkRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
+                        StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Sated");
                     }
                 }
             }
@@ -243,12 +273,25 @@ public final class DFModCompatSystem extends DFSystem {
             let cigaretteType2Count: Int32 = this.TransactionSystem.GetItemQuantity(this.player, ItemID.FromTDBID(t"Items.GenericJunkItem24"));
             let cigaretteType3Count: Int32 = this.TransactionSystem.GetItemQuantity(this.player, ItemID.FromTDBID(t"DarkFutureItem.CigarettePackC"));
 
+            let itemToRemove: TweakDBID = t"";
             if cigaretteType1Count > 0 {
-                this.TransactionSystem.RemoveItemByTDBID(this.player, t"Items.GenericJunkItem23", 1);
+                itemToRemove = t"Items.GenericJunkItem23";
+
             } else if cigaretteType2Count > 0 {
-                this.TransactionSystem.RemoveItemByTDBID(this.player, t"Items.GenericJunkItem24", 1);
+                itemToRemove = t"Items.GenericJunkItem24";
+
             } else if cigaretteType3Count > 0 {
-                this.TransactionSystem.RemoveItemByTDBID(this.player, t"DarkFutureItem.CigarettePackC", 1);
+                itemToRemove = t"DarkFutureItem.CigarettePackC";
+            }
+
+            if NotEquals(itemToRemove, t"") {
+                this.TransactionSystem.RemoveItemByTDBID(this.player, itemToRemove, 1);
+            }
+
+            if this.GameStateService.IsValidGameState(this, true) && !this.InteractionSystem.IsWithinSmokePromptDebounceWindow() {
+                this.PlayerStateService.HandleManagedConsumable(TweakDBInterface.GetItemRecord(itemToRemove), true);
+            } else {
+                DFLog(this, "Ignoring request; game state not valid, or within the smoking prompt debounce window.");
             }
         }
         
@@ -261,30 +304,37 @@ public final class DFModCompatSystem extends DFSystem {
 
         DFLog(this, "OnIFVEatDrinkFactChanged: value = " + ToString(value));
         if Equals(this.IFVEatDrinkFactLastValue, -1) && value >= 1 { // -1 == Ready
-            if this.NerveSystem.GetHasNausea() {
-                this.InteractionSystem.QueueVomitFromInteractionChoice();
-            } else {
-                let consumableTDBID: TweakDBID;
-                if value == 7 { // Beer (Not Handled Here)
-                    return;
-                } else if value == 1 || value == 2 || value == 3 || value == 4 { // Sandwich, Burger, Sushi, Fruit ($20-$35)
-                    consumableTDBID = t"Items.GoodQualityFood10"; // Locust Pepperoni Pizza (Nutrition Tier 3, applies bonus)
-                } else if value == 5 || value == 6 { // Pudding, Hot Dog ($10 - $15)
-                    consumableTDBID = t"Items.LowQualityFood3"; // Hawt Dawg (Nutrition Tier 2, applies bonus)
-                } else if value == 8 { // Soda ($15)
-                    consumableTDBID = t"Items.LowQualityDrink10"; // NiCola (Hydration Tier 1, applies Nerve penalty)
-                }
+            let consumableTDBID: TweakDBID;
+            if value == 7 { // Beer (Not Handled Here)
+                return;
+            } else if value == 1 || value == 2 || value == 3 || value == 4 { // Sandwich, Burger, Sushi, Fruit ($20-$35)
+                consumableTDBID = t"Items.GoodQualityFood10"; // Locust Pepperoni Pizza (Nutrition Tier 3, applies bonus)
+            } else if value == 5 || value == 6 { // Pudding, Hot Dog ($10 - $15)
+                consumableTDBID = t"Items.LowQualityFood3"; // Hawt Dawg (Nutrition Tier 2, applies bonus)
+            } else if value == 8 { // Soda ($15)
+                consumableTDBID = t"Items.LowQualityDrink10"; // NiCola (Hydration Tier 1, applies Nerve penalty)
+            }
 
-                if NotEquals(consumableTDBID, t"") {
-                    let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(consumableTDBID);
-                    if IsDefined(consumableRecord) {
-                        this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
+            let isFood: Bool = value >= 1 && value <= 6;
+            let isSoda: Bool = value == 8;
 
-                        if consumableRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
-                            if value >= 1 && value <= 6 {
+            if NotEquals(consumableTDBID, t"") {
+                if isFood {
+                    if this.NerveSystem.GetHasNausea() {
+                        this.InteractionSystem.QueueVomitFromInteractionChoice();
+                    } else {
+                        let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(consumableTDBID);
+                        if IsDefined(consumableRecord) {
+                            this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
+                            if consumableRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
                                 StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.WellFed");
                             }
                         }
+                    }
+                } else if isSoda {
+                    let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(consumableTDBID);
+                    if IsDefined(consumableRecord) {
+                        this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
                     }
                 }
             }
@@ -299,16 +349,46 @@ public final class DFModCompatSystem extends DFSystem {
 
         DFLog(this, "OnIBTDrinkFactChanged: value = " + ToString(value));
         if Equals(this.IBTDrinkFactLastValue, -1) && value == 4 { // -1 == Ready, 4 == Soda
-            if this.NerveSystem.GetHasNausea() {
-                this.InteractionSystem.QueueVomitFromInteractionChoice();
-            } else {
-                let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(t"Items.LowQualityDrink10"); // NiCola (Hydration Tier 1, applies Nerve penalty)
-                if IsDefined(consumableRecord) {
-                    this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
-                }
+            let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(t"Items.LowQualityDrink10"); // NiCola
+            if IsDefined(consumableRecord) {
+                this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
             }
         }
         
         this.IBTDrinkFactLastValue = value;
+    }
+
+    @if(ModuleExists("ConsumableAnimations.Main"))
+    private func IsConsumableAnimationsInstalled() -> Bool {
+        return true;
+    }
+
+    @if(!ModuleExists("ConsumableAnimations.Main"))
+    private func IsConsumableAnimationsInstalled() -> Bool {
+        return false;
+    }
+
+    @if(ModuleExists("ConsumableAnimations.Settings"))
+    private func ToggleConsumableAnimationsOff() -> Void {
+        let caSettings: ref<CASettings> = CASettings.GetInstance(GetGameInstance());
+        caSettings.mainSystemEnabled = false;
+        caSettings.OnModSettingsChange();
+    }
+
+    @if(!ModuleExists("ConsumableAnimations.Settings"))
+    private func ToggleConsumableAnimationsOff() -> Void {
+        // Do nothing
+    }
+
+    @if(ModuleExists("ConsumableAnimations.Settings"))
+    private func ToggleConsumableAnimationsOn() -> Void {
+        let caSettings: ref<CASettings> = CASettings.GetInstance(GetGameInstance());
+        caSettings.mainSystemEnabled = true;
+        caSettings.OnModSettingsChange();
+    }
+
+    @if(!ModuleExists("ConsumableAnimations.Settings"))
+    private func ToggleConsumableAnimationsOn() -> Void {
+        // Do nothing
     }
 }

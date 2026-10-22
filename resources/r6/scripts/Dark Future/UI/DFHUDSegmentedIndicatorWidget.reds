@@ -48,6 +48,11 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
     public let m_hasPulsedOnThisLockDisplay: Bool = false;
     public let m_displayingOverStamina: Bool = false;
 
+    public final func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool, visibleInDangerAtCriticalThreshold: Bool, opt alwaysVisibleDuringEuphoria: Bool) -> Void {
+        this.debugEnabled = false;
+        super.Init(attachedPlayer, alwaysVisibleInDanger, visibleInDangerAtCriticalThreshold, alwaysVisibleDuringEuphoria);
+    }
+
     public final func EvaluateAllSegmentedIndicatorVisibility(forceMomentaryDisplay: Bool, fromParentUpdate: Bool, momentaryDisplayIgnoresSceneTier: Bool, healthBarVisible: Bool, staminaBarVisible: Bool) -> Void {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility forceMomentaryDisplay: " + ToString(forceMomentaryDisplay));
@@ -62,7 +67,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
         }
 
         // Early exit - If Stamina Bar is visible, hide immediately.
-        if staminaBarVisible && !forceMomentaryDisplay {
+        if staminaBarVisible && this.Settings.syncConditionsUIWithHealthStamina && !forceMomentaryDisplay {
             this.SetAllFadeOut(true);
             return;
         }
@@ -125,12 +130,14 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                     this.SetAllDisplayMomentary(momentaryDisplayIgnoresSceneTier);
 
                     if staminaBarVisible {
-                        this.m_displayingOverStamina = true;
-
-                        for bar in this.needsBars {
-                            let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
-                            indicator.m_shadow.SetVisible(true);
-                            indicator.m_iconshadow.SetVisible(true);
+                        if this.Settings.syncConditionsUIWithHealthStamina {
+                            this.m_displayingOverStamina = true;
+                            
+                            for bar in this.needsBars {
+                                let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+                                indicator.m_shadow.SetVisible(true);
+                                indicator.m_iconshadow.SetVisible(true);
+                            }
                         }
                     } else {
                         for bar in this.needsBars {
@@ -160,8 +167,14 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "ShouldDisplayContinuously anySegmentActive " + ToString(anySegmentActive) + ", currentSceneTier " + ToString(currentSceneTier));
 
-        if Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) && anySegmentActive && healthBarVisible && !staminaBarVisible {
-            // Contextual Display - Show continuously when any segment is active, the health bar is displayed, and the stamina bar is not displayed.
+        if this.Settings.syncConditionsUIWithHealthStamina && (Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) && anySegmentActive && healthBarVisible && !staminaBarVisible) {
+            // Contextual Display (Synced with Health and Stamina)
+            // Show continuously when any segment is active, the health bar is displayed, and the stamina bar is not displayed.
+            return true;
+        
+        } else if !this.Settings.syncConditionsUIWithHealthStamina && (Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) && anySegmentActive) {
+            // Contextual Display (Unsynced with Health and Stamina)
+            // Show continuously when any segment is active.
             return true;
         
         } else if !staminaBarVisible && nerveLockVisible {
@@ -176,7 +189,10 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
         //DFProfile();
         // momentaryDisplayIgnoresSceneTier is used very selectively to display bars restoring in otherwise invalid scene tiers (while drinking, smoking, etc).
 
-        if (!staminaBarVisible || forceMomentaryDisplay) && (momentaryDisplayIgnoresSceneTier || (Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) || Equals(currentSceneTier, GameplayTier.Tier2_StagedGameplay))) {
+        let validStaminaBarState: Bool = ((!staminaBarVisible || !this.Settings.syncConditionsUIWithHealthStamina) || forceMomentaryDisplay);
+        let validSceneTierState: Bool = (momentaryDisplayIgnoresSceneTier || (Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) || Equals(currentSceneTier, GameplayTier.Tier2_StagedGameplay)));
+        
+        if validStaminaBarState && validSceneTierState {
             if forceMomentaryDisplay {
                 return true;
             }
@@ -345,7 +361,7 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
         icon.SetAnchorPoint(Vector2(0.5, 0.5));
         icon.SetHAlign(inkEHorizontalAlign.Center);
         icon.SetVAlign(inkEVerticalAlign.Center);
-        icon.SetOpacity(0.4);
+        icon.SetOpacity(1.0);
         icon.SetTranslation(-374.0, 0.0);
         icon.SetSize(Vector2(28.0, 28.0));
         icon.SetBrushMirrorType(inkBrushMirrorType.NoMirror);
@@ -497,7 +513,7 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
         }
     }
 
-    public final func SetActive(type: DFHUDSegmentedIndicatorSegmentType, active: Bool) -> Void {
+    public final func SetSegmentActive(type: DFHUDSegmentedIndicatorSegmentType, active: Bool) -> Void {
         let i: Int32 = 0;
         let typeFound: Bool = false;
 
@@ -507,8 +523,8 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
                 this.m_segments[i].active = active;
 
                 if active {
-                    this.m_segments[i].label.SetOpacity(0.8);
-                    this.m_segments[i].border.SetOpacity(0.4);
+                    this.m_segments[i].label.SetOpacity(1.0);
+                    this.m_segments[i].border.SetOpacity(0.8);
                     this.m_segments[i].bg.SetOpacity(0.4);
                 } else {
                     this.m_segments[i].label.SetOpacity(0.125);
@@ -516,7 +532,7 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
                     this.m_segments[i].bg.SetOpacity(0.0);
                 }
 
-                this.EvaluateSegmentedIndicatorGroupVisibility(true, false, this.m_barGroup.HUDSystem.healthBarController.m_moduleShown, this.m_barGroup.HUDSystem.staminaBarController.m_RootWidget.IsVisible());
+                this.EvaluateSegmentedIndicatorGroupVisibility(active, active, this.m_barGroup.HUDSystem.healthBarController.m_moduleShown, this.m_barGroup.HUDSystem.staminaBarController.m_RootWidget.IsVisible());
             }
             i += 1;
         }

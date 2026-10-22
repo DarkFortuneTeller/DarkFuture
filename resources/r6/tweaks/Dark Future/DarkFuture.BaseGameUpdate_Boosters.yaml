@@ -78,6 +78,25 @@ Items.StaminaBooster_inline1.floatValues:
 
 #
 #
+# Stamina Booster Effect Fixes
+#
+#
+# Bug Fix: Stamina Boosters state that they grant +X% Stamina Regen Rate, but target a multiplier stat that
+# doesn't play well with other effects that modify the base stat by multiplying.
+BaseStatusEffect.StaminaBooster_inline1:
+  $type: gamedataConstantStatModifier_Record
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
+  value: 0.1
+
+BaseStatusEffect.Blackmarket_StaminaBooster_inline1:
+  $type: gamedataConstantStatModifier_Record
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
+  value: 0.2
+
+#
+#
 # Health Booster (Now Trauma Kit)
 #
 #

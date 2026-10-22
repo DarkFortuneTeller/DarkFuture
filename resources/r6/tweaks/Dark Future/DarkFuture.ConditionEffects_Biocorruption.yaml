@@ -40,10 +40,330 @@ DarkFutureStatusEffectTypes.Biocorruption:
   enumComment: ''
   enumName: Biocorruption
 
-UIIcon.DarkFutureBiocorruptionCrash:
+UIIcon.DarkFutureBiocorruption:
   $type: gamedataUIIcon_Record
   atlasPartName: ico_condition_biocorruption
   atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
+
+UIIcon.DarkFutureRestless:
+  $type: gamedataUIIcon_Record
+  atlasPartName: qh_cyberpsychosis
+  atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
+
+#
+#
+# Restless
+#
+#
+DarkFutureStatusEffectTypes.Restless:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Restless
+
+DarkFutureStatusEffect.Restless_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureRestlessDesc"
+  displayName: l"DarkFutureRestlessName"
+  fluffText: ''
+  iconPath: DarkFutureRestless
+  priority: -10
+  floatValues: []
+  intValues:
+    - 50
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Restless:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Crash
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Restless_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureRestless
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Crash
+#
+#
+DarkFutureStatusEffectTypes.Crash:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Crash
+
+DarkFutureStatusEffect.CrashMaxStacks_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 16
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.CrashMaxStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.CrashMaxStacks_StatModifier
+
+DarkFutureStatusEffect.Crash_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureCrashStatusEffectDescription"
+  displayName: l"DarkFutureCrashStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: DarkFutureBiocorruption
+  priority: -10
+  floatValues: []
+  intValues:
+    - -5
+    - 30
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Crash:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.CrashMaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Crash
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Crash_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureCrash
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Euphoria
+#
+#
+DarkFutureStatusEffectTypes.Euphoria:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Euphoria
+
+DarkFutureStatusEffect.Euphoria_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureEuphoriaStatusEffectDescription"
+  displayName: l"DarkFutureEuphoriaStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: perks_maniac
+  priority: -10
+  floatValues: []
+  intValues:
+    - 100
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Euphoria_NoCyberpsychosis_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureEuphoriaStatusEffectDescriptionNoCyberpsychosis"
+  displayName: l"DarkFutureEuphoriaStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: perks_maniac
+  priority: -10
+  floatValues: []
+  intValues:
+    - 100
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Euphoria_NoHumanityLoss_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureEuphoriaStatusEffectDescriptionNoHumanityLoss"
+  displayName: l"DarkFutureEuphoriaStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: perks_maniac
+  priority: -10
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Euphoria:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Euphoria
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Euphoria_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Buff
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureEuphoria
+    - DarkFutureAddictionPrimaryEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.Euphoria_NoCyberpsychosis:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Euphoria
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Euphoria_NoCyberpsychosis_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Buff
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureEuphoria
+    - DarkFutureAddictionPrimaryEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.Euphoria_NoHumanityLoss:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Euphoria
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Euphoria_NoHumanityLoss_UIData
+  debugTags: []
+  gameplayTags:
+    - DarkFutureCanHideOnBuffBar
+    - Buff
+    - DarkFutureInfiniteDurationEffect
+    - DarkFutureEuphoria
+    - DarkFutureAddictionPrimaryEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+#
+#
+# Euphoria Slow Time
+#
+#
+DarkFutureStatusEffect.EuphoriaSlowTimeDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 2
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.EuphoriaSlowTimeDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.EuphoriaSlowTimeDuration_StatModifier
+
+DarkFutureStatusEffectTypes.EuphoriaSlowTime:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: EuphoriaSlowTime
+
+DarkFutureStatusEffect.EuphoriaSlowTimeEffector:
+  $type: gamedataEffector_Record
+  effectorClassName: SetTimeDilationEffector
+  prereqRecord: BaseStatusEffect.BerserkTimeDilationEffector_inline0
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  statModifierGroups: []
+  affectsPlayer: True
+  easeOutCurve: ReflexRecorderEaseOut
+  easeInCurve: MeleeHitEaseIn
+  reason: kereznikov
+  duration: 3.25
+  dilation: 0.25
+
+DarkFutureStatusEffect.EuphoriaSlowTimePackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.EuphoriaSlowTimeEffector
+  items: []
+  statPools: []
+  stats: []
+
+# Applied via the General Voice Lines scene for synchronizing with VFX and voice
+DarkFutureStatusEffect.EuphoriaSlowTime:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.EuphoriaSlowTimeDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: False
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SingleStack
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: True
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.EuphoriaSlowTime
+  stopActiveSfxOnDeactivate: True
+  debugTags: []
+  gameplayTags: []
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.EuphoriaSlowTimePackage
+  SFX: []
+  VFX: []
 
 #
 #
@@ -52,16 +372,16 @@ UIIcon.DarkFutureBiocorruptionCrash:
 #
 DarkFutureStatusEffect.Biocorruption01_UIData:
   $type: gamedataStatusEffectUIData_Record
-  description: l"DarkFutureBiocorruptionAllDesc"
+  description: l"DarkFutureBiocorruptionDescAll"
   displayName: l"DarkFutureBiocorruption01Name"
   fluffText: ''
-  iconPath: DarkFutureBiocorruptionCrash
+  iconPath: DarkFutureBiocorruption
   priority: -11
   floatValues: []
   intValues:
+    - 5
     - 100
-    - 12
-    - 80
+    - 48
   nameValues: []
   stats: []
 
@@ -100,16 +420,16 @@ DarkFutureStatusEffect.Biocorruption01:
 #
 DarkFutureStatusEffect.Biocorruption02_UIData:
   $type: gamedataStatusEffectUIData_Record
-  description: l"DarkFutureBiocorruptionAllDesc"
+  description: l"DarkFutureBiocorruptionDescAll"
   displayName: l"DarkFutureBiocorruption02Name"
   fluffText: ''
-  iconPath: DarkFutureBiocorruptionCrash
+  iconPath: DarkFutureBiocorruption
   priority: -11
   floatValues: []
   intValues:
+    - 7
     - 100
-    - 24
-    - 60
+    - 36
   nameValues: []
   stats: []
 
@@ -148,16 +468,16 @@ DarkFutureStatusEffect.Biocorruption02:
 #
 DarkFutureStatusEffect.Biocorruption03_UIData:
   $type: gamedataStatusEffectUIData_Record
-  description: l"DarkFutureBiocorruptionAllDesc"
+  description: l"DarkFutureBiocorruptionDescAll"
   displayName: l"DarkFutureBiocorruption03Name"
   fluffText: ''
-  iconPath: DarkFutureBiocorruptionCrash
+  iconPath: DarkFutureBiocorruption
   priority: -11
   floatValues: []
   intValues:
+    - 9
     - 100
-    - 36
-    - 40
+    - 30
   nameValues: []
   stats: []
 
@@ -196,16 +516,16 @@ DarkFutureStatusEffect.Biocorruption03:
 #
 DarkFutureStatusEffect.Biocorruption04Female_UIData:
   $type: gamedataStatusEffectUIData_Record
-  description: l"DarkFutureBiocorruptionAllDesc"
+  description: l"DarkFutureBiocorruptionDescAll"
   displayName: l"DarkFutureBiocorruption04FemaleName"
   fluffText: ''
-  iconPath: DarkFutureBiocorruptionCrash
+  iconPath: DarkFutureBiocorruption
   priority: -11
   floatValues: []
   intValues:
+    - 11
     - 100
-    - 48
-    - 20
+    - 24
   nameValues: []
   stats: []
 
@@ -244,16 +564,16 @@ DarkFutureStatusEffect.Biocorruption04Female:
 #
 DarkFutureStatusEffect.Biocorruption04Male_UIData:
   $type: gamedataStatusEffectUIData_Record
-  description: l"DarkFutureBiocorruptionAllDesc"
+  description: l"DarkFutureBiocorruptionDescAll"
   displayName: l"DarkFutureBiocorruption04MaleName"
   fluffText: ''
-  iconPath: DarkFutureBiocorruptionCrash
+  iconPath: DarkFutureBiocorruption
   priority: -11
   floatValues: []
   intValues:
+    - 11
     - 100
-    - 48
-    - 25
+    - 24
   nameValues: []
   stats: []
 

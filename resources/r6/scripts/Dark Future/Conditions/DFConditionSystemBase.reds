@@ -8,6 +8,7 @@
 // - Used by:
 //   - DFInjuryConditionSystem
 //   - DFHumanityLossConditionSystem
+//   - DFBiocorruptionConditonSystem
 //
 
 module DarkFuture.Conditions
@@ -50,6 +51,10 @@ import DarkFuture.UI.{
     DFHUDSegmentedIndicatorUIUpdate,
     DFHUDSegmentedIndicatorSegmentType,
     HUDSystemUpdateUIRequestEvent
+}
+
+public struct DFConditionSuppressionLayer {
+    public persistent let reason: CName;
 }
 
 public class UpdateConditionsHUDUIEvent extends CallbackSystemEvent {
@@ -95,7 +100,7 @@ public abstract class DFConditionSystemEventListener extends DFSystemEventListen
 	//
 	private func GetSystemInstance() -> wref<DFConditionSystemBase> {
         //DFProfile();
-		DFLogNoSystem(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+		DFLogNoSystem(DFSystemlessDebugEnabled(), this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
 		return null;
 	}
 
@@ -141,6 +146,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     public persistent let currentConditionLevel: Uint32 = 0u;
     public persistent let hasShownTutorial: Bool = false;
     public persistent let lastDisplayedProgressionNotificationValue: Int32 = 0;
+    public persistent let conditionSuppressionLayers: array<DFConditionSuppressionLayer>;
 
     public let conditionRepeatFXDelayID: DelayID;
 
@@ -161,6 +167,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     private func UnregisterListeners() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
+    public func OnTimeSkipBegin() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
     public func UnregisterAllDelayCallbacks() -> Void {}
 
@@ -424,6 +431,9 @@ public abstract class DFConditionSystemBase extends DFSystem {
 		// Remove the status effects associated with this Condition.
 		StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetConditionStatusEffectTag());
 
+        // If the Condition is suppressed, exit.
+        if this.GetIsConditionSuppressed() { return; }
+
         let currentLevel: Uint32 = this.GetConditionLevel();
 
         if currentLevel > 0u && this.GameStateService.IsValidGameState(this) {
@@ -440,26 +450,27 @@ public abstract class DFConditionSystemBase extends DFSystem {
         this.QueueConditionProgressionNotification(originalValue, false, Cast<Int32>(-1.0 * amount));
 
         if skipMessage { return; }
-        let notificationTitle: String;
-        let conditionLevelAfter: Uint32 = this.GetConditionLevel();
-        let conditionAmountAfter: Float = this.accumulatedPercentTowardNextLevel;
-        let allCured: Bool = false;
 
-        if conditionLevelAfter == 0u && conditionAmountAfter == 0.0 {
+        //let notificationTitle: String;
+        //let conditionLevelAfter: Uint32 = this.GetConditionLevel();
+        //let conditionAmountAfter: Float = this.accumulatedPercentTowardNextLevel;
+        //let allCured: Bool = false;
+
+        /*if conditionLevelAfter == 0u && conditionAmountAfter == 0.0 {
             allCured = true;
             notificationTitle = GetLocalizedTextByKey(this.GetAllCuredNotificationMessageKey());
         } else {
             notificationTitle = GetLocalizedTextByKey(this.GetCuredNotificationMessageKey());
-        }
+        }*/
 
-        if PlayerPuppet.GetSceneTier(this.player) > 2 || allCured || this.GameStateService.IsInAnyMenu() {
+        /*if PlayerPuppet.GetSceneTier(this.player) > 2 || allCured || this.GameStateService.IsInAnyMenu() {
             let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
             notificationEvent.m_title = notificationTitle;
             notificationEvent.m_overrideCurrentNotification = true;
             
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
-        }
+        }*/
     }
 
     public func SetLastDisplayedProgressionNotificationValue(value: Int32) -> Void {
@@ -487,6 +498,8 @@ public abstract class DFConditionSystemBase extends DFSystem {
     }
 
     public final func QueueConditionProgressionNotification(lastValue: Int32, increasing: Bool, opt actualDelta: Int32) {
+        if !this.Settings.conditionMessagesEnabled { return; }
+        
         let notification: DFProgressionNotification;
         notification.value = Cast<Int32>(this.accumulatedPercentTowardNextLevel);
         
@@ -501,7 +514,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
         notification.remainingPointsToLevelUp = 100 - notification.value;
         notification.currentLevel = Cast<Int32>(this.GetConditionLevel());
         notification.isLevelMaxed = this.GetConditionLevel() >= this.GetMaxConditionLevel();
-        notification.type = IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", this.GetConditionProgressionNotificationType()));
+        notification.type = DFEnum_gamedataProficiencyType(this.GetConditionProgressionNotificationType());
         notification.titleKey = this.GetConditionProgressionNotificationTitleKey();
 
         let pn: DFNotification;
@@ -573,5 +586,32 @@ public abstract class DFConditionSystemBase extends DFSystem {
 		//DFProfile();
         let data: DFHUDSegmentedIndicatorUIUpdate = DFHUDSegmentedIndicatorUIUpdate(type, active, pulse);
         GameInstance.GetCallbackSystem().DispatchEvent(UpdateConditionsHUDUIEvent.Create(data));
+    }
+
+    // Suppression
+    //
+    public final func GetIsConditionSuppressed() -> Bool {
+        return ArraySize(this.conditionSuppressionLayers) > 0;
+    }
+
+    public final func SetSuppression(reason: CName) -> Void {
+        ArrayPush(this.conditionSuppressionLayers, DFConditionSuppressionLayer(reason));
+        this.RefreshConditionStatusEffects();
+    }
+
+    public final func UnsetSuppression(reason: CName) -> Void {
+        let i: Int32 = ArraySize(this.conditionSuppressionLayers) - 1;
+        while i >= 0 {
+            if Equals(this.conditionSuppressionLayers[i].reason, reason) {
+                ArrayErase(this.conditionSuppressionLayers, i);
+            }
+            i -= 1;
+        }
+        this.RefreshConditionStatusEffects();
+    }
+
+    public final func ClearSuppression() -> Void {
+        ArrayClear(this.conditionSuppressionLayers);
+        this.RefreshConditionStatusEffects();
     }
 }

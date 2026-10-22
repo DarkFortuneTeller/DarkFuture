@@ -9,60 +9,60 @@ module DarkFuture.Needs
 
 import DarkFuture.Logging.*
 import DarkFuture.System.*
+import DarkFuture.DelayHelper.*
 import DarkFuture.Utils.{
 	DFRunGuard,
-	DFIsSleeping
+	DFIsSleeping,
+	RandRangeInclusive
 }
 import DarkFuture.Main.{
 	DFNeedsDatum,
 	DFNeedChangeDatum,
+	DFBiocorruptionDatum,
 	DFTimeSkipData,
 	DFTimeSkipType,
-	DFTempEnergyItemType
+	DFEnergyChangePreview
+}
+import DarkFuture.Conditions.{
+	DFBiocorruptionConditionSystem,
+	DFBiocorruptionDelayedNeedLossDatum,
+	DFQueuedCrashType
 }
 import DarkFuture.Services.{
 	DFGameStateService,
 	DFNotificationService,
 	DFPlayerStateService,
+	DFAnimationService,
 	DFAudioCue,
 	DFVisualEffect,
 	DFBarUIDisplay,
 	DFNotification,
-	DFNotificationCallback
+	DFNotificationCallback,
+	DFManagedEffectItemDefinition,
+	DFManagedEffectStackCountMode,
+	DFManagedEffectType,
+	DFManagedEffect,
+	DFManagedEffectDefinition,
+	DFManagedEffectStackCountDef,
+	DFManagedEffectPipelineResult,
+	DFCrashAnimMode,
+	DFCyberwareService
 }
 import DarkFuture.UI.DFHUDBarType
 import DarkFuture.Settings.{
 	DFSettings,
-	DFSleepQualitySetting
+	DFSleepQualitySetting,
+	DFCrashAnimSetting
 }
-import DarkFuture.Conditions.{
-	DFBiocorruptionConditionSystem,
-	DFBiocorruptionConditionState,
-	BiocorruptionConditionSystemApplyDelayedNeedLossEvent
-}
-
-public struct DFEnergyChangeWithRecoverLimit {
-	public let change: Float;
-	public let delayedLoss: Float;
-	public let showLock: Bool;
+import DarkFuture.Addictions.{
+	DFAddictionSystemBase
 }
 
-@wrapMethod(PlayerPuppet)
-protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
-	//DFProfile();
-	let effectID: TweakDBID = evt.staticData.GetID();
-	let mainSystemEnabled: Bool = DFSettings.Get().mainSystemEnabled;
-	if mainSystemEnabled {
-		if Equals(effectID, t"DarkFutureStatusEffect.EnergizedEffect") {
-			DFEnergySystem.Get().OnEnergizedEffectRemoved();
-		
-		} else if Equals(effectID, t"BaseStatusEffect.Drunk") {
-			DFEnergySystem.Get().OnAlcoholEffectRemoved();
-
-		}
-	}
-	
-	return wrappedMethod(evt);
+public enum DFStackCountExceedResult {
+	Invalid = 0,
+	CrashHeadache = 1,
+	CrashVomit = 2,
+	Overdose = 3
 }
 
 class DFEnergySystemEventListener extends DFNeedSystemEventListener {
@@ -70,38 +70,24 @@ class DFEnergySystemEventListener extends DFNeedSystemEventListener {
 		//DFProfile();
 		return DFEnergySystem.Get();
 	}
-
-	public cb func OnLoad() {
-		//DFProfile();
-		super.OnLoad();
-
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<BiocorruptionConditionSystemApplyDelayedNeedLossEvent>(), this, n"OnBiocorruptionConditionSystemApplyDelayedNeedLossEvent", true);
-	}
-
-	private cb func OnBiocorruptionConditionSystemApplyDelayedNeedLossEvent(event: ref<BiocorruptionConditionSystemApplyDelayedNeedLossEvent>) {
-		//DFProfile();
-        this.GetSystemInstance().ApplyDelayedNeedLoss();
-    }
 }
 
 public final class DFEnergySystem extends DFNeedSystemBase {
-	private persistent let energyRestoredPerEnergizedStack: array<Float>;
-	private persistent let energyDrainedPerAlcoholStack: array<Float>;
+	let AnimationService: ref<DFAnimationService>;
+	let NerveSystem: ref<DFNerveSystem>;
+	let NutritionSystem: ref<DFNutritionSystem>;
+	let HydrationSystem: ref<DFHydrationSystem>;
+	let QuestsSystem: ref<QuestsSystem>;
 
-	let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
-
-	private let energizedEffectID: TweakDBID = t"DarkFutureStatusEffect.EnergizedEffect";
-	private let alcoholEffectID: TweakDBID = t"BaseStatusEffect.Drunk";
-
-    private const let energyRecoverAmountSleeping: Float = 0.74;
-	private const let energyRecoverAmountBlackout: Float = 0.41;
-	public const let energizedMaxStacksFromCaffeine: Uint32 = 3u;
-	private const let energizedMaxStacksFromStimulants: Uint32 = 6u;
-	private const let alcoholMaxStacks: Uint32 = 10u;
+    public const let energyRecoverAmountSleeping: Float = 0.74;
+	//private const let energyRecoverAmountBlackout: Float = 0.41;
 	private const let energyPercentToDeferPerBiocorruptionLevel: Float = 0.25;
-	private const let blackoutEnergyRecoveryLimit: Float = 20.0;
+	private const let blackoutEnergyRecoveryLimit: Float = 40.0;
+	private const let restlessEnergyRecoveryLimit: Float = 50.0;
 
-	private let isSkippingTime: Bool = false;
+	private const let caffeinatedMaxStackCount: Uint32 = 3u;
+
+	public let isSkippingTime: Bool = false;
 
     //
 	//	System Methods
@@ -122,7 +108,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	//
 	private func SetupDebugLogging() -> Void {
 		//DFProfile();
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 	
 	public final func GetSystemToggleSettingValue() -> Bool {
@@ -140,18 +126,13 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	public final func SetupData() -> Void {
 		//DFProfile();
 		super.SetupData();
+		
 		this.needStageStatusEffects = [
 			t"DarkFutureStatusEffect.EnergyPenalty_01",
 			t"DarkFutureStatusEffect.EnergyPenalty_02",
 			t"DarkFutureStatusEffect.EnergyPenalty_03",
 			t"DarkFutureStatusEffect.EnergyPenalty_04"
 		];
-	}
-
-	public func DoPostSuspendActions() -> Void {
-		//DFProfile();
-		super.DoPostSuspendActions();
-		this.ClearEnergyManagementEffects();
 	}
 
 	public func DoPostResumeActions() -> Void {
@@ -161,7 +142,21 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	public final func GetSystems() -> Void {
 		super.GetSystems();
-		this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.Get();
+
+		let gameInstance = GetGameInstance();
+		this.AnimationService = DFAnimationService.GetInstance(gameInstance);
+		this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
+		this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
+		this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
+		this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
+	}
+
+	private final func RegisterListeners() -> Void {}
+	private final func UnregisterListeners() -> Void {}
+
+	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+		super.InitSpecific(attachedPlayer);
+		this.TryToSetupBlackoutWithCrash(true, 0u);
 	}
 
     //
@@ -171,8 +166,8 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		//DFProfile();
 		let props: DFChangeNeedValueProps;
 		
-		if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Bonus) {
-			props.delayPercent = this.energyPercentToDeferPerBiocorruptionLevel * Cast<Float>(this.BiocorruptionConditionSystem.GetConditionLevel());
+		if this.BiocorruptionConditionSystem.GetHasEuphoria() {
+			props.delayPercent = 1.0;
 		}
 		
 		this.ChangeNeedValue(this.GetEnergyChange(this.GetNeedValue()), props);
@@ -192,49 +187,44 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 	private final func OnTimeSkipFinishedActual(data: DFTimeSkipData) -> Void {
 		//DFProfile();
-		this.ClearEnergyManagementEffects();
-		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.energy.value - this.GetNeedValue(), false, false, t"", Equals(data.timeSkipType, DFTimeSkipType.Blackout));
+		
+		let queuedChange: DFQueuedNeedValueChange;
+		queuedChange.value = data.targetNeedValues.energy.value;
+		queuedChange.targetDelayedValue = data.targetNeedValues.energy.delayedValue;
+		queuedChange.isFromBlackout = Equals(data.timeSkipType, DFTimeSkipType.Blackout);
+		queuedChange.finalChangeInEuphoriaDepletion = true;
+		queuedChange.targetValueMode = true;
+		queuedChange.skipSevereNeedMessage = data.skipSevereNeedMessage;
+		queuedChange.isFromTimeskip = true;
+		queuedChange.highestCrashStackCountOnTimeskip = data.targetBiocorruptionValues.highestCrashStackCount;
+
+		// To avoid race conditions, set this data from this update.
+		if data.targetBiocorruptionValues.crashOccuredDuringTimeskip {
+			this.BiocorruptionConditionSystem.SetCrashQueued(DFQueuedCrashType.FromTimeskip);
+		}
+
+		this.QueueContextuallyDelayedNeedValueChange(queuedChange);
+
 		this.isSkippingTime = false;
 	}
 
-	public final func PerformQuestSleep() -> Void {
-		//DFProfile();
-		this.ClearEnergyManagementEffects();
-		this.QueueContextuallyDelayedNeedValueChange(100.0);
-	}
-
 	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
-		//DFProfile();
+		// Drug Penalties
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
 		if consumableNeedsData.energy.value < 0.0 {
-			this.ReduceEnergyFromItem(this.GetClampedNeedChangeFromData(consumableNeedsData.energy), false, consumableNeedsData.energy.value);
-		} else {
-			let tempEnergyItemType: DFTempEnergyItemType;
-			let energizedStacksToApply: Uint32;
-			let alcoholStacksToApply: Uint32;
+			let changeNeedValueProps: DFChangeNeedValueProps;
 
-			if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCaffeine") {
-				tempEnergyItemType = DFTempEnergyItemType.Caffeine;
-				energizedStacksToApply = this.GetEnergizedStackCountFromItemRecord(itemRecord);
+			let uiFlags: DFNeedChangeUIFlags;
+			uiFlags.forceMomentaryUIDisplay = true;
+			uiFlags.instantUIChange = !animateUI;
+			uiFlags.forceBright = true;
+			uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
-			} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedStimulant") {
-				tempEnergyItemType = DFTempEnergyItemType.Stimulant;
-				energizedStacksToApply = this.GetEnergizedStackCountFromItemRecord(itemRecord);
+			changeNeedValueProps.uiFlags = uiFlags;
+			changeNeedValueProps.isSoftCapRestrictedChange = true;
 
-			} else if itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholWeak") {
-				tempEnergyItemType = DFTempEnergyItemType.WeakAlcohol;
-				alcoholStacksToApply = 1u;
-
-			} else if itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholStrong") {
-				tempEnergyItemType = DFTempEnergyItemType.StrongAlcohol;
-				alcoholStacksToApply = 3u;
-
-			} else {
-				return;
-			}
-
-			this.TryToApplyTemporaryEnergy(energizedStacksToApply, alcoholStacksToApply, tempEnergyItemType, false);
+			this.ChangeNeedValue(this.GetClampedNeedChangeFromData(consumableNeedsData.energy), changeNeedValueProps);
 		}
 	}
 
@@ -259,7 +249,9 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 				notification.sfx = DFAudioCue(n"ono_v_breath_heavy", 10);
 			}
 
-			if this.Settings.energyNeedVFXEnabled {
+			// TODO - Make setting for impaired driving
+			if this.Settings.energyNeedVFXEnabled && (stage < this.PlayerStateService.impairedDrivingEnergyThreshold || !this.PlayerStateService.wasAboveImpairedDrivingSpeedThreshold) {
+				// Don't show this VFX when above the Impaired Driving threshold, as this effect is used then as well.
 				notification.vfx = DFVisualEffect(n"waking_up", null);
 			}
 			
@@ -334,12 +326,60 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func GetNeedSoftCapValue() -> Float {
-		if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Crash) {
-			return this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption();
-		
-		} else {
-			return 100.0;
+		return 100.0;
+	}
+
+	public final func ApplyDelayedNeedLoss(data: DFBiocorruptionDelayedNeedLossDatum) -> Void {
+		// Sets isFinalChangeInEuphoriaDepletion to True to signal that it's allowed to
+        // trigger a Crash animation if a Blackout never played (prevents race condition between
+        // Nerve and Energy updates).
+
+		if data.depleteEnergy {
+			let uiFlags: DFNeedChangeUIFlags;
+			uiFlags.forceMomentaryUIDisplay = true;
+			uiFlags.momentaryDisplayIgnoresSceneTier = true;
+
+			let props: DFChangeNeedValueProps;
+			props.uiFlags = uiFlags;
+
+			if data.fromQuest {
+				// Special Handling - sq031 (A Cool Metal Fire)
+				// Don't play a Crash animation, and set the player's Energy appropriately.
+				props.finalChangeInEuphoriaDepletion = false;
+				props.skipSevereNeedMessage = true;
+				props.targetValueMode = true;
+			
+				this.ChangeNeedValue(65.0, props);
+				this.currentDelayedNeedLoss = 0.0;
+
+			} else {
+				// All other cases.
+				props.finalChangeInEuphoriaDepletion = true;
+			
+				if NotEquals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) {
+					props.skipSevereNeedMessage = true;
+				}
+
+				this.ChangeNeedValue(this.GetAccumulatedDelayedNeedLoss(), props);
+				this.currentDelayedNeedLoss = 0.0;
+			}
 		}
+	}
+
+	public final func GetNeedMaxAfterItemUse(itemRecord: wref<Item_Record>) -> Float {
+		//DFProfile();
+		return 100.0;
+	}
+
+	public final func GetCalculatedNeedMax() -> Float {
+		//DFProfile();
+		return 100.0;
+	}
+
+	// Overrides parent implementation
+	public final func GetCalculatedBasicNeedMaxInProvidedState(crashStacks: Uint32, hasEuphoria: Bool) -> Float {
+		//DFProfile();
+		return 100.0;
 	}
 
     //
@@ -347,13 +387,50 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	//
 	public final func ChangeNeedValue(amount: Float, opt changeValueProps: DFChangeNeedValueProps) -> Void {
 		super.ChangeNeedValue(amount, changeValueProps);
+		// TODO: >>>>>>>>>>>> Ask the Biocorruption Condition, or whoever has the time skip info, for the latest data here regarding crash stacks.
 
+		let crashStackCountFromTimeskip: Uint32 = changeValueProps.highestCrashStackCountOnTimeskip;
+		this.TryToSetupBlackoutWithCrash(changeValueProps.finalChangeInEuphoriaDepletion, crashStackCountFromTimeskip);
+
+		// If the Need Stage is high, enable impaired driving.
+		// TODO - Make setting
+		/*if this.GetNeedStage() >= 4 {
+			this.QuestsSystem.SetFact(n"df_fact_enable_impaired_driving", 1);
+		} else {
+			this.QuestsSystem.SetFact(n"df_fact_enable_impaired_driving", 0);
+		}*/
+	}
+
+	private final func TryToSetupBlackoutWithCrash(crashAllowed: Bool, crashStackCountFromTimeskip: Uint32) -> Void {
 		let currentNeedValue: Float = this.GetNeedValue();
 
 		// TODO - If Energy is restored while a blackout is pending, cancel the pending blackout and animation registration
 		if currentNeedValue == 0.0 && !this.blackoutNeedChangePending {
 			this.blackoutNeedChangePending = true;
-			this.PlayerStateService.TryToStartBlackoutAnimation();
+			
+			// Ensure that a vomit takes place, if necessary. If this Blackout turns out not to include a vomit,
+			// we'll get that data back after the event and can re-queue it at that time.
+			// TODO - Check Crash stack count
+			if NotEquals(this.BiocorruptionConditionSystem.GetCrashQueued(), DFQueuedCrashType.None) && this.BiocorruptionConditionSystem.GetConditionLevel() > 1u {
+				this.QuestsSystem.SetFact(this.AnimationService.GetNextBlackoutShouldIncludeCrashFact(), 1);
+				
+				// If a Crash animation is already queued, unqueue it.
+				this.AnimationService.UnqueuePendingCrashAnim();
+			} else {
+				this.QuestsSystem.SetFact(this.AnimationService.GetNextBlackoutShouldIncludeCrashFact(), 0);
+			}
+
+			this.AnimationService.TryToQueueBlackoutAnimation();
+			
+		} else if currentNeedValue > 0.0 {
+			if !this.AnimationService.IsBlackoutQueued() && 
+				NotEquals(this.BiocorruptionConditionSystem.GetCrashQueued(), DFQueuedCrashType.None) && 
+				crashAllowed {
+				// Looks like we changed Energy, and while we didn't black out, the Biocorruption Condition wants a
+				// Crash to occur. There are no more Energy changes coming related to Euphoria depletion, this was the last
+				// one. Since we're definitely not blacking out, queue a Crash animation instead.
+				this.AnimationService.TryToQueueCrashAnimation(DFCrashAnimMode.FromCrash, crashStackCountFromTimeskip);
+			}
 		}
 	}
 	
@@ -380,146 +457,144 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		}
 	}
 
-	public final func TryToApplyTemporaryEnergy(energizedStacksFromItem: Uint32, alcoholStacksFromItem: Uint32, tempEnergyItemType: DFTempEnergyItemType, animateUI: Bool, opt contextuallyDelayed: Bool) -> Void {
-		//DFProfile();
-		if DFRunGuard(this) { return; }
-
-		let energizedStacksToApply: Uint32 = 0u;
-		let alcoholStacksToApply: Uint32 = 0u;
+	/*
+	public final func TryToApplyTemporaryEnergy(managementStatus: DFEnergyManagementStatus, stackCount: Uint32, animateUI: Bool, contextuallyDelayed: Bool, opt stackCountOverride: Uint32, opt isFromTimeskip: Bool) -> Uint32 {
+		let interruptApplication: Bool = false;
 		let totalEnergyAmount: Float = 0.0;
 
-		let availableEnergizedStacks: Int32;
-		let availableAlcoholStacks: Int32;
-		if Equals(tempEnergyItemType, DFTempEnergyItemType.Caffeine) {
-			availableEnergizedStacks = Cast<Int32>(this.energizedMaxStacksFromCaffeine) - Cast<Int32>(this.GetEnergizedStacks());
+		// How many stacks can currently be applied, given its type?
+		let currentStacksApplied: Uint32 = this.GetEnergyManagementEffectStacksByType(managementStatus.type);
+		
+		// Handle these stack counts as Int32, because the stacks applied could be greater than the max allowed stacks,
+		// which would cause a Uint32 overflow.
 
-		} else if Equals(tempEnergyItemType, DFTempEnergyItemType.Stimulant) {
-			availableEnergizedStacks = Cast<Int32>(this.energizedMaxStacksFromStimulants) - Cast<Int32>(this.GetEnergizedStacks());
+		// Max Allowed Stacks - Trigger Effects
+		if Equals(managementStatus.itemRecordTag, n"DarkFutureManagedConsumableCaffeine") {
+			if currentStacksApplied + stackCount > this.caffeinatedMaxStackCount {
+				stackCount = this.caffeinatedMaxStackCount - currentStacksApplied;
+			}
 
-		} else if Equals(tempEnergyItemType, DFTempEnergyItemType.WeakAlcohol) || Equals(tempEnergyItemType, DFTempEnergyItemType.StrongAlcohol) {
-			availableAlcoholStacks = Cast<Int32>(this.alcoholMaxStacks) - Cast<Int32>(this.GetAlcoholStacks());
-
+		} else if Equals(managementStatus.itemRecordTag, n"DarkFutureManagedConsumableNicotine") {
+			if currentStacksApplied + stackCount >= this.BiocorruptionConditionSystem.maxNicotineStacksUntilDebuffPerBiocorruptionLevel[Cast<Int32>(this.BiocorruptionConditionSystem.GetConditionLevel())] {
+				// Crash - Headache
+				this.HandleStackCountExceeded(managementStatus, DFStackCountExceedResult.CrashHeadache);
+				interruptApplication = true;
+			}
+		
+		} else if Equals(managementStatus.itemRecordTag, n"DarkFutureManagedConsumableAlcohol") {
+			if currentStacksApplied + stackCount >= this.BiocorruptionConditionSystem.maxAlcoholStacksUntilDebuffPerBiocorruptionLevel[Cast<Int32>(this.BiocorruptionConditionSystem.GetConditionLevel())] {
+				// Crash - Vomit
+				this.HandleStackCountExceeded(managementStatus, DFStackCountExceedResult.CrashVomit);
+				interruptApplication = true;
+			}
+		
+		} else if Equals(managementStatus.itemRecordTag, n"DarkFutureManagedConsumableWeakNarcotic") {
+			if currentStacksApplied + stackCount >= this.BiocorruptionConditionSystem.maxNarcoticStacksUntilDebuffPerBiocorruptionLevel[Cast<Int32>(this.BiocorruptionConditionSystem.GetConditionLevel())] {
+				// Crash - Vomit
+				this.HandleStackCountExceeded(managementStatus, DFStackCountExceedResult.CrashVomit);
+				interruptApplication = true;
+			}
+		
+		} else if Equals(managementStatus.itemRecordTag, n"DarkFutureManagedConsumableStrongNarcotic") {
+			if currentStacksApplied + stackCount >= this.BiocorruptionConditionSystem.maxNarcoticStacksUntilDebuffPerBiocorruptionLevel[Cast<Int32>(this.BiocorruptionConditionSystem.GetConditionLevel())] {
+				// Overdose
+				this.HandleStackCountExceeded(managementStatus, DFStackCountExceedResult.Overdose);
+				this.NerveSystem.SetOverdoseBehavior(true);
+				interruptApplication = true;
+			}
 		}
-
-		if energizedStacksFromItem > 0u && availableEnergizedStacks > 0 {
-			energizedStacksToApply = Cast<Uint32>(Min(Cast<Int32>(energizedStacksFromItem), availableEnergizedStacks));
-			
-			let i: Uint32 = 0u;
-			let needValue: Float = this.GetNeedValue();
-			while i < energizedStacksToApply {
-				// Keep track of the actual amount of Energy replenished, so that we can subtract it later.
-				let energyAmount: Float = this.Settings.energyPerEnergizedStack;
+		
+		let i: Uint32 = 0u;
+		let needValue: Float = this.GetNeedValue();
+		if !interruptApplication {
+			while i < stackCount {
+				// Keep track of the actual amount of Energy changed, so that we can subtract it later.
+				
+				// We don't handle clamping to 0, because this would cause a Blackout anyway.
+				let energyAmount: Float = managementStatus.change;
 				if energyAmount + needValue > this.GetNeedMax() {
 					energyAmount = this.GetNeedMax() - needValue;
 				}
 				needValue += energyAmount;
 				totalEnergyAmount += energyAmount;
-				ArrayPush(this.energyRestoredPerEnergizedStack, energyAmount);
+
+				ArrayPush(this.energyManagementActiveEffects, DFEnergyManagementStatus(managementStatus.type, managementStatus.effect, managementStatus.itemRecordTag, energyAmount, managementStatus.maxStacks));
 
 				// Apply the stack.
-				StatusEffectHelper.ApplyStatusEffect(this.player, this.energizedEffectID);
+				// TODO - You don't know if we should be applying the regular effect, the lasting effect, or just a tolerance stack here. Must be checked earlier.
+				StatusEffectHelper.ApplyStatusEffect(this.player, managementStatus.effect);
 
 				i += 1u;
 			}
-		
-		} else if alcoholStacksFromItem > 0u && availableAlcoholStacks > 0 {
-			// We are just pushing temporary energy loss without any Status Effect stack management.
-			alcoholStacksToApply = Cast<Uint32>(Min(Cast<Int32>(alcoholStacksFromItem), availableAlcoholStacks));
 
-			let i: Uint32 = 0u;
-			let needValue: Float = this.GetNeedValue();
-
-			while i < alcoholStacksToApply {
-				// Keep track of the actual amount of Energy drained, so that we can add it later.
-				// TODO - Make Setting
-				let energyAmount: Float = -10.0;
-				if energyAmount + needValue < 0.0 {
-					energyAmount = -needValue;
-				}
-				needValue += energyAmount;
-				totalEnergyAmount += energyAmount;
-				ArrayPush(this.energyDrainedPerAlcoholStack, energyAmount);
-
-				i += 1u;
+			// If this was from a Timeskip, don't actually change the value.
+			if isFromTimeskip {
+				DFLog(this, "================== FROM TIMESKIP ==================: Not actually changing Energy!");
+				totalEnergyAmount = 0.0;
 			}
-		}
-
-		DFLog(this, "energyRestoredPerEnergizedStack: " + ToString(this.energyRestoredPerEnergizedStack));
-		DFLog(this, "energyDrainedPerAlcoholStack: " + ToString(this.energyDrainedPerAlcoholStack));
-		
-		if contextuallyDelayed {
-			this.QueueContextuallyDelayedNeedValueChange(totalEnergyAmount, true);
-		} else {
-			let changeNeedValueProps: DFChangeNeedValueProps;
 			
-			let uiFlags: DFNeedChangeUIFlags;
-			uiFlags.forceMomentaryUIDisplay = true;
-			uiFlags.instantUIChange = !animateUI;
-			uiFlags.forceBright = true;
-			uiFlags.momentaryDisplayIgnoresSceneTier = true;
+			if contextuallyDelayed {
+				let queuedChange: DFQueuedNeedValueChange;
+				queuedChange.value = totalEnergyAmount;
+				queuedChange.forceMomentaryUIDisplay = true;
+				this.QueueContextuallyDelayedNeedValueChange(queuedChange);
+			} else {
+				let changeNeedValueProps: DFChangeNeedValueProps;
+				
+				let uiFlags: DFNeedChangeUIFlags;
+				uiFlags.forceMomentaryUIDisplay = true;
+				uiFlags.instantUIChange = !animateUI;
+				uiFlags.forceBright = true;
+				uiFlags.momentaryDisplayIgnoresSceneTier = true;
 
-			changeNeedValueProps.uiFlags = uiFlags;
+				changeNeedValueProps.uiFlags = uiFlags;
 
-			this.ChangeNeedValue(totalEnergyAmount, changeNeedValueProps);
+				this.ChangeNeedValue(totalEnergyAmount, changeNeedValueProps);
+			}
+
+			DFLog(this, "energyManagementActiveEffects - " + ToString(this.energyManagementActiveEffects));
 		}
+
+		return stackCount;
 	}
 
-	public final func GetItemEnergyChangePreviewAmount(itemRecord: wref<Item_Record>, needsData: DFNeedsDatum) -> Float {
+	private final func HandleStackCountExceeded(managementStatus: DFEnergyManagementStatus, result: DFStackCountExceedResult) -> Void {
+		 
+	}
+	*/
+
+	public final func GetItemEnergyChangePreviewAmountWithCrashInfo(itemRecord: wref<Item_Record>) -> DFEnergyChangePreview {
 		//DFProfile();
-		if needsData.energy.value < 0.0 {
-			return needsData.energy.value;
-
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergized") {
-			// Temporary Energy (Replenish)
-
-			// How many stacks can the item apply?
-			let energizedStacksFromItem: Uint32 = this.GetEnergizedStackCountFromItemRecord(itemRecord);
-
-			// How many stacks can currently be applied, given its type?
-			let availableStacks: Int32;
-			if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCaffeine") {
-				availableStacks = Cast<Int32>(this.energizedMaxStacksFromCaffeine) - Cast<Int32>(this.GetEnergizedStacks());
-			} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedStimulant") {
-				availableStacks = Cast<Int32>(this.energizedMaxStacksFromStimulants) - Cast<Int32>(this.GetEnergizedStacks());
-			}
-
-			if availableStacks > 0 {
-				let energizedStacksToApply: Uint32 = Cast<Uint32>(Min(Cast<Int32>(energizedStacksFromItem), availableStacks));
-				return this.Settings.energyPerEnergizedStack * Cast<Float>(energizedStacksToApply);
-			} else {
-				return 0.0;
-			}
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcohol") {
-			// Temporary Energy (Drain)
-
-			// How many stacks can the item apply?
-			let alcoholStacksFromItem: Uint32;
-			if itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholWeak") {
-				alcoholStacksFromItem = 1u;
-
-			} else if itemRecord.TagsContains(n"DarkFutureConsumableAddictiveAlcoholStrong") {
-				alcoholStacksFromItem = 3u;
-			}
-
-			// How many stacks can currently be applied, given its type?
-			let availableStacks: Int32 = Cast<Int32>(this.alcoholMaxStacks) - Cast<Int32>(this.GetAlcoholStacks());
-
-			if availableStacks > 0 {
-				let alcoholStacksToApply: Uint32 = Cast<Uint32>(Min(Cast<Int32>(alcoholStacksFromItem), availableStacks));
-				// TODO - Setting
-				return -10.0 * Cast<Float>(alcoholStacksToApply);
-			} else {
-				return 0.0;
-			}
-
-		} else {
-			return 0.0;
+		let r: DFEnergyChangePreview;
+		let pipelineResult: DFManagedEffectPipelineResult = this.PlayerStateService.ManagedConsumablePipeline(itemRecord);
+		if pipelineResult.managedEffectStateIndex == -1 || Equals(pipelineResult.managedEffectItemDef.itemRecordTag, n"") { return r; }
+		
+		// If the stack count granted is random, we can't know the effect on the player's Energy.
+		if Equals(pipelineResult.managedEffectItemDef.stackCountDef.mode, DFManagedEffectStackCountMode.Random) { 
+			r.indeterminate = true;
+			return r; 
 		}
+		
+		// If no active effect applied, bail.
+		if pipelineResult.activeStacksToApply == 0 { return r; }
+		
+		let change: Float = pipelineResult.managedEffectItemDef.energyChangeWhileActive;
+		if Equals(pipelineResult.type, DFManagedEffectType.Alcohol) {
+			change += this.CyberwareService.GetAlcoholEnergyLossBonus();
+		}
+
+		r.change = Cast<Float>(pipelineResult.activeStacksToApply) * change;
+
+		if pipelineResult.triggerExcessStackEffect {
+			r.wouldCrash = true;
+		}
+
+		return r;
 	}
 
 	// TODO - Convert effect to remove all stacks at once and simplify
 	// TODO - Actually, think I'm moving away from that approach. Maybe?
-	public final func OnEnergizedEffectRemoved() -> Void {
+	/*public final func OnEnergizedEffectRemoved() -> Void {
 		//DFProfile();
 		if DFRunGuard(this) { return; }
 		if this.isSkippingTime { return; }
@@ -581,7 +656,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		}
 
 		DFLog(this, "energyDrainedPerAlcoholStack: " + ToString(this.energyDrainedPerAlcoholStack));
-	}
+	}*/
 
     //
     //  System-Specific Methods
@@ -598,15 +673,15 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 		let targetHoursInRange: Float;
 		if currentEnergy > this.Settings.basicNeedThresholdValue1V2 {
 			totalPointLossInRange = 100.0 - this.Settings.basicNeedThresholdValue1V2;
-			targetHoursInRange = 20.0;
+			targetHoursInRange = 12.0;
 
 		} else if currentEnergy > this.Settings.basicNeedThresholdValue2V2 {
 			totalPointLossInRange = this.Settings.basicNeedThresholdValue1V2 - this.Settings.basicNeedThresholdValue2V2;
-			targetHoursInRange = 6.0;
+			targetHoursInRange = 4.0;
 
 		} else if currentEnergy > this.Settings.basicNeedThresholdValue3V2 {
 			totalPointLossInRange = this.Settings.basicNeedThresholdValue2V2 - this.Settings.basicNeedThresholdValue3V2;
-			targetHoursInRange = 6.0;
+			targetHoursInRange = 4.0;
 
 		} else if currentEnergy > this.Settings.basicNeedThresholdValue4V2 {
 			totalPointLossInRange = this.Settings.basicNeedThresholdValue3V2 - this.Settings.basicNeedThresholdValue4V2;
@@ -614,153 +689,134 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 
 		} else {
 			totalPointLossInRange = this.Settings.basicNeedThresholdValue4V2;
-			targetHoursInRange = 4.0;
+			targetHoursInRange = 2.0;
 		}
 
 		return (totalPointLossInRange / ((targetHoursInRange * 60.0) / 5.0) * -1.0) * (this.Settings.energyLossRatePctV2 / 100.0);
+
+		// OLD:
+		// (Points to Lose) / ((Target In-Game Hours * 60 In-Game Minutes) / In-Game Update Interval (5 Minutes))
+		//return (100.0 / ((30.0 * 60.0) / 5.0) * -1.0) * (this.Settings.energyLossRatePctV2 / 100.0);
 	}
 
-	public final func GetEnergizedStacks() -> Uint32 {
+	public final func GetNeedChangeWithRecoverLimit(needValue: Float, timeSkipType: DFTimeSkipType, hasEuphoria: Bool, hasRestless: Bool, alreadyDelayedAmount: Float) -> DFNeedChangeWithRecoverLimit {
 		//DFProfile();
-		return Cast<Uint32>(ArraySize(this.energyRestoredPerEnergizedStack));
-	}
-
-	public final func GetAlcoholStacks() -> Uint32 {
-		return Cast<Uint32>(ArraySize(this.energyDrainedPerAlcoholStack));
-	}
-
-	public final func GetTotalEnergyRestoredFromEnergized() -> Float {
-		//DFProfile();
-		let totalEnergy: Float = 0.0;
-		
-		if ArraySize(this.energyRestoredPerEnergizedStack) > 0 {
-			for val in this.energyRestoredPerEnergizedStack {
-				totalEnergy += val;
-			}
-		}
-
-		return totalEnergy;
-	}
-
-	public final func GetTotalEnergyDrainedFromAlcohol() -> Float {
-		//DFProfile();
-		let totalEnergy: Float = 0.0;
-		
-		if ArraySize(this.energyDrainedPerAlcoholStack) > 0 {
-			for val in this.energyDrainedPerAlcoholStack {
-				totalEnergy += val;
-			}
-		}
-
-		return totalEnergy;
-	}
-
-	public final func GetEnergyChangeWithRecoverLimit(energyValue: Float, timeSkipType: DFTimeSkipType, isDistressed: Bool, biocorruptionLevel: Uint32, sufferingBiocorruptionCrashAtSkipTimeStart: Bool, percentageOfBasicNeedLossToDelay: Float, alreadyDelayedAmount: Float) -> DFEnergyChangeWithRecoverLimit {
-		//DFProfile();
-		let amountToChange: Float;
-		let delayedEnergyLoss: Float;
+		let hasInsomniaNow: Bool = this.NerveSystem.GetNeedStage() >= this.NerveSystem.insomniaNeedStageThreshold;
+		let hasHungerThirstPangsNow: Bool = this.NutritionSystem.GetNeedStage() >= this.NutritionSystem.hungerPangNeedStageThreshold || this.HydrationSystem.GetNeedStage() >= this.HydrationSystem.thirstPangNeedStageThreshold;
+		let amountToChange: Float = 0.0;
+		let delayedNeedLoss: Float = 0.0;
+		let isNeedReducing: Bool = false;
+		let wasSleeping: Bool = false;
 		let showLock: Bool = false;
-		let limitFromBiocorruption: Bool = false;
 
 		if DFIsSleeping(timeSkipType) {
-			if isDistressed && NotEquals(timeSkipType, DFTimeSkipType.Blackout) {
-				// If Distressed and not sleeping due to blacking out, reduce Energy.
-
-				if biocorruptionLevel > 0u && !sufferingBiocorruptionCrashAtSkipTimeStart {
-					// Get the change taking into account the already delayed amount,
-					// because the loss rate is non-linear.
-					energyValue += alreadyDelayedAmount;
-					amountToChange = this.GetEnergyChange(energyValue);
-					delayedEnergyLoss = amountToChange * percentageOfBasicNeedLossToDelay;
-					amountToChange -= delayedEnergyLoss;
-				} else {
-					amountToChange = this.GetEnergyChange(energyValue);
-				}
-
-				return DFEnergyChangeWithRecoverLimit(amountToChange, delayedEnergyLoss, false);
-			}
-
 			let recoverLimit: Float;
-			switch timeSkipType {
-				case DFTimeSkipType.FullSleep:
-					recoverLimit = 100.0;
-					break;
-				case DFTimeSkipType.LimitedSleep:
-					recoverLimit = this.Settings.limitedEnergySleepingInVehicles;
-					break;
-				case DFTimeSkipType.Blackout:
-					recoverLimit = this.blackoutEnergyRecoveryLimit;
-					break;
-			}
+			if (hasInsomniaNow || hasHungerThirstPangsNow) && NotEquals(timeSkipType, DFTimeSkipType.Blackout) {
+				// If Distressed at the moment Sleep started, and not blacking out, reduce Energy down to 50, but not below.
+				recoverLimit = this.restlessEnergyRecoveryLimit;
+				wasSleeping = true;
 
-			if biocorruptionLevel > 0u && sufferingBiocorruptionCrashAtSkipTimeStart {
-				let biocorruptionSoftCap: Float = this.BiocorruptionConditionSystem.GetBasicNeedSoftCapFromBiocorruptionAtLevel(biocorruptionLevel);
-				if biocorruptionSoftCap < recoverLimit {
-					recoverLimit = biocorruptionSoftCap;
-					limitFromBiocorruption = true;
-				}
-			}
-
-			if energyValue > recoverLimit {
-				if biocorruptionLevel > 0u && !sufferingBiocorruptionCrashAtSkipTimeStart {
-					// Get the change taking into account the already delayed amount,
-					// because the loss rate is non-linear.
-					energyValue += alreadyDelayedAmount;
-					amountToChange = this.GetEnergyChange(energyValue);
-					delayedEnergyLoss = amountToChange * percentageOfBasicNeedLossToDelay;
-					amountToChange -= delayedEnergyLoss;
-				} else {
-					amountToChange = this.GetEnergyChange(energyValue);
-				}
+			} else if Equals(timeSkipType, DFTimeSkipType.FullSleep) {
+				// The player always recovers Energy, even if becoming Distressed while asleep.
+				recoverLimit = 100.0;
+				wasSleeping = true;
 				
-				if energyValue + amountToChange < recoverLimit {
-					amountToChange = energyValue - recoverLimit;
+			} else if Equals(timeSkipType, DFTimeSkipType.LimitedSleep) {
+				recoverLimit = this.Settings.limitedEnergySleepingInVehicles;
+				wasSleeping = true;
+
+			} else if Equals(timeSkipType, DFTimeSkipType.Blackout) {
+				recoverLimit = this.blackoutEnergyRecoveryLimit;
+			}
+
+			if wasSleeping && hasRestless {
+				if recoverLimit > this.restlessEnergyRecoveryLimit  {
+					recoverLimit = this.restlessEnergyRecoveryLimit;
 				}
+			}
+
+			if needValue > recoverLimit {
+				// Above the recovery limit, reduce Energy.
+				isNeedReducing = true;
 
 			} else {
 				if Equals(timeSkipType, DFTimeSkipType.Blackout) {
-					amountToChange = this.energyRecoverAmountBlackout;
+					// TODO: Temp
+					amountToChange = 30.0 + Cast<Float>(RandRangeInclusive(2, 7));
 				} else {
-					amountToChange = this.energyRecoverAmountSleeping;
+					amountToChange = this.GetEnergySleepingRecoveryAmountAtIteration(needValue);
 				}
 				
-				if energyValue + amountToChange >= recoverLimit {
-					amountToChange = recoverLimit - energyValue;
+				if needValue + amountToChange >= recoverLimit {
+					amountToChange = recoverLimit - needValue;
 
-					if limitFromBiocorruption {
+					if wasSleeping && (hasRestless || hasInsomniaNow || hasHungerThirstPangsNow) {
+						// We are sleeping and we have Restless, and we're capped at the recovery limit;
+						// show the lock.
+						showLock = true;
+					} else if Equals(timeSkipType, DFTimeSkipType.LimitedSleep) && recoverLimit == this.Settings.limitedEnergySleepingInVehicles {
+						// Sleeping in a vehicle, show the lock.
 						showLock = true;
 					}
 				}
 			}
+			
 		} else {
-			amountToChange = this.GetEnergyChange(energyValue);
+			isNeedReducing = true;
+		}
 
-			if biocorruptionLevel > 0u && !sufferingBiocorruptionCrashAtSkipTimeStart {
-				delayedEnergyLoss = amountToChange * percentageOfBasicNeedLossToDelay;
-				amountToChange -= delayedEnergyLoss;
+		if isNeedReducing {
+			if hasEuphoria {
+				// Get the change taking into account the already delayed amount,
+				// because the loss rate is non-linear.
+				needValue += alreadyDelayedAmount;
+				delayedNeedLoss = this.GetEnergyChange(needValue);
+			} else {
+				amountToChange = this.GetEnergyChange(needValue);
 			}
 		}
 
-		return DFEnergyChangeWithRecoverLimit(amountToChange, delayedEnergyLoss, showLock);
+		return DFNeedChangeWithRecoverLimit(amountToChange, delayedNeedLoss, showLock);
 	}
 
-	public final func ClearEnergyManagementEffects() -> Void {
-		//DFProfile();
-		DFLog(this, "Clearing energy management effects.");
-		ArrayClear(this.energyRestoredPerEnergizedStack);
-		StatusEffectHelper.RemoveStatusEffect(this.player, this.energizedEffectID, this.energizedMaxStacksFromStimulants);
-	}
+	private final func GetEnergySleepingRecoveryAmountAtIteration(currentEnergy: Float) -> Float {
+		// Regain points non-linearly.
 
-	private final func GetEnergizedStackCountFromItemRecord(itemRecord: wref<Item_Record>) -> Uint32 {
-		//DFProfile();
-		if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCount1") {
-			return 1u;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCount2") {
-			return 2u;
-		} else if itemRecord.TagsContains(n"DarkFutureConsumableEnergizedCount3") {
-			return 3u;
+		let totalPointRecoveryInRange: Float;
+		let targetSleepingHoursInRange: Float;
+		if currentEnergy > this.Settings.basicNeedThresholdValue1V2 {
+			totalPointRecoveryInRange = 100.0 - this.Settings.basicNeedThresholdValue1V2;
+			targetSleepingHoursInRange = 4.0;
+
+		} else if currentEnergy > this.Settings.basicNeedThresholdValue2V2 {
+			totalPointRecoveryInRange = this.Settings.basicNeedThresholdValue1V2 - this.Settings.basicNeedThresholdValue2V2;
+			targetSleepingHoursInRange = 3.0;
+
+		} else if currentEnergy > this.Settings.basicNeedThresholdValue3V2 {
+			totalPointRecoveryInRange = this.Settings.basicNeedThresholdValue2V2 - this.Settings.basicNeedThresholdValue3V2;
+			targetSleepingHoursInRange = 2.0;
+
+		} else if currentEnergy > this.Settings.basicNeedThresholdValue4V2 {
+			totalPointRecoveryInRange = this.Settings.basicNeedThresholdValue3V2 - this.Settings.basicNeedThresholdValue4V2;
+			targetSleepingHoursInRange = 2.0;
+
 		} else {
-			return 0u;
+			totalPointRecoveryInRange = this.Settings.basicNeedThresholdValue4V2;
+			targetSleepingHoursInRange = 1.0;
 		}
+
+		return (totalPointRecoveryInRange / targetSleepingHoursInRange) / 12.0;
+	}
+
+	public final func GetRestlessEnergyRecoveryLimit() -> Float {
+		return this.restlessEnergyRecoveryLimit;
+    }
+
+	public final func RemoveCrashDurationByHours(hours: Int32) -> Void {
+		// TODO
+		/*
+		let stacksToClear: Uint32 = Cast<Uint32>(hours * 2);
+		this.ClearCrashStacks(stacksToClear);
+		*/
 	}
 }

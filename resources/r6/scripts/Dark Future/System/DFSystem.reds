@@ -14,6 +14,7 @@ import DarkFuture.Main.{
     MainSystemPlayerDeathEvent,
     MainSystemTimeSkipStartEvent,
     MainSystemTimeSkipCancelledEvent,
+    MainSystemTimeSkipBeginEvent,
     MainSystemTimeSkipFinishedEvent,
     DFTimeSkipData
 }
@@ -42,7 +43,7 @@ public abstract class DFSystemEventListener extends ScriptableService {
 	//
 	private func GetSystemInstance() -> wref<DFSystem> {
         //DFProfile();
-		DFLogNoSystem(true, this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+		DFLogNoSystem(DFSystemlessDebugEnabled(), this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
 		return null;
 	}
 
@@ -51,7 +52,8 @@ public abstract class DFSystemEventListener extends ScriptableService {
 		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemPlayerDeathEvent>(), this, n"OnMainSystemPlayerDeathEvent", true);
 		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipStartEvent>(), this, n"OnMainSystemTimeSkipStartEvent", true);
 		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipCancelledEvent>(), this, n"OnMainSystemTimeSkipCancelledEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipFinishedEvent>(), this, n"OnMainSystemTimeSkipFinishedEvent", true);
+		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipBeginEvent>(), this, n"OnMainSystemTimeSkipBeginEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipFinishedEvent>(), this, n"OnMainSystemTimeSkipFinishedEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<SettingChangedEvent>(), this, n"OnSettingChangedEvent", true);
     }
 
@@ -68,6 +70,11 @@ public abstract class DFSystemEventListener extends ScriptableService {
 	private cb func OnMainSystemTimeSkipCancelledEvent(event: ref<MainSystemTimeSkipCancelledEvent>) {
         //DFProfile();
         this.GetSystemInstance().OnTimeSkipCancelled();
+    }
+
+    private cb func OnMainSystemTimeSkipBeginEvent(event: ref<MainSystemTimeSkipBeginEvent>) {
+        //DFProfile();
+        this.GetSystemInstance().OnTimeSkipBegin();
     }
 
 	private cb func OnMainSystemTimeSkipFinishedEvent(event: ref<MainSystemTimeSkipFinishedEvent>) {
@@ -255,6 +262,11 @@ public abstract class DFSystem extends ScriptableSystem {
 		this.LogMissingOverrideError("OnTimeSkipCancelled");
 	}
 
+    public func OnTimeSkipBegin() -> Void {
+        //DFProfile();
+		this.LogMissingOverrideError("OnTimeSkipBegin");
+	}
+
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
         //DFProfile();
 		this.LogMissingOverrideError("OnTimeSkipFinished");
@@ -299,6 +311,7 @@ private func UnregisterListeners() -> Void {}
 public func UnregisterAllDelayCallbacks() -> Void {}
 public func OnTimeSkipStart() -> Void {}
 public func OnTimeSkipCancelled() -> Void {}
+public func OnTimeSkipBegin() -> Void {}
 public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
 public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 

@@ -15,6 +15,10 @@ public enum DFLogLevel {
     Error = 2
 }
 
+public func DFSystemlessDebugEnabled() -> Bool {
+    return false;
+}
+
 // =====================================
 // Dark Future Function Profiling Toggle
 // =====================================
@@ -31,7 +35,7 @@ public func DFProfile() -> Void {
         } else {
             trace = s"[FUNC:\(entry.function)]";
         }
-        FTLog("[DarkFuture][Profile] " + trace);
+        //FTLog("[DarkFuture][Profile] " + trace);
     }
 }
 
@@ -49,13 +53,13 @@ public func DFLog(class: ref<DFSystem>, message: String, opt level: DFLogLevel) 
         
         switch level {
             case DFLogLevel.Warning:
-                LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);
+                //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);
                 break;
             case DFLogLevel.Error:
-                LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! " + trace + ": " + message);
+                //LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! " + trace + ": " + message);
                 break;
             default:
-                LogChannel(n"DEBUG", "[DarkFuture]#INFO# " + trace + ": " + message);
+                //LogChannel(n"DEBUG", "[DarkFuture]#INFO# " + trace + ": " + message);
                 break;
         }
     }
@@ -75,13 +79,13 @@ public func DFLogNoSystem(enabled: Bool, class: ref<IScriptable>, message: Strin
         
         switch level {
             case DFLogLevel.Warning:
-                LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);
+                //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);
                 break;
             case DFLogLevel.Error:
-                LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! " + trace + ": " + message);
+                //LogChannelError(n"DEBUG", "[DarkFuture]!ERR~! " + trace + ": " + message);
                 break;
             default:
-                LogChannel(n"DEBUG", "[DarkFuture]#INFO# " + trace + ": " + message);
+                //LogChannel(n"DEBUG", "[DarkFuture]#INFO# " + trace + ": " + message);
                 break;
         }
     }

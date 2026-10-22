@@ -22,8 +22,8 @@ DarkFutureStatusEffectTypes.NicotineWithdrawal:
 
 UIIcon.DarkFutureNicotineWithdrawalIcon:
   $type: gamedataUIIcon_Record
-  atlasPartName: loot_face
-  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+  atlasPartName: ico_status_smoking
+  atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
 
 #
 #
@@ -88,7 +88,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData:
   floatValues: []
   intValues:
     - 85
-    - 36
+    - 24
   nameValues: []
   stats: []
 
@@ -184,7 +184,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData:
   floatValues: []
   intValues:
     - 75
-    - 48
+    - 36
   nameValues: []
   stats: []
 
@@ -280,7 +280,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData:
   floatValues: []
   intValues:
     - 65
-    - 60
+    - 48
   nameValues: []
   stats: []
 
@@ -376,7 +376,7 @@ DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData:
   floatValues: []
   intValues:
     - 55
-    - 72
+    - 60
   nameValues: []
   stats: []
 

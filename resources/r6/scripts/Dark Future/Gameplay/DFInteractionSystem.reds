@@ -26,20 +26,26 @@ import DarkFuture.Main.{
 	DFAddictionDatum,
 	DFAddictionUpdateDatum,
 	DFHumanityLossDatum,
+	DFBiocorruptionDatum,
 	DFFutureHoursData,
 	DFNeedChangeDatum,
 	DFTimeSkipData,
-	DFTimeSkipType,
-	DFTempEnergyItemType
+	DFTimeSkipType
 }
 import DarkFuture.Services.{
 	DFGameStateService,
 	DFPlayerStateService,
 	DFNotificationService,
+	DFAnimationService,
 	DFNotification,
 	DFAudioCue,
 	DFVisualEffect,
-	DFNotificationCallback
+	DFNotificationCallback,
+	DFManagedEffect,
+	DFManagedEffectType,
+	DFCrashAnimMode,
+	DFManagedEffectPipelineResult,
+	DFManagedEffectMode
 }
 import DarkFuture.Needs.{
 	DFHydrationSystem,
@@ -48,7 +54,8 @@ import DarkFuture.Needs.{
 	DFNerveSystem,
 	DFNeedChangeUIFlags,
 	DFChangeNeedValueProps,
-	DFEnergyChangeWithRecoverLimit
+	DFNeedChangeWithRecoverLimit,
+	DFQueuedNeedValueChange
 }
 import DarkFuture.Addictions.{
 	DFAddictionSystemBase,
@@ -61,8 +68,7 @@ import DarkFuture.Conditions.{
 	DFHumanityLossRestorationActivityType,
 	DFHumanityLossRestorationType,
 	DFHumanityLossCostType,
-	DFBiocorruptionConditionSystem,
-	DFBiocorruptionConditionState
+	DFBiocorruptionConditionSystem
 }
 
 //  Edgerunner's Mansion Compatibility - Detect shower interactions.
@@ -110,7 +116,7 @@ public struct DFAddictionTimeSkipIterationStateDatum {
 	public let addictionAmount: Float;
 	public let addictionAmountAsPercentage: Float;
 	public let addictionStage: Int32;
-	public let primaryEffectDuration: Float;
+	public let activeEffectApplied: Bool;
 	public let backoffDuration: Float;
 	public let withdrawalLevel: Int32;
 	public let withdrawalDuration: Float;
@@ -125,7 +131,12 @@ public struct DFHumanityLossTimeSkipIterationStateDatum {
 }
 
 public struct DFBiocorruptionTimeSkipIterationStateDatum {
-	public let level: Uint32;
+	public let newCrashDuration: Float;
+	public let newCrashStackCount: Uint32;
+	public let highestCrashStackCount: Uint32;
+	public let newTimeUntilRestless: Float;
+	public let isRestless: Bool;
+	public let crashOccuredDuringTimeskip: Bool;
 }
 
 public struct DFJournalEntryUpdate {
@@ -135,45 +146,37 @@ public struct DFJournalEntryUpdate {
 	public let state: gameJournalEntryState;
 }
 
-public class VomitFromInteractionChoiceStage2Callback extends DFDelayCallback {
-	public let InteractionSystem: wref<DFInteractionSystem>;
-
-	public static func Create(interactionSystem: wref<DFInteractionSystem>) -> ref<DFDelayCallback> {
+public class DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback extends DFDelayCallback {
+	public static func Create() -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self: ref<VomitFromInteractionChoiceStage2Callback> = new VomitFromInteractionChoiceStage2Callback();
-		self.InteractionSystem = interactionSystem;
-		return self;
+		return new DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback();
 	}
 
 	public func InvalidateDelayID() -> Void {
 		//DFProfile();
-		this.InteractionSystem.vomitFromInteractionChoiceStage2DelayID = GetInvalidDelayID();
+		DFInteractionSystem.Get().clearLastAttemptedChoiceForFXCheckDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
 		//DFProfile();
-		this.InteractionSystem.OnVomitFromInteractionChoiceStage2();
+		DFInteractionSystem.Get().OnClearLastAttemptedChoiceForFXCheck();
 	}
 }
 
-public class DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback extends DFDelayCallback {
-	public let InteractionSystem: wref<DFInteractionSystem>;
-
-	public static func Create(interactionSystem: wref<DFInteractionSystem>) -> ref<DFDelayCallback> {
+public class DFInteractionSystemSmokeChoiceDebounceCallback extends DFDelayCallback {
+	public static func Create() -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self: ref<DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback> = new DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback();
-		self.InteractionSystem = interactionSystem;
-		return self;
+		return new DFInteractionSystemSmokeChoiceDebounceCallback();
 	}
 
 	public func InvalidateDelayID() -> Void {
 		//DFProfile();
-		this.InteractionSystem.clearLastAttemptedChoiceForFXCheckDelayID = GetInvalidDelayID();
+		DFInteractionSystem.Get().smokePromptDebounceDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
 		//DFProfile();
-		this.InteractionSystem.OnClearLastAttemptedChoiceForFXCheck();
+		DFInteractionSystem.Get().OnSmokePromptDebounceCallback();
 	}
 }
 
@@ -182,23 +185,11 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 	//DFProfile();
 	let interactionSystem: ref<DFInteractionSystem> = DFInteractionSystem.Get();
 	let effectID: TweakDBID = evt.staticData.GetID();
-	let effectTags: array<CName> = evt.staticData.GameplayTags();
 
 	if IsSystemEnabledAndRunning(interactionSystem) {		
 		if Equals(effectID, t"HousingStatusEffect.Energized") {
-			if DFNerveSystem.Get().GetHasNausea() {
-				if StatusEffectSystem.ObjectHasStatusEffect(this, t"HousingStatusEffect.Energized") {
-					StatusEffectHelper.RemoveStatusEffect(this, t"HousingStatusEffect.Energized");
-				}
-				interactionSystem.QueueVomitFromInteractionChoice();
-			} else {
-				interactionSystem.DrankCoffeeFromChoice();
-			}
+			interactionSystem.DrankCoffeeFromChoice();
 		}
-	}
-
-	if ArrayContains(effectTags, n"DarkFutureSmokingFromItem") {
-		interactionSystem.HandleSmokingFromItem();
 	}
 
 	return wrappedMethod(evt);
@@ -216,6 +207,7 @@ public final class DFInteractionSystem extends DFSystem {
     private let GameStateService: ref<DFGameStateService>;
 	private let PlayerStateService: ref<DFPlayerStateService>;
 	private let NotificationService: ref<DFNotificationService>;
+	private let AnimationService: ref<DFAnimationService>;
     private let HydrationSystem: ref<DFHydrationSystem>;
 	private let NutritionSystem: ref<DFNutritionSystem>;
 	private let EnergySystem: ref<DFEnergySystem>;
@@ -226,16 +218,20 @@ public final class DFInteractionSystem extends DFSystem {
 	private let NarcoticAddictionSystem: ref<DFNarcoticAddictionSystem>;
 	private let HumanityLossConditionSystem: ref<DFHumanityLossConditionSystem>;
 	private let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
+	private let RelaxActionSystem: ref<DFRelaxActionSystem>;
 
 	private let QuestsSystem: ref<QuestsSystem>;
     private let BlackboardSystem: ref<BlackboardSystem>;
     private let UIInteractionsBlackboard: ref<IBlackboard>;
 
+	// Choice Detection
+	private let injectedInteractionIconEnumNames: array<CName>;
     private let choiceListener: ref<CallbackHandle>;
 	private let choiceHubListener: ref<CallbackHandle>;
 
     private let lastAttemptedChoiceCaption: String;
 	private let lastAttemptedChoiceIconName: CName;
+	private let lastAttemptedInjectedInteractionIconName: CName;
 
     public let clearLastAttemptedChoiceForFXCheckDelayID: DelayID;
     private let clearLastAttemptedChoiceForFXCheckDelayInterval: Float = 10.0;
@@ -248,11 +244,10 @@ public final class DFInteractionSystem extends DFSystem {
 	private let skippingTimeFromHubMenu: Bool = false;
 	private let lastEnergyBeforeSleeping: Float = 0.0;
 
-	private const let sleepingReduceMetabolismMult: Float = 0.4;
-	private const let needPercentageToDelayFromBiocorruption: Float = 0.25;
-
-	public let vomitFromInteractionChoiceStage2DelayID: DelayID;
-	private let vomitFromInteractionChoiceStage2DelayInterval: Float = 1.5;
+	// Smoke prompt debounce timer (Compatibility with Idle Anywhere)
+	public let smokePromptDebounceDelayID: DelayID;
+	private let smokePromptDebounceDelayInterval: Float = 6.0;
+	public let isWithinSmokePromptDebounceWindow: Bool = false;
 
 	// Quest-related Sleep Journal Entry Updates
 	private let journalEntryUpdate_JackieDeath_q005: DFJournalEntryUpdate;
@@ -273,6 +268,7 @@ public final class DFInteractionSystem extends DFSystem {
 	private let journalEntryUpdate_Funeral_sq018: DFJournalEntryUpdate;
 	private let journalEntryUpdate_XBD_STSWatNID04: DFJournalEntryUpdate;
 	private let journalEntryUpdate_BD_sq021: DFJournalEntryUpdate;
+	private let journalEntryUpdate_Biocorruption_sq031: DFJournalEntryUpdate;
 
 	// See: darkfuture/localization_interactions/*/onscreens/darkfuture_interactions_donotmodify.json
 	private const let locKey_Interaction_Sleep_BaseGame: CName = n"DarkFutureInteraction_mq000_01_apartment_Sleep";
@@ -299,6 +295,8 @@ public final class DFInteractionSystem extends DFSystem {
 	private const let locKey_Interaction_TakeDrag: CName = n"DarkFutureInteraction_dlc6_apart_wbr_jpn_TakeDrag";
 	private const let locKey_Interaction_ThrowBall: CName = n"DarkFutureInteraction_q302_06_basketball_Throw";
 	private const let locKey_Interaction_SureThrowBall: CName = n"DarkFutureInteraction_q302_06_basketball_SureThrow";
+	public const let locKey_Interaction_MistyTarotFirst: CName = n"DarkFutureInteraction_MistyTarot_First";
+	public const let locKey_Interaction_MistyTarotRepeat: CName = n"DarkFutureInteraction_MistyTarot_Repeat";
 
 	private const let questFact_MetroSelectedTrack: CName = n"ue_metro_track_selected";
 
@@ -323,9 +321,10 @@ public final class DFInteractionSystem extends DFSystem {
 		this.lastEnergyBeforeSleeping = 0.0;
 	}
 	public final func DoPostResumeActions() -> Void {}
+
 	private final func SetupDebugLogging() -> Void {
 		//DFProfile();
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 
 	public final func SetupData() -> Void {
@@ -348,11 +347,42 @@ public final class DFInteractionSystem extends DFSystem {
 		this.journalEntryUpdate_Funeral_sq018 = DFJournalEntryUpdate("sq018_jackie", "03_el_coyote_funeral", "03_take_part_in_ceremony", gameJournalEntryState.Succeeded);
 		this.journalEntryUpdate_XBD_STSWatNID04 = DFJournalEntryUpdate("sts_wat_nid_04", "sts_wat_nid_04", "find_recording", gameJournalEntryState.Succeeded);
 		this.journalEntryUpdate_BD_sq021 = DFJournalEntryUpdate("sq021_sick_dreams", "bd", "06_leave_bd", gameJournalEntryState.Succeeded);
+		this.journalEntryUpdate_Biocorruption_sq031 = DFJournalEntryUpdate("sq031_smack_my_bitch_up", "04_smack_motel", "03_talk_to_johnny", gameJournalEntryState.Succeeded);
+
+		this.injectedInteractionIconEnumNames = [
+			n"DarkFutureInteraction_Sleep_BaseGame",
+			n"DarkFutureInteraction_Sleep_KressStreet",
+			n"DarkFutureInteraction_EnterRollercoaster",
+			n"DarkFutureInteraction_MQ014MonkFinishPromptA",
+			n"DarkFutureInteraction_MQ014MonkFinishPromptB",
+			n"DarkFutureInteraction_MQ014MonkFinishPromptC",
+			n"DarkFutureInteraction_MQ014MonkFinishPromptD",
+			n"DarkFutureInteraction_Cuddle",
+			n"DarkFutureInteraction_Kiss",
+			n"DarkFutureInteraction_Dance",
+			n"DarkFutureInteraction_Meditate",
+			n"DarkFutureInteraction_Q003TakeInhaler",
+			n"DarkFutureInteraction_Q003MeredithStoutPrompt",
+			n"DarkFutureInteraction_Eat",
+			n"DarkFutureInteraction_Q303SitAndDrink",
+			n"DarkFutureInteraction_Q303PlayBraindance",
+			n"DarkFutureInteraction_CoffeeDrink",
+			n"DarkFutureInteraction_DLC6DrinkTea",
+			n"DarkFutureInteraction_DLC6HitBall",
+			n"DarkFutureInteraction_DLC6BurnIncense",
+			n"DarkFutureInteraction_Smoke",
+			n"DarkFutureInteraction_TakeDrag",
+			n"DarkFutureInteraction_ThrowBall",
+			n"DarkFutureInteraction_SureThrowBall",
+			n"DarkFutureInteraction_MistyTarotFirst",
+			n"DarkFutureInteraction_MistyTarotRepeat"
+		];
 	}
 
 	private final func RegisterAllRequiredDelayCallbacks() -> Void {}
 	public final func OnTimeSkipStart() -> Void {}
 	public final func OnTimeSkipCancelled() -> Void {}
+	public final func OnTimeSkipBegin() -> Void {}
 	public final func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
 	public final func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
     public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
@@ -377,6 +407,7 @@ public final class DFInteractionSystem extends DFSystem {
         this.GameStateService = DFGameStateService.GetInstance(gameInstance);
 		this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
 		this.NotificationService = DFNotificationService.GetInstance(gameInstance);
+		this.AnimationService = DFAnimationService.GetInstance(gameInstance);
         this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
 		this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
 		this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
@@ -387,6 +418,7 @@ public final class DFInteractionSystem extends DFSystem {
 		this.NarcoticAddictionSystem = DFNarcoticAddictionSystem.GetInstance(gameInstance);
 		this.HumanityLossConditionSystem = DFHumanityLossConditionSystem.GetInstance(gameInstance);
 		this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
+		this.RelaxActionSystem = DFRelaxActionSystem.GetInstance(gameInstance);
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
 		this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
 	}
@@ -399,7 +431,6 @@ public final class DFInteractionSystem extends DFSystem {
 	public final func UnregisterAllDelayCallbacks() -> Void {
 		//DFProfile();
 		this.UnregisterClearLastAttemptedChoiceForFXCheckCallback();
-		this.UnregisterVomitFromInteractionChoiceStage2Callback();
 	}
 
     private final func RegisterListeners() -> Void {
@@ -611,6 +642,14 @@ public final class DFInteractionSystem extends DFSystem {
 		}
 	}
 
+	private final func IsDumDumBlackLaceChoice(choiceCaption: String, choiceIconName: CName) -> Bool {
+		if Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Q003TakeInhaler)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	//
 	//	Sleeping and Waiting
 	//
@@ -634,12 +673,13 @@ public final class DFInteractionSystem extends DFSystem {
 		addictionAmount: Float,
 		addictionAmountAsPercentage: Float,
 		addictionStage: Int32, 
-		primaryEffectDuration: Float, 
+		activeEffectApplied: Bool, 
 		backoffDuration: Float, 
 		withdrawalLevel: Int32, 
 		withdrawalDuration: Float,
 		currentHour: Int32,
-		hasLostAddictionAmountToday: Bool
+		hasLostAddictionAmountToday: Bool,
+		hasEuphoria: Bool
 	) -> DFAddictionTimeSkipIterationStateDatum {
 		//DFProfile();
 		
@@ -688,42 +728,39 @@ public final class DFInteractionSystem extends DFSystem {
 
 					if withdrawalLevel > 0 {
 						if withdrawalLevel < addictionStage {
-							withdrawalDuration = HoursToGameTimeSeconds(1);
+							withdrawalDuration = HoursToGameTimeSeconds(2);
 						} else {
 							withdrawalDuration = withdrawalDurations[withdrawalLevel];
 						}
 					}
 				}
 
-			} else if primaryEffectDuration > 0.0 {
-				primaryEffectDuration -= 300.0;
-				if primaryEffectDuration <= 0.0 {
-					primaryEffectDuration = 0.0;
-					
-					// The primary effect expired; start a fake back-off timer.
-					backoffDuration = addictionBackoffDurations[addictionStage];
-				}
+			} else if activeEffectApplied && !hasEuphoria {
+				activeEffectApplied = false;
+				
+				// The primary effect expired; start a fake back-off timer.
+				backoffDuration = addictionBackoffDurations[addictionStage];
 			}
 		}
 
-		DFLog(this, "=====================================================================================");
+		/*DFLog(this, "=====================================================================================");
 
 		DFLog(this, "Predictive " + logName + " AddictionAmount: " + ToString(addictionAmount));
 		DFLog(this, "Predictive " + logName + " AddictionAmountAsPercentage: " + ToString(addictionAmountAsPercentage));
 		DFLog(this, "Predictive " + logName + " AddictionStage: " + ToString(addictionStage));
-		DFLog(this, "Predictive " + logName + " PrimaryEffectDuration: " + ToString(primaryEffectDuration));
 		DFLog(this, "Predictive " + logName + " BackoffDuration: " + ToString(backoffDuration));
 		DFLog(this, "Predictive " + logName + " WithdrawalDuration: " + ToString(withdrawalDuration));
 		DFLog(this, "Predictive " + logName + " WithdrawalLevel: " + ToString(withdrawalLevel));
-		DFLog(this, "Predictive " + logName + " HasLostAddictionAmountToday: " + ToString(hasLostAddictionAmountToday));
+		DFLog(this, "Predictive " + logName + " activeEffectApplied: " + ToString(activeEffectApplied));
 
 		DFLog(this, "=====================================================================================");
+		*/
 
 		let addictionTimeSkipIterationStateData: DFAddictionTimeSkipIterationStateDatum;
 		addictionTimeSkipIterationStateData.addictionAmount = addictionAmount;
 		addictionTimeSkipIterationStateData.addictionAmountAsPercentage = addictionAmountAsPercentage;
 		addictionTimeSkipIterationStateData.addictionStage = addictionStage;
-		addictionTimeSkipIterationStateData.primaryEffectDuration = primaryEffectDuration;
+		addictionTimeSkipIterationStateData.activeEffectApplied = activeEffectApplied;
 		addictionTimeSkipIterationStateData.backoffDuration = backoffDuration;
 		addictionTimeSkipIterationStateData.withdrawalLevel = withdrawalLevel;
 		addictionTimeSkipIterationStateData.withdrawalDuration = withdrawalDuration;
@@ -739,9 +776,13 @@ public final class DFInteractionSystem extends DFSystem {
 		// Need Variables
 		let calculatedBasicNeedsData: array<DFNeedsDatum>;
 		let calculatedHydrationAtHour: Float = this.HydrationSystem.GetNeedValue();
+		let calculatedHydrationMaxAtHour: Float = this.HydrationSystem.GetNeedMax();
 		let calculatedNutritionAtHour: Float = this.NutritionSystem.GetNeedValue();
+		let calculatedNutritionMaxAtHour: Float = this.NutritionSystem.GetNeedMax();
 		let calculatedEnergyAtHour: Float = this.EnergySystem.GetNeedValue();
+		let calculatedEnergyMaxAtHour: Float = this.EnergySystem.GetNeedMax();
 		let calculatedNerveAtHour: Float = this.NerveSystem.GetNeedValue();
+		let calculatedEuphoriaAtHour: Float = this.NerveSystem.GetOverchargeValue();
 		let calculatedNerveMaxAtHour: Float = this.NerveSystem.GetNeedMax();
 
 		let calculatedDelayedHydrationAtHour: Float = this.HydrationSystem.GetAccumulatedDelayedNeedLoss();
@@ -749,8 +790,7 @@ public final class DFInteractionSystem extends DFSystem {
 		let calculatedDelayedEnergyAtHour: Float = this.EnergySystem.GetAccumulatedDelayedNeedLoss();
 
 		// Energy Variables
-		let energyRestoredFromEnergized: Float = this.EnergySystem.GetTotalEnergyRestoredFromEnergized();
-		let energyDrainedFromAlcohol: Float = this.EnergySystem.GetTotalEnergyDrainedFromAlcohol();
+		let managedEffectState: array<DFManagedEffect> = this.PlayerStateService.GetManagedEffectsState();
 
 		// Addiction Variables
 		let calculatedAddictionData: array<DFAddictionDatum>;
@@ -763,13 +803,7 @@ public final class DFInteractionSystem extends DFSystem {
 		alcoholDataAccumulator.addictionStage = this.AlcoholAddictionSystem.GetAddictionStage();
 		alcoholDataAccumulator.backoffDuration = this.AlcoholAddictionSystem.GetRemainingBackoffDurationInGameTimeSeconds();
 		alcoholDataAccumulator.withdrawalDuration = this.AlcoholAddictionSystem.GetRemainingWithdrawalDurationInGameTimeSeconds();
-		alcoholDataAccumulator.primaryEffectDuration = 0.0;
-		// Does the player have a Alcohol Primary Effect?
-		let alcoholEffects: array<ref<StatusEffect>>;
-		StatusEffectHelper.GetAppliedEffectsWithTag(this.player, this.AlcoholAddictionSystem.GetAddictionPrimaryStatusEffectTag(), alcoholEffects);
-		if ArraySize(alcoholEffects) > 0 {
-			alcoholDataAccumulator.primaryEffectDuration = alcoholEffects[0].GetRemainingDuration();
-		}
+		alcoholDataAccumulator.activeEffectApplied = this.PlayerStateService.GetManagedEffectActiveStacksByType(DFManagedEffectType.Alcohol) > 0u;
 
 		// Nicotine Variables
 		let nicotineDataAccumulator: DFAddictionTimeSkipIterationStateDatum;
@@ -779,13 +813,7 @@ public final class DFInteractionSystem extends DFSystem {
 		nicotineDataAccumulator.addictionStage = this.NicotineAddictionSystem.GetAddictionStage();
 		nicotineDataAccumulator.backoffDuration = this.NicotineAddictionSystem.GetRemainingBackoffDurationInGameTimeSeconds();
 		nicotineDataAccumulator.withdrawalDuration = this.NicotineAddictionSystem.GetRemainingWithdrawalDurationInGameTimeSeconds();
-		nicotineDataAccumulator.primaryEffectDuration = 0.0;
-		// Does the player have a Nicotine Primary Effect?
-		let nicotineEffects: array<ref<StatusEffect>>;
-		StatusEffectHelper.GetAppliedEffectsWithTag(this.player, n"DarkFutureAddictionPrimaryEffectNicotine", nicotineEffects);
-		if ArraySize(nicotineEffects) > 0 {
-			nicotineDataAccumulator.primaryEffectDuration = nicotineEffects[0].GetRemainingDuration();
-		}
+		nicotineDataAccumulator.activeEffectApplied = this.PlayerStateService.GetManagedEffectActiveStacksByType(DFManagedEffectType.Nicotine) > 0u;
 
 		// Narcotic Variables
 		let narcoticDataAccumulator: DFAddictionTimeSkipIterationStateDatum;
@@ -795,13 +823,7 @@ public final class DFInteractionSystem extends DFSystem {
 		narcoticDataAccumulator.addictionStage = this.NarcoticAddictionSystem.GetAddictionStage();
 		narcoticDataAccumulator.backoffDuration = this.NarcoticAddictionSystem.GetRemainingBackoffDurationInGameTimeSeconds();
 		narcoticDataAccumulator.withdrawalDuration = this.NarcoticAddictionSystem.GetRemainingWithdrawalDurationInGameTimeSeconds();
-		narcoticDataAccumulator.primaryEffectDuration = 0.0;
-		// Does the player have a Narcotic Primary Effect?
-		let narcoticEffects: array<ref<StatusEffect>>;
-		StatusEffectHelper.GetAppliedEffectsWithTag(this.player, n"DarkFutureAddictionPrimaryEffectNarcotic", narcoticEffects);
-		if ArraySize(narcoticEffects) > 0 {
-			narcoticDataAccumulator.primaryEffectDuration = narcoticEffects[0].GetRemainingDuration();
-		}
+		narcoticDataAccumulator.activeEffectApplied = this.PlayerStateService.GetManagedEffectActiveStacksByType(DFManagedEffectType.Narcotic) > 0u;
 
 		// Store the original withdrawal level values.
 		let originalAlcoholWithdrawalLevel: Int32 = alcoholDataAccumulator.withdrawalLevel;
@@ -809,7 +831,7 @@ public final class DFInteractionSystem extends DFSystem {
 		let originalNarcoticWithdrawalLevel: Int32 = narcoticDataAccumulator.withdrawalLevel;
 
 		// Addiction Treatment Variables
-		let addictionTreatmentDuration = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds();
+		let addictionTreatmentDuration: Float = this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds();
 
 		// Humanity Loss Variables
 		let calculatedHumanityLossData: array<DFHumanityLossDatum>;
@@ -819,14 +841,23 @@ public final class DFInteractionSystem extends DFSystem {
 		humanityLossDataAccumulator.newTimeUntilNextCyberpsychosisAllowed = this.HumanityLossConditionSystem.GetTimeUntilNextCyberpsychosisAllowed();
 		humanityLossDataAccumulator.newEndotrisineDuration = this.HumanityLossConditionSystem.GetRemainingEndotrisineDurationInGameTimeSeconds();
 
+		// Biocorruption Variables
+		let calculatedBiocorruptionData: array<DFBiocorruptionDatum>;
 
+		let biocorruptionDataAccumulator: DFBiocorruptionTimeSkipIterationStateDatum;
+		biocorruptionDataAccumulator.newCrashDuration = this.BiocorruptionConditionSystem.GetRemainingCrashStackDurationInGameTimeSeconds();
+		biocorruptionDataAccumulator.newCrashStackCount = this.BiocorruptionConditionSystem.GetLastKnownCrashStackCount();
+		biocorruptionDataAccumulator.highestCrashStackCount = biocorruptionDataAccumulator.newCrashStackCount;
+		biocorruptionDataAccumulator.newTimeUntilRestless = this.BiocorruptionConditionSystem.GetRemainingTimeUntilRestlessInGameTimeSeconds();
+		biocorruptionDataAccumulator.isRestless = false;
+		biocorruptionDataAccumulator.crashOccuredDuringTimeskip = false;
 
 		let i = 0;
 		while i < 24 { // Iterate over each hour
-			let needHydration = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, 0.0, false);
-			let needNutrition = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, 0.0, false);
-			let needEnergy = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, 0.0, false);
-			let needNerve = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, 0.0, false);
+			let needHydration = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
+			let needNutrition = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
+			let needEnergy = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
+			let needNerve = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
 
 			let basicNeedsData: DFNeedsDatum;
 			basicNeedsData.hydration = needHydration;
@@ -867,10 +898,16 @@ public final class DFInteractionSystem extends DFSystem {
 			humanityLossData.newTimeUntilNextCyberpsychosisAllowed = humanityLossDataAccumulator.newTimeUntilNextCyberpsychosisAllowed;
 			humanityLossData.newEndotrisineDuration = humanityLossDataAccumulator.newEndotrisineDuration;
 
-			let sufferingBiocorruptionCrashAtSkipTimeStart: Bool = Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Crash);
+			let biocorruptionData: DFBiocorruptionDatum;
+			biocorruptionData.newCrashDuration = biocorruptionDataAccumulator.newCrashDuration;
+			biocorruptionData.newCrashStackCount = biocorruptionDataAccumulator.newCrashStackCount;
+			biocorruptionData.highestCrashStackCount = biocorruptionDataAccumulator.highestCrashStackCount;
+			biocorruptionData.newTimeUntilRestless = biocorruptionDataAccumulator.newTimeUntilRestless;
+			biocorruptionData.isRestless = biocorruptionDataAccumulator.isRestless;
+			biocorruptionData.crashOccuredDuringTimeskip = biocorruptionDataAccumulator.crashOccuredDuringTimeskip;
 
-			let showEnergyLock: Bool = false;
 			let showNerveLock: Bool = false;
+			let showEnergyLock: Bool = false;
 
 			// Accumulate all of the changes by iterating over each update cycle within the hour (60 / 12, or every 5 minutes)
 			let j = 1;
@@ -889,12 +926,13 @@ public final class DFInteractionSystem extends DFSystem {
 					nicotineDataAccumulator.addictionAmount,
 					nicotineDataAccumulator.addictionAmountAsPercentage,
 					nicotineDataAccumulator.addictionStage, 
-					nicotineDataAccumulator.primaryEffectDuration, 
+					nicotineDataAccumulator.activeEffectApplied, 
 					nicotineDataAccumulator.backoffDuration,
 					nicotineDataAccumulator.withdrawalLevel, 
 					nicotineDataAccumulator.withdrawalDuration,
 					currentHour,
-					nicotineDataAccumulator.hasLostAddictionAmountToday
+					nicotineDataAccumulator.hasLostAddictionAmountToday,
+					calculatedEuphoriaAtHour > 0.0
 				);
 
 				let alcoholDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Alcohol", 
@@ -902,12 +940,13 @@ public final class DFInteractionSystem extends DFSystem {
 					alcoholDataAccumulator.addictionAmount,
 					alcoholDataAccumulator.addictionAmountAsPercentage,
 					alcoholDataAccumulator.addictionStage, 
-					alcoholDataAccumulator.primaryEffectDuration, 
+					alcoholDataAccumulator.activeEffectApplied, 
 					alcoholDataAccumulator.backoffDuration,
 					alcoholDataAccumulator.withdrawalLevel, 
 					alcoholDataAccumulator.withdrawalDuration,
 					currentHour,
-					alcoholDataAccumulator.hasLostAddictionAmountToday
+					alcoholDataAccumulator.hasLostAddictionAmountToday,
+					calculatedEuphoriaAtHour > 0.0
 				);
 
 				let narcoticDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Narcotic", 
@@ -915,16 +954,17 @@ public final class DFInteractionSystem extends DFSystem {
 					narcoticDataAccumulator.addictionAmount,
 					narcoticDataAccumulator.addictionAmountAsPercentage,
 					narcoticDataAccumulator.addictionStage, 
-					narcoticDataAccumulator.primaryEffectDuration, 
+					narcoticDataAccumulator.activeEffectApplied, 
 					narcoticDataAccumulator.backoffDuration,
 					narcoticDataAccumulator.withdrawalLevel, 
 					narcoticDataAccumulator.withdrawalDuration,
 					currentHour,
-					narcoticDataAccumulator.hasLostAddictionAmountToday
+					narcoticDataAccumulator.hasLostAddictionAmountToday,
+					calculatedEuphoriaAtHour > 0.0
 				);
 
 				// Update the accumulators.
-				alcoholDataAccumulator.primaryEffectDuration = alcoholDataForIter.primaryEffectDuration;
+				alcoholDataAccumulator.activeEffectApplied = alcoholDataForIter.activeEffectApplied;
 				alcoholDataAccumulator.addictionAmount = alcoholDataForIter.addictionAmount;
 				alcoholDataAccumulator.addictionAmountAsPercentage = alcoholDataForIter.addictionAmountAsPercentage;
 				alcoholDataAccumulator.addictionStage = alcoholDataForIter.addictionStage;
@@ -934,7 +974,7 @@ public final class DFInteractionSystem extends DFSystem {
 				alcoholDataAccumulator.isWithdrawalLevelWorsened = alcoholDataForIter.withdrawalLevel > originalAlcoholWithdrawalLevel && alcoholDataForIter.withdrawalLevel != 5;
 				alcoholDataAccumulator.hasLostAddictionAmountToday = alcoholDataForIter.hasLostAddictionAmountToday;
 
-				nicotineDataAccumulator.primaryEffectDuration = nicotineDataForIter.primaryEffectDuration;
+				nicotineDataAccumulator.activeEffectApplied = nicotineDataForIter.activeEffectApplied;
 				nicotineDataAccumulator.addictionAmount = nicotineDataForIter.addictionAmount;
 				nicotineDataAccumulator.addictionAmountAsPercentage = nicotineDataForIter.addictionAmountAsPercentage;
 				nicotineDataAccumulator.addictionStage = nicotineDataForIter.addictionStage;
@@ -944,7 +984,7 @@ public final class DFInteractionSystem extends DFSystem {
 				nicotineDataAccumulator.isWithdrawalLevelWorsened = nicotineDataForIter.withdrawalLevel > originalNicotineWithdrawalLevel && nicotineDataForIter.withdrawalLevel != 5;
 				nicotineDataAccumulator.hasLostAddictionAmountToday = nicotineDataForIter.hasLostAddictionAmountToday;
 
-				narcoticDataAccumulator.primaryEffectDuration = narcoticDataForIter.primaryEffectDuration;
+				narcoticDataAccumulator.activeEffectApplied = narcoticDataForIter.activeEffectApplied;
 				narcoticDataAccumulator.addictionAmount = narcoticDataForIter.addictionAmount;
 				narcoticDataAccumulator.addictionAmountAsPercentage = narcoticDataForIter.addictionAmountAsPercentage;
 				narcoticDataAccumulator.addictionStage = narcoticDataForIter.addictionStage;
@@ -957,32 +997,35 @@ public final class DFInteractionSystem extends DFSystem {
 				//
 				// Biocorruption
 				//
-				let shouldBeCrashed: Bool = false;
-				let biocorruptionState = this.BiocorruptionConditionSystem.GetBiocorruptionStateInProvidedState(
-																							alcoholDataAccumulator, 
-																							nicotineDataAccumulator, 
-																							narcoticDataAccumulator);
+				let crashedOnThisIter: Bool = false;
 
-				if Equals(biocorruptionState, DFBiocorruptionConditionState.Crash) || (Equals(biocorruptionState, DFBiocorruptionConditionState.Bonus) && currentHour == this.BiocorruptionConditionSystem.lastBonusTime.Hours()) {
-					shouldBeCrashed = true;
-				}
-				
+				// Calculate the Biocorruption Level. Because the Addiction states are the source of truth for the level, we don't store it in an accumulator.
 				let biocorruptionLevelAtIter: Uint32 = this.BiocorruptionConditionSystem.GetCalculatedBiocorruptionLevelInProvidedState(alcoholDataAccumulator.addictionStage, nicotineDataAccumulator.addictionStage, narcoticDataAccumulator.addictionStage, alcoholDataAccumulator.addictionAmountAsPercentage, nicotineDataAccumulator.addictionAmountAsPercentage, narcoticDataAccumulator.addictionAmountAsPercentage);
 				DFLog(this, "biocorruptionLevelAtIter: " + ToString(biocorruptionLevelAtIter));
-				let percentageOfBasicNeedLossToDelay = this.needPercentageToDelayFromBiocorruption * Cast<Float>(biocorruptionLevelAtIter);
-				DFLog(this, "percentageOfBasicNeedLossToDelay: " + ToString(percentageOfBasicNeedLossToDelay));
+
+				// Allow the Crash duration to reduce if the player is NOT sleeping, NOT euphoric, and
+				if (!isSleeping || (isSleeping && !biocorruptionDataAccumulator.crashOccuredDuringTimeskip)) && calculatedEuphoriaAtHour == 0.0 && biocorruptionDataAccumulator.newCrashStackCount > 0u {
+					biocorruptionDataAccumulator.newCrashDuration = ClampF(biocorruptionDataAccumulator.newCrashDuration - 300.0, 0.0, HoursToGameTimeSeconds(0.5));
+					if biocorruptionDataAccumulator.newCrashDuration <= 0.0 {
+						DFLog(this, "Would remove Crash stack this iter.");
+
+						if biocorruptionDataAccumulator.newCrashStackCount > 0u {
+							biocorruptionDataAccumulator.newCrashStackCount -= 1u;
+							biocorruptionDataAccumulator.newCrashDuration = HoursToGameTimeSeconds(0.5);
+						} else {
+							biocorruptionDataAccumulator.newCrashDuration = 0.0;
+						}						
+					}
+				}
 
 				//
 				// Nutrition and Hydration
 				//
-				let nutritionChangeTemp: Float = this.NutritionSystem.GetNutritionChange();
-				let hydrationChangeTemp: Float = this.HydrationSystem.GetHydrationChange();
+				let nutritionChangeTemp: DFNeedChangeWithRecoverLimit = this.NutritionSystem.GetNeedChangeWithRecoverLimit(calculatedNutritionAtHour, isSleeping, calculatedEuphoriaAtHour > 0.0);
+				calculatedDelayedNutritionAtHour += nutritionChangeTemp.delayedLoss;
 
-				if isSleeping {
-					// Reduced metabolism - Reduce Nutrition and Hydration at reduced rate
-					nutritionChangeTemp *= this.sleepingReduceMetabolismMult;
-					hydrationChangeTemp *= this.sleepingReduceMetabolismMult;
-				}
+				let hydrationChangeTemp: DFNeedChangeWithRecoverLimit = this.HydrationSystem.GetNeedChangeWithRecoverLimit(calculatedHydrationAtHour, isSleeping, calculatedEuphoriaAtHour > 0.0);
+				calculatedDelayedHydrationAtHour += hydrationChangeTemp.delayedLoss;
 				
 				//
 				// Nerve
@@ -993,114 +1036,148 @@ public final class DFInteractionSystem extends DFSystem {
 				let nutritionStageAtHour: Int32 = this.NutritionSystem.GetNeedStageAtValue(calculatedNutritionAtHour);
 				let energyStageAtHour: Int32 = this.EnergySystem.GetNeedStageAtValue(calculatedEnergyAtHour);
 
-				if Equals(timeSkipType, DFTimeSkipType.Blackout) {
-					// Don't change Nerve when blacking out. (Prevents dying after waking up)
+				if calculatedEuphoriaAtHour > 0.0 {
+					// Euphoria depletes at a constant rate before Nerve.
+					let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
+					calculatedEuphoriaAtHour += nerveChangeTemp;
+					if calculatedEuphoriaAtHour <= 0.0 {
+						calculatedEuphoriaAtHour = 0.0;
+						crashedOnThisIter = true;
 
-				} else if Equals(timeSkipType, DFTimeSkipType.FullSleep) {
-					if calculatedNerveAtHour <= nerveSoftCapAtIter && hydrationStageAtHour < 3 && nutritionStageAtHour < 3 {
-						// Recover Nerve when sleeping in a bed.
-						calculatedNerveAtHour += this.NerveSystem.nerveRecoverAmountSleeping;
-
-						if calculatedNerveAtHour > this.NerveSystem.nerveRecoverAmountSleepingMax {
-							calculatedNerveAtHour = this.NerveSystem.nerveRecoverAmountSleepingMax;
+						// Crash.
+						biocorruptionDataAccumulator.newCrashDuration = HoursToGameTimeSeconds(0.5);
+						biocorruptionDataAccumulator.newCrashStackCount += this.BiocorruptionConditionSystem.crashStacksAfterEuphoriaPerBiocorruptionLevel[Cast<Int32>(biocorruptionLevelAtIter)];
+						if biocorruptionDataAccumulator.newCrashStackCount > this.BiocorruptionConditionSystem.GetMaxCrashStackCount() {
+							biocorruptionDataAccumulator.newCrashStackCount = this.BiocorruptionConditionSystem.GetMaxCrashStackCount();
 						}
 
-						if calculatedNerveAtHour >= nerveSoftCapAtIter {
-							calculatedNerveAtHour = nerveSoftCapAtIter;
-							if nerveSoftCapAtIter < 100.0 {
-								showNerveLock = true;
-							}
+						biocorruptionDataAccumulator.crashOccuredDuringTimeskip = true;
+						
+						// Track the highest Crash stack count so that we can play the most severe animation even if the player waits for all of them to expire.
+						if biocorruptionDataAccumulator.newCrashStackCount > biocorruptionDataAccumulator.highestCrashStackCount {
+							biocorruptionDataAccumulator.highestCrashStackCount = biocorruptionDataAccumulator.newCrashStackCount;
 						}
-					} else {
-						let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
-						calculatedNerveAtHour += nerveChangeTemp;
+
+						// Allow any Addictions to progress their Withdrawals in the next iteration.
+
+						DFLog(this, "CRASHED on this iter!");
 					}
 
 				} else {
-					let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
-					calculatedNerveAtHour += nerveChangeTemp;
+					if Equals(timeSkipType, DFTimeSkipType.Blackout) {
+						// Don't change Nerve when blacking out. (Prevents dying after waking up)
+
+					} else if Equals(timeSkipType, DFTimeSkipType.FullSleep) {
+						if calculatedNerveAtHour <= nerveSoftCapAtIter && hydrationStageAtHour < 3 && nutritionStageAtHour < 3 {
+							// Recover Nerve when sleeping in a bed.
+							calculatedNerveAtHour += this.NerveSystem.nerveRecoverAmountSleeping;
+
+							if calculatedNerveAtHour > this.NerveSystem.nerveRecoverAmountSleepingMax {
+								calculatedNerveAtHour = this.NerveSystem.nerveRecoverAmountSleepingMax;
+							}
+
+							if calculatedNerveAtHour >= nerveSoftCapAtIter {
+								calculatedNerveAtHour = nerveSoftCapAtIter;
+								if nerveSoftCapAtIter < 100.0 {
+									showNerveLock = true;
+								}
+							}
+						} else {
+							let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
+							calculatedNerveAtHour += nerveChangeTemp;
+						}
+
+					} else {
+						let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
+						calculatedNerveAtHour += nerveChangeTemp;
+					}
+				}
+
+				//
+				// Biocorruption
+				//
+				
+				// Does the player have a Restless duration?
+				if biocorruptionDataAccumulator.newTimeUntilRestless > 0.0 {
+					biocorruptionDataAccumulator.newTimeUntilRestless = ClampF(biocorruptionDataAccumulator.newTimeUntilRestless - 300.0, 0.0, HoursToGameTimeSeconds(48));
+				}
+
+				// Are they Restless?
+				if biocorruptionDataAccumulator.newTimeUntilRestless == 0.0 && biocorruptionLevelAtIter > 0u {
+					biocorruptionDataAccumulator.isRestless = true;
+				} else {
+					biocorruptionDataAccumulator.isRestless = false;
 				}
 
 				//
 				// Energy
 				//
-				let energyChangeTemp: DFEnergyChangeWithRecoverLimit = this.EnergySystem.GetEnergyChangeWithRecoverLimit(
+				let energyChangeTemp: DFNeedChangeWithRecoverLimit = this.EnergySystem.GetNeedChangeWithRecoverLimit(
 					                                                       calculatedEnergyAtHour, 
 																		   timeSkipType, 
-																		   this.NerveSystem.GetNeedStageAtValue(calculatedNerveAtHour) >= 3, 
-																		   biocorruptionLevelAtIter, 
-																		   sufferingBiocorruptionCrashAtSkipTimeStart,
-																		   percentageOfBasicNeedLossToDelay,
+																		   calculatedEuphoriaAtHour > 0.0,
+																		   biocorruptionDataAccumulator.isRestless,
 																		   calculatedDelayedEnergyAtHour);
 
+				DFLog(this, "energyChangeTemp.change: " + ToString(energyChangeTemp.change) + ", energyChangeTemp.delayedLoss: " + ToString(energyChangeTemp.delayedLoss));
 				calculatedDelayedEnergyAtHour += energyChangeTemp.delayedLoss;
-				let energyMax: Float = this.EnergySystem.GetNeedMax();
 				showEnergyLock = energyChangeTemp.showLock;
+				let energyMax: Float = this.EnergySystem.GetNeedMax();
+				DFLog(this, "energyChangeTemp.needMax: " + ToString(energyMax));
 
 				// Nuke any temporary Energy effects the player might have.
-				energyChangeTemp.change -= energyRestoredFromEnergized;
-				energyChangeTemp.change += (energyDrainedFromAlcohol * -1.0);
-				energyRestoredFromEnergized = 0.0;
-				energyDrainedFromAlcohol = 0.0;
+				let energy_i: Int32 = 0;
+				while energy_i < ArraySize(managedEffectState) {
+					let canClear: Bool = false;
+					if Equals(managedEffectState[energy_i].effectMode, DFManagedEffectMode.Timed) || crashedOnThisIter {
+						canClear = true;
+						for activeEffectEnergyChange in managedEffectState[energy_i].activeEffectEnergyChanges {
+							energyChangeTemp.change += -activeEffectEnergyChange;
+						}
+					}
+					
+					if canClear {
+						ArrayClear(managedEffectState[energy_i].activeEffectEnergyChanges);
+						managedEffectState[energy_i].toleranceEffectCount = 0;
+					}
 
-				// Apply delayed Energy loss, if necessary.
-				if biocorruptionLevelAtIter > 0u && shouldBeCrashed && calculatedDelayedEnergyAtHour < 0.0 {
-					DFLog(this, "Dumping " + ToString(calculatedDelayedNutritionAtHour) + " delayed Energy.");
-					calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + energyChangeTemp.change, 0.0, energyMax);
-					calculatedEnergyAtHour += calculatedDelayedEnergyAtHour;
-					calculatedDelayedEnergyAtHour = 0.0;
-				} else {
-					calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + energyChangeTemp.change, 0.0, energyMax);
+					energy_i += 1;
+				}
+
+				calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + energyChangeTemp.change, 0.0, energyMax);
+
+				// Apply delayed Energy loss, if necessary. Don't damage Energy if Crashing while asleep.
+				if crashedOnThisIter {
+					if calculatedDelayedEnergyAtHour < 0.0 {
+						DFLog(this, "Applying " + ToString(calculatedDelayedEnergyAtHour) + " delayed Energy.");
+						calculatedEnergyAtHour = ClampF(calculatedEnergyAtHour + calculatedDelayedEnergyAtHour, 0.0, 100.0);
+						calculatedDelayedEnergyAtHour = 0.0;
+					}
 				}
 
 				//
 				// Hydration and Nutrition (Post-Biocorruption Calculation)
 				//
-				if biocorruptionLevelAtIter > 0u {
-					if shouldBeCrashed {
-						DFLog(this, "Should be crashed.");
-						// We have Biocorruption, and we should be Crashed now.
-						if calculatedDelayedNutritionAtHour < 0.0 {
-							DFLog(this, "Dumping " + ToString(calculatedDelayedNutritionAtHour) + " delayed Nutrition.");
-							// Apply Delayed Need loss.
-							calculatedNutritionAtHour = ClampF(calculatedNutritionAtHour + nutritionChangeTemp, 0.0, this.NutritionSystem.GetNeedMax());
-							calculatedNutritionAtHour += calculatedDelayedNutritionAtHour;
-							calculatedDelayedNutritionAtHour = 0.0;
-						} else {
-							// Drain as normal.
-							calculatedNutritionAtHour = ClampF(calculatedNutritionAtHour + nutritionChangeTemp, 0.0, this.NutritionSystem.GetNeedMax());
-						}
+				calculatedNutritionAtHour = ClampF(calculatedNutritionAtHour + nutritionChangeTemp.change, 0.0, this.NutritionSystem.GetNeedMax());
+				calculatedHydrationAtHour = ClampF(calculatedHydrationAtHour + hydrationChangeTemp.change, 0.0, this.HydrationSystem.GetNeedMax());
 
-						if calculatedDelayedHydrationAtHour < 0.0 {
-							// Apply Delayed Need loss.
-							calculatedHydrationAtHour = ClampF(calculatedHydrationAtHour + hydrationChangeTemp, 0.0, this.HydrationSystem.GetNeedMax());
-							calculatedHydrationAtHour += calculatedDelayedHydrationAtHour;
-							calculatedDelayedHydrationAtHour = 0.0;
-						} else {
-							// Drain as normal.
-							calculatedHydrationAtHour = ClampF(calculatedHydrationAtHour + hydrationChangeTemp, 0.0, this.HydrationSystem.GetNeedMax());
-						}
-
-					} else {
-						DFLog(this, "NOT crashed.");
-						// We have Biocorruption, but are not Crashed. Drain while accumulating delayed loss.
-						let delayedNutritionLoss: Float = nutritionChangeTemp * percentageOfBasicNeedLossToDelay;
-						let delayedHydrationLoss: Float = hydrationChangeTemp * percentageOfBasicNeedLossToDelay;
-
-						calculatedDelayedNutritionAtHour += delayedNutritionLoss;
-						calculatedDelayedHydrationAtHour += delayedHydrationLoss;
-						DFLog(this, "Delayed Nutrition loss: " + ToString(calculatedDelayedNutritionAtHour));
-
-						nutritionChangeTemp -= delayedNutritionLoss;
-						hydrationChangeTemp -= delayedHydrationLoss;
-
-						calculatedNutritionAtHour = ClampF(calculatedNutritionAtHour + nutritionChangeTemp, 0.0, this.NutritionSystem.GetNeedMax());
-						calculatedHydrationAtHour = ClampF(calculatedHydrationAtHour + hydrationChangeTemp, 0.0, this.HydrationSystem.GetNeedMax());
+				// Apply delayed Hydration and Nutrition loss, if necessary.
+				if crashedOnThisIter {
+					DFLog(this, "Applying " + ToString(calculatedDelayedNutritionAtHour) + " delayed Nutrition.");
+					calculatedNutritionAtHour += calculatedDelayedNutritionAtHour;
+					if calculatedNutritionAtHour < 0.0 {
+						calculatedNutritionAtHour = 0.0;
 					}
-				} else {
-					// We don't have Biocorruption. Drain as normal.
-					calculatedNutritionAtHour = ClampF(calculatedNutritionAtHour + nutritionChangeTemp, 0.0, this.NutritionSystem.GetNeedMax());
-					calculatedHydrationAtHour = ClampF(calculatedHydrationAtHour + hydrationChangeTemp, 0.0, this.HydrationSystem.GetNeedMax());
+					calculatedDelayedNutritionAtHour = 0.0;
+				}
+
+				if crashedOnThisIter {
+					DFLog(this, "Applying " + ToString(calculatedDelayedHydrationAtHour) + " delayed Hydration.");
+					calculatedHydrationAtHour += calculatedDelayedHydrationAtHour;
+					if calculatedHydrationAtHour < 0.0 {
+						calculatedHydrationAtHour = 0.0;
+					}
+					calculatedDelayedHydrationAtHour = 0.0;
 				}
 
 				//
@@ -1130,10 +1207,17 @@ public final class DFInteractionSystem extends DFSystem {
 					humanityLossDataAccumulator.newEndotrisineDuration = ClampF(humanityLossDataAccumulator.newEndotrisineDuration - 300.0, 0.0, HoursToGameTimeSeconds(24));
 				}
 
+				// Basic Needs (final calculation)
+				calculatedHydrationMaxAtHour = this.HydrationSystem.GetCalculatedBasicNeedMaxInProvidedState(Cast<Int32>(biocorruptionDataAccumulator.newCrashStackCount), 0, calculatedEuphoriaAtHour > 0.0);
+				calculatedHydrationAtHour = ClampF(calculatedHydrationAtHour, 0.0, calculatedHydrationMaxAtHour);
+
+				calculatedNutritionMaxAtHour = this.NutritionSystem.GetCalculatedBasicNeedMaxInProvidedState(Cast<Int32>(biocorruptionDataAccumulator.newCrashStackCount), 0, calculatedEuphoriaAtHour > 0.0);
+				calculatedNutritionAtHour = ClampF(calculatedNutritionAtHour, 0.0, calculatedNutritionMaxAtHour);
+
 				//
 				// Nerve (final calculation)
 				//
-				calculatedNerveMaxAtHour = this.NerveSystem.GetCalculatedNeedMaxInProvidedState(addictionTreatmentDuration, alcoholDataAccumulator.withdrawalLevel, nicotineDataAccumulator.withdrawalLevel, narcoticDataAccumulator.withdrawalLevel);
+				calculatedNerveMaxAtHour = this.NerveSystem.GetCalculatedNerveMaxInProvidedState(addictionTreatmentDuration, alcoholDataAccumulator.withdrawalLevel, nicotineDataAccumulator.withdrawalLevel, narcoticDataAccumulator.withdrawalLevel, calculatedEuphoriaAtHour > 0.0);
 				calculatedNerveAtHour = ClampF(calculatedNerveAtHour, 0.0, calculatedNerveMaxAtHour);
 
 				j += 1;
@@ -1143,11 +1227,15 @@ public final class DFInteractionSystem extends DFSystem {
 			basicNeedsData.energy.value = calculatedEnergyAtHour;
 			basicNeedsData.energy.delayedValue = calculatedDelayedEnergyAtHour;
 			basicNeedsData.energy.showLock = showEnergyLock;
+			basicNeedsData.energy.ceiling = calculatedEnergyMaxAtHour;
 			basicNeedsData.nutrition.value = calculatedNutritionAtHour;
 			basicNeedsData.nutrition.delayedValue = calculatedDelayedNutritionAtHour;
+			basicNeedsData.nutrition.ceiling = calculatedNutritionMaxAtHour;
 			basicNeedsData.hydration.value = calculatedHydrationAtHour;
 			basicNeedsData.hydration.delayedValue = calculatedDelayedHydrationAtHour;
+			basicNeedsData.hydration.ceiling = calculatedHydrationMaxAtHour;
 			basicNeedsData.nerve.value = calculatedNerveAtHour;
+			basicNeedsData.nerve.overcharge = calculatedEuphoriaAtHour;
 			basicNeedsData.nerve.ceiling = calculatedNerveMaxAtHour;
 			basicNeedsData.nerve.showLock = showNerveLock;
 
@@ -1184,10 +1272,32 @@ public final class DFInteractionSystem extends DFSystem {
 
 			ArrayPush(calculatedHumanityLossData, humanityLossData);
 
+			biocorruptionData.newCrashDuration = biocorruptionDataAccumulator.newCrashDuration;
+			biocorruptionData.newCrashStackCount = biocorruptionDataAccumulator.newCrashStackCount;
+			biocorruptionData.highestCrashStackCount = biocorruptionDataAccumulator.highestCrashStackCount; // Consumed by Energy System
+			biocorruptionData.newTimeUntilRestless = biocorruptionDataAccumulator.newTimeUntilRestless;
+			biocorruptionData.isRestless = biocorruptionDataAccumulator.isRestless;
+			biocorruptionData.crashOccuredDuringTimeskip = biocorruptionDataAccumulator.crashOccuredDuringTimeskip;
+
+			ArrayPush(calculatedBiocorruptionData, biocorruptionData);
+
+			DFLog(this, "--------------------------------------------------------");
+			DFLog(this, "calculatedEnergyAtHour = " + ToString(calculatedEnergyAtHour));
+			DFLog(this, "calculatedDelayedEnergyAtHour = " + ToString(calculatedDelayedEnergyAtHour));
+			DFLog(this, "showEnergyLock = " + ToString(showEnergyLock));
+			DFLog(this, "calculatedNutritionAtHour = " + ToString(calculatedNutritionAtHour));
+			DFLog(this, "calculatedDelayedNutritionAtHour = " + ToString(calculatedDelayedNutritionAtHour));
+			DFLog(this, "calculatedHydrationAtHour = " + ToString(calculatedHydrationAtHour));
+			DFLog(this, "calculatedDelayedHydrationAtHour = " + ToString(calculatedDelayedHydrationAtHour));
+			DFLog(this, "biocorruptionData.newCrashDuration = " + ToString(biocorruptionData.newCrashDuration));
+			DFLog(this, "biocorruptionData.newCrashStackCount = " + ToString(biocorruptionData.newCrashStackCount));
+			DFLog(this, "biocorruptionData.newTimeUntilRestless = " + ToString(biocorruptionData.newTimeUntilRestless));
+			DFLog(this, "biocorruptionData.crashOccuredDuringTimeskip = " + ToString(biocorruptionData.crashOccuredDuringTimeskip));
+
 			i += 1;
 		};
 
-		let calculatedData: DFFutureHoursData = DFFutureHoursData(calculatedBasicNeedsData, calculatedAddictionData, calculatedHumanityLossData);
+		let calculatedData: DFFutureHoursData = DFFutureHoursData(calculatedBasicNeedsData, calculatedAddictionData, calculatedHumanityLossData, calculatedBiocorruptionData);
 
 		return calculatedData;
 	}
@@ -1221,10 +1331,23 @@ public final class DFInteractionSystem extends DFSystem {
 		let choiceCaption: String = choiceData.choice.caption;
 		let choiceCaptionParts: array<ref<InteractionChoiceCaptionPart>> = choiceData.choice.captionParts.parts;
 		let choiceIconName: CName = n"";
+		let injectedInteractionIconName: CName = n"";
 		for part in choiceCaptionParts {
 			let icon: wref<ChoiceCaptionIconPart_Record> = (part as InteractionChoiceCaptionIconPart).iconRecord;
 			if IsDefined(icon) {
-				choiceIconName = icon.EnumName();
+				let injectedInteractionIcon: Bool;
+				for name in this.injectedInteractionIconEnumNames {
+					if Equals(name, icon.EnumName()) {
+						injectedInteractionIcon = true;
+						break;
+					}
+				}
+				
+				if injectedInteractionIcon {
+					injectedInteractionIconName = icon.EnumName();
+				} else {
+					choiceIconName = icon.EnumName();
+				}
 			}
 		}
 
@@ -1232,24 +1355,24 @@ public final class DFInteractionSystem extends DFSystem {
 		// Register for callback to clear these values shortly after.
 		this.lastAttemptedChoiceCaption = choiceCaption;
 		this.lastAttemptedChoiceIconName = choiceIconName;
+		this.lastAttemptedInjectedInteractionIconName = injectedInteractionIconName;
 		this.RegisterClearLastAttemptedChoiceForFXCheckCallback();
+
+		this.HandleIsHumanityLossRestoreChoice(choiceCaptionParts, choiceCaption, choiceIconName);
+		
+		// If this originated from Relax Action Mode, stop here.
+		if this.RelaxActionSystem.GetInRelaxActionMode() { return; }
 
 		if this.IsSleepChoice(choiceCaption, choiceIconName) {
 			this.SleepChoiceSelected();
 		
 		} else if this.IsDrinkTeaInCorpoPlazaChoice(choiceCaption) {
-			if !this.NerveSystem.GetHasNausea() {
-				this.DrankTeaFromChoice();
-			} else {
-				this.QueueVomitFromInteractionChoice();
-			}
+			this.DrankTeaFromChoice();
 		
 		} else if this.IsDrinkTeaWithMrHandsChoice(choiceCaption) {
-			// Story moment - Ignore Nausea
 			this.DrankTeaFromChoice();
 
 		} else if this.IsDrinkCoffeeInDialogChoice(choiceCaption) {
-			// Story moment - Ignore Nausea
 			this.DrankCoffeeFromChoice();
 
 		} else if StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Smoke)) || StrContains(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_TakeDrag)) {
@@ -1259,7 +1382,11 @@ public final class DFInteractionSystem extends DFSystem {
 			this.NerveSystem.SetNerveRegenTarget(100.0);
 			
 		} else if this.IsNerveRestorationChoice(choiceCaption, choiceIconName) {
-			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, true);
+			let queuedChange: DFQueuedNeedValueChange;
+			queuedChange.value = 100.0;
+			queuedChange.forceMomentaryUIDisplay = true;
+			queuedChange.isSoftCapRestrictedChange = true;
+			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(queuedChange);
 
 		} else if this.IsSmallNerveRestorationChoice(choiceCaption, choiceIconName) {
 			// We want the Nerve bar to provide immediate feedback, so directly change Nerve now instead of a queued change
@@ -1276,10 +1403,14 @@ public final class DFInteractionSystem extends DFSystem {
 			this.NerveSystem.ChangeNeedValue(20.0, changeNeedValueProps);
 
 		} else if this.IsNutritionRestorationChoice(choiceCaption, choiceIconName) {
-			this.NutritionSystem.QueueContextuallyDelayedNeedValueChange(20.0, true, true, t"DarkFutureStatusEffect.WellFed");
+			this.PlayerStateService.HandleManagedConsumable(TweakDBInterface.GetItemRecord(t"Items.GoodQualityFood9"), true); // Gojilla
+		
+		} else if this.IsDumDumBlackLaceChoice(choiceCaption, choiceIconName) {
+			// Specifically apply as many Narcotic stacks as the player can currently handle.
+			let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(t"Items.BlackLaceV0");
+			let overridePipeline: DFManagedEffectPipelineResult = this.PlayerStateService.ManagedConsumablePipeline(itemRecord, true);
+			this.PlayerStateService.HandleManagedConsumable(itemRecord, true, true, overridePipeline);
 		}
-
-		this.HandleIsHumanityLossRestoreChoice(choiceCaptionParts, choiceCaption, choiceIconName);
 	}
 
     public final func DrankCoffeeFromChoice() -> Void {
@@ -1294,35 +1425,43 @@ public final class DFInteractionSystem extends DFSystem {
 			
 			// Since the player can repeatedly activate the coffee machine to obtain max Hydration,
 			// just grant all of it on the first use.
-            this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, true);
+			let queuedChange: DFQueuedNeedValueChange;
+			queuedChange.value = 100.0;
+			queuedChange.forceMomentaryUIDisplay = true;
+			queuedChange.isSoftCapRestrictedChange = true;
+            this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(queuedChange);
 
 			// Treat the Energy restoration from the coffee machine like consuming normal coffee items.
-			// Grant all stacks possible from coffee at once.
-            this.EnergySystem.TryToApplyTemporaryEnergy(this.EnergySystem.energizedMaxStacksFromCaffeine, 0u, DFTempEnergyItemType.Caffeine, true, true);
+			this.PlayerStateService.HandleManagedConsumable(TweakDBInterface.GetItemRecord(t"Items.LowQualityDrink1"), true);
 		}
 	}
 
 	public final func SmokedFromChoice() -> Void {
 		//DFProfile();
 		if this.GameStateService.IsValidGameState(this, true) {
+			DFLog(this, "============= Smoking prompt debounce window START");
+			this.isWithinSmokePromptDebounceWindow = true;
+			this.RegisterSmokePromptDebounceCallback();
+
+			this.PlayerStateService.HandleManagedConsumable(TweakDBInterface.GetItemRecord(t"DarkFutureItem.CigarettePackC"), true);
+
+			/*
 			// Remove any pre-existing item effects.
 			if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
 				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureSmoking");
 			}
 			
+			// TODO - Needed still? Should just bail on the fallback FX when in a higher scene tier
 			// Smoking status effect variant to suppress additional unneeded FX
 			StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
-
-			// Use Vargas Black Label as an example item when calculating the max override.
-			let itemRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(t"DarkFutureItem.CigarettePackC");
-			this.MainSystem.DispatchItemConsumedEvent(itemRecord, true, true);
+			*/
 		}
 	}
 
 	private final func SleepChoiceSelected() -> Void {
 		//DFProfile();
 		if this.GameStateService.IsValidGameState(this, true) {
-			// Used to suppress VFX and notifications until the player gets up.
+			// Used to suppress VFX, notifications, and animations until the player gets up.
 			this.GameStateService.SetInSleepCinematic(true);
 		}
 	}
@@ -1330,7 +1469,12 @@ public final class DFInteractionSystem extends DFSystem {
     private final func DrankTeaFromChoice() -> Void {
 		//DFProfile();
 		if this.GameStateService.IsValidGameState(this, true) {
-			this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, true, t"DarkFutureStatusEffect.Sated");
+			let queuedChange: DFQueuedNeedValueChange;
+			queuedChange.value = 100.0;
+			queuedChange.forceMomentaryUIDisplay = true;
+			queuedChange.isSoftCapRestrictedChange = true;
+			queuedChange.effectToApplyAfterValueChange = t"DarkFutureStatusEffect.Sated";
+			this.HydrationSystem.QueueContextuallyDelayedNeedValueChange(queuedChange);
 		}
 	}
 
@@ -1382,38 +1526,10 @@ public final class DFInteractionSystem extends DFSystem {
 	//
 	//	FX
 	//
-	public final func HandleSmokingFromItem() {
-		//DFProfile();
-		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice") {
-			StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
-		}
-	}
-
 	public final func QueueVomitFromInteractionChoice() -> Void {
 		//DFProfile();
-		if this.Settings.nauseaInteractableEffectEnabled {
-			// Vomit from Interaction Choice: Fade to black, mini-map shake, vomit VO
-
-			let vomitNotification: DFNotification;
-			vomitNotification.sfx = DFAudioCue(n"sq032_sc_04_v_pukes", 0);
-			vomitNotification.vfx = DFVisualEffect(n"blink_slow", null);
-			this.NotificationService.QueueNotification(vomitNotification);
-
-			let shakeNotification: DFNotification;
-			shakeNotification.vfx = DFVisualEffect(n"stagger_effect", null);
-			this.NotificationService.QueueNotification(shakeNotification);
-
-			this.RegisterVomitFromInteractionChoiceStage2();
-		}
-	}
-
-	public final func OnVomitFromInteractionChoiceStage2() -> Void {
-		//DFProfile();
-		// Vomit from Interaction Choice: Splash SFX (ew!)
-
-		let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
-		evt.soundName = n"w_melee_gore_blood_splat_small";
-		this.player.QueueEvent(evt);
+		this.QuestsSystem.SetFact(n"df_fact_crash_override_notification", 1);
+		this.AnimationService.TryToQueueCrashAnimation(DFCrashAnimMode.ForceVomit);
 	}
 
 	//
@@ -1530,7 +1646,13 @@ public final class DFInteractionSystem extends DFSystem {
 					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_BD_sq021) {
 						// The Hunt (Finish BD)
 						increaseHumanityLossDuringQuestMinor = true;
-
+					
+					} else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Biocorruption_sq031) {
+						// A Cool Metal Fire (complete)
+						this.BiocorruptionConditionSystem.ApplyCrash(10u, true);
+						this.AlcoholAddictionSystem.TryToAdvanceAddiction(this.AlcoholAddictionSystem.GetAddictionAmountOnUse(), 12, DFManagedEffectType.Alcohol, true);
+						this.NicotineAddictionSystem.TryToAdvanceAddiction(this.NicotineAddictionSystem.GetAddictionAmountOnUse(), 3, DFManagedEffectType.Nicotine, true);
+						this.NarcoticAddictionSystem.TryToAdvanceAddiction(this.NarcoticAddictionSystem.GetAddictionAmountOnUse(), 6, DFManagedEffectType.Narcotic, true);
 					}
 				}
 			}
@@ -1538,9 +1660,16 @@ public final class DFInteractionSystem extends DFSystem {
 
 		if sleptDuringQuest {
 			this.SimulateSleepFromQuest();
+
 		} else if romanceDuringQuest {
-			this.EnergySystem.ClearEnergyManagementEffects();
-			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, true);
+			// TODO - Does this still make sense?
+			this.PlayerStateService.ClearAllManagedEffects();
+			
+			let queuedChange: DFQueuedNeedValueChange;
+			queuedChange.value = 100.0;
+			queuedChange.forceMomentaryUIDisplay = true;
+			queuedChange.isSoftCapRestrictedChange = true;
+			this.NerveSystem.QueueContextuallyDelayedNeedValueChange(queuedChange);
 		}
 
 		if restoreHumanityLossDuringQuestMinor {
@@ -1571,9 +1700,21 @@ public final class DFInteractionSystem extends DFSystem {
 
 	public final func SimulateSleepFromQuest() -> Void {
 		//DFProfile();
-		this.EnergySystem.ClearEnergyManagementEffects();
-		this.EnergySystem.QueueContextuallyDelayedNeedValueChange(100.0, false, true);
-		this.NerveSystem.QueueContextuallyDelayedNeedValueChange(100.0, true, true);
+		// TODO: Does this still make sense?
+		this.PlayerStateService.ClearAllManagedEffects();
+		// TODO: this.EnergySystem.ClearCrashStacksByHours();
+
+		let queuedEnergyChange: DFQueuedNeedValueChange;
+		queuedEnergyChange.value = 100.0;
+		queuedEnergyChange.isSoftCapRestrictedChange = true;
+
+		let queuedNerveChange: DFQueuedNeedValueChange;
+		queuedNerveChange.value = 100.0;
+		queuedNerveChange.forceMomentaryUIDisplay = true;
+		queuedNerveChange.isSoftCapRestrictedChange = true;
+		
+		this.EnergySystem.QueueContextuallyDelayedNeedValueChange(queuedEnergyChange);
+		this.NerveSystem.QueueContextuallyDelayedNeedValueChange(queuedNerveChange);
 	}
 
 	public final func CheckHotscene() -> Void {
@@ -1608,21 +1749,33 @@ public final class DFInteractionSystem extends DFSystem {
 	*/
 	}
 
+	//
+	// Smoke Choice Debounce Callback
+	//
+	public final func OnSmokePromptDebounceCallback() -> Void {
+		this.isWithinSmokePromptDebounceWindow = false;
+		DFLog(this, "============= Smoking prompt debounce window END");
+	}
+
+	public final func IsWithinSmokePromptDebounceWindow() -> Bool {
+		return this.isWithinSmokePromptDebounceWindow;
+	}
+
     //
     //  Registration
     //
     private final func RegisterClearLastAttemptedChoiceForFXCheckCallback() -> Void {
 		//DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback.Create(this), this.clearLastAttemptedChoiceForFXCheckDelayID, this.clearLastAttemptedChoiceForFXCheckDelayInterval);
+		RegisterDFDelayCallback(this.DelaySystem, DFInteractionSystemClearLastAttemptedChoiceForFXCheckCallback.Create(), this.clearLastAttemptedChoiceForFXCheckDelayID, this.clearLastAttemptedChoiceForFXCheckDelayInterval);
 	}
 
-	private final func RegisterVomitFromInteractionChoiceStage2() -> Void {
+	private final func RegisterSmokePromptDebounceCallback() -> Void {
 		//DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, VomitFromInteractionChoiceStage2Callback.Create(this), this.vomitFromInteractionChoiceStage2DelayID, this.vomitFromInteractionChoiceStage2DelayInterval);
+		RegisterDFDelayCallback(this.DelaySystem, DFInteractionSystemSmokeChoiceDebounceCallback.Create(), this.smokePromptDebounceDelayID, this.smokePromptDebounceDelayInterval);
 	}
 
 	//
-	//	Unregistration
+	//	Deregistration
 	//
 
 	private final func UnregisterClearLastAttemptedChoiceForFXCheckCallback() -> Void {
@@ -1630,9 +1783,9 @@ public final class DFInteractionSystem extends DFSystem {
 		UnregisterDFDelayCallback(this.DelaySystem, this.clearLastAttemptedChoiceForFXCheckDelayID);
 	}
 
-	private final func UnregisterVomitFromInteractionChoiceStage2Callback() -> Void {
+	private final func UnregisterSmokePromptDebounceCallback() -> Void {
 		//DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.vomitFromInteractionChoiceStage2DelayID);
+		UnregisterDFDelayCallback(this.DelaySystem, this.smokePromptDebounceDelayID);
 	}
 
 	//
@@ -1708,6 +1861,11 @@ public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoi
 			if Equals(icon.EnumName(), n"Sit") {
 				if Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_Meditate)) {
 					if HumanityLossConditionSystem.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.Meditation) {
+						shouldAddHumanityLossRestoreIconWidget = true;
+					}
+				
+				} else if Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MistyTarotFirst)) || Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MistyTarotRepeat)) {
+					if HumanityLossConditionSystem.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.TarotReading) {
 						shouldAddHumanityLossRestoreIconWidget = true;
 					}
 				}

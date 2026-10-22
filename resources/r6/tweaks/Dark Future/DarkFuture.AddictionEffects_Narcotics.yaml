@@ -35,6 +35,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_Cessation_UIData:
   floatValues: []
   intValues:
     - 80
+    - 3
     - 48
   nameValues: []
   stats: []
@@ -83,7 +84,8 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_NoProgression_UIData:
   floatValues: []
   intValues:
     - 80
-    - 36
+    - 3
+    - 24
   nameValues: []
   stats: []
 
@@ -131,6 +133,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_01_WithProgression_UIData:
   floatValues: []
   intValues:
     - 80
+    - 3
     - 2
   nameValues: []
   stats: []
@@ -179,7 +182,8 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_NoProgression_UIData:
   floatValues: []
   intValues:
     - 60
-    - 48
+    - 5
+    - 36
   nameValues: []
   stats: []
 
@@ -227,6 +231,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_02_WithProgression_UIData:
   floatValues: []
   intValues:
     - 60
+    - 5
     - 2
   nameValues: []
   stats: []
@@ -275,7 +280,8 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_NoProgression_UIData:
   floatValues: []
   intValues:
     - 40
-    - 60
+    - 7
+    - 48
   nameValues: []
   stats: []
 
@@ -323,6 +329,7 @@ DarkFutureStatusEffect.NarcoticWithdrawal_03_WithProgression_UIData:
   floatValues: []
   intValues:
     - 40
+    - 7
     - 2
   nameValues: []
   stats: []
@@ -371,7 +378,8 @@ DarkFutureStatusEffect.NarcoticWithdrawal_04_NoProgression_UIData:
   floatValues: []
   intValues:
     - 20
-    - 72
+    - 9
+    - 60
   nameValues: []
   stats: []
 

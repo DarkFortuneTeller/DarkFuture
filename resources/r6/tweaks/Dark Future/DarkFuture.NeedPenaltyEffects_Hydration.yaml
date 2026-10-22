@@ -38,9 +38,9 @@ UIIcon.DarkFutureHydrationIcon:
 #
 DarkFutureStatusEffect.HydrationPenalty_01_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.90
-  modifierType: Multiplier
-  statType: BaseStats.StaminaRegenRate
+  value: -0.1
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
 
 DarkFutureStatusEffect.HydrationPenalty_01_StatsPackage:
   $type: gamedataGameplayLogicPackage_Record
@@ -82,6 +82,7 @@ DarkFutureStatusEffect.HydrationPenalty_01:
   uiData: DarkFutureStatusEffect.HydrationPenalty_01_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect
@@ -99,9 +100,9 @@ DarkFutureStatusEffect.HydrationPenalty_01:
 #
 DarkFutureStatusEffect.HydrationPenalty_02_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.75
-  modifierType: Multiplier
-  statType: BaseStats.StaminaRegenRate
+  value: -0.25
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
 
 DarkFutureStatusEffect.HydrationPenalty_02_StatsPackage:
   $type: gamedataGameplayLogicPackage_Record
@@ -143,6 +144,7 @@ DarkFutureStatusEffect.HydrationPenalty_02:
   uiData: DarkFutureStatusEffect.HydrationPenalty_02_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect
@@ -161,9 +163,9 @@ DarkFutureStatusEffect.HydrationPenalty_02:
 #
 DarkFutureStatusEffect.HydrationPenalty_03_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.50
-  modifierType: Multiplier
-  statType: BaseStats.StaminaRegenRate
+  value: -0.5
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
 
 DarkFutureStatusEffect.HydrationPenalty_03_StatsPackage:
   $type: gamedataGameplayLogicPackage_Record
@@ -205,6 +207,7 @@ DarkFutureStatusEffect.HydrationPenalty_03:
   uiData: DarkFutureStatusEffect.HydrationPenalty_03_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect
@@ -223,9 +226,9 @@ DarkFutureStatusEffect.HydrationPenalty_03:
 #
 DarkFutureStatusEffect.HydrationPenalty_04_StatsPackageModifier_StaminaRegenRate:
   $type: gamedataConstantStatModifier_Record
-  value: 0.25
-  modifierType: Multiplier
-  statType: BaseStats.StaminaRegenRate
+  value: -0.75
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
 
 DarkFutureStatusEffect.HydrationPenalty_04_StatsPackage:
   $type: gamedataGameplayLogicPackage_Record
@@ -267,6 +270,7 @@ DarkFutureStatusEffect.HydrationPenalty_04:
   uiData: DarkFutureStatusEffect.HydrationPenalty_04_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedHydration
     - DarkFutureInfiniteDurationEffect

@@ -109,6 +109,7 @@ DarkFutureStatusEffect.NervePenalty_01:
   uiData: DarkFutureStatusEffect.NervePenalty_01_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
@@ -370,6 +371,7 @@ DarkFutureStatusEffect.NervePenalty_02:
   uiData: DarkFutureStatusEffect.NervePenalty_02_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
@@ -656,6 +658,7 @@ DarkFutureStatusEffect.NervePenalty_03:
   uiData: DarkFutureStatusEffect.NervePenalty_03_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect
@@ -942,6 +945,7 @@ DarkFutureStatusEffect.NervePenalty_04:
   uiData: DarkFutureStatusEffect.NervePenalty_04_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNerve
     - DarkFutureInfiniteDurationEffect

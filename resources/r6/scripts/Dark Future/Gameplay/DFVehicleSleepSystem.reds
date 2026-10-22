@@ -10,7 +10,10 @@ module DarkFuture.Gameplay
 import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.DelayHelper.*
-import DarkFuture.Utils.DFRunGuard
+import DarkFuture.Utils.{
+	DFRunGuard,
+	DarkFutureSendRadioEvent
+}
 import DarkFuture.Main.DFTimeSkipData
 import DarkFuture.Services.{
 	DFNotificationService,
@@ -49,20 +52,21 @@ public enum EnhancedVehicleSystemCompatPowerBehaviorPassenger {
 //	Input Event Registration
 //
 @addField(PlayerPuppet)
-public let m_DarkFutureInputListener: ref<DarkFutureInputListener>;
+public let m_DarkFutureVehicleSleepInputListener: ref<DarkFutureVehicleSleepInputListener>;
 
+// TODO - Do this for Relax Action
 @wrapMethod(PlayerPuppet)
 protected cb func OnDetach() -> Bool {
 	//DFProfile();
     let r: Bool = wrappedMethod();
 
-    this.UnregisterInputListener(this.m_DarkFutureInputListener);
-    this.m_DarkFutureInputListener = null;
+    this.UnregisterInputListener(this.m_DarkFutureVehicleSleepInputListener);
+    this.m_DarkFutureVehicleSleepInputListener = null;
 
 	return r;
 }
 
-public class DarkFutureInputListener {
+public class DarkFutureVehicleSleepInputListener {
 	protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
 		if Equals(ListenerAction.GetName(action), n"DFVehicleSleepAction") && Equals(ListenerAction.GetType(action), gameinputActionType.BUTTON_HOLD_COMPLETE) {
 			//DFProfile();
@@ -78,14 +82,14 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {		
-		this.HandleDarkFutureVehicleMounted();
+		this.HandleDarkFutureVehicleMountedSleepSystem();
 	}
 
 	return r;
 }
 
 @addMethod(VehicleObject)
-public final func HandleDarkFutureVehicleMounted() -> Void {
+public final func HandleDarkFutureVehicleMountedSleepSystem() -> Void {
 	//DFProfile();
 	let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
 	DFVSS.RegisterVehicleSleepActionListener();
@@ -318,7 +322,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 		VehicleComponent.GetVehicle(GetGameInstance(), attachedPlayer, vehicleObj);
 		if IsDefined(vehicleObj) {
 			// The player loaded a save game or started Dark Future while mounted to a vehicle.
-			vehicleObj.HandleDarkFutureVehicleMounted();
+			vehicleObj.HandleDarkFutureVehicleMountedSleepSystem();
 		}
 		this.UpdateSettingsFacts();
 	}
@@ -338,6 +342,8 @@ public final class DFVehicleSleepSystem extends DFSystem {
 			this.RandomEncounterSystem.ClearRandomEncounter();
 		}
 	}
+
+	public func OnTimeSkipBegin() -> Void {}
 
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
 		//DFProfile();
@@ -367,14 +373,14 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
 	public final func RegisterVehicleSleepActionListener() -> Void {
 		//DFProfile();
-		this.player.m_DarkFutureInputListener = new DarkFutureInputListener();
-    	this.player.RegisterInputListener(this.player.m_DarkFutureInputListener);
+		this.player.m_DarkFutureVehicleSleepInputListener = new DarkFutureVehicleSleepInputListener();
+    	this.player.RegisterInputListener(this.player.m_DarkFutureVehicleSleepInputListener);
 	}
 
 	public final func UnregisterVehicleSleepActionListener() -> Void {
 		//DFProfile();
 		this.player.UnregisterInputListener(this, n"DFVehicleSleepAction");
-		this.player.m_DarkFutureInputListener = null;
+		this.player.m_DarkFutureVehicleSleepInputListener = null;
 	}
 
 	private func GetTutorialTitleKey() -> CName {
@@ -544,7 +550,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 			let pocketRadio: ref<PocketRadio> = this.player.GetPocketRadio();
 			if pocketRadio.IsActive() {
 				this.shouldRestoreRadioAfterSleep = true;
-				this.SendRadioEvent(false, false, -1);
+				DarkFutureSendRadioEvent(this.player, false, false, -1);
 			}
 
 			let enginePowerChangeMade: Bool = false;
@@ -608,7 +614,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 		//DFProfile();
 		if this.shouldRestoreRadioAfterSleep {
 			this.shouldRestoreRadioAfterSleep = false;
-			this.SendRadioEvent(true, false, 0);
+			DarkFutureSendRadioEvent(this.player, true, false, 0);
 		}
 		
 		this.GameStateService.SetSleepingInVehicle(false);
@@ -662,21 +668,6 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	private final func IsPlayerInRoad() -> Bool {		
 		//DFProfile();
 		return NotEquals(this.AutoDriveSystem.CheckCurrentLaneValidity(), gameAutodriveLaneValidityResult.NotOnRoad);
-	}
-
-	public final func SendRadioEvent(toggle: Bool, setStation: Bool, stationIndex: Int32) -> Void {
-		//DFProfile();
-		let vehicleObj: wref<VehicleObject>;
-		VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
-
-		if IsDefined(vehicleObj) {
-			let vehRadioEvent: ref<VehicleRadioEvent> = new VehicleRadioEvent();
-			vehRadioEvent.toggle = toggle;
-			vehRadioEvent.setStation = setStation;
-			vehRadioEvent.station = stationIndex >= 0 ? EnumInt(RadioStationDataProvider.GetRadioStationByUIIndex(stationIndex)) : -1;
-			this.player.QueueEventForEntityID(vehicleObj.GetEntityID(), vehRadioEvent);
-			this.player.QueueEvent(vehRadioEvent);
-		}
 	}
 
 	@if(!ModuleExists("Hgyi56.Enhanced_Vehicle_System"))

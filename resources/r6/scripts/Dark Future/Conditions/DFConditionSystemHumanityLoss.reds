@@ -8,6 +8,8 @@
 // - Cured through activities in the world and Endotrisine.
 //
 
+// TODO - After becoming Cyberpsycho and resolving it the first time, Regina Jones should text you.
+
 module DarkFuture.Conditions
 
 import DarkFuture.Logging.*
@@ -16,8 +18,7 @@ import DarkFuture.DelayHelper.*
 import DarkFuture.Main.{
     DFMainSystem,
     DFHumanityLossDatum,
-    DFTimeSkipData,
-    MainSystemItemConsumedEvent
+    DFTimeSkipData
 }
 import DarkFuture.Utils.{
     HoursToGameTimeSeconds,
@@ -26,8 +27,10 @@ import DarkFuture.Utils.{
     DFFactListener,
     CreateDFFactListener,
     CreateDFActionFactListener,
+    DFFactListenerValueTransitionData,
     UnregisterAllDFFactListeners,
     DFFactListenerCanRun,
+    DFFactListenerCanRunOnExpectedValueTransition,
     IsPlayerInBadlands,
     DFGeneralVoiceLine
 }
@@ -77,7 +80,9 @@ public enum DFHumanityLossRestorationActivityType {
     ConfessionBooth = 6,
     Rollercoaster = 7,
     Meditation = 8,
-    Speed = 9
+    Speed = 9,
+    Radio = 10,
+    TarotReading = 11
 }
 
 public enum DFHumanityLossRestoreChoiceType {
@@ -85,7 +90,8 @@ public enum DFHumanityLossRestoreChoiceType {
     Nomad = 2,
     CorpoFreshStart = 3,
     Speed = 4,
-    ConfessionBooth = 5
+    ConfessionBooth = 5,
+    Radio = 6
 }
 
 public enum DFHumanityLossRestorationType {
@@ -102,6 +108,12 @@ public enum DFHumanityLossCostType {
     OneTimeEventMinor = 1,
     OneTimeEventMajor = 2,
     OneTimeEventPivotal = 3
+}
+
+public enum DFHumanityLossRadioState {
+    Unknown = 0,
+    On = 1,
+    Off = 2
 }
 
 @wrapMethod(ScriptedPuppet)
@@ -125,22 +137,22 @@ private let DarkFutureSetLastKnownCyberpsychosisStackCountLock: RWLock;
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
     //DFProfile();
     let nerveSystem: ref<DFNerveSystem> = DFNerveSystem.Get();
-    let humanityLossSystem: ref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
+    let humanityLossCondition: ref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
 
-    if IsSystemEnabledAndRunning(nerveSystem) && IsSystemEnabledAndRunning(humanityLossSystem) {
+    if IsSystemEnabledAndRunning(nerveSystem) && IsSystemEnabledAndRunning(humanityLossCondition) {
 		let effectID: TweakDBID = evt.staticData.GetID();
         if Equals(effectID, t"DarkFutureStatusEffect.CyberpsychosisApplicationDone") {
             
             let cyberpsychosisStackCountApplied: Uint32 = StatusEffectHelper.GetStatusEffectByID(this, t"DarkFutureStatusEffect.Cyberpsychosis").GetStackCount();
 
             RWLock.Acquire(this.DarkFutureSetLastKnownCyberpsychosisStackCountLock);
-            humanityLossSystem.SetLastKnownCyberpsychosisStackCount(cyberpsychosisStackCountApplied);
+            humanityLossCondition.SetLastKnownCyberpsychosisStackCount(cyberpsychosisStackCountApplied);
             RWLock.Release(this.DarkFutureSetLastKnownCyberpsychosisStackCountLock);
 
-            humanityLossSystem.RegisterConditionFXRepeatCallback();
-            humanityLossSystem.CheckCyberpsychosisTutorial();
+            humanityLossCondition.RegisterConditionFXRepeatCallback();
+            humanityLossCondition.CheckCyberpsychosisTutorial();
 
-            DFLogNoSystem(true, this, "PlayerPuppet: OnStatusEffectApplied: Received CyberpsychosisApplicationDone, updating Nerve limit.");
+            DFLogNoSystem(DFSystemlessDebugEnabled(), this, "PlayerPuppet: OnStatusEffectApplied: Received CyberpsychosisApplicationDone, updating Nerve limit.");
             nerveSystem.OnCyberpsychosisUpdated(true);
         }
     }
@@ -152,9 +164,9 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
     //DFProfile();
     let nerveSystem: ref<DFNerveSystem> = DFNerveSystem.Get();
-    let humanityLossSystem: ref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
+    let humanityLossCondition: ref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
 
-    if IsSystemEnabledAndRunning(nerveSystem) && IsSystemEnabledAndRunning(humanityLossSystem) {
+    if IsSystemEnabledAndRunning(nerveSystem) && IsSystemEnabledAndRunning(humanityLossCondition) {
         let effectID: TweakDBID = evt.staticData.GetID();
         if Equals(effectID, t"DarkFutureStatusEffect.Cyberpsychosis") {
             let humanityLossConditionSystem: ref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
@@ -163,7 +175,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 
             let cyberpsychosisStackCountApplied: Uint32 = StatusEffectHelper.GetStatusEffectByID(this, t"DarkFutureStatusEffect.Cyberpsychosis").GetStackCount();
             let lastKnownCyberpsychosisStackCount: Uint32 = humanityLossConditionSystem.GetLastKnownCyberpsychosisStackCount();
-            DFLogNoSystem(true, this, "PlayerPuppet: OnStatusEffectRemoved: One or more stacks of Cyberpsychosis removed, updating Nerve limit. Event stackCount = " + ToString(evt.stackCount) + ", cyberpsychosisStackCountApplied: " + ToString(cyberpsychosisStackCountApplied) + ", isFinalRemoval: " + ToString(evt.isFinalRemoval) + ", lastKnownCyberpsychosisStackCount: " + ToString(lastKnownCyberpsychosisStackCount));
+            DFLogNoSystem(DFSystemlessDebugEnabled(), this, "PlayerPuppet: OnStatusEffectRemoved: One or more stacks of Cyberpsychosis removed, updating Nerve limit. Event stackCount = " + ToString(evt.stackCount) + ", cyberpsychosisStackCountApplied: " + ToString(cyberpsychosisStackCountApplied) + ", isFinalRemoval: " + ToString(evt.isFinalRemoval) + ", lastKnownCyberpsychosisStackCount: " + ToString(lastKnownCyberpsychosisStackCount));
 
             if humanityLossConditionSystem.ignoreFirstNeutralizationForCyberpsychosisEffectPlayback {
                 humanityLossConditionSystem.ignoreFirstNeutralizationForCyberpsychosisEffectPlayback = false;
@@ -221,6 +233,40 @@ public class RelicMalfunctionHumanityLossDelayCallback extends DFDelayCallback {
 	public func Callback() -> Void {
         //DFProfile();
 		DFHumanityLossConditionSystem.Get().OnRelicMalfunction();
+	}
+}
+
+public class RadioTrackRecheckHumanityLossDelayCallback extends DFDelayCallback {
+	public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+		return new RadioTrackRecheckHumanityLossDelayCallback();
+	}
+
+	public func InvalidateDelayID() -> Void {
+        //DFProfile();
+		DFHumanityLossConditionSystem.Get().radioTrackRecheckDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+        //DFProfile();
+		//DFHumanityLossConditionSystem.Get().OnRadioTrackRecheck();
+	}
+}
+
+public class DelayedUnsetRadioRestrictionOverride extends DFDelayCallback {
+	public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+		return new DelayedUnsetRadioRestrictionOverride();
+	}
+
+	public func InvalidateDelayID() -> Void {
+        //DFProfile();
+		DFHumanityLossConditionSystem.Get().delayedUnsetRadioRestrictionOverrideDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+        //DFProfile();
+		DFHumanityLossConditionSystem.Get().OnDelayedUnsetRadioRestrictionOverride();
 	}
 }
 
@@ -288,14 +334,20 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     private let CyberwareService: ref<DFCyberwareService>;
     private let NerveSystem: ref<DFNerveSystem>;
     private let PlayerStateService: ref<DFPlayerStateService>;
+    private let BiocorruptionCondition: ref<DFBiocorruptionConditionSystem>;
 
     private let UINotificationsBlackboardDef: ref<UI_NotificationsDef>;
     private let UINotificationsBlackboard: ref<IBlackboard>;
 
     public let humanityLossDurationUpdateDelayID: DelayID;
     public let relicMalfunctionHumanityLossDelayID: DelayID;
+    public let radioTrackRecheckDelayID: DelayID;
+    public let delayedUnsetRadioRestrictionOverrideDelayID: DelayID;
     private let humanityLossDurationUpdateIntervalInGameTimeSeconds: Float = 300.0;
     private let relicMalfunctionHumanityLossInterval: Float = 4.0;
+    private let radioTrackRecheckDelayIntervalFast: Float = 5.0;
+    private let radioTrackRecheckDelayInterval: Float = 10.0;
+    private let delayedUnsetRadioRestrictionOverrideDelayInterval: Float = 1.0;
 
     private persistent let oneTimeSetupDone: Bool = false;
     private persistent let remainingEndotrisineEffectDurationInGameTimeSeconds: Float = 0.0;
@@ -312,12 +364,15 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public persistent let lastDayRestored_Rollercoaster: Int32;
     public persistent let lastDayRestored_Meditation: Int32;
     public persistent let lastDayRestored_Speed: Int32;
+    public persistent let lastDayRestored_Radio: Int32;
+    public persistent let lastDayRestored_TarotReading: Int32;
 
     private persistent let onceOnlyDFFactListenersFired: array<CName>;
 
     private const let endotrisineEffectDurationInGameHours: Int32 = 24;
 
-    public const let humanityLossRestoration_EndotrisineAdditiveMultiplier: Float = 1.0;
+    public const let humanityLossRestoration_EndotrisineAdditiveMultiplier: Float = 2.0;
+    public const let humanityLossRestoration_EuphoriaAdditiveMultiplier: Float = 1.0;
 
     public const let cyberpsychosisChancePerCyberwareCapacityPointExceeded: Float = 0.5;
     public const let cyberwareCapacityHumanityLossMult: Float = 0.3;
@@ -331,6 +386,9 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public let cyberpsychosisFXStopDelayID: DelayID;
     public let cyberpsychosisFXStopDelayInterval: Float = 2.0;
 
+    private let currentRadioState: DFHumanityLossRadioState;
+    private let lastKnownRadioStation: Int32;
+
     // ==== Quest Fact Listeners
     //
     private let factListenerRegistry: array<DFFactListener>;
@@ -338,14 +396,13 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     private let showHumanityLossTutorialActionFactListener: DFFactListener;
     private let humanityLossRestoreChoiceActivatedActionFactListener: DFFactListener;
     private let speedVoicelineGetInBadlandsActionFactListener: DFFactListener;
+    private let unsetRadioRestrictionOverrideActionFactListener: DFFactListener;
 
     private let warningMessageListener: ref<CallbackHandle>;
-    private let activePlayerVehicleSpeedListener: ref<CallbackHandle>;
     private let lastHumanityLossRestorationChoiceType: Int32 = 0;
-    private let lastAutoDriveDistrictEnumName: String = "";
-    private let lastActivePlayerVehicleSpeed: Int32 = 0;
-    private let lastActivePlayerVehicle: ref<VehicleObject>;
     private const let playerVehicleSpeedHumanityLossRestoreThreshold: Int32 = 140; // MPH
+    private let lastAutoDriveDistrictEnumName: String = "";
+    private let lastMistyCardsOnTableFactValue: Int32 = 0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFHumanityLossConditionSystem> {
         //DFProfile();
@@ -433,6 +490,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         this.CyberwareService = DFCyberwareService.GetInstance(gameInstance);
         this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
         this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
+        this.BiocorruptionCondition = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     }
 
 	public func SetupData() -> Void {
@@ -455,6 +513,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 		DFLog(this, "OnTimeSkipStart");
 
 		this.UnregisterHumanityLossDurationUpdateCallback();
+        //this.UnregisterForRadioTrackRecheck();
     }
 
     public func OnTimeSkipCancelled() -> Void {
@@ -464,7 +523,13 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
 		this.RegisterHumanityLossDurationUpdateCallback();
         this.UpdateConditionRepeatFXCallback(this.ShouldRepeatFX());
+
+        /*if Equals(this.currentRadioState, DFHumanityLossRadioState.On) {
+            this.RegisterForRadioTrackRecheck();
+        }*/
     }
+
+    public func OnTimeSkipBegin() -> Void {}
 
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
         //DFProfile();
@@ -473,6 +538,10 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
 		this.RegisterHumanityLossDurationUpdateCallback();
         this.UpdateConditionRepeatFXCallback(this.ShouldRepeatFX());
+
+        /*if Equals(this.currentRadioState, DFHumanityLossRadioState.On) {
+            this.RegisterForRadioTrackRecheck();
+        }*/
 
         if this.GameStateService.IsValidGameState(this, true) {
             this.OnHumanityLossDurationUpdateFromTimeSkip(data.targetHumanityLossValues);
@@ -486,7 +555,6 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         this.RegisterHumanityLossDurationUpdateCallback();
         this.UpdateConditionRepeatFXCallback(this.ShouldRepeatFX());
         this.UpdateSettingsFacts();
-        this.RegisterForVehicleSpeedChange();
 
         if !this.oneTimeSetupDone {
             this.lastDayRestored_LifePath = -9999;
@@ -495,6 +563,10 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             this.lastDayRestored_Charity = -9999;
             this.lastDayRestored_ConfessionBooth = -9999;
             this.lastDayRestored_Rollercoaster = -9999;
+            this.lastDayRestored_Meditation = -9999;
+            this.lastDayRestored_Speed = -9999;
+            this.lastDayRestored_Radio = -9999;
+            this.lastDayRestored_TarotReading = -9999;
             this.oneTimeSetupDone = true;
         }
     }
@@ -503,6 +575,8 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         //DFProfile();
         this.UnregisterHumanityLossDurationUpdateCallback();
         this.UnregisterForRelicMalfunctionHumanityLoss();
+        this.UnregisterForRadioTrackRecheck();
+        this.UnregisterForDelayedUnsetRadioRestrictionOverride();
     }
 
     private func RegisterListeners() -> Void {
@@ -510,11 +584,13 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         this.showHumanityLossTutorialActionFactListener = CreateDFActionFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"df_fact_action_show_humanity_loss_tutorial", n"OnTherapyShowHumanityLossTutorialActionFactChanged");
         this.humanityLossRestoreChoiceActivatedActionFactListener = CreateDFActionFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"df_fact_humanityloss_restore_choice_activated", n"OnHumanityLossRestoreChoiceActivatedFactChanged");
         this.speedVoicelineGetInBadlandsActionFactListener = CreateDFActionFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"df_fact_action_speed_voiceline_get_in_badlands", n"OnSpeedVoicelineGetInBadlandsFactChanged");
+        this.unsetRadioRestrictionOverrideActionFactListener = CreateDFActionFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"df_fact_action_unset_radio_restriction_override", n"OnUnsetRadioRestrictionOverrideFactChanged");
 
-        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"ue_metro_player_stand_door", n"OnMetroPlayerStandDoorFactChanged");
-        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"ue_metro_player_window_left", n"OnMetroPlayerWindowLeftFactChanged");
-        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"ue_metro_player_window_right", n"OnMetroPlayerWindowRightFactChanged");
-        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"homeless_paid", n"OnHomelessPaidFactChanged");
+        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"ue_metro_player_stand_door", n"OnMetroPlayerStandDoorFactChanged");          // Stand near door of Metro (Repeatable)
+        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"ue_metro_player_window_left", n"OnMetroPlayerWindowLeftFactChanged");        // Look out window of Metro (Repeatable)
+        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"ue_metro_player_window_right", n"OnMetroPlayerWindowRightFactChanged");      // Look out window of Metro (Repeatable)
+        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"homeless_paid", n"OnHomelessPaidFactChanged");                               // Charity to Homeless (Repeatable)
+        CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"misty_default_cards_on_table", n"OnMistyTarotReadingFactChanged");           // Misty read Tarot (Repeatable)
 
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"q101_enable_activities_flat", n"OnAct2StartFactChanged", true);              // Start of Act 2
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"sq021_randy_saved", n"OnSQ021RandySavedFactChanged", true);                  // The Hunt (Randy Saved)
@@ -527,6 +603,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"default_jackie_phone_dead", n"OnQ005VCallsJackieDeadFactChanged", true);     // V calls Jackie after his death
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"q105_03a_lie_down", n"OnQ105DollLieDownFactChanged", true);                  // Automatic Love (Lied Down With Doll)
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"q305_medal_given_away", n"OnQ305MedalGivenAwayFactChanged", true);           // Gave away NUSA Medal to homeless person
+        
 
         this.UINotificationsBlackboardDef = GetAllBlackboardDefs().UI_Notifications;
         this.UINotificationsBlackboard = GameInstance.GetBlackboardSystem(GetGameInstance()).Get(this.UINotificationsBlackboardDef);
@@ -538,10 +615,6 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
         if IsDefined(this.UINotificationsBlackboard) {
             this.UINotificationsBlackboard.UnregisterDelayedListener(this.UINotificationsBlackboardDef.WarningMessage, this.warningMessageListener);
-        }
-
-        if IsDefined(this.lastActivePlayerVehicle) {
-            this.UnregisterForVehicleSpeedChange(this.lastActivePlayerVehicle);
         }
     }
 
@@ -654,6 +727,8 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
     private final func QueueConditionMessage(level: Uint32) -> Void {
         //DFProfile();
+        if !this.Settings.conditionMessagesEnabled { return; }
+        
         let conditionLevelUpMessage: DFMessage;
         conditionLevelUpMessage.type = SimpleMessageType.Negative;
         conditionLevelUpMessage.key = StringToName("DarkFutureMagicMessageStringConditionHumanityLoss" + IntToString(Cast<Int32>(level)));
@@ -728,6 +803,81 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 		// Refresh player-facing status effects.
 		this.RefreshEndotrisineStatusEffect();
 	}
+
+    public final func OnActivePlayerVehicleSpeedValueChanged(speedValueInMph: Int32, lastSpeedValueInMph: Int32) -> Void {
+        if DFRunGuard(this) { return; }
+
+        if lastSpeedValueInMph < this.playerVehicleSpeedHumanityLossRestoreThreshold && speedValueInMph >= this.playerVehicleSpeedHumanityLossRestoreThreshold {
+            this.TryToDisplayHumanityLossRestorationChoice(DFHumanityLossRestorationActivityType.Speed);
+        }
+    }
+
+    /*public final func OnUpdateRadioState(state: DFHumanityLossRadioState) -> Void {
+        if DFRunGuard(this) { return; }
+        let transitionedOn: Bool = false;
+        let possibleStationChange: Bool = false;
+        
+        if Equals(this.currentRadioState, DFHumanityLossRadioState.Off) && Equals(state, DFHumanityLossRadioState.Off) { return; }
+        if NotEquals(this.currentRadioState, DFHumanityLossRadioState.On) && Equals(state, DFHumanityLossRadioState.On) { transitionedOn = true; }
+        if Equals(this.currentRadioState, DFHumanityLossRadioState.On) && Equals(state, DFHumanityLossRadioState.On) { possibleStationChange = true; }
+        
+        this.currentRadioState = state;
+        let pocketRadio: ref<PocketRadio> = this.player.GetPocketRadio();
+        let station: Int32 = pocketRadio.m_selectedStation;
+
+        if transitionedOn {
+            DFLog(this, "!!!!!!@@@@@@@ Radio On!");
+            this.lastKnownRadioStation = station;
+            this.RegisterForRadioTrackRecheck(true);
+        
+        } else if Equals(state, DFHumanityLossRadioState.On) {
+            DFLog(this, "!!!!!!@@@@@@@ Radio On! (Duplicate -- Might have been station change)");
+            if possibleStationChange {
+                if NotEquals(station, this.lastKnownRadioStation) {
+                    DFLog(this, "!!!!!!@@@@@@@ Station change! Kill HL Radio prompt and recheck.");
+                    this.lastKnownRadioStation = station;
+                    this.QuestsSystem.SetFact(n"df_fact_action_humanityloss_restore_radio_kill_prompt", 1);
+                }
+            }
+            this.RegisterForRadioTrackRecheck(true);
+
+        } else if Equals(state, DFHumanityLossRadioState.Off) {
+            // Kill any prompt.
+            DFLog(this, "!!!!!!@@@@@@@ Radio Off.");
+            this.QuestsSystem.SetFact(n"df_fact_action_humanityloss_restore_radio_kill_prompt", 1);
+            this.UnregisterForRadioTrackRecheck();
+        }
+    }*/
+
+    /*public final func OnRadioTrackRecheck() -> Void {
+        if Equals(this.currentRadioState, DFHumanityLossRadioState.On) {
+            if !this.IsCurrentTrackASongAndDisplayedChoicePrompt() {
+                // Only display the prompt once in a given listening session, or until the player changes stations.
+                // If this wasn't a song, register to check again.
+                this.RegisterForRadioTrackRecheck();
+            }
+        }
+    }*/
+
+    /*private final func IsCurrentTrackASongAndDisplayedChoicePrompt() -> Bool {
+        DFLog(this, "!!!!!!@@@@@@@ Checking current song...");
+        let pocketRadio: ref<PocketRadio> = this.player.GetPocketRadio();
+        let track = GetRadioStationCurrentTrackName(RadioStationDataProvider.GetStationNameByIndex(pocketRadio.m_selectedStation));
+        if NotEquals(GetLocalizedTextByKey(track), GetLocalizedTextByKey(n"Gameplay-Devices-Radio-NoneTrack")) {
+            DFLog(this, "!!!!!!@@@@@@@     It's a song! Try to show prompt.");
+            this.QuestsSystem.SetFact(n"df_fact_action_humanityloss_restore_radio_kill_prompt", 0);
+            this.TryToDisplayHumanityLossRestorationChoice(DFHumanityLossRestorationActivityType.Radio);
+            return true;
+        } else {
+            DFLog(this, "!!!!!!@@@@@@@     Not a song.");
+            return false;
+        }
+    }*/
+
+    public final func OnDelayedUnsetRadioRestrictionOverride() -> Void {
+        DFLog(this, "!!!!!!@@@@@@@     Unsetting radio restriction override.");
+        this.player.m_pocketRadio.DFSetRestrictionOverride(false);
+    }
 
     // Overrides base implementation
     public final func CheckTutorial() -> Void {
@@ -817,12 +967,19 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureImmunosuppressant") {
             chanceData.chance = 0.0;
             chanceData.reason = GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonImmunosuppressant");
+        
+        } else if this.BiocorruptionCondition.GetHasEuphoria() {
+            chanceData.chance = 0.0;
+            chanceData.reason = GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonEuphoria");
+
         } else if this.GetTimeUntilNextCyberpsychosisAllowed() > 0.0 {
             chanceData.chance = 0.0;
             chanceData.reason = GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonCooldown");
+
         } else if Cast<Int32>(this.GetConditionLevel()) < this.GetCyberpsychosisMinConditionLevel() {
             chanceData.chance = 0.0;
             chanceData.reason = GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonHumanityLoss");
+            
         } else {
             chanceData.chance = pointsExceeded * this.cyberpsychosisChancePerCyberwareCapacityPointExceeded;
             // TEST chanceData.chance = 100.0;
@@ -1227,37 +1384,30 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         RegisterDFDelayCallback(this.DelaySystem, RelicMalfunctionHumanityLossDelayCallback.Create(), this.relicMalfunctionHumanityLossDelayID, this.relicMalfunctionHumanityLossInterval);
     }
 
-    public final func TryToRegisterForVehicleSpeedChange(veh: ref<VehicleObject>) -> Void {
-        this.lastActivePlayerVehicle = veh;
-
-        if this.GameStateService.IsValidGameState(this) && IsSystemEnabledAndRunning(this) && !veh.IsQuest() {
-            this.RegisterForVehicleSpeedChange();
-        }
-    }
-
-    private final func RegisterForVehicleSpeedChange() -> Void {
-        if IsDefined(this.lastActivePlayerVehicle) {
-            let vehicleBlackboard: ref<IBlackboard> = this.lastActivePlayerVehicle.GetBlackboard();
-            if IsDefined(vehicleBlackboard) {
-                this.activePlayerVehicleSpeedListener = vehicleBlackboard.RegisterListenerFloat(GetAllBlackboardDefs().Vehicle.SpeedValue, this, n"OnActivePlayerVehicleSpeedValueChanged");
-            }
-        }
-    }
-    
-    public final func UnregisterForVehicleSpeedChange(veh: ref<VehicleObject>) -> Void {
-        let vehicleBlackboard: ref<IBlackboard> = veh.GetBlackboard();
-        if IsDefined(vehicleBlackboard) {
-            vehicleBlackboard.UnregisterListenerFloat(GetAllBlackboardDefs().Vehicle.SpeedValue, this.activePlayerVehicleSpeedListener);
-            this.activePlayerVehicleSpeedListener = null;
-            this.lastActivePlayerVehicleSpeed = 0;
-            this.lastActivePlayerVehicle = null;
-        }
-    }
-
     private final func UnregisterForRelicMalfunctionHumanityLoss() -> Void {
         //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.relicMalfunctionHumanityLossDelayID);
 	}
+
+    private final func RegisterForRadioTrackRecheck(opt firstIteration: Bool) -> Void {
+        //DFProfile();
+        RegisterDFDelayCallback(this.DelaySystem, RadioTrackRecheckHumanityLossDelayCallback.Create(), this.radioTrackRecheckDelayID, firstIteration ? this.radioTrackRecheckDelayIntervalFast : this.radioTrackRecheckDelayInterval);
+    }
+
+    private final func UnregisterForRadioTrackRecheck() -> Void {
+        //DFProfile();
+        UnregisterDFDelayCallback(this.DelaySystem, this.radioTrackRecheckDelayID);
+    }
+
+    private final func RegisterForDelayedUnsetRadioRestrictionOverride() -> Void {
+        //DFProfile();
+        RegisterDFDelayCallback(this.DelaySystem, DelayedUnsetRadioRestrictionOverride.Create(), this.delayedUnsetRadioRestrictionOverrideDelayID, this.delayedUnsetRadioRestrictionOverrideDelayInterval);
+    }
+
+    private final func UnregisterForDelayedUnsetRadioRestrictionOverride() -> Void {
+        //DFProfile();
+        UnregisterDFDelayCallback(this.DelaySystem, this.delayedUnsetRadioRestrictionOverrideDelayID);
+    }
 
     public final func GetTimeUntilNextCyberpsychosisAllowed() -> Float {
         //DFProfile();
@@ -1362,35 +1512,33 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public final func RestoreHumanityLoss(restoreType: DFHumanityLossRestorationType) -> Void {
         if DFRunGuard(this) { return; }
 
-        let bonusMult: Float = this.IsEndotrisineActive() ? this.humanityLossRestoration_EndotrisineAdditiveMultiplier : 1.0;
+        let bonusMult: Float = 0.0;
+        if this.IsEndotrisineActive() {
+            bonusMult += this.humanityLossRestoration_EndotrisineAdditiveMultiplier;
+        }
+        if this.BiocorruptionCondition.GetHasEuphoria() {
+            bonusMult += this.humanityLossRestoration_EuphoriaAdditiveMultiplier;
+        }
+
+        DFLog(this, "RestoreHumanityLoss ---- bonusMult = " + ToString(bonusMult));
+        
         if Equals(restoreType, DFHumanityLossRestorationType.RepeatableMinor) {
-            if this.IsEndotrisineActive() {
-                this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMinor + (this.Settings.humanityLossRegenerationAmountRepeatableMinor * bonusMult));
-            } else {
-                this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMinor);
-            }
+            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMinorRev2 + (this.Settings.humanityLossRegenerationAmountRepeatableMinorRev2 * bonusMult));
+            
         } else if Equals(restoreType, DFHumanityLossRestorationType.RepeatableMajor) {
-            if this.IsEndotrisineActive() {
-                this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMajor + (this.Settings.humanityLossRegenerationAmountRepeatableMajor * bonusMult));
-            } else {
-                this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMajor);
-            }
+            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMajorRev2 + (this.Settings.humanityLossRegenerationAmountRepeatableMajorRev2 * bonusMult));
         
         } else if Equals(restoreType, DFHumanityLossRestorationType.RepeatablePivotal) {
-            if this.IsEndotrisineActive() {
-                this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatablePivotal + (this.Settings.humanityLossRegenerationAmountRepeatablePivotal * bonusMult));
-            } else {
-                this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatablePivotal);
-            }
+            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatablePivotalRev2 + (this.Settings.humanityLossRegenerationAmountRepeatablePivotalRev2 * bonusMult));
 
         } else if Equals(restoreType, DFHumanityLossRestorationType.OneTimeEventMinor) {
-            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountOneTimeMinor);
+            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountOneTimeMinorRev2);
 
         } else if Equals(restoreType, DFHumanityLossRestorationType.OneTimeEventMajor) {
-            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountOneTimeMajor);
+            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountOneTimeMajorRev2);
 
         } else if Equals(restoreType, DFHumanityLossRestorationType.OneTimeEventPivotal) {
-            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountOneTimePivotal);
+            this.RestoreCondition(this.Settings.humanityLossRegenerationAmountOneTimePivotalRev2);
         }
     }
 
@@ -1412,6 +1560,10 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             return today > this.lastDayRestored_Rollercoaster;
         } else if Equals(activity, DFHumanityLossRestorationActivityType.Speed) {
             return today > this.lastDayRestored_Speed;
+        } else if Equals(activity, DFHumanityLossRestorationActivityType.Radio) {
+            return today > this.lastDayRestored_Radio;
+        } else if Equals(activity, DFHumanityLossRestorationActivityType.TarotReading) {
+            return today > this.lastDayRestored_TarotReading;
         }
     }
 
@@ -1435,6 +1587,10 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         } else if Equals(type, DFHumanityLossRestorationActivityType.ConfessionBooth) && this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.ConfessionBooth) {
             this.lastHumanityLossRestorationChoiceType = EnumInt(DFHumanityLossRestoreChoiceType.ConfessionBooth);
             this.QuestsSystem.SetFact(this.GetShowTimedHumanityLossRestoreChoiceFactAction(), EnumInt(DFHumanityLossRestoreChoiceType.ConfessionBooth));
+        
+        } else if Equals(type, DFHumanityLossRestorationActivityType.Radio) && this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.Radio) {
+            this.lastHumanityLossRestorationChoiceType = EnumInt(DFHumanityLossRestoreChoiceType.Radio);
+            this.QuestsSystem.SetFact(this.GetShowTimedHumanityLossRestoreChoiceFactAction(), EnumInt(DFHumanityLossRestoreChoiceType.Radio));
         }
     }
 
@@ -1477,7 +1633,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         // Corpo / Fresh Start
         if Equals(lifePath, gamedataLifePath.Corporate) || (NotEquals(FreshStartLifePathType, gamedataLifePath.Invalid) && Equals(lifePath, FreshStartLifePathType)) {
             // AutoDrive
-            if this.AutoDriveSystem.GetAutodriveEnabled() && !this.AutoDriveSystem.GetAutodriveIsDelamain() {
+            if this.AutoDriveSystem.GetAutodriveEnabled() { // Dark Future 3.0 - Delamain Taxi allowed
                 // City Center
 
                 let thisDistrict: String = this.player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord().ParentDistrict().EnumName();
@@ -1540,6 +1696,13 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             }
             this.RestoreHumanityLoss(DFHumanityLossRestorationType.RepeatableMinor);
             this.lastDayRestored_ConfessionBooth = GetGameInstance().GetGameTime().Days();
+        }
+    }
+
+    public final func TryToRestoreHumanityLossFromTarotReading() -> Void {
+        if this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.TarotReading) {
+            this.RestoreHumanityLoss(DFHumanityLossRestorationType.RepeatablePivotal);
+            this.lastDayRestored_TarotReading = GetGameInstance().GetGameTime().Days();
         }
     }
 
@@ -1627,6 +1790,30 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                     this.lastDayRestored_Speed = GetGameInstance().GetGameTime().Days();
                 }
             
+            // Radio
+            } else if this.lastHumanityLossRestorationChoiceType == EnumInt(DFHumanityLossRestoreChoiceType.Radio) {
+                if Equals(value, 1) {
+                    if this.Settings.humanityLossRegenerationSFXEnabled {
+                        // Allow the radio to keep playing through the scene.
+                        DFLog(this, "!!!!!!@@@@@@@     Setting radio restriction override.");
+                        this.player.m_pocketRadio.DFSetRestrictionOverride(true);
+
+                        this.QuestsSystem.SetFact(n"df_fact_play_voice_line", EnumInt(DFGeneralVoiceLine.HumanityLossRestoreRadio));
+                    }
+                    this.RestoreHumanityLoss(DFHumanityLossRestorationType.RepeatableMinor);
+                    this.lastDayRestored_Radio = GetGameInstance().GetGameTime().Days();
+
+                } else if Equals(value, 2) {
+                    if this.Settings.humanityLossRegenerationSFXEnabled {
+                        // Allow the radio to keep playing through the scene.
+                        DFLog(this, "!!!!!!@@@@@@@     Setting radio restriction override.");
+                        this.player.m_pocketRadio.DFSetRestrictionOverride(true);
+
+                        this.QuestsSystem.SetFact(n"df_fact_play_voice_line", EnumInt(DFGeneralVoiceLine.HumanityLossRestoreCancel));
+                    }
+                    this.lastDayRestored_Radio = GetGameInstance().GetGameTime().Days();
+                }
+            
             // Confession Booth
             /*} else if this.lastHumanityLossRestorationChoiceType == EnumInt(DFHumanityLossRestoreChoiceType.ConfessionBooth) {
                 if Equals(value, 1) {
@@ -1645,6 +1832,13 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             }
             
             this.QuestsSystem.SetFact(this.humanityLossRestoreChoiceActivatedActionFactListener.fact, 0);
+        }
+    }
+
+    private final func OnUnsetRadioRestrictionOverrideFactChanged(value: Int32) -> Void {
+        if DFFactListenerCanRun(value, this.factListenerRegistry, this.onceOnlyDFFactListenersFired) {
+            this.RegisterForDelayedUnsetRadioRestrictionOverride();
+            this.QuestsSystem.SetFact(this.unsetRadioRestrictionOverrideActionFactListener.fact, 0);
         }
     }
 
@@ -1686,6 +1880,20 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         if DFFactListenerCanRun(value, this.factListenerRegistry, this.onceOnlyDFFactListenersFired) {
             this.TryToRestoreHumanityLossFromCharity();
         }
+    }
+
+    private final func OnMistyTarotReadingFactChanged(value: Int32) -> Void {
+        let vtd: DFFactListenerValueTransitionData;
+        vtd.valueFrom = this.lastMistyCardsOnTableFactValue;
+        vtd.expectedValueFrom = 1;
+        vtd.valueTo = value;
+        vtd.expectedValueTo = 0;
+        
+        if DFFactListenerCanRunOnExpectedValueTransition(vtd, this.factListenerRegistry, this.onceOnlyDFFactListenersFired) {
+            this.TryToRestoreHumanityLossFromTarotReading();
+        }
+
+        this.lastMistyCardsOnTableFactValue = value;
     }
 
     private final func OnAct2StartFactChanged(value: Int32) -> Void {
@@ -1785,18 +1993,6 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         }
     }
 
-    private cb func OnActivePlayerVehicleSpeedValueChanged(rawSpeed: Float) -> Bool {
-        //DFProfile();
-        let velocity: Float = AbsF(rawSpeed);
-        let multiplier: Float = GameInstance.GetStatsDataSystem(GetGameInstance()).GetValueFromCurve(n"vehicle_ui", velocity, n"speed_to_multiplier");
-        let speedValue: Int32 = RoundMath(velocity * multiplier);
-        if this.lastActivePlayerVehicleSpeed < this.playerVehicleSpeedHumanityLossRestoreThreshold && speedValue >= this.playerVehicleSpeedHumanityLossRestoreThreshold {
-            this.TryToDisplayHumanityLossRestorationChoice(DFHumanityLossRestorationActivityType.Speed);
-        }
-
-        this.lastActivePlayerVehicleSpeed = speedValue;
-    }
-
     // Increase Humanity Loss on Relic Malfunction
     public final func OnRelicMalfunction() -> Void {
         //DFProfile();
@@ -1856,28 +2052,24 @@ protected cb func OnVideoFinished(target: wref<inkVideo>) -> Bool {
     wrappedMethod(target);
 }
 
-@wrapMethod(VehicleObject)
-protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
-	//DFProfile();
-	let r = wrappedMethod(evt);
+// PocketRadio - Humanity Loss Restore when listening to music.
+//               Called when radio turned on while on foot, when station changes, and in vehicles.
+//
+/*@wrapMethod(PocketRadio)
+private final func TurnOn(playSFX: Bool) -> Void {
+    wrappedMethod(playSFX);
 
-	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-	if IsDefined(mountChild) && mountChild.IsPlayer() && VehicleComponent.IsDriverSlot(evt.request.lowLevelMountingInfo.slotId.id) {		
-		DFHumanityLossConditionSystem.Get().TryToRegisterForVehicleSpeedChange(this);
-	}
+    DFHumanityLossConditionSystem.Get().OnUpdateRadioState(DFHumanityLossRadioState.On);
+    
+    //let track = GetRadioStationCurrentTrackName(RadioStationDataProvider.GetStationNameByIndex(this.m_selectedStation));
+    //FTLog(GetLocalizedTextByKey(track)");
+}*/
 
-	return r;
-}
+// PocketRadio - Called when radio turned off while on foot, when station changes, and in vehicles.
+//
+/*@wrapMethod(PocketRadio)
+private final func TurnOff(playSFX: Bool) -> Void {
+    wrappedMethod(playSFX);
 
-@wrapMethod(VehicleObject)
-protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
-	//DFProfile();
-	let r = wrappedMethod(evt);
-
-	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-	if IsDefined(mountChild) && mountChild.IsPlayer() {
-		DFHumanityLossConditionSystem.Get().UnregisterForVehicleSpeedChange(this);
-	}
-	
-	return r;
-}
+    DFHumanityLossConditionSystem.Get().OnUpdateRadioState(DFHumanityLossRadioState.Off);
+}*/

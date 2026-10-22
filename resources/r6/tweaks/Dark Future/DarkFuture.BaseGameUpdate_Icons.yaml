@@ -6,3 +6,15 @@
 #
 UIIcon.rested_icon.atlasPartName: house_xp_gain
 UIIcon.refreshed_icon.atlasPartName: house_hp_regen
+
+#
+#
+# Update the Well Fed status effect icon, for clarity.
+#
+#
+UIIcon.DarkFutureWellFedIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: food_vendor
+  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+
+BaseStatusEffect.WellFed_inline4.iconPath: DarkFutureWellFedIcon

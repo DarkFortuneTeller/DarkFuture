@@ -16,7 +16,9 @@ import RevisedBackpack.{
 }
 
 import Codeware.UI.VirtualResolutionWatcher
-
+import DarkFuture.Utils.{
+    DFGetPlayer
+}
 import DarkFuture.Settings.{
 	DFSettings,
 	SettingChangedEvent
@@ -26,7 +28,9 @@ import DarkFuture.System.*
 import DarkFuture.Main.DFTimeSkipData
 import DarkFuture.Main.{ 
 	DFNeedsDatum,
-	DFNeedChangeDatum
+	DFNeedChangeDatum,
+    DFEnergyChangePreview,
+    DFNerveChangePreview
 }
 import DarkFuture.Needs.{
 	DFHydrationSystem,
@@ -48,8 +52,7 @@ import DarkFuture.UI.{
 	DFNeedsMenuBarSetupData
 }
 import DarkFuture.Conditions.{
-    DFBiocorruptionConditionSystem,
-    DFBiocorruptionConditionState
+    DFBiocorruptionConditionSystem
 }
 
 class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
@@ -105,6 +108,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     private let barClusterfadeInAnim: ref<inkAnimDef>;
     private let barClusterfadeOutAnimProxy: ref<inkAnimProxy>;
     private let barClusterfadeOutAnim: ref<inkAnimDef>;
+    private let startedInOvercharge: Bool;
 
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFRevisedBackpackUISystem> {
 		let instance: ref<DFRevisedBackpackUISystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRevisedBackpackUISystem>()) as DFRevisedBackpackUISystem;
@@ -133,6 +137,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
             this.CreateNeedsBarCluster(this.widgetSlot);
             this.SetOriginalValuesInUI();
             this.UpdateAllBarsAppearance();
+            this.nerveBar.UpdateOverchargeAppearance(this.NerveSystem.GetOverchargeValue(), this.Settings.compatibilityProjectE3UI);
 
             // Watch for changes to client resolution. Set the correct resolution now to scale all widgets.
             this.virtualResolutionWatcher = new VirtualResolutionWatcher();
@@ -147,48 +152,57 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
         }
     }
 
+    private final func GetStackLimitedNerveToRestore(needsData: DFNeedsDatum, stackingEffect: TweakDBID, maxStacks: Uint32, stacksToTryToApply: Uint32) -> Float {
+        let amountToRestore: Float = 0.0;
+        let appliedEffect: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(DFGetPlayer(), stackingEffect);
+        let appliedEffectStackCount: Uint32 = IsDefined(appliedEffect) ? appliedEffect.GetStackCount() : 0u;
+
+        let availableStackCount = maxStacks - appliedEffectStackCount;
+        let stacksToApply = Min(Cast<Int32>(availableStackCount), Cast<Int32>(stacksToTryToApply));
+        if stacksToApply > 0 {
+            amountToRestore = needsData.nerve.value * Cast<Float>(stacksToApply);
+        }
+
+        return amountToRestore;
+    }
+
     public final func OnRevisedBackpackItemHoverOver(itemData: ref<gameItemData>) -> Void {
         DFLog(this, "RevisedBackpack: OnRevisedBackpackItemHoverOver, itemData: " + ToString(itemData));
-        if this.Settings.mainSystemEnabled && !StatusEffectSystem.ObjectHasStatusEffect(this.HydrationSystem.player, t"DarkFutureStatusEffect.Weakened") {
+        if this.Settings.mainSystemEnabled {
             if IsDefined(itemData) {
                 if itemData.HasTag(n"Consumable") {
                     let itemRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID());
                     let needsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
+                    
+                    // Show the change in Energy if player meets the energy management effect criteria.
+                    let energyMax: Float = this.EnergySystem.GetNeedMaxAfterItemUse(itemRecord);
+                    let ePrev: DFEnergyChangePreview = this.EnergySystem.GetItemEnergyChangePreviewAmountWithCrashInfo(itemRecord);
+                    this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue() + ePrev.change, energyMax);
 
-                    // Show the increase in Hydration and Nutrition if player's Nerve is not too low.
+                    // Show the increase in Hydration and Nutrition if player's Nerve is not too low or not impacted by Biocorruption.
+                    let hydrationMax: Float = this.HydrationSystem.GetNeedMaxAfterItemUse(itemRecord);
+                    let nutritionMax: Float = this.NutritionSystem.GetNeedMaxAfterItemUse(itemRecord);
+
+                    this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), hydrationMax);
+                    let hPrev: Float = this.HydrationSystem.GetNeedValue() + needsData.hydration.value;
+                    this.hydrationBar.SetUpdatedValue(hPrev, MinF(MaxF(needsData.hydration.ceiling, this.HydrationSystem.GetNeedValue()), hydrationMax));
+                    this.UpdateBarLimit(this.hydrationBar, hydrationMax);
+
                     if this.NerveSystem.GetHasNausea() {
-                        this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
-                        this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), this.NutritionSystem.GetNeedMax());
-                    } else if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Crash) {
-                        // Player has Biocorruption Crash, which prevents Needs restoration.
-                        let biocorruptionSoftCap: Float = this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption();
-                        let showHydrationLock: Bool = ((this.HydrationSystem.GetNeedValue() + needsData.hydration.value) >= biocorruptionSoftCap) && (needsData.hydration.value > 0.0);
-                        let showNutritionLock: Bool = ((this.NutritionSystem.GetNeedValue() + needsData.nutrition.value) >= biocorruptionSoftCap) && (needsData.nutrition.value > 0.0);
-
-                        if needsData.hydration.value > 0.0 {
-                            this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption(), showHydrationLock);
-                        }
-                        if needsData.nutrition.value > 0.0 {
-                            this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption(), showNutritionLock);
-                        }
+                        // Player has nausea from low Nerve.
+                        this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), nutritionMax);
                         
                     } else {
-                        this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue() + needsData.hydration.value, MinF(MaxF(needsData.hydration.ceiling, this.HydrationSystem.GetNeedValue()), this.HydrationSystem.GetNeedMax()));
-					    this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue() + needsData.nutrition.value, MinF(MaxF(needsData.nutrition.ceiling, this.NutritionSystem.GetNeedValue()), this.NutritionSystem.GetNeedMax()));
+                        let nPrev: Float = this.NutritionSystem.GetNeedValue() + needsData.nutrition.value;
+                        this.nutritionBar.SetUpdatedValue(nPrev, MinF(MaxF(needsData.nutrition.ceiling, this.NutritionSystem.GetNeedValue()), nutritionMax));
+                        this.UpdateBarLimit(this.nutritionBar, nutritionMax);
                     }
 
-                    // Show the change in Energy if player meets the energy management effect criteria.
-                    // If this item is coffee or an energy drink, and the player has nausea, don't show the energy improvement.
-                    if this.NerveSystem.GetHasNausea() && needsData.hydration.value > 0.0 {
-                        this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
-                    } else {
-                        this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue() + this.EnergySystem.GetItemEnergyChangePreviewAmount(itemRecord, needsData), this.HydrationSystem.GetNeedMax());
-                    }
-                    
-                    // Handle Addiction Withdrawal and Alcohol
+				    // Handle Addiction Withdrawal and Alcohol
                     let nerveMax: Float = this.NerveSystem.GetNeedMaxAfterItemUse(itemRecord);
                     let nerveValue: Float = this.NerveSystem.GetNeedValue();
-                    let potentialNewValue: Float = nerveValue + (needsData.nerve.value + needsData.nerve.valueOnStatusEffectApply);
+                    let nervePrev: DFNerveChangePreview = this.NerveSystem.GetItemNerveChangePreviewAmount(itemRecord);
+				    let potentialNewValue: Float = nerveValue + nervePrev.change;
 
                     if nerveValue > potentialNewValue {
                         // Decreasing
@@ -210,14 +224,11 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                         }
                     }
 
-                    // If this item's Nerve benefit only works outside of combat, don't show the benefit if in combat.
-                    if itemRecord.TagsContains(n"DarkFutureConsumableNerveNoCombat") && this.HydrationSystem.player.IsInCombat() {
-                        this.nerveBar.SetUpdatedValue(nerveValue, nerveMax);
-                    } else {
-                        this.nerveBar.SetUpdatedValue(potentialNewValue, nerveMax);
-                    }
-                    this.UpdateNerveBarLimit(nerveMax);
-                };
+                    this.nerveBar.SetUpdatedValue(potentialNewValue, nerveMax, false, nervePrev.indeterminate);
+                    
+                    this.UpdateBarLimit(this.nerveBar, nerveMax);
+                    this.UpdateNerveBarOvercharge(this.NerveSystem.GetOverchargeValue());
+                }
             };
         }
     }
@@ -235,7 +246,11 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
             this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue(), this.EnergySystem.GetNeedMax());
             this.nerveBar.SetUpdatedValue(this.NerveSystem.GetNeedValue(), this.NerveSystem.GetNeedMax());
 
-            this.UpdateNerveBarLimit(this.NerveSystem.GetNeedMax());
+            this.UpdateBarLimit(this.hydrationBar, this.HydrationSystem.GetNeedMax());
+            this.UpdateBarLimit(this.nutritionBar, this.NutritionSystem.GetNeedMax());
+            this.UpdateBarLimit(this.energyBar, this.EnergySystem.GetNeedMax());
+            this.UpdateBarLimit(this.nerveBar, this.NerveSystem.GetNeedMax());
+            this.UpdateNerveBarOvercharge(this.NerveSystem.GetOverchargeValue());
         }
     }
 
@@ -246,6 +261,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
             if Equals(categoryId, 10) || Equals(categoryId, 50) {
                 this.SetBarClusterFadeIn();
                 this.UpdateAllBarsAppearance();
+                this.nerveBar.UpdateOverchargeAppearance(this.NerveSystem.GetOverchargeValue(), this.Settings.compatibilityProjectE3UI);
             } else {
                 this.SetBarClusterFadeOut();
             }
@@ -293,6 +309,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 	public func UnregisterAllDelayCallbacks() -> Void {}
 	public func OnTimeSkipStart() -> Void {}
 	public func OnTimeSkipCancelled() -> Void {}
+    public func OnTimeSkipBegin() -> Void {}
 	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
 	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 	public func DoPostSuspendActions() -> Void {}
@@ -345,8 +362,8 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
         let nerveIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
         let nerveIconName: CName = n"illegal";
 
-        let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
-        let hydrationIconName: CName = n"bar";
+        let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\widgets\\healthbar\\atlas_buffinfo.inkatlas";
+        let hydrationIconName: CName = n"hydrated";
         
         let nutritionIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
         let nutritionIconName: CName = n"food_vendor";
@@ -356,19 +373,19 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 
         let barSetupData: DFNeedsMenuBarSetupData;
 
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nerveBar", nerveIconPath, nerveIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNerve"), 400.0, 100.0, 0.0, 0.0, true, false, GetLocalizedTextByKey(n"DarkFutureEuphoriaResourceName"));
         this.nerveBar = new DFNeedsMenuBar();
         this.nerveBar.Init(barSetupData);
 
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, false, true);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, true, false, "");
         this.hydrationBar = new DFNeedsMenuBar();
         this.hydrationBar.Init(barSetupData);
         
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, false, true);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, true, false, "");
         this.nutritionBar = new DFNeedsMenuBar();
         this.nutritionBar.Init(barSetupData);
 
-        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false, false);
+        barSetupData = DFNeedsMenuBarSetupData(rowOne, n"energyBar", energyIconPath, energyIconName, GetLocalizedTextByKey(n"DarkFutureUILabelEnergy"), 400.0, 0.0, 0.0, 0.0, false, false, "");
         this.energyBar = new DFNeedsMenuBar();
         this.energyBar.Init(barSetupData);
     }
@@ -418,12 +435,32 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
             this.nutritionBar.SetOriginalValue(this.NutritionSystem.GetNeedValue());
             this.energyBar.SetOriginalValue(this.EnergySystem.GetNeedValue());
             this.nerveBar.SetOriginalValue(this.NerveSystem.GetNeedValue());
-            this.UpdateNerveBarLimit(this.NerveSystem.GetNeedMax());
+
+            this.hydrationBar.SetUpdatedValue(this.HydrationSystem.GetNeedValue(), this.HydrationSystem.GetNeedMax());
+            this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), this.NutritionSystem.GetNeedMax());
+            this.energyBar.SetUpdatedValue(this.EnergySystem.GetNeedValue(), this.EnergySystem.GetNeedMax());
+            this.nerveBar.SetUpdatedValue(this.NerveSystem.GetNeedValue(), this.NerveSystem.GetNeedMax());
+
+            this.UpdateBarLimit(this.hydrationBar, this.HydrationSystem.GetNeedMax());
+            this.UpdateBarLimit(this.nutritionBar, this.NutritionSystem.GetNeedMax());
+            this.UpdateBarLimit(this.nerveBar, this.NerveSystem.GetNeedMax());
+            let overcharge: Float = this.NerveSystem.GetOverchargeValue();
+            if overcharge > 0.0 {
+			this.startedInOvercharge = true;
+		}
+		    this.UpdateNerveBarOvercharge(overcharge);
         }
     }
 
-    private final func UpdateNerveBarLimit(newLimitValue: Float) -> Void {
+    private final func UpdateBarLimit(bar: ref<DFNeedsMenuBar>, newLimitValue: Float) -> Void {
         let currentLimitPct: Float = 1.0 - (newLimitValue / 100.0);
-        this.nerveBar.SetProgressEmpty(currentLimitPct);
+        bar.SetProgressEmpty(currentLimitPct);
+    }
+
+    private final func UpdateNerveBarOvercharge(newOverchargeValue: Float) -> Void {
+        //DFProfile();
+        let currentOverchargePct: Float = newOverchargeValue / 100.0;
+        this.nerveBar.SetProgressOvercharge(currentOverchargePct);
+        this.nerveBar.UpdateOverchargeAppearance(newOverchargeValue, this.Settings.compatibilityProjectE3UI, !this.startedInOvercharge && currentOverchargePct > 0.0);
     }
 }

@@ -12,58 +12,53 @@ DarkFutureItem.EndorphinRegulatorCoolAttunement:
   modifierType: Additive
   statType: BaseStats.AttunementHelper
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Epic_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholDesc"
   localizedName: ''
   floatValues: []
   intValues:
     - 20
-    - 3
   nameValues: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_EpicPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 20
-    - 3
+    - 30
   nameValues: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Legendary_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 20
-    - 2
+    - 40
   nameValues: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 20
-    - 2
+    - 50
   nameValues: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus_UIData:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlusPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholNumbStacksDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorAlcoholDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - -25
-    - 2
+    - 60
   nameValues: []
   stats: []
 
@@ -73,7 +68,7 @@ DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Epic_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - 20
+    - 1
   nameValues: []
   stats: []
 
@@ -83,84 +78,84 @@ DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_EpicPlus_UIData:
   localizedName: ''
   floatValues: []
   intValues:
-    - 40
+    - 1
   nameValues: []
   stats: []
 
 DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Legendary_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsMultipleDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 60
+    - 2
   nameValues: []
   stats: []
 
 DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsMultipleDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 80
+    - 2
   nameValues: []
   stats: []
 
 DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlusPlus_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsDesc"
+  localizedDescription: l"DarkFutureCyberwareEndorphinRegulatorNarcoticsMultipleDesc"
   localizedName: ''
   floatValues: []
   intValues:
-    - 100
+    - 3
   nameValues: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Epic:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Epic_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_EpicPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_EpicPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Legendary:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Legendary_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus:
+DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlusPlus:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus_UIData
+  UIData: DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlusPlus_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -275,7 +270,7 @@ DarkFutureItem.EndorphinRegulatorLegendaryPlusPlus:
   localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlusPlus
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlusPlus
     - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlusPlus
     - Attunements.CoolHeadshotDamage
   OnLooted: []
@@ -370,7 +365,7 @@ DarkFutureItem.EndorphinRegulatorLegendaryPlus:
   localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_LegendaryPlus
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_LegendaryPlus
     - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_LegendaryPlus
     - Attunements.CoolHeadshotDamage
   OnLooted: []
@@ -465,7 +460,7 @@ DarkFutureItem.EndorphinRegulatorLegendary:
   localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Legendary
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Legendary
     - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Legendary
     - Attunements.CoolHeadshotDamage
   OnLooted: []
@@ -560,7 +555,7 @@ DarkFutureItem.EndorphinRegulatorEpicPlus:
   localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_EpicPlus
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_EpicPlus
     - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_EpicPlus
     - Attunements.CoolHeadshotDamage
   OnLooted: []
@@ -655,7 +650,7 @@ DarkFutureItem.EndorphinRegulatorEpic:
   localizedDescription: l"Gameplay-Cyberware-LocalizedDescription-IronLungs"
   OnAttach: []
   OnEquip:
-    - DarkFutureItem.EndorphinRegulatorOnEquip_AlcoholNumbStacks_Epic
+    - DarkFutureItem.EndorphinRegulatorOnEquip_Alcohol_Epic
     - DarkFutureItem.EndorphinRegulatorOnEquip_Narcotics_Epic
     - Attunements.CoolHeadshotDamage
   OnLooted: []

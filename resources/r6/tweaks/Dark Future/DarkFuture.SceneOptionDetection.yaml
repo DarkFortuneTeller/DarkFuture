@@ -1,0 +1,156 @@
+ChoiceCaptionParts.DarkFutureInteraction_Sleep_BaseGame:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Sleep_BaseGame
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Sleep_KressStreet:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Sleep_KressStreet
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_EnterRollercoaster:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_EnterRollercoaster
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptA:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_MQ014MonkFinishPromptA
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptB:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_MQ014MonkFinishPromptB
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptC:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_MQ014MonkFinishPromptC
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptD:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_MQ014MonkFinishPromptD
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Cuddle:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Cuddle
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Kiss:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Kiss
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Dance:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Dance
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Meditate:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Meditate
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Q003TakeInhaler:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Q003TakeInhaler
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Q003MeredithStoutPrompt:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Q003MeredithStoutPrompt
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Eat:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Eat
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Q303SitAndDrink:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Q303SitAndDrink
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Q303PlayBraindance:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Q303PlayBraindance
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_CoffeeDrink:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_CoffeeDrink
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_DLC6DrinkTea:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_DLC6DrinkTea
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_DLC6HitBall:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_DLC6HitBall
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_DLC6BurnIncense:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_DLC6BurnIncense
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_Smoke:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_Smoke
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_TakeDrag:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_TakeDrag
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_ThrowBall:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_ThrowBall
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_SureThrowBall:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_SureThrowBall
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_MistyTarotFirst:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_MistyTarotFirst
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+
+ChoiceCaptionParts.DarkFutureInteraction_MistyTarotRepeat:
+  $type: gamedataChoiceCaptionIconPart_Record
+  enumName: DarkFutureInteraction_MistyTarotRepeat
+  mappinVariant: Mappins.InvalidVariant
+  partType: ChoiceCaptionPartType.Icon
+

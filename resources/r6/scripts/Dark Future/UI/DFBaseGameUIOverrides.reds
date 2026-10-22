@@ -33,7 +33,8 @@ import DarkFuture.Services.{
 import DarkFuture.Utils.{
 	GetDarkFutureHDRColor,
 	DFHDRColor,
-	IsCoinFlipSuccessful
+	IsCoinFlipSuccessful,
+	RandRangeInclusive
 }
 
 // ===================================================
@@ -82,20 +83,12 @@ public final func TryToShowAddictiveConsumableHeader(itemData: wref<gameItemData
 			addictionLabel = GetLocalizedTextByKey(n"DarkFutureAddictiveItemTooltipHeaderNicotine");
 		}
 
-		if IsSystemEnabledAndRunning(DFAlcoholAddictionSystem.Get()) && itemData.HasTag(n"DarkFutureConsumableAddictiveAlcoholWeak") {
+		if IsSystemEnabledAndRunning(DFAlcoholAddictionSystem.Get()) && itemData.HasTag(n"DarkFutureConsumableAddictiveAlcohol") {
 			addictionLabel = GetLocalizedTextByKey(n"DarkFutureAddictiveItemTooltipHeaderAlcohol");
 		}
 
-		if IsSystemEnabledAndRunning(DFAlcoholAddictionSystem.Get()) && itemData.HasTag(n"DarkFutureConsumableAddictiveAlcoholStrong") {
-			addictionLabel = GetLocalizedTextByKey(n"DarkFutureAddictiveItemTooltipHeaderAlcoholStrong");
-		}
-
-		if IsSystemEnabledAndRunning(DFNarcoticAddictionSystem.Get()) && itemData.HasTag(n"DarkFutureConsumableAddictiveNarcoticWeak") {
-			addictionLabel = GetLocalizedTextByKey(n"DarkFutureAddictiveItemTooltipHeaderNarcoticWeak");
-		}
-
-		if IsSystemEnabledAndRunning(DFNarcoticAddictionSystem.Get()) && itemData.HasTag(n"DarkFutureConsumableAddictiveNarcoticStrong") {
-			addictionLabel = GetLocalizedTextByKey(n"DarkFutureAddictiveItemTooltipHeaderNarcoticStrong");
+		if IsSystemEnabledAndRunning(DFNarcoticAddictionSystem.Get()) && itemData.HasTag(n"DarkFutureConsumableAddictiveNarcotic") {
+			addictionLabel = GetLocalizedTextByKey(n"DarkFutureAddictiveItemTooltipHeaderNarcotic");
 		}
 
 		if NotEquals(addictionLabel, "") {
@@ -322,11 +315,13 @@ private final func GetFilteredBuffList(value: Variant) -> array<BuffInfo> {
 	//DFProfile();
 	let buffDataList: array<BuffInfo> = FromVariant<array<BuffInfo>>(value);
 	let filteredBuffDataList: array<BuffInfo>;
+
+	let hidePersistent: Bool = DFSettings.Get().hidePersistentStatusIconsV2;
 	
 	for buff in buffDataList {
 		let buffTags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buff.buffID).GameplayTags();
 		
-		if Equals(buffTags[0], n"DarkFutureCanHideOnBuffBar") {
+		if hidePersistent && Equals(buffTags[0], n"DarkFutureCanHideOnBuffBar") {
 			// Filter out buffs that should be hidden on the buff bar.
 		} else {
 			ArrayPush(filteredBuffDataList, buff);
@@ -437,6 +432,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
     let debuffs: array<BuffInfo>;
 	let filteredBuffs: array<BuffInfo>;
 	let filteredDebuffs: array<BuffInfo>;
+	let typeToShowOnOpen: DFRadialMenuActiveEffectType;
     let effect: UIBuffInfo;
     let effects: array<UIBuffInfo>;
     let i: Int32;
@@ -451,7 +447,11 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
 	  while i < ArraySize(buffs) {
 		let tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
 		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
-	      if NotEquals(tags[2], n"DarkFutureCondition") {
+	      if (NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
+			ArrayPush(filteredBuffs, buffs[i]);
+		  }
+		} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.LongTermEffects) {
+	      if NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining == -1.0) {
 			ArrayPush(filteredBuffs, buffs[i]);
 		  }
 	  	} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
@@ -477,34 +477,108 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
       this.GetDebuffs(debuffs);
 	  // Edit Start
 	  // Filter the buff and debuff lists.
+	  let statusEffectBuffs: array<BuffInfo>;
+	  let longTermEffectBuffs: array<BuffInfo>;
+	  let conditionBuffs: array<BuffInfo>;
+	  let statusEffectDebuffs: array<BuffInfo>;
+	  let longTermEffectDebuffs: array<BuffInfo>;
+	  let conditionDebuffs: array<BuffInfo>;
+
 	  i = 0;
 	  while i < ArraySize(buffs) {
 		let tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
-		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
-	      if NotEquals(tags[2], n"DarkFutureCondition") {
-			ArrayPush(filteredBuffs, buffs[i]);
-		  }
-	  	} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
-		  if Equals(tags[2], n"DarkFutureCondition") {
-			ArrayPush(filteredBuffs, buffs[i]);
-		  }
+
+		if this.DarkFutureOpening {
+			// Autocalculate the type.
+			if (NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
+				ArrayPush(statusEffectBuffs, buffs[i]);
+			} else if NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining == -1.0) {
+				ArrayPush(longTermEffectBuffs, buffs[i]);
+			} else if Equals(tags[2], n"DarkFutureCondition") {
+				ArrayPush(conditionBuffs, buffs[i]);
+			}
+		
+		} else {
+			// Use the provided type.
+			if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+				if (NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
+					ArrayPush(filteredBuffs, buffs[i]);
+				}
+			} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.LongTermEffects) {
+				if NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining == -1.0) {
+					ArrayPush(filteredBuffs, buffs[i]);
+				}
+			} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+				if Equals(tags[2], n"DarkFutureCondition") {
+					ArrayPush(filteredBuffs, buffs[i]);
+				}
+			}
 		}
+		
 		i += 1;
 	  }
 	  i = 0;
 	  while i < ArraySize(debuffs) {
 		let tags = TweakDBInterface.GetStatusEffectRecord(debuffs[i].buffID).GameplayTags();
-		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
-	      if NotEquals(tags[2], n"DarkFutureCondition") {
-			ArrayPush(filteredDebuffs, debuffs[i]);
-		  }
-	  	} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
-		  if Equals(tags[2], n"DarkFutureCondition") {
-			ArrayPush(filteredDebuffs, debuffs[i]);
-		  }
+
+		if this.DarkFutureOpening {
+			if (NotEquals(tags[2], n"DarkFutureCondition") && (debuffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
+				ArrayPush(statusEffectDebuffs, debuffs[i]);
+			} else if NotEquals(tags[2], n"DarkFutureCondition") && (debuffs[i].timeRemaining == -1.0) {
+				ArrayPush(longTermEffectDebuffs, debuffs[i]);
+			} else if Equals(tags[2], n"DarkFutureCondition") {
+				ArrayPush(conditionDebuffs, debuffs[i]);
+			}
+		
+		} else {
+			if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
+				if (NotEquals(tags[2], n"DarkFutureCondition") && (debuffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
+					ArrayPush(filteredDebuffs, debuffs[i]);
+				}
+			} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.LongTermEffects) {
+				if NotEquals(tags[2], n"DarkFutureCondition") && (debuffs[i].timeRemaining == -1.0) {
+					ArrayPush(filteredDebuffs, debuffs[i]);
+				}
+			} else if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.Conditions) {
+				if Equals(tags[2], n"DarkFutureCondition") {
+					ArrayPush(filteredDebuffs, debuffs[i]);
+				}
+			}
 		}
+		
 		i += 1;
 	  }
+	  
+	  if this.DarkFutureOpening {
+		// Finish calculating the category to show.
+		
+		let statusEffectSize: Int32 = ArraySize(statusEffectBuffs) + ArraySize(statusEffectDebuffs);
+		typeToShowOnOpen = DFRadialMenuActiveEffectType.StatusEffects;
+
+		let longTermEffectSize: Int32 = ArraySize(longTermEffectBuffs) + ArraySize(longTermEffectDebuffs);
+		if statusEffectSize == 0 && longTermEffectSize > 0 {
+			typeToShowOnOpen = DFRadialMenuActiveEffectType.LongTermEffects;
+		}
+
+		let conditionsSize: Int32 = ArraySize(conditionBuffs) + ArraySize(conditionDebuffs);
+		if statusEffectSize == 0 && longTermEffectSize == 0 && conditionsSize > 0 {
+			typeToShowOnOpen = DFRadialMenuActiveEffectType.Conditions;
+		}
+
+		if Equals(typeToShowOnOpen, DFRadialMenuActiveEffectType.StatusEffects) {
+			filteredBuffs = statusEffectBuffs;
+			filteredDebuffs = statusEffectDebuffs;
+
+		} else if Equals(typeToShowOnOpen, DFRadialMenuActiveEffectType.LongTermEffects) {
+			filteredBuffs = longTermEffectBuffs;
+			filteredDebuffs = longTermEffectDebuffs;
+
+		} else if Equals(typeToShowOnOpen, DFRadialMenuActiveEffectType.Conditions) {
+			filteredBuffs = conditionBuffs;
+			filteredDebuffs = conditionDebuffs;
+		}
+	  }
+
 	  // Edit End
 
       i = 0;
@@ -533,6 +607,14 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
     if ArraySize(effects) > 0 {
         this.ParseBuffList(effects);
     };
+
+	// Force the correct category.
+	if this.DarkFutureOpening {
+		this.DarkFutureActiveEffectType = typeToShowOnOpen;
+		DFHUDSystem.Get().ForceRadialMenuActiveEffectTitle(typeToShowOnOpen);
+	}
+
+	this.DarkFutureOpening = false;
 
 	// Edit Start
     /*if ArraySize(effects) == 0 {
@@ -834,7 +916,7 @@ public final func ProgressCyberpsychosisMessage() -> Void {
 		
 		let glitchOffsetX: Float = RandRangeF(-10.0, 50.0);
 		let glitchOffsetY: Float = RandRangeF(-50.0, 50.0);
-		let shouldShear: Bool = RandRange(1, 100) <= 20;
+		let shouldShear: Bool = RandRangeInclusive(1, 100) <= 20;
 		let glitchShear: Float = RandRangeF(-0.4, -0.7);
 
 		inkWidgetRef.SetTranslation(this.m_mainTextWidget, Vector2(0.0, 0.0));
@@ -846,12 +928,12 @@ public final func ProgressCyberpsychosisMessage() -> Void {
 			inkWidgetRef.SetShear(this.m_mainTextWidget, Vector2(0.0, 0.0));
 		}
 
-		let randomMessageIndex: Int32 = RandRange(1, 11);
+		let randomMessageIndex: Int32 = RandRangeInclusive(1, 11);
 		this.m_mainTextWidget.SetLocalizedText(StringToName("DarkFutureCyberpsychosisNotification" + ToString(randomMessageIndex)));
 
 		// Randomly stretch, shear, or offset the icon.
-		let shouldMutateIcon: Bool = RandRange(1, 100) <= 85;
-		let randomIconMutation: Int32 = RandRange(1, 10);
+		let shouldMutateIcon: Bool = RandRangeInclusive(1, 100) <= 85;
+		let randomIconMutation: Int32 = RandRangeInclusive(1, 10);
 
 		if shouldMutateIcon {
 			// Reset the icon.
@@ -1039,9 +1121,9 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
 	let expTextLabel: ref<inkText> = (inkWidgetRef.Get(this.m_expText).parentWidget as inkHorizontalPanel).GetWidgetByPathName(n"exp_value_title") as inkText;
 	let expPlus: ref<inkText> = (inkWidgetRef.Get(this.m_expText).parentWidget as inkHorizontalPanel).GetWidgetByPathName(n"plus") as inkText;
 	if IsDefined(asProgressionViewData) {
-		if Equals(asProgressionViewData.type, IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureHumanityLoss"))) ||
-		   Equals(asProgressionViewData.type, IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureInjury"))) ||
-		   Equals(asProgressionViewData.type, IntEnum<gamedataProficiencyType>(EnumValueFromName(n"gamedataProficiencyType", n"DarkFutureBiocorruption"))) {
+		if Equals(asProgressionViewData.type, DFEnum_gamedataProficiencyType(n"DarkFutureHumanityLoss")) ||
+		   Equals(asProgressionViewData.type, DFEnum_gamedataProficiencyType(n"DarkFutureInjury")) ||
+		   Equals(asProgressionViewData.type, DFEnum_gamedataProficiencyType(n"DarkFutureBiocorruption")) {
 			
 			// Hide the plus symbol when the value is decreasing.
 			let deltaToCheck: Int32 = IsDefined(asDFProgressionViewData) ? asDFProgressionViewData.actualDelta : this.progression_data.delta;

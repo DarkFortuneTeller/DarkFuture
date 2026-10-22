@@ -9,8 +9,15 @@ module DarkFuture.Utils
 
 import DarkFuture.Logging.*
 
+public struct DFSceneOptionIconMap {
+    public let locId: Uint64;
+    public let icon: TweakDBID;
+}
+
 
 public class DFResourceUtils extends ScriptableService {
+    private let sceneOptionIconMaps: array<DFSceneOptionIconMap>;
+
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFResourceUtils> {
         //DFProfile();
 		let instance: ref<DFResourceUtils> = GameInstance.GetScriptableServiceContainer().GetService(NameOf<DFResourceUtils>()) as DFResourceUtils;
@@ -24,6 +31,13 @@ public class DFResourceUtils extends ScriptableService {
 
     private cb func OnLoad() {
         //DFProfile();
+
+        //this.BuildSceneOptionIconMap();
+
+        // Process Scene Choice Options
+        //GameInstance.GetCallbackSystem().RegisterCallback(n"Resource/Load", this, n"OnLoadSceneResource")
+        //.AddTarget(ResourceTarget.Type(n"scnSceneResource"));
+
         // Condition Notification Style
         GameInstance.GetCallbackSystem().RegisterCallback(n"Resource/Load", this, n"ProcessNotificationStyle")
         .AddTarget(ResourceTarget.Path(r"base\\gameplay\\gui\\widgets\\notifications\\notification.inkstyle"));
@@ -37,11 +51,40 @@ public class DFResourceUtils extends ScriptableService {
         .AddTarget(ResourceTarget.Path(r"base\\open_world\\metro\\ue_metro\\scenes\\ue_metro_02_station_v3.scene"));
     }
 
+    /*protected cb func OnLoadSceneResource(event: ref<ResourceEvent>) -> Void {
+        // scnscreenplayChoiceOption.itemId.id -> respective dialogue localization id
+        let localizationMap: ref<inkStringMap>;
+        
+        let scene: ref<scnSceneResource> = event.GetResource() as scnSceneResource;
+        for option in scene.screenplayStore.options {
+            localizationMap.Insert(ToString(option.itemId.id), CRUIDToHash(option.locstringId.ruid));
+        }
+
+        for node in scene.sceneGraph.graph {
+            let choiceNode: ref<scnChoiceNode> = node as scnChoiceNode;
+
+            if IsDefined(choiceNode) {
+                let i: Int32 = 0;
+
+                while i < ArraySize(choiceNode.options) {
+                    let option = choiceNode.options[i];
+                    let dialogueLocalization = localizationMap.Get(ToString(option.screenplayOptionId.id));
+
+                    if Equals(dialogueLocalization, ) {
+                        ArrayPush(choiceNode.options[i].iconTagIds, );
+                    }
+
+                    i += 1;
+                }
+            }
+        }
+    }*/
+
     private cb func ProcessNotificationStyle(event: ref<ResourceEvent>) -> Void {
         //DFProfile();
         let sr: ref<inkStyleResource> = event.GetResource() as inkStyleResource;
         if IsDefined(sr) {
-            DFLogNoSystem(true, this, "DFResourceUtils: Injecting inkStyles into notification.inkstyle...");
+            DFLogNoSystem(DFSystemlessDebugEnabled(), this, "DFResourceUtils: Injecting inkStyles into notification.inkstyle...");
 
             let darkFutureStyle: inkStyle;
             darkFutureStyle.state = n"DarkFuture";
@@ -102,7 +145,7 @@ public class DFResourceUtils extends ScriptableService {
             // Push the style definition into the inkStyle.
             ArrayPush(sr.styles, darkFutureStyle);
 
-            DFLogNoSystem(true, this, "DFResourceUtils: ...done!");
+            DFLogNoSystem(DFSystemlessDebugEnabled(), this, "DFResourceUtils: ...done!");
         }
     }
 
@@ -131,7 +174,7 @@ public class DFResourceUtils extends ScriptableService {
         }
 
         if Equals(fastTravelOption.caption, n"FT") {
-            DFLogNoSystem(true, this, "DFResourceUtils: Injecting Fast Travel condition into ue_metro_02_station_v3.scene...");
+            DFLogNoSystem(DFSystemlessDebugEnabled(), this, "DFResourceUtils: Injecting Fast Travel condition into ue_metro_02_station_v3.scene...");
             let metroFastTravelCondition: ref<questFactsDBCondition> = new questFactsDBCondition();
             
             let varComparisonConditionType: ref<questVarComparison_ConditionType> = new questVarComparison_ConditionType();
@@ -144,7 +187,81 @@ public class DFResourceUtils extends ScriptableService {
             ArrayPush((fastTravelOption.questCondition as questLogicalCondition).conditions, metroFastTravelCondition);
         }
     }
+
+    private final func BuildSceneOptionIconMap() -> Void {
+        this.sceneOptionIconMaps = [
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Sleep_BaseGame"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Sleep_KressStreet"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_EnterRollercoaster"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptA"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptB"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptC"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_MQ014MonkFinishPromptD"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Cuddle"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Kiss"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Dance"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Meditate"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Q003TakeInhaler"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Q003MeredithStoutPrompt"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Eat"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Q303SitAndDrink"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Q303PlayBraindance"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_CoffeeDrink"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_DLC6DrinkTea"),
+            DFSceneOptionIconMap(3060661460960976900ul, t"ChoiceCaptionParts.DarkFutureInteraction_DLC6HitBall"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_DLC6BurnIncense"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Smoke"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_TakeDrag"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_ThrowBall"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_SureThrowBall"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_MistyTarotFirst"),
+            DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_MistyTarotRepeat")
+        ];
+    }
 }
+
+/*class DFSceneOptionProcessor extends IScriptable {
+    protected let m_scene: ref<scnSceneResource>;
+
+    // scnscreenplayChoiceOption.itemId.id -> respective dialogue localization id
+    protected let m_localizationMap: ref<inkStringMap>;
+
+    protected func MapLocalization() -> Void {
+        for option in this.m_scene.screenplayStore.options {
+            this.m_localizationMap.Insert(ToString(option.itemId.id), CRUIDToHash(option.locstringId.ruid));
+        }
+    }
+
+    protected func Process() -> Void {
+        for node in this.m_scene.sceneGraph.graph {
+            let choiceNode: ref<scnChoiceNode> = node as scnChoiceNode;
+
+            if IsDefined(choiceNode) {
+                let i: Int32 = 0;
+
+                while i < ArraySize(choiceNode.options) {
+                    let option = choiceNode.options[i];
+                    let dialogueLocalization = this.m_localizationMap.Get(ToString(option.screenplayOptionId.id));
+
+                    if Equals(dialogueLocalization, ) { // Hit ball
+                        ArrayPush(choiceNode.options[i].iconTagIds, );
+                    }
+
+                    i += 1;
+                }
+            }
+        }
+    }
+
+    public static final func Process(scene: ref<scnSceneResource>) -> Void {
+        let processor: ref<DFSceneOptionProcessor> = new DFSceneOptionProcessor();
+        processor.m_scene = scene;
+        processor.m_localizationMap = new inkStringMap();
+
+        processor.MapLocalization();
+        processor.Process();
+    }
+}*/
 
 /*
     private cb func ProcessVendingMachines(event: ref<ResourceEvent>) {

@@ -87,6 +87,7 @@ DarkFutureStatusEffect.NutritionPenalty_01:
   uiData: DarkFutureStatusEffect.NutritionPenalty_01_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNutrition
     - DarkFutureInfiniteDurationEffect
@@ -177,6 +178,7 @@ DarkFutureStatusEffect.NutritionPenalty_02:
   uiData: DarkFutureStatusEffect.NutritionPenalty_02_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNutrition
     - DarkFutureInfiniteDurationEffect
@@ -267,6 +269,7 @@ DarkFutureStatusEffect.NutritionPenalty_03:
   uiData: DarkFutureStatusEffect.NutritionPenalty_03_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNutrition
     - DarkFutureInfiniteDurationEffect
@@ -357,6 +360,7 @@ DarkFutureStatusEffect.NutritionPenalty_04:
   uiData: DarkFutureStatusEffect.NutritionPenalty_04_UIData
   debugTags: []
   gameplayTags:
+    - DarkFutureCanHideOnBuffBar
     - Debuff
     - DarkFutureNeedNutrition
     - DarkFutureInfiniteDurationEffect

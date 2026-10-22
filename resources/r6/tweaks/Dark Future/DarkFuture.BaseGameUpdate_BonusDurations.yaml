@@ -4,3 +4,6 @@
 Items.LongLastingConsumableDuration_inline0.value: 900
 #Items.SatedDuration_inline0.value: 900
 #Items.WellFedDuration_inline0.value: 900
+
+# Update Rested name.
+HousingStatusEffect.Rested_inline0.displayName: l"DarkFutureEffectNameRested"

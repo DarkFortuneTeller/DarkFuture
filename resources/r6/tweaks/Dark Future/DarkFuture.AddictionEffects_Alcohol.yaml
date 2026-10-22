@@ -37,7 +37,7 @@ UIIcon.DarkFutureAlcoholWithdrawalIcon:
   $type: gamedataUIIcon_Record
   atlasPartName: drunk
   atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
-
+ 
 #
 #
 # Alcohol Withdrawal Cessation
@@ -103,7 +103,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_01_NoProgression_UIData:
   intValues:
     - 80
     - 4
-    - 36
+    - 24
   nameValues: []
   stats: []
 
@@ -201,7 +201,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_02_NoProgression_UIData:
   intValues:
     - 65
     - 6
-    - 48
+    - 36
   nameValues: []
   stats: []
 
@@ -299,7 +299,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_03_NoProgression_UIData:
   intValues:
     - 50
     - 8
-    - 60
+    - 48
   nameValues: []
   stats: []
 
@@ -397,7 +397,7 @@ DarkFutureStatusEffect.AlcoholWithdrawal_04_NoProgression_UIData:
   intValues:
     - 35
     - 10
-    - 72
+    - 60
   nameValues: []
   stats: []
 

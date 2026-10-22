@@ -34,10 +34,9 @@ public final class DFCyberwareService extends DFSystem {
 	private let equippedCyberwareItemIDs: array<ItemID>;
 
     private let cyberwareHasSecondHeart: Bool = false;
-    private let cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride: Uint32 = 0u;
     private let cyberwareNicotineEffectDurationOverride: Float = 0.0;
-	private let cyberwareNerveCostWhenHitBonusMult: Float = 1.0;
-	private let cyberwareNarcoticsEffectDurationOverride: Float = 300.0;
+	private let cyberwareAlcoholEnergyLossBonus: Float = 0.0;
+	private let cyberwareNarcoticExcessStacksAllowedBonus: Int32 = 0;
 	private let cyberwareSecondHeartNerveRestoreAmount: Float = 10.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFCyberwareService> {
@@ -60,6 +59,7 @@ public final class DFCyberwareService extends DFSystem {
 	public final func UnregisterAllDelayCallbacks() -> Void {}
 	public final func OnTimeSkipStart() -> Void {}
 	public final func OnTimeSkipCancelled() -> Void {}
+	public final func OnTimeSkipBegin() -> Void {}
 	public final func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
 	public final func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 	private final func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
@@ -116,10 +116,10 @@ public final class DFCyberwareService extends DFSystem {
 	private final func SetDefaultBonusState() -> Void {
 		//DFProfile();
 		this.cyberwareHasSecondHeart = false;
-		this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = 0u;
 		this.cyberwareNicotineEffectDurationOverride = 0.0;
-		this.cyberwareNarcoticsEffectDurationOverride = 300.0;
-		this.cyberwareSecondHeartNerveRestoreAmount = 30.0;
+		this.cyberwareAlcoholEnergyLossBonus = 0.0;
+		this.cyberwareNarcoticExcessStacksAllowedBonus = 0;
+		this.cyberwareSecondHeartNerveRestoreAmount = 10.0;
 	}
 
     public final func UpdateEquippedCyberwareAndBonuses() -> Void {
@@ -149,10 +149,7 @@ public final class DFCyberwareService extends DFSystem {
     private final func UpdateCyberwareBonuses() -> Void {
 		//DFProfile();
 		// Reset data.
-		this.cyberwareNarcoticsEffectDurationOverride = 300.0;
-        this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = 0u;
-        this.cyberwareNicotineEffectDurationOverride = 0.0;
-		this.cyberwareHasSecondHeart = false;
+		this.SetDefaultBonusState();
 
 		let i: Int32 = 0;
 		while i < ArraySize(this.equippedCyberwareItemIDs) {
@@ -189,24 +186,24 @@ public final class DFCyberwareService extends DFSystem {
 				} else if Equals(cyberwareType, n"EndorphinRegulator") {
 					switch quality {
 						case gamedataQuality.Epic:
-							this.cyberwareNarcoticsEffectDurationOverride = 360.0; // 20% bonus
-							this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = 3u;
+							this.cyberwareAlcoholEnergyLossBonus = 2.0; // 20% bonus
+							this.cyberwareNarcoticExcessStacksAllowedBonus = 1;
 							break;
 						case gamedataQuality.EpicPlus:
-							this.cyberwareNarcoticsEffectDurationOverride = 420.0; // 40% bonus
-							this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = 3u;
+							this.cyberwareAlcoholEnergyLossBonus = 3.0; // 30% bonus
+							this.cyberwareNarcoticExcessStacksAllowedBonus = 1;
 							break;
 						case gamedataQuality.Legendary:
-							this.cyberwareNarcoticsEffectDurationOverride = 480.0; // 60% bonus
-							this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = 2u;
+							this.cyberwareAlcoholEnergyLossBonus = 4.0; // 40% bonus
+							this.cyberwareNarcoticExcessStacksAllowedBonus = 2;
 							break;
 						case gamedataQuality.LegendaryPlus:
-							this.cyberwareNarcoticsEffectDurationOverride = 540.0; // 80% bonus
-							this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = 2u;
+							this.cyberwareAlcoholEnergyLossBonus = 5.0; // 50% bonus
+							this.cyberwareNarcoticExcessStacksAllowedBonus = 2;
 							break;
 						case gamedataQuality.LegendaryPlusPlus:
-							this.cyberwareNarcoticsEffectDurationOverride = 600.0; // 100% bonus
-							this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = 2u;
+							this.cyberwareAlcoholEnergyLossBonus = 6.0; // 60% bonus
+							this.cyberwareNarcoticExcessStacksAllowedBonus = 3;
 							break;
 					}
 
@@ -219,10 +216,10 @@ public final class DFCyberwareService extends DFSystem {
 		}
 
 		DFLog(this, "UpdateCyberwareBonuses Result:");
-		DFLog(this, "    cyberwareNarcoticsEffectDurationOverride = " + ToString(this.cyberwareNarcoticsEffectDurationOverride));
 		DFLog(this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
+		DFLog(this, "    cyberwareAlcoholEnergyLossBonus = " + ToString(this.cyberwareAlcoholEnergyLossBonus));
+		DFLog(this, "    cyberwareNarcoticExcessStacksAllowedBonus = " + ToString(this.cyberwareNarcoticExcessStacksAllowedBonus));
 		DFLog(this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
-		DFLog(this, "    cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride = " + ToString(this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride));
 	}
 
     public final func GetHasSecondHeart() -> Bool {
@@ -234,20 +231,20 @@ public final class DFCyberwareService extends DFSystem {
 		//DFProfile();
         return this.cyberwareNicotineEffectDurationOverride;
     }
-	
-    public final func GetNarcoticsEffectDurationOverride() -> Float {
+
+	public final func GetAlcoholEnergyLossBonus() -> Float {
 		//DFProfile();
-        return this.cyberwareNarcoticsEffectDurationOverride;
+        return this.cyberwareAlcoholEnergyLossBonus;
+    }
+	
+    public final func GetNarcoticExcessStacksAllowedBonus() -> Int32 {
+		//DFProfile();
+        return this.cyberwareNarcoticExcessStacksAllowedBonus;
     }
 
     public final func GetSecondHeartNerveRestoreAmount() -> Float {
 		//DFProfile();
         return this.cyberwareSecondHeartNerveRestoreAmount;
-    }
-
-	public final func GetAlcoholBiocorruptionBonusRequiredStacksOverride() -> Uint32 {
-		//DFProfile();
-		return this.cyberwareAlcoholBiocorruptionBonusRequiredStacksOverride;
 	}
 
 	public final func GetPointsOfCyberwareCapacityAllocated() -> Float {

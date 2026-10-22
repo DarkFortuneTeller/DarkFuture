@@ -12,7 +12,10 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Settings.DFSettings
 import DarkFuture.Main.DFTimeSkipData
-import DarkFuture.Utils.DFRunGuard
+import DarkFuture.Utils.{
+    DFRunGuard,
+    RandRangeInclusive
+}
 
 enum DFNPCSpawnSlot {
     Unassigned = 0,
@@ -119,6 +122,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     public func UnregisterAllDelayCallbacks() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
+    public func OnTimeSkipBegin() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
@@ -173,12 +177,12 @@ public final class DFRandomEncounterSystem extends DFSystem {
             }
 
             let possiblePuppetsToSpawn: array<TweakDBID> = this.GetCharacterListFromFactionName(this.selectedRandomEncounter.gangName);
-            let numToSpawn: Int32 = RandRange(this.minGangNPCsToSpawn, this.maxGangNPCsToSpawn);
+            let numToSpawn: Int32 = RandRangeInclusive(this.minGangNPCsToSpawn, this.maxGangNPCsToSpawn);
 
             let puppetsToSpawn: array<TweakDBID> = [];
             let i: Int32 = 0;
             while i < numToSpawn {
-                let randomPuppetIdx: Int32 = RandRange(0, ArraySize(possiblePuppetsToSpawn) - 1);
+                let randomPuppetIdx: Int32 = RandRangeInclusive(0, ArraySize(possiblePuppetsToSpawn) - 1);
                 ArrayPush(puppetsToSpawn, possiblePuppetsToSpawn[randomPuppetIdx]);
 
                 i += 1;
@@ -278,7 +282,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
 
 		if ArraySize(districtHostileGangs) > 0 {
 			// Select a gang from the list at random.
-			let randomIdx: Int32 = RandRange(0, ArraySize(districtHostileGangs) - 1);
+			let randomIdx: Int32 = RandRangeInclusive(0, ArraySize(districtHostileGangs) - 1);
 			selectedGangData.gangName = districtHostileGangs[randomIdx].EnumName();
             DFLog(this, "Selected gang: " + NameToString(selectedGangData.gangName) + ", district: " + selectedGangData.districtName);
 
@@ -592,7 +596,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
         let assignedSlot: DFNPCSpawnSlot;
 
         while Equals(assignedSlot, DFNPCSpawnSlot.Unassigned) {
-            let randomSlot: DFNPCSpawnSlot = IntEnum<DFNPCSpawnSlot>(RandRange(1, 8));
+            let randomSlot: DFNPCSpawnSlot = IntEnum<DFNPCSpawnSlot>(RandRangeInclusive(1, 8));
             if !ArrayContains(reservedSpawnSlots, randomSlot) {
                 ArrayPush(reservedSpawnSlots, randomSlot);
                 assignedSlot = randomSlot;

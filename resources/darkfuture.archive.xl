@@ -23,11 +23,19 @@ quest:
       parent: df_combined_scope.quest
     - path: darkfuture\quest\phases\darkfuture_blackout_anim.questphase
       parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_crash_anim.questphase
+      parent: df_combined_scope.quest
     - path: darkfuture\quest\phases\darkfuture_impaireddriving.questphase
       parent: df_combined_scope.quest
     - path: darkfuture\quest\phases\darkfuture_therapy.questphase
       parent: df_combined_scope.quest
     - path: darkfuture\quest\phases\darkfuture_humanityloss_restore.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_biocorruptiontutorial_dino.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_dealer_quest.questphase
+      parent: df_combined_scope.quest
+    - path: darkfuture\quest\phases\darkfuture_relax_action.questphase
       parent: df_combined_scope.quest
 
 localization:

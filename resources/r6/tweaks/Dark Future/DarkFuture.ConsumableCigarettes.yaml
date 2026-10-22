@@ -1,3 +1,16 @@
+#
+#
+# Common Records
+#
+#
+DarkFutureStatusEffect.BiocorruptionAddictiveSubstance_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureAddictiveSubstanceUIDescription"
+  localizedName: ''
+  intValues: []
+  nameValues: []
+  stats: []
+
 DarkFutureStatusEffect.SingleStack_StatModifier:
   $type: gamedataConstantStatModifier_Record
   value: 1
@@ -14,7 +27,33 @@ DarkFutureStatusEffect.SingleStack:
   statModifiers:
     - DarkFutureStatusEffect.SingleStack_StatModifier
 
+#
+#
+# Cigarettes
+#
+#
+DarkFutureStatusEffect.SmokingMaxStacks_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 5
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+  
+DarkFutureStatusEffect.SmokingMaxStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SmokingMaxStacks_StatModifier
+
 DarkFutureStatusEffectTypes.Smoking:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Smoking
+
+DarkFutureStatusEffectTypes.SmokingDebuff:
   $type: gamedataStatusEffectType_Record
   enumComment: ''
   enumName: Smoking
@@ -45,7 +84,18 @@ UIIcon.DarkFutureCigaretteDebuffIcon:
   atlasPartName: loot_face
   atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
 
+UIIcon.DarkFutureCigaretteBuffIcon:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ico_status_smoking
+  atlasResourcePath: darkfuture\condition_images\condition_assets.inkatlas
+
 DarkFutureItem.CigaretteDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 600
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureItem.CigaretteDebuffDuration_StatModifier:
   $type: gamedataConstantStatModifier_Record
   value: 300
   modifierType: Additive
@@ -61,32 +111,51 @@ DarkFutureItem.CigaretteDuration:
   statModifiers:
     - DarkFutureItem.CigaretteDuration_StatModifier
 
-DarkFutureStatusEffect.CigarettePackageStatStamina:
-  $type: gamedataConstantStatModifier_Record
-  value: 0.80
-  modifierType: Multiplier
-  statType: BaseStats.Stamina
+DarkFutureItem.CigaretteDebuffDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureItem.CigaretteDebuffDuration_StatModifier
 
-DarkFutureStatusEffect.CigarettePackage:
-  $type: gamedataGameplayLogicPackage_Record
-  stackable: False
-  animationWrapperOverrides: []
-  effectors: []
-  items: []
-  statPools: []
-  stats:
-    - DarkFutureStatusEffect.CigarettePackageStatStamina
-
-DarkFutureStatusEffect.CigaretteStatusEffectUIData:
+DarkFutureStatusEffect.CigaretteStatusEffect_UIData:
   $type: gamedataStatusEffectUIData_Record
   description: l"DarkFutureCigaretteStatusEffectDesc"
   displayName: l"DarkFutureCigaretteStatusEffectDisplayName"
   fluffText: ''
-  iconPath: DarkFutureCigaretteDebuffIcon
+  iconPath: DarkFutureCigaretteBuffIcon
   priority: 0
   floatValues: []
   intValues:
-    - -20
+    - 10
+    - 50
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.CigaretteStatusDebuffEffect_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureCigaretteStatusDebuffEffectDesc"
+  displayName: l"DarkFutureCigaretteStatusDebuffEffectDisplayName"
+  fluffText: ''
+  iconPath: DarkFutureCigaretteDebuffIcon
+  priority: 0
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineTolerance_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNicotineToleranceStatusEffectDesc"
+  displayName: l"DarkFutureNicotineToleranceStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: DarkFutureCigaretteBuffIcon
+  priority: 0
+  floatValues: []
+  intValues: []
   nameValues: []
   stats: []
 
@@ -96,32 +165,37 @@ DarkFutureStatusEffect.Smoking:
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
-  maxStacks: DarkFutureStatusEffect.SingleStack
+  maxStacks: DarkFutureStatusEffect.SmokingMaxStacks
   reapplyPackagesOnMaxStacks: False
-  removeAllStacksWhenDurationEnds: False
+  removeAllStacksWhenDurationEnds: True
   removeOnStoryTier: False
   replicated: False
   savable: True
   statusEffectType: DarkFutureStatusEffectTypes.Smoking
   stopActiveSfxOnDeactivate: True
-  uiData: DarkFutureStatusEffect.CigaretteStatusEffectUIData
+  uiData: DarkFutureStatusEffect.CigaretteStatusEffect_UIData
   debugTags: []
   gameplayTags:
-    - Debuff
+    - Buff
     - DarkFutureSmoking
-    - DarkFutureSmokingFromItem
-    - DarkFutureAddictionPrimaryEffect
-    - DarkFutureAddictionPrimaryEffectNicotine
-    - DarkFutureShouldInterruptSprintOnEmptyStamina
+    - DarkFutureManagedEffect
   immunityStats: []
-  packages:
-    - DarkFutureStatusEffect.CigarettePackage
+  packages: []
   SFX: []
   VFX: []
 
-DarkFutureStatusEffect.SmokingFromChoice:
+DarkFutureStatusEffect.SmokingLasting:
+  $base: DarkFutureStatusEffect.Smoking
+  duration: BaseStats.InfiniteDuration
+  gameplayTags:
+    - Buff
+    - DarkFutureSmoking
+    - DarkFutureManagedEffect
+    - DarkFutureInfiniteDurationEffect
+
+DarkFutureStatusEffect.SmokingDebuff:
   $type: gamedataStatusEffect_Record
-  duration: DarkFutureItem.CigaretteDuration
+  duration: DarkFutureItem.CigaretteDebuffDuration
   dynamicDuration: False
   isAffectedByTimeDilationNPC: True
   isAffectedByTimeDilationPlayer: True
@@ -131,22 +205,59 @@ DarkFutureStatusEffect.SmokingFromChoice:
   removeOnStoryTier: False
   replicated: False
   savable: True
-  statusEffectType: DarkFutureStatusEffectTypes.Smoking
+  statusEffectType: DarkFutureStatusEffectTypes.SmokingDebuff
   stopActiveSfxOnDeactivate: True
-  uiData: DarkFutureStatusEffect.CigaretteStatusEffectUIData
+  uiData: DarkFutureStatusEffect.CigaretteStatusDebuffEffect_UIData
   debugTags: []
   gameplayTags:
     - Debuff
-    - DarkFutureSmoking
-    - DarkFutureSmokingFromChoice
-    - DarkFutureAddictionPrimaryEffect
-    - DarkFutureAddictionPrimaryEffectNicotine
+    - DarkFutureSmokingDebuff
     - DarkFutureShouldInterruptSprintOnEmptyStamina
   immunityStats: []
-  packages:
-    - DarkFutureStatusEffect.CigarettePackage
+  packages: []
   SFX: []
   VFX: []
+
+DarkFutureStatusEffect.SmokingDebuffLasting:
+  $base: DarkFutureStatusEffect.SmokingDebuff
+  duration: BaseStats.InfiniteDuration
+  gameplayTags:
+    - Debuff
+    - DarkFutureSmokingDebuff
+    - DarkFutureShouldInterruptSprintOnEmptyStamina
+    - DarkFutureInfiniteDurationEffect
+
+DarkFutureStatusEffect.NicotineTolerance:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureItem.CigaretteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.SmokingMaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: True
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Smoking
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NicotineTolerance_UIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFutureManagedEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.NicotineToleranceLasting:
+  $base: DarkFutureStatusEffect.NicotineTolerance
+  duration: BaseStats.InfiniteDuration
+  gameplayTags:
+    - Buff
+    - DarkFutureManagedEffect
+    - DarkFutureInfiniteDurationEffect
 
 DarkFutureItems.CigaretteItemActionEffectCommon:
   $type: gamedataObjectActionEffect_Record
@@ -161,8 +272,8 @@ DarkFutureItems.CigaretteItemActionCommon:
   objectActionType: ObjectActionType.Item
   priority: 0
   activationTime: []
-  completionEffects:
-    - DarkFutureItems.CigaretteItemActionEffectCommon
+  completionEffects: []
+  #  - DarkFutureItems.CigaretteItemActionEffectCommon
   costs: []
   durationTime: []
   instigatorActivePrereqs: []
@@ -172,40 +283,78 @@ DarkFutureItems.CigaretteItemActionCommon:
   targetActivePrereqs: []
   targetPrereqs: []
 
-DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_UIData:
+DarkFutureStatusEffect.ConsumableCigaretteEffect_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureConsumableUIDescriptionNerve"
+  localizedDescription: l"DarkFutureNicotineUIDescription"
   localizedName: ''
   floatValues: []
   intValues:
-    - 15
+    - 10
+    - 10
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.ConsumableCigarettePenalty_UIData:
+DarkFutureStatusEffect.ConsumableCigaretteMultiplierEffect_UIData:
   $type: gamedataGameplayLogicPackageUIData_Record
-  localizedDescription: l"DarkFutureCigaretteStatPackageDesc"
+  localizedDescription: l"DarkFutureNicotineMultiplierUIDescription"
   localizedName: ''
   floatValues: []
   intValues:
-    - -20
+    - 50
   nameValues: []
   stats: []
 
-DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip:
+DarkFutureStatusEffect.ConsumableCigaretteDebuffEffect_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNicotineDebuffUIDescription"
+  localizedName: ''
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineTolerance_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNicotineToleranceUIDescription"
+  localizedName: ''
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableCigaretteEffect_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_UIData
+  UIData: DarkFutureStatusEffect.ConsumableCigaretteEffect_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
   statPools: []
   stats: []
 
-DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip:
+DarkFutureStatusEffect.ConsumableCigaretteMultiplierEffect_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False
-  UIData: DarkFutureStatusEffect.ConsumableCigarettePenalty_UIData
+  UIData: DarkFutureStatusEffect.ConsumableCigaretteMultiplierEffect_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.ConsumableCigaretteDebuffEffect_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.ConsumableCigaretteDebuffEffect_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NicotineTolerance_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.NicotineTolerance_OnEquip_UIData
   animationWrapperOverrides: []
   effectors: []
   items: []
@@ -271,8 +420,10 @@ Items.GenericJunkItem23:
   localizedDescription: l"Gameplay-Misc-Junk-LocalizedDescription-GenericJunkItem23"
   OnAttach: []
   OnEquip:
-    - DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip
-    - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteEffect_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteMultiplierEffect_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteDebuffEffect_OnEquip
+    - DarkFutureStatusEffect.NicotineTolerance_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -293,12 +444,16 @@ Items.GenericJunkItem23:
     - Consumable
     - Drug
     - HasModel
-    - DarkFutureConsumableNerve
-    - DarkFutureConsumableCigarettesNerve
+    - DarkFutureManagedConsumable
+    - DarkFutureManagedConsumableNicotine
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNicotine
     - DarkFutureCigarette
+    - DarkFutureAnimatedConsumable
+    - DarkFutureRelaxActionItemUseCigarette
     - DarkFutureAnimSmoking
+    - DarkFutureItemTooltipShowBars
+    - DarkFutureItemTooltipShowBarsNicotine
   variants: []
   visualTags: []
   effectors: []
@@ -372,8 +527,10 @@ Items.GenericJunkItem24:
   localizedDescription: l"Gameplay-Misc-Junk-LocalizedDescription-GenericJunkItem24"
   OnAttach: []
   OnEquip:
-    - DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip
-    - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteEffect_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteMultiplierEffect_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteDebuffEffect_OnEquip
+    - DarkFutureStatusEffect.NicotineTolerance_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -394,12 +551,16 @@ Items.GenericJunkItem24:
     - Consumable
     - Drug
     - HasModel
-    - DarkFutureConsumableNerve
-    - DarkFutureConsumableCigarettesNerve
+    - DarkFutureManagedConsumable
+    - DarkFutureManagedConsumableNicotine
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNicotine
     - DarkFutureCigarette
+    - DarkFutureAnimatedConsumable
+    - DarkFutureRelaxActionItemUseCigarette
     - DarkFutureAnimSmoking
+    - DarkFutureItemTooltipShowBars
+    - DarkFutureItemTooltipShowBarsNicotine
   variants: []
   visualTags: []
   effectors: []
@@ -474,8 +635,10 @@ DarkFutureItem.CigarettePackC:
   localizedDescription: l"DarkFutureCigarette03Desc"
   OnAttach: []
   OnEquip:
-    - DarkFutureStatusEffect.ConsumableCigaretteNerveRestore_OnEquip
-    - DarkFutureStatusEffect.ConsumableCigarettePenalty_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteEffect_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteMultiplierEffect_OnEquip
+    - DarkFutureStatusEffect.ConsumableCigaretteDebuffEffect_OnEquip
+    - DarkFutureStatusEffect.NicotineTolerance_OnEquip
   OnLooted: []
   parts: []
   placementSlots:
@@ -496,12 +659,16 @@ DarkFutureItem.CigarettePackC:
     - Consumable
     - Drug
     - HasModel
-    - DarkFutureConsumableNerve
-    - DarkFutureConsumableCigarettesNerve
+    - DarkFutureManagedConsumable
+    - DarkFutureManagedConsumableNicotine
     - DarkFutureConsumableAddictive
     - DarkFutureConsumableAddictiveNicotine
     - DarkFutureCigarette
+    - DarkFutureAnimatedConsumable
+    - DarkFutureRelaxActionItemUseCigarette
     - DarkFutureAnimSmoking
+    - DarkFutureItemTooltipShowBars
+    - DarkFutureItemTooltipShowBarsNicotine
   variants: []
   visualTags: []
   effectors: []
@@ -594,3 +761,4 @@ Vendors.wat_nid_foodshop_02.itemStock: *CigaretteItemStock            # Totentan
 Vendors.wbr_hil_foodshop_01.itemStock: *CigaretteItemStock            # Yagami Market
 Vendors.wbr_hil_foodshop_02.itemStock: *CigaretteItemStock            # Tyger Claws Casino
 Vendors.q105_dollhouse_bar_barkeeper.itemStock: *CigaretteItemStock   # Clouds
+Vendors.std_arr_foodshop_01.itemStock: *CigaretteItemStock            # Red Dirt

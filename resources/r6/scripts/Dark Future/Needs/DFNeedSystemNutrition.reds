@@ -11,12 +11,19 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.DelayHelper.*
 import DarkFuture.Utils.{
-	DFRunGuard
+	DFRunGuard,
+	DFIsSleeping
 }
 import DarkFuture.Main.{
 	DFNeedsDatum,
 	DFNeedChangeDatum,
-	DFTimeSkipData
+	DFTimeSkipData,
+	DFTimeSkipType
+}
+import DarkFuture.Addictions.DFAddictionSystemBase
+import DarkFuture.Conditions.{
+	DFBiocorruptionConditionSystem,
+	DFBiocorruptionDelayedNeedLossDatum
 }
 import DarkFuture.Services.{
 	DFGameStateService,
@@ -26,26 +33,24 @@ import DarkFuture.Services.{
 	DFVisualEffect,
 	DFBarUIDisplay,
 	DFNotification,
-	DFNotificationCallback
+	DFNotificationCallback,
+	DFManagedEffectExcessStackDef,
+	DFManagedEffectExcessStackItemActionType,
+	DFManagedEffectItemDefinition
 }
 import DarkFuture.UI.DFHUDBarType
-import DarkFuture.Settings.DFSettings
-import DarkFuture.Conditions.{
-	DFBiocorruptionConditionSystem,
-	DFBiocorruptionConditionState,
-	BiocorruptionConditionSystemApplyDelayedNeedLossEvent
+import DarkFuture.Settings.{
+	DFSettings,
+	DFCrashAnimSetting
 }
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
 	//DFProfile();
     let effectID: TweakDBID = evt.staticData.GetID();
-	let mainSystemEnabled: Bool = DFSettings.Get().mainSystemEnabled;
-	if Equals(effectID, t"DarkFutureStatusEffect.WellFed") && mainSystemEnabled {
-        DFNutritionSystem.Get().RegisterBonusEffectCheckCallback();
-	} else if Equals(effectID, t"BaseStatusEffect.WellFed") && !mainSystemEnabled {
-		// The base game Nourishment effect was applied while Dark Future was disabled - Apply the
-		// Dark Future variant instead.
+	if Equals(effectID, t"BaseStatusEffect.WellFed") {
+		// The base game Nourishment effect was applied - Apply the Dark Future variant instead.
+		StatusEffectHelper.RemoveStatusEffect(this, t"BaseStatusEffect.WellFed");
 		StatusEffectHelper.ApplyStatusEffect(this, t"DarkFutureStatusEffect.WellFed");
 	}
 
@@ -70,24 +75,11 @@ class DFNutritionSystemEventListener extends DFNeedSystemEventListener {
 		//DFProfile();
 		return DFNutritionSystem.Get();
 	}
-
-	public cb func OnLoad() {
-		//DFProfile();
-		super.OnLoad();
-
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<BiocorruptionConditionSystemApplyDelayedNeedLossEvent>(), this, n"OnBiocorruptionConditionSystemApplyDelayedNeedLossEvent", true);
-	}
-
-	private cb func OnBiocorruptionConditionSystemApplyDelayedNeedLossEvent(event: ref<BiocorruptionConditionSystemApplyDelayedNeedLossEvent>) {
-		//DFProfile();
-        this.GetSystemInstance().ApplyDelayedNeedLoss();
-    }
 }
 
 public final class DFNutritionSystem extends DFNeedSystemBase {
-	let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
-
 	public const let insufficientNeedFXStopDelayInterval: Float = 2.1;
+	public const let hungerPangNeedStageThreshold: Int32 = 4;
 	private const let nutritionPercentToDeferPerBiocorruptionLevel: Float = 0.25;
 
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFNutritionSystem> {
@@ -106,7 +98,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 	//
 	private func SetupDebugLogging() -> Void {
 		//DFProfile();
-		this.debugEnabled = true;
+		this.debugEnabled = false;
 	}
 	
 	public final func GetSystemToggleSettingValue() -> Bool {
@@ -132,11 +124,6 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		];
 	}
 
-	public final func GetSystems() -> Void {
-		super.GetSystems();
-		this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.Get();
-	}
-
     //
 	//  Required Overrides
 	//
@@ -146,18 +133,28 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		if !StatusEffectSystem.ObjectHasStatusEffect(this.player, this.GetBonusEffectTDBID()) {
 			let props: DFChangeNeedValueProps;
 			
-			if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Bonus) {
-				props.delayPercent = this.nutritionPercentToDeferPerBiocorruptionLevel * Cast<Float>(this.BiocorruptionConditionSystem.GetConditionLevel());
+			if this.BiocorruptionConditionSystem.GetHasEuphoria() {
+				props.delayPercent = 1.0;
 			}
+
+			let change = this.GetNutritionChange();
+			change = StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.JunkFood") ? change * 1.5 : change;
 			
-			this.ChangeNeedValue(this.GetNutritionChange(), props);
+			this.ChangeNeedValue(change, props);
 		}
 	}
 
 	private final func OnTimeSkipFinishedActual(data: DFTimeSkipData) -> Void {
 		//DFProfile();
 		DFLog(this, "OnTimeSkipFinishedActual");
-		this.QueueContextuallyDelayedNeedValueChange(data.targetNeedValues.nutrition.value - this.GetNeedValue());
+
+		let queuedChange: DFQueuedNeedValueChange;
+		queuedChange.value = data.targetNeedValues.nutrition.value;
+		queuedChange.targetDelayedValue = data.targetNeedValues.nutrition.delayedValue;
+		queuedChange.targetValueMode = true;
+		queuedChange.skipSevereNeedMessage = data.skipSevereNeedMessage;
+
+		this.QueueContextuallyDelayedNeedValueChange(queuedChange);
 	}
 
 	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
@@ -215,7 +212,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 				if Equals(this.player.GetResolvedGenderName(), n"Female") {
 					notification.sfx = DFAudioCue(n"ono_v_greet", 20);
 				} else {
-					notification.sfx = DFAudioCue(n"ono_v_bump", 20);
+					notification.sfx = DFAudioCue(n"ono_v_phone", 20);
 				}
 			}
 
@@ -275,16 +272,51 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 	}
 
 	private final func GetNeedDeathSettingValue() -> Bool {
-		return this.Settings.nutritionLossIsFatal;
+		return false;
 	}
 
 	private final func GetNeedSoftCapValue() -> Float {
-		if Equals(this.BiocorruptionConditionSystem.GetCurrentBiocorruptionState(), DFBiocorruptionConditionState.Crash) {
-			return this.BiocorruptionConditionSystem.GetCurrentBasicNeedSoftCapFromBiocorruption();
-		
-		} else {
-			return 100.0;
+		return 100.0;
+	}
+
+	public final func ApplyDelayedNeedLoss(data: DFBiocorruptionDelayedNeedLossDatum) -> Void {
+		if data.depleteNutrition {
+			let uiFlags: DFNeedChangeUIFlags;
+			uiFlags.forceMomentaryUIDisplay = true;
+			uiFlags.momentaryDisplayIgnoresSceneTier = true;
+
+			let props: DFChangeNeedValueProps;
+			props.uiFlags = uiFlags;
+
+			if NotEquals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) {
+				props.skipSevereNeedMessage = true;
+			}
+
+			this.ChangeNeedValue(this.GetAccumulatedDelayedNeedLoss(), props);
+			this.currentDelayedNeedLoss = 0.0;
 		}
+	}
+
+	public final func GetNeedMaxAfterItemUse(itemRecord: wref<Item_Record>) -> Float {
+		let needMax: Float = 100.0;
+
+		if this.BiocorruptionConditionSystem.GetHasEuphoria() {
+			return needMax;
+		}
+
+		if IsDefined(itemRecord) {
+			let effectiveCrashStackCount: Int32 = Max(Cast<Int32>(this.BiocorruptionConditionSystem.GetLastKnownCrashStackCount()) - this.BiocorruptionConditionSystem.GetCrashSuppressionStackCount(itemRecord), 0);
+			needMax -= 5.0 * Cast<Float>(effectiveCrashStackCount);
+		}
+
+		return needMax;
+	}
+
+	public final func GetCalculatedNeedMax() -> Float {
+		return this.GetCalculatedBasicNeedMaxInProvidedState(
+					Cast<Int32>(this.BiocorruptionConditionSystem.GetLastKnownCrashStackCount()),
+					this.BiocorruptionConditionSystem.GetCrashSuppressionStackCount(),
+					this.BiocorruptionConditionSystem.GetHasEuphoria());
 	}
 
     //
@@ -295,8 +327,31 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 		// Subtract 100 points every 22 in-game hours.
 
 		// (Points to Lose) / ((Target In-Game Hours * 60 In-Game Minutes) / In-Game Update Interval (5 Minutes))
-		let value: Float = (100.0 / ((22.0 * 60.0) / 5.0) * -1.0) * (this.Settings.nutritionLossRatePct / 100.0);
-		return value;
+		let loss: Float = (100.0 / ((22.0 * 60.0) / 5.0) * -1.0) * (this.Settings.nutritionLossRatePct / 100.0);
+		
+		return loss;
+	}
+
+	public final func GetNeedChangeWithRecoverLimit(needValue: Float, isSleeping: Bool, hasEuphoria: Bool) -> DFNeedChangeWithRecoverLimit {
+		//DFProfile();
+		let amountToChange: Float = 0.0;
+		let needLoss: Float = 0.0;
+		let delayedNeedLoss: Float = 0.0;
+
+		amountToChange = this.GetNutritionChange();
+
+		// If sleeping, reduce the change amount.
+		if isSleeping {
+			amountToChange *= this.sleepingReduceMetabolismMult;
+		}
+
+		if hasEuphoria {
+			delayedNeedLoss = amountToChange;
+		} else {
+			needLoss = amountToChange;
+		}
+
+		return DFNeedChangeWithRecoverLimit(needLoss, delayedNeedLoss, false);
 	}
 
     //

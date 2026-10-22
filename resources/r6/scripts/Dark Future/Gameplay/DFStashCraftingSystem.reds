@@ -51,6 +51,7 @@ public final class DFStashCraftingSystem extends DFSystem {
     public func UnregisterAllDelayCallbacks() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
+    public func OnTimeSkipBegin() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}

@@ -431,16 +431,24 @@ public class ConditionBarLogicController extends inkVirtualCompoundItemControlle
 
     private final func GetConditionDesciption(condition: DFConditionType) -> String {
         //DFProfile();
+        let settings: ref<DFSettings> = DFSettings.Get();
+
         if Equals(condition, DFConditionType.Injury) {
             return GetLocalizedTextByKey(n"DarkFutureConditionInjuryDesc");
         } else if Equals(condition, DFConditionType.HumanityLoss) {
-            if DFSettings.Get().humanityLossCyberpsychosisEnabled {
+            if settings.humanityLossCyberpsychosisEnabled {
                 return GetLocalizedTextByKey(n"DarkFutureConditionHumanityLossDesc");
             } else {
                 return GetLocalizedTextByKey(n"DarkFutureConditionHumanityLossNoCyberpsychosisDesc");
             }
         } else if Equals(condition, DFConditionType.Biocorruption) {
-            return GetLocalizedTextByKey(n"DarkFutureConditionBiocorruptionDesc");
+            if settings.humanityLossConditionEnabled && settings.humanityLossCyberpsychosisEnabled {
+                return GetLocalizedTextByKey(n"DarkFutureConditionBiocorruptionDesc");
+            } else if settings.humanityLossConditionEnabled {
+                return GetLocalizedTextByKey(n"DarkFutureConditionBiocorruptionDescNoCyberpsychosis");
+            } else {
+                return GetLocalizedTextByKey(n"DarkFutureConditionBiocorruptionDescNoHumanityLoss");
+            }
         }
         
         return "";

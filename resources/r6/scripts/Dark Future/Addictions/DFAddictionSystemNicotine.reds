@@ -12,7 +12,8 @@ import DarkFuture.System.*
 import DarkFuture.Utils.{
 	HoursToGameTimeSeconds,
 	GameTimeSecondsToHours,
-	DFRunGuard
+	DFRunGuard,
+	RandRangeInclusive
 }
 import DarkFuture.Main.{
 	DFAddictionDatum,
@@ -26,7 +27,8 @@ import DarkFuture.Services.{
 	DFNotification,
 	DFMessage,
 	DFMessageContext,
-	DFAddictionType
+	DFAddictionType,
+	DFManagedEffectType
 }
 import DarkFuture.Needs.DFNerveSystem
 import DarkFuture.Settings.DFSettings
@@ -39,11 +41,9 @@ class DFNicotineAddictionSystemEventListener extends DFAddictionSystemEventListe
 }
 
 public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
-    private let nicotineDefaultEffectDuration: Float = 300.0;
-
 	private let nicotineAddictionMaxStage: Int32 = 4;
 	private let nicotineAddictionStageAdvanceAmounts: array<Float>;
-	private let nicotineAddictionNerveLimits: array<Float>;
+	private let nicotineAddictionNeedLimits: array<Float>;
 	private let nicotineAddictionBackoffDurationsInGameTimeSecondsByStage: array<Float>;
 	private let nicotineAddictionWithdrawalDurationsInGameTimeSeconds: array<Float>;
 
@@ -68,102 +68,84 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 
 	public func GetSystemToggleSettingValue() -> Bool {
 		//DFProfile();
-		return this.Settings.nicotineAddictionEnabled;
+		return this.Settings.addictionEnabled;
 	}
 
 	private func GetSystemToggleSettingString() -> String {
 		//DFProfile();
-		return "nicotineAddictionEnabled";
+		return "addictionEnabled";
 	}
 
     public final func SetupData() -> Void {
 		//DFProfile();
 		this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds = [
 			0.0,
-			HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2),
-			HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2),
-			HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2),
-			HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2),
-			HoursToGameTimeSeconds(this.Settings.nicotineAddictionCessationDurationInGameTimeHoursV2)
+			HoursToGameTimeSeconds(this.Settings.addictionStage1WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.addictionStage2WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.addictionStage3WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.addictionStage4WithdrawalDurationInGameTimeHoursV2),
+			HoursToGameTimeSeconds(this.Settings.addictionCessationDurationInGameTimeHours)
 		];
 		this.nicotineAddictionStageAdvanceAmounts = [
-			this.Settings.nicotineAddictionMinAmountStage1,
-			this.Settings.nicotineAddictionMinAmountStage2,
-			this.Settings.nicotineAddictionMinAmountStage3,
-			this.Settings.nicotineAddictionMinAmountStage4,
+			3.0,
+			6.0,
+			8.0,
+			10.0,
 			-1.0
 		];
 		this.nicotineAddictionBackoffDurationsInGameTimeSecondsByStage = [
 			0.0,
-			this.Settings.nicotineAddictionBackoffDurationStage1V2 * 3600.0,
-			this.Settings.nicotineAddictionBackoffDurationStage2V2 * 3600.0,
-			this.Settings.nicotineAddictionBackoffDurationStage3V2 * 3600.0,
-			this.Settings.nicotineAddictionBackoffDurationStage4V2 * 3600.0
+			this.Settings.addictionBackoffDurationStage1 * 3600.0,
+			this.Settings.addictionBackoffDurationStage2 * 3600.0,
+			this.Settings.addictionBackoffDurationStage3 * 3600.0,
+			this.Settings.addictionBackoffDurationStage4 * 3600.0
 		];
-		this.nicotineAddictionNerveLimits = [100.0, 85.0, 75.0, 65.0, 55.0, 85.0];
+		this.nicotineAddictionNeedLimits = [100.0, 85.0, 75.0, 65.0, 55.0, 85.0];
 		this.UpdateNicotineWithdrawalEffectDisplayData();
 	}
 
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
 		//DFProfile();
-		if ArrayContains(changedSettings, "nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2") ||
-		   ArrayContains(changedSettings, "nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2") || 
-		   ArrayContains(changedSettings, "nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2") || 
-		   ArrayContains(changedSettings, "nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2") || 
-		   ArrayContains(changedSettings, "nicotineAddictionCessationDurationInGameTimeHoursV2") {
+		if ArrayContains(changedSettings, "addictionStage1WithdrawalDurationInGameTimeHoursV2") ||
+		   ArrayContains(changedSettings, "addictionStage2WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "addictionStage3WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "addictionStage4WithdrawalDurationInGameTimeHoursV2") || 
+		   ArrayContains(changedSettings, "addictionCessationDurationInGameTimeHours") {
 			this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds = [
 				0.0,
-				HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage1WithdrawalDurationInGameTimeHoursV2),
-				HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage2WithdrawalDurationInGameTimeHoursV2),
-				HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage3WithdrawalDurationInGameTimeHoursV2),
-				HoursToGameTimeSeconds(this.Settings.nicotineAddictionStage4WithdrawalDurationInGameTimeHoursV2),
-				HoursToGameTimeSeconds(this.Settings.nicotineAddictionCessationDurationInGameTimeHoursV2)
+				HoursToGameTimeSeconds(this.Settings.addictionStage1WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.addictionStage2WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.addictionStage3WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.addictionStage4WithdrawalDurationInGameTimeHoursV2),
+				HoursToGameTimeSeconds(this.Settings.addictionCessationDurationInGameTimeHours)
 			];
 			this.UpdateNicotineWithdrawalEffectDisplayData();
 			
 			if IsSystemEnabledAndRunning(this) {
 				let withdrawalLevel: Int32 = this.GetWithdrawalLevel();
 				let addictionStage: Int32 = this.GetAddictionStage();
-				if withdrawalLevel < addictionStage && this.remainingWithdrawalDurationInGameTimeSeconds > this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[withdrawalLevel] {
-					this.remainingWithdrawalDurationInGameTimeSeconds = this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[withdrawalLevel];
+				if withdrawalLevel < addictionStage && this.remainingWithdrawalDurationInGameTimeSecondsRev2 > this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[withdrawalLevel] {
+					this.remainingWithdrawalDurationInGameTimeSecondsRev2 = this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[withdrawalLevel];
 				}
 			}
 		}
 
-		if ArrayContains(changedSettings, "nicotineAddictionMinAmountStage1") || 
-			ArrayContains(changedSettings, "nicotineAddictionMinAmountStage2") || 
-			ArrayContains(changedSettings, "nicotineAddictionMinAmountStage3") || 
-			ArrayContains(changedSettings, "nicotineAddictionMinAmountStage4") {
-			
-				this.nicotineAddictionStageAdvanceAmounts = [
-					this.Settings.nicotineAddictionMinAmountStage1,
-					this.Settings.nicotineAddictionMinAmountStage2,
-					this.Settings.nicotineAddictionMinAmountStage3,
-					this.Settings.nicotineAddictionMinAmountStage4,
-					-1.0
-				];
-
-				if IsSystemEnabledAndRunning(this) {
-					this.TryToAdvanceAddiction(0.0);
-				}
-		}
-
-		if ArrayContains(changedSettings, "nicotineAddictionBackoffDurationStage1V2") || 
-			ArrayContains(changedSettings, "nicotineAddictionBackoffDurationStage2V2") || 
-			ArrayContains(changedSettings, "nicotineAddictionBackoffDurationStage3V2") || 
-			ArrayContains(changedSettings, "nicotineAddictionBackoffDurationStage4V2") {
+		if ArrayContains(changedSettings, "addictionBackoffDurationStage1") || 
+			ArrayContains(changedSettings, "addictionBackoffDurationStage2") || 
+			ArrayContains(changedSettings, "addictionBackoffDurationStage3") || 
+			ArrayContains(changedSettings, "addictionBackoffDurationStage4") {
 
 				this.nicotineAddictionBackoffDurationsInGameTimeSecondsByStage = [
 					0.0,
-					this.Settings.nicotineAddictionBackoffDurationStage1V2 * 3600.0,
-					this.Settings.nicotineAddictionBackoffDurationStage2V2 * 3600.0,
-					this.Settings.nicotineAddictionBackoffDurationStage3V2 * 3600.0,
-					this.Settings.nicotineAddictionBackoffDurationStage4V2 * 3600.0
+					this.Settings.addictionBackoffDurationStage1 * 3600.0,
+					this.Settings.addictionBackoffDurationStage2 * 3600.0,
+					this.Settings.addictionBackoffDurationStage3 * 3600.0,
+					this.Settings.addictionBackoffDurationStage4 * 3600.0
 				];
 
 				if IsSystemEnabledAndRunning(this) {
-					if this.remainingBackoffDurationInGameTimeSeconds > this.nicotineAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()] {
-						this.remainingBackoffDurationInGameTimeSeconds = this.nicotineAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()];
+					if this.remainingBackoffDurationInGameTimeSecondsRev2 > this.nicotineAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()] {
+						this.remainingBackoffDurationInGameTimeSecondsRev2 = this.nicotineAddictionBackoffDurationsInGameTimeSecondsByStage[this.GetAddictionStage()];
 					}
 				}
 		}
@@ -177,9 +159,9 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 		return addictionData.nicotine;
 	}
 
-    public final func GetDefaultEffectDuration() -> Float {
+    public final func GetDefaultDebuffEffectDuration() -> Float {
 		//DFProfile();
-        return this.nicotineDefaultEffectDuration;
+        return 300.0;
     }
 
 	private final func GetEffectDuration() -> Float {
@@ -188,7 +170,7 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 		if durationOverride > 0.0 {
 			return durationOverride;
 		} else {
-			return this.GetDefaultEffectDuration();
+			return this.GetDefaultDebuffEffectDuration();
 		}
     }
 
@@ -199,12 +181,12 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 
 	private final func GetAddictionProgressionChance() -> Float {
 		//DFProfile();
-        return this.Settings.nicotineAddictionProgressChance;
+        return this.Settings.nicotineAddictionProgressChanceRev2;
     }
 
-	private final func GetAddictionAmountOnUse() -> Float {
+	public final func GetAddictionAmountOnUse() -> Float {
 		//DFProfile();
-        return this.Settings.nicotineAddictionAmountOnUse;
+        return 1.0;
     }
 
 	private final func GetAddictionStageAdvanceAmounts() -> array<Float> {
@@ -212,9 +194,9 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
         return this.nicotineAddictionStageAdvanceAmounts;
     }
 
-	public final func GetAddictionNerveLimits() -> array<Float> {
+	public final func GetAddictionNeedLimits() -> array<Float> {
 		//DFProfile();
-        return this.nicotineAddictionNerveLimits;
+        return this.nicotineAddictionNeedLimits;
     }
 
 	public func GetAddictionBackoffDurationsInGameTimeSecondsByStage() -> array<Float> {
@@ -224,13 +206,7 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 
 	public final func GetAddictionAmountLossPerDay() -> Float {
 		//DFProfile();
-        return this.Settings.nicotineAddictionLossPerDay;
-    }
-
-	public final func GetAddictionMinStacksPerStage() -> array<Uint32> {
-		//DFProfile();
-		// Unused
-		return [];
+        return this.Settings.nicotineAddictionLossPerDayRev2;
     }
 
 	public func GetAddictionWithdrawalDurationsInGameTimeSeconds() -> array<Float> {
@@ -253,12 +229,12 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 		if this.Settings.addictionSFXEnabled {
 			let notification: DFNotification;
 
-			let random: Int32 = RandRange(1, 100);
+			let random: Int32 = RandRangeInclusive(1, 100);
 			if random >= 50 {
 				if this.GetAddictionStage() <= 2 {
 					notification.sfx = DFAudioCue(n"g_sc_v_sickness_cough_light", 5);
 				} else {
-					random = RandRange(1, 100);
+					random = RandRangeInclusive(1, 100);
 					if random > 25 {
 						notification.sfx = DFAudioCue(n"g_sc_v_sickness_cough_hard", 5);
 					} else {
@@ -266,7 +242,11 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 					}
 				}
 			} else {
-				notification.sfx = DFAudioCue(n"ono_v_bump", 5);
+				if Equals(this.player.GetResolvedGenderName(), n"Female") {
+					notification.sfx = DFAudioCue(n"ono_v_bump", 5);
+				} else {
+					notification.sfx = DFAudioCue(n"ono_v_phone", 5);
+				}
 			}
 
 			this.NotificationService.QueueNotification(notification);
@@ -283,47 +263,9 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
         return t"DarkFutureStatusEffect.NicotineWithdrawal_";
     }
 
-	public final func GetAddictionPrimaryStatusEffectTag() -> CName {
+	public final func GetAddictionManagedEffectType() -> DFManagedEffectType {
 		//DFProfile();
-        return n"DarkFutureAddictionPrimaryEffectNicotine";
-    }
-
-	public final func OnAddictionPrimaryEffectApplied(effectID: TweakDBID, effectGameplayTags: array<CName>) -> Void {
-		//DFProfile();
-        if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectNicotine") {
-			// Addiction-Specific - Only continue if system running.
-			if DFRunGuard(this) { return; }
-
-			// Clear any active withdrawal effects or backoff durations.
-			if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"AddictionWithdrawalNicotine") {
-				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"AddictionWithdrawalNicotine");
-			}
-			this.SetWithdrawalLevel(0);
-			this.SetRemainingWithdrawalDurationInGameTimeSeconds(0.0);
-			this.SetRemainingBackoffDurationInGameTimeSeconds(0.0);
-			this.NerveSystem.UpdateNeedHUDUI();
-
-			// Try to advance the player's addiction.
-			this.TryToAdvanceAddiction(this.GetAddictionAmountOnUse());
-		}
-    }
-
-	public final func OnAddictionPrimaryEffectRemoved(effectID: TweakDBID, effectGameplayTags: array<CName>) -> Void {
-		//DFProfile();
-		// Addiction-Specific - Only continue if system running.
-		if DFRunGuard(this) { return; }
-
-        if ArrayContains(effectGameplayTags, n"DarkFutureAddictionPrimaryEffectNicotine") {
-			DFLog(this, "ProcessNicotinePrimaryEffectRemoved");
-			// Does the player have the Nicotine Addiction Primary Effect? If not, the primary effect expired, and we should try to start
-			// a backoff effect if the player is currently addicted.
-
-			if !StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureAddictionPrimaryEffectNicotine") {
-				if this.GetAddictionStage() > 0 {
-					this.StartBackoffDuration();
-				}
-			}
-		}
+        return DFManagedEffectType.Nicotine;
     }
 
 	public final func GetWithdrawalAnimationLowFirstTimeMessageKey() -> CName {
@@ -376,30 +318,45 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 		return n"df_fact_action_set_therapy_addiction_nicotine_state_index";
     }
 
+	private final func GetAddictionStageFact() -> CName {
+		//DFProfile();
+		return n"df_fact_addiction_stage_nicotine";
+	}
+
 	private final func GetAddictionType() -> DFAddictionType {
 		return DFAddictionType.Nicotine;
+    }
+
+	private final func GetAddictionAdvanceNotificationKey() -> CName {
+        //DFProfile();
+		return n"DarkFutureNicotineAddictionIncreaseNotification";
+    }
+
+	private final func GetAddictionWithdrawalRemovedNotificationKey() -> CName {
+        //DFProfile();
+		return n"DarkFutureNicotineAddictionWithdrawalRemovedNotification";
     }
 
     //
     //  System-Specific Methods
     //
-	public final func UpdateActiveNicotineEffectDuration(effectID: TweakDBID) -> Void {
+	public final func UpdateActiveNicotineDebuffEffectDuration(effectID: TweakDBID) -> Void {
 		//DFProfile();
-		if NotEquals(this.GetEffectDuration(), this.GetDefaultEffectDuration()) {
+		if NotEquals(this.GetEffectDuration(), this.GetDefaultDebuffEffectDuration()) {
 			GameInstance.GetStatusEffectSystem(GetGameInstance()).SetStatusEffectRemainingDuration(this.player.GetEntityID(), effectID, this.GetEffectDuration());
 		}
 	}
 
 	private final func UpdateNicotineWithdrawalEffectDisplayData() -> Void {
 		//DFProfile();
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[5]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[5])]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[1]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[1])]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[1]), 1]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[2]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[2])]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[2]), 1]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[3]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[3])]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[3]), 1]);
-		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNerveLimits[4]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[4])]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[5]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[5])]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[1]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[1])]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_01_WithProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[1]), 1]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_02_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[2]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[2])]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_02_WithProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[2]), 1]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_03_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[3]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[3])]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_03_WithProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[3]), 1]);
+		TweakDBManager.SetFlat(t"DarkFutureStatusEffect.NicotineWithdrawal_04_NoProgression_UIData.intValues", [Cast<Int32>(this.nicotineAddictionNeedLimits[4]), GameTimeSecondsToHours(this.nicotineAddictionWithdrawalDurationsInGameTimeSeconds[4])]);
 
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NicotineWithdrawal_Cessation_UIData");
 		TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.NicotineWithdrawal_01_NoProgression_UIData");

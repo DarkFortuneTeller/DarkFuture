@@ -1,0 +1,4 @@
+UIIcon.DarkFutureTolerancePip:
+  $type: gamedataUIIcon_Record
+  atlasPartName: ico_locked
+  atlasResourcePath: base\gameplay\gui\common\icons\atlas_common.inkatlas

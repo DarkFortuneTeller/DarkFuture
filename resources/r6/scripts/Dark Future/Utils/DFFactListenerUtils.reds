@@ -16,6 +16,13 @@ public struct DFFactListener {
     public let fireOnceOnly: Bool = false;
 }
 
+public struct DFFactListenerValueTransitionData {
+    public let valueFrom: Int32;
+    public let valueTo: Int32;
+    public let expectedValueFrom: Int32;
+    public let expectedValueTo: Int32;
+}
+
 public func CreateDFFactListener(questsSystem: ref<QuestsSystem>, listener: ref<IScriptable>, registry: script_ref<array<DFFactListener>>, fact: CName, callback: CName, opt fireOnceOnly: Bool) -> Void {
     // Create a DFFactListener, add it to the registry, and register it with the QuestsSystem.
     let newFactListener: DFFactListener;
@@ -42,11 +49,11 @@ public func CreateDFActionFactListener(questsSystem: ref<QuestsSystem>, listener
 }
 
 public func UnregisterAllDFFactListeners(questsSystem: ref<QuestsSystem>, registry: script_ref<array<DFFactListener>>) -> Void {
-    let i: Int32 = 0;
-    while i < ArraySize(Deref(registry)) {
+    let i: Int32 = ArraySize(Deref(registry)) - 1;
+    while i >= 0 {
         UnregisterDFFactListener(Deref(registry)[i], questsSystem);
-        ArrayRemove(Deref(registry), Deref(registry)[i]);
-        i += 1;
+        ArrayErase(Deref(registry), i);
+        i -= 1;
     }
 }
 
@@ -57,6 +64,43 @@ public func DFFactListenerCanRun(value: Int32, registry: script_ref<array<DFFact
     //     set to fireOnceOnly, and fact not present in the onceOnlyFactsFired array (if not present, add it now for convenience).
 
     if value < 1 {
+        // Invalid value; fail.
+        return false; 
+    }
+
+    // Coerce the caller's function name through reflection. Used to look up the DFFactListener in the registry.
+    let trace: array<StackTraceEntry> = GetStackTrace(1, true);
+    let caller: String = StrBeforeFirst(NameToString(trace[0].function), ";");
+
+    let factIdx: Int32 = FindDFFactListenerIndexInRegistryByCallback(registry, caller);
+    if NotEquals(factIdx, -1) {
+        if registry[factIdx].fireOnceOnly {
+            for fact in Deref(onceOnlyFactsFired) {
+                if Equals(fact, registry[factIdx].fact) {
+                    // The DFFactListener is set to fireOnceOnly, and the fact was present in the onceOnlyFactsFired array; fail.
+                    return false;
+                }
+            }
+            // The DFFactListener is set to fireOnceOnly, but was not in the onceOnlyFactsFired array; add it to the array and succeed.
+            ArrayPush(Deref(onceOnlyFactsFired), registry[factIdx].fact);
+            return true;
+        } else {
+            // The DFFactListener was not set to fireOnceOnly; succeed.
+            return true;
+        }
+    } else {
+        // The DFFactListener was not found in the registry based on the callback function name; succeed.
+        return true;
+    }
+}
+
+public func DFFactListenerCanRunOnExpectedValueTransition(valueData: DFFactListenerValueTransitionData, registry: script_ref<array<DFFactListener>>, onceOnlyFactsFired: script_ref<array<CName>>) -> Bool {
+    // Allow DFFactListeners to run if:
+    //     value >= 1, and
+    //     not set to fireOnceOnly, or
+    //     set to fireOnceOnly, and fact not present in the onceOnlyFactsFired array (if not present, add it now for convenience).
+
+    if valueData.valueFrom != valueData.expectedValueFrom || valueData.valueTo != valueData.expectedValueTo {
         // Invalid value; fail.
         return false; 
     }

@@ -17,6 +17,7 @@ module DarkFuture.Services
 import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Settings.*
+import DarkFuture.DelayHelper.*
 import DarkFuture.Main.{
     DFMainSystem,
     DFTimeSkipData
@@ -116,6 +117,23 @@ public class DFGameStateServiceSceneTierChangedEvent extends CallbackSystemEvent
     }
 }
 
+public class DFGameStateServiceSleepCinematicExitDelayCallback extends DFDelayCallback {
+    public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+        return new DFGameStateServiceSleepCinematicExitDelayCallback();
+	}
+
+	public func InvalidateDelayID() -> Void {
+        //DFProfile();
+		DFGameStateService.Get().sleepCinematicExitDelayID = GetInvalidDelayID();
+	}
+
+	public func Callback() -> Void {
+        //DFProfile();
+		DFGameStateService.Get().SetInSleepCinematic(false);
+	}
+}
+
 class DFGameStateServiceEventListener extends DFSystemEventListener {
 	private func GetSystemInstance() -> wref<DFGameStateService> {
         //DFProfile();
@@ -142,17 +160,24 @@ public final class DFGameStateService extends DFSystem {
     private let phantomLibertyIntroFactListener: Uint32;
     private let baseGamePointOfNoReturnFactListener: Uint32;
 
+    // Mod Support - Live The Montage, Prolonged Prologue, etc
+    private let prologueAllowedStartFactListener: Uint32;
+
     private let gameplayTier: GameplayTier = GameplayTier.Tier1_FullGameplay;
     private let baseGameIntroMissionDone: Bool = false;
     private let baseGameQ101ShowerDone: Bool = false;
     private let phantomLibertyIntroDone: Bool = false;
     private let baseGamePointOfNoReturnDone: Bool = false;
+    private let prologueAllowedStartDone: Bool = false;
     private let isInMenu: Bool = false;
     private let isReplacer: Bool = false;
     private let isInSleepCinematic: Bool = false;
     private let isSleepingInVehicle: Bool = false;
     public let isInFury: Bool = false;
     private let isInCyberspace: Bool = false;
+
+    public let sleepCinematicExitDelayID: DelayID;
+    private let sleepCinematicExitDelayInterval: Float = 1.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFGameStateService> {
         //DFProfile();
@@ -169,10 +194,15 @@ public final class DFGameStateService extends DFSystem {
     //  DFSystem Required Methods
     //
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
-    public func UnregisterAllDelayCallbacks() -> Void {}
+
+    public func UnregisterAllDelayCallbacks() -> Void {
+        this.UnregisterDelayedSleepCinematicExit();
+    }
+    
     public func SetupData() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
+    public func OnTimeSkipBegin() -> Void {}
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
@@ -187,6 +217,7 @@ public final class DFGameStateService extends DFSystem {
         this.baseGameIntroMissionDone = false;
         this.baseGameQ101ShowerDone = false;
         this.phantomLibertyIntroDone = false;
+        this.prologueAllowedStartDone = false;
         this.isReplacer = false;
         this.isInSleepCinematic = false;
         this.isSleepingInVehicle = false;
@@ -199,10 +230,11 @@ public final class DFGameStateService extends DFSystem {
         this.OnBaseGameIntroMissionFactChanged(this.QuestsSystem.GetFact(n"q001_01_go_to_sleep_done"));
         this.OnBaseGameQ101ShowerMissionFactChanged(this.QuestsSystem.GetFact(n"q101_enable_activities_flat"));
         this.OnPhantomLibertyIntroFactChanged(this.QuestsSystem.GetFact(n"q301_00_done"));
+        this.OnPrologueAllowedStartFactChanged(this.QuestsSystem.GetFact(n"df_prologue_allowed_start"));
         this.OnReplacerChanged(this.player.IsReplacer());
         this.OnFuryStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury"), true);
         this.OnCyberspaceStateChanged(StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"CyberspacePresence"), true);
-        this.isInSleepCinematic = false;
+        this.SetInSleepCinematic(false);
         this.isSleepingInVehicle = false;
     }
 
@@ -230,6 +262,7 @@ public final class DFGameStateService extends DFSystem {
         this.baseGameQ101ShowerMissionFactListener = this.QuestsSystem.RegisterListener(n"q101_enable_activities_flat", this, n"OnBaseGameQ101ShowerMissionFactChanged");
         this.baseGamePointOfNoReturnFactListener = this.QuestsSystem.RegisterListener(n"q115_point_of_no_return", this, n"OnBaseGamePointOfNoReturnFactChanged");
         this.phantomLibertyIntroFactListener = this.QuestsSystem.RegisterListener(n"q301_00_done", this, n"OnPhantomLibertyIntroFactChanged");
+        this.prologueAllowedStartFactListener = this.QuestsSystem.RegisterListener(n"df_prologue_allowed_start", this, n"OnPrologueAllowedStartFactChanged");
     }
 
     private func UnregisterListeners() -> Void {
@@ -251,6 +284,9 @@ public final class DFGameStateService extends DFSystem {
 
         this.QuestsSystem.UnregisterListener(n"q301_00_done", this.phantomLibertyIntroFactListener);
         this.phantomLibertyIntroFactListener = 0u;
+
+        this.QuestsSystem.UnregisterListener(n"df_prologue_allowed_start", this.prologueAllowedStartFactListener);
+        this.prologueAllowedStartFactListener = 0u;
     }
 
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -258,6 +294,7 @@ public final class DFGameStateService extends DFSystem {
         this.OnBaseGameIntroMissionFactChanged(this.QuestsSystem.GetFact(n"q001_01_go_to_sleep_done"));
         this.OnBaseGameQ101ShowerMissionFactChanged(this.QuestsSystem.GetFact(n"q101_enable_activities_flat"));
         this.OnPhantomLibertyIntroFactChanged(this.QuestsSystem.GetFact(n"q301_00_done"));
+        this.OnPrologueAllowedStartFactChanged(this.QuestsSystem.GetFact(n"df_prologue_allowed_start"));
         this.OnReplacerChanged(this.player.IsReplacer());
     }
 
@@ -336,6 +373,12 @@ public final class DFGameStateService extends DFSystem {
         this.phantomLibertyIntroDone = value == 1 ? true : false;
     }
 
+    private final func OnPrologueAllowedStartFactChanged(value: Int32) -> Void {
+        //DFProfile();
+        DFLog(this, "OnPrologueAllowedStartFactChanged value = " + ToString(value));
+        this.prologueAllowedStartDone = value == 1 ? true : false;
+    }
+
     private final func OnReplacerChanged(value: Bool) -> Void {
         //DFProfile();
         DFLog(this, "OnReplacerChange value = " + ToString(value));
@@ -371,8 +414,8 @@ public final class DFGameStateService extends DFSystem {
             return GameState.Invalid;
         }
         
-        if !this.baseGameIntroMissionDone && !this.baseGameQ101ShowerDone && !this.phantomLibertyIntroDone {
-            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGameIntroMissionDone=" + ToString(this.baseGameIntroMissionDone) + ", this.baseGameQ101ShowerDone=" + ToString(this.baseGameQ101ShowerDone) + ", this.phantomLibertyIntroDone=" + ToString(this.phantomLibertyIntroDone));
+        if !this.baseGameIntroMissionDone && !this.baseGameQ101ShowerDone && !this.phantomLibertyIntroDone && !this.prologueAllowedStartDone {
+            DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGameIntroMissionDone=" + ToString(this.baseGameIntroMissionDone) + ", this.baseGameQ101ShowerDone=" + ToString(this.baseGameQ101ShowerDone) + ", this.phantomLibertyIntroDone=" + ToString(this.phantomLibertyIntroDone)  + ", this.prologueAllowedStartDone=" + ToString(this.prologueAllowedStartDone));
             return GameState.Invalid;
         }
 
@@ -430,6 +473,17 @@ public final class DFGameStateService extends DFSystem {
     public final func IsInAnyMenu() -> Bool {
         //DFProfile();
         return this.isInMenu;
+    }
+
+    //
+    //  Registration
+    //
+    public final func RegisterDelayedSleepCinematicExit() -> Void {
+        RegisterDFDelayCallback(this.DelaySystem, DFGameStateServiceSleepCinematicExitDelayCallback.Create(), this.sleepCinematicExitDelayID, this.sleepCinematicExitDelayInterval);
+    }
+
+    public final func UnregisterDelayedSleepCinematicExit() -> Void {
+        UnregisterDFDelayCallback(this.DelaySystem, this.sleepCinematicExitDelayID);
     }
 
     //

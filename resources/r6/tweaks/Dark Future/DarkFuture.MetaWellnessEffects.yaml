@@ -1,0 +1,75 @@
+#
+# DELAYED FOR FUTURE UPDATE
+#
+
+#
+# Common Records
+#
+#
+#DarkFutureStatusEffect.SingleStack_StatModifier:
+#  $type: gamedataConstantStatModifier_Record
+#  value: 1
+#  modifierType: Additive
+#  statType: BaseStats.MaxStacks
+#
+#DarkFutureStatusEffect.SingleStack:
+#  $type: gamedataStatModifierGroup_Record
+#  drawBasedOnStatType: False
+#  optimiseCombinedModifiers: False
+#  saveBasedOnStatType: False
+#  statModsLimit: -1
+#  relatedModifierGroups: []
+#  statModifiers:
+#    - DarkFutureStatusEffect.SingleStack_StatModifier
+#
+#UIIcon.DarkFutureCombinedEffectIcon:
+#  $type: gamedataUIIcon_Record
+#  atlasPartName: other
+#  atlasResourcePath: base\gameplay\gui\common\icons\mappin_icons.inkatlas
+#
+## Meta-Wellness Effects
+##
+#DarkFutureStatusEffectTypes.Wellness:
+#  $type: gamedataStatusEffectType_Record
+#  enumComment: ''
+#  enumName: Wellness
+#
+#DarkFutureStatusEffect.WellnessEffect_UIData:
+#  $type: gamedataStatusEffectUIData_Record
+#  description: l"DarkFutureWellnessEffectDescription"
+#  displayName: l"DarkFutureWellnessStatusEffectDisplayName"
+#  fluffText: ''
+#  iconPath: Body_Central_Milestone_3
+#  priority: -10
+#  floatValues: []
+#  intValues:
+#    - -50
+#    - 24
+#  nameValues: []
+#  stats: []
+#
+#DarkFutureStatusEffect.WellnessEffect:
+#  $type: gamedataStatusEffect_Record
+#  duration: BaseStats.InfiniteDuration
+#  dynamicDuration: False
+#  isAffectedByTimeDilationNPC: True
+#  isAffectedByTimeDilationPlayer: True
+#  maxStacks: DarkFutureStatusEffect.SingleStack
+#  reapplyPackagesOnMaxStacks: False
+#  removeAllStacksWhenDurationEnds: False
+#  removeOnStoryTier: False
+#  replicated: False
+#  savable: True
+#  statusEffectType: DarkFutureStatusEffectTypes.Wellness
+#  stopActiveSfxOnDeactivate: True
+#  uiData: DarkFutureStatusEffect.WellnessEffect_UIData
+#  debugTags: []
+#  gameplayTags:
+#    - DarkFutureCanHideOnBuffBar
+#    - Buff
+#    - DarkFutureWellnessBuff
+#    - DarkFutureInfiniteDurationEffect
+#  immunityStats: []
+#  packages: []
+#  SFX: []
+#  VFX: []

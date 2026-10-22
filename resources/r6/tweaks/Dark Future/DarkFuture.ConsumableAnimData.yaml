@@ -1141,6 +1141,22 @@ DarkFutureProps.jellytricity:
   statPools: []
   weakspots: []
 
+DarkFutureProps.wine_glass_filled:
+  $type: gamedataProp_Record
+  friendlyName: df_wine_glass_filled
+  entityTemplatePath: base\items\interactive\dining_accessories\int_dining_accessories_001__glass_d_wine.ent
+  priority: SpawnableObjectPriority.Regular
+  savable: False
+  multiplayerTemplatePaths: []
+  tags: []
+  visualTags: []
+  effectors: []
+  objectActions: []
+  statModifierGroups: []
+  statModifiers: []
+  statPools: []
+  weakspots: []
+
 #
 #
 # Animations
@@ -1258,6 +1274,11 @@ Items.NetrunnerFood1: &DarkFutureAnimDrinkChromanticoreChug
     - !append-once DarkFutureAnimDrinkChromanticoreChug
 Items.MediumQualityDrink10: *DarkFutureAnimDrinkChromanticoreChug
 Items.Blackmarket_HealthBooster: *DarkFutureAnimDrinkChromanticoreChug
+
+# AssKick
+Items.Blackmarket_HealthBooster:
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseAssKick
 
 # Sain Ruisseau
 Items.GoodQualityDrink1:
@@ -1442,6 +1463,11 @@ Items.HealthFood3: *DarkFutureAnimFoodLargePackagedGenericSilver
 Items.NetrunnerFood2: *DarkFutureAnimFoodLargePackagedGenericSilver
 Items.Blackmarket_CarryCapacityBooster: *DarkFutureAnimFoodLargePackagedGenericSilver
 
+# Ol Donkey
+Items.Blackmarket_CarryCapacityBooster:
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseOlDonkey
+
 # Large Generic Packaged Food (Gold)
 Items.HealthFood1: &DarkFutureAnimFoodLargePackagedGenericGold
   tags:
@@ -1544,22 +1570,26 @@ Items.HealthBooster:
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimHealthBooster
+    - !append-once DarkFutureRelaxActionItemUseTraumaKit
 
 # Pills
 Items.CarryCapacityBooster:
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillAPink
+    - !append-once DarkFutureRelaxActionItemUseCapacityBooster
 
 Items.StaminaBooster:
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillAGreen
+    - !append-once DarkFutureRelaxActionItemUseStaminaBooster
 
 Items.MemoryBooster:
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimPillABlue
+    - !append-once DarkFutureRelaxActionItemUseMemoryBooster
 
 Items.PermanentHealthFood:
   tags:
@@ -1581,6 +1611,7 @@ Items.LowQualityFood6: &DarkFutureAnimNarcoticsMrWhitey
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimNarcoticsMrWhitey
+    - !append-once DarkFutureRelaxActionItemUseMrWhitey
 Items.MediumQualityFood11: *DarkFutureAnimNarcoticsMrWhitey
 Items.MediumQualityFood14: *DarkFutureAnimNarcoticsMrWhitey
 Items.MediumQualityFood15: *DarkFutureAnimNarcoticsMrWhitey
@@ -1590,12 +1621,14 @@ Items.Blackmarket_MemoryBooster:
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrugRAMNugs
+    - !append-once DarkFutureRelaxActionItemUseRAMNugs
 
 # Jellytricity
 Items.Blackmarket_StaminaBooster:
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimDrugJellytricity
+    - !append-once DarkFutureRelaxActionItemUseJellytricity
 
 #
 ## Alcohol
@@ -1785,4 +1818,239 @@ Items.BlackLaceV0: &DarkFutureAnimBlackLace
   tags:
     - !append-once DarkFutureAnimatedConsumable
     - !append-once DarkFutureAnimInhalerBlackLace
+    - !append-once DarkFutureRelaxActionItemUseBlackLace
 Items.BlackLaceV1: *DarkFutureAnimBlackLace
+
+#
+#
+# Immersive Item Use
+#
+#
+
+## Junk Food
+#
+Items.LowQualityFood5: &DarkFutureAnimRelaxActionItemUseFoodJunkFood
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseJunkFood
+Items.LowQualityFood8: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood12: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood13: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood14: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood17: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood18: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood19: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood20: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood21: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood22: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood23: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood17: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood18: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood19: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood7: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood9: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood15: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood16: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood24: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood25: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood26: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood27: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood28: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.LowQualityFood11: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood3: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood4: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood7: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood12: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood13: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+Items.MediumQualityFood20: *DarkFutureAnimRelaxActionItemUseFoodJunkFood
+
+## Snack
+#
+Items.LowQualityFood1: &DarkFutureAnimRelaxActionItemUseFoodSnack
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseSnack
+Items.MediumQualityFood1: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.MediumQualityFood2: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.MediumQualityFood5: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.MediumQualityFood6: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.MediumQualityFood8: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.MediumQualityFood16: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.GoodQualityFood1: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.GoodQualityFood7: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.GoodQualityFood8: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.GoodQualityFood3: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.GoodQualityFood4: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.LowQualityDrink3: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.GoodQualityDrink11: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.NomadsDrink2: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.MediumQualityDrink14: *DarkFutureAnimRelaxActionItemUseFoodSnack
+Items.GoodQualityDrink3: *DarkFutureAnimRelaxActionItemUseFoodSnack
+
+## Meal
+#
+Items.GoodQualityFood10: &DarkFutureAnimRelaxActionItemUseFoodMeal
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseMeal
+Items.GoodQualityFood11: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.GoodQualityFood12: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.GoodQualityFood13: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.GoodQualityFood5: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.GoodQualityFood6: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.LowQualityFood10: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.MediumQualityFood9: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.HawtDawgKabanos: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.LowQualityFood3: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.HawtDawgClassic: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.HawtDawgCheese: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.HawtDawgChilli: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.NomadsFood1: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.NomadsFood2: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.GoodQualityFood2: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.GoodQualityFood9: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.MediumQualityFood10: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.CombatFood1: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.CombatFood3: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.HealthFood1: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.NetrunnerFood2: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.StealthFood1: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.CombatFood2: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.HealthFood2: *DarkFutureAnimRelaxActionItemUseFoodMeal
+Items.HealthFood3: *DarkFutureAnimRelaxActionItemUseFoodMeal
+
+## Special Meal
+#
+Items.RiverFood1: &DarkFutureAnimRelaxActionItemUseFoodSpecialFood
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseSpecialFood
+Items.JudyFood1: *DarkFutureAnimRelaxActionItemUseFoodSpecialFood
+Items.PanamFood1: *DarkFutureAnimRelaxActionItemUseFoodSpecialFood
+Items.sq026_judy_sandwich: *DarkFutureAnimRelaxActionItemUseFoodSpecialFood
+
+## Special Drinks
+#
+Items.JudyDrink1: &DarkFutureAnimRelaxActionItemUseDrinkSpecialDrink
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseSpecialDrink
+Items.sq026_judy_coffee: *DarkFutureAnimRelaxActionItemUseDrinkSpecialDrink
+Items.RiverDrink1: *DarkFutureAnimRelaxActionItemUseDrinkSpecialDrink
+
+## Water
+#
+Items.MediumQualityDrink3: &DarkFutureAnimRelaxActionItemUseDrinkWater
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseWater
+Items.MediumQualityDrink4: *DarkFutureAnimRelaxActionItemUseDrinkWater
+Items.NomadsDrink1: *DarkFutureAnimRelaxActionItemUseDrinkWater
+Items.GoodQualityDrink10: *DarkFutureAnimRelaxActionItemUseDrinkWater
+Items.GoodQualityDrink1: *DarkFutureAnimRelaxActionItemUseDrinkWater
+Items.GoodQualityDrink8: *DarkFutureAnimRelaxActionItemUseDrinkWater
+Items.GoodQualityDrink9: *DarkFutureAnimRelaxActionItemUseDrinkWater
+
+## Tea and Decaf
+#
+Items.MediumQualityDrink8: &DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseTeaDecaf
+Items.MediumQualityDrink9: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+Items.MediumQualityDrink12: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+Items.MediumQualityDrink13: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+Items.LowQualityDrink2: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+Items.GoodQualityDrink5: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+Items.GoodQualityDrink6: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+Items.GoodQualityDrink7: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+Items.MediumQualityDrink11: *DarkFutureAnimRelaxActionItemUseDrinkTeaDecaf
+
+## Coffee
+#
+Items.LowQualityDrink1: &DarkFutureAnimRelaxActionItemUseDrinkCoffee
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseCoffee
+Items.LowQualityDrink11: *DarkFutureAnimRelaxActionItemUseDrinkCoffee
+Items.LowQualityDrink12: *DarkFutureAnimRelaxActionItemUseDrinkCoffee
+Items.LowQualityDrink13: *DarkFutureAnimRelaxActionItemUseDrinkCoffee
+Items.CarFood1: *DarkFutureAnimRelaxActionItemUseDrinkCoffee
+
+## Energy Drinks
+#
+Items.MediumQualityDrink10: &DarkFutureAnimRelaxActionItemUseDrinkEnergyDrink
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseEnergyDrink
+Items.NetrunnerFood1: *DarkFutureAnimRelaxActionItemUseDrinkEnergyDrink
+Items.MediumQualityDrink7: *DarkFutureAnimRelaxActionItemUseDrinkEnergyDrink
+Items.GoodQualityDrink2: *DarkFutureAnimRelaxActionItemUseDrinkEnergyDrink
+Items.GoodQualityDrink4: *DarkFutureAnimRelaxActionItemUseDrinkEnergyDrink
+Items.LowQualityDrink4: *DarkFutureAnimRelaxActionItemUseDrinkEnergyDrink
+Items.LowQualityDrink5: *DarkFutureAnimRelaxActionItemUseDrinkEnergyDrink
+
+## Soda
+#
+Items.LowQualityDrink10: &DarkFutureAnimRelaxActionItemUseDrinkSoda
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseSoda
+Items.LowQualityDrink6: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+Items.LowQualityDrink7: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+Items.LowQualityDrink8: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+Items.LowQualityDrink9: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+Items.MediumQualityDrink1: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+Items.MediumQualityDrink2: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+Items.MediumQualityDrink5: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+Items.MediumQualityDrink6: *DarkFutureAnimRelaxActionItemUseDrinkSoda
+
+## Special Alcohol
+#
+Items.KerryAlcohol1:
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseSpecialAlcohol
+
+## Liquor
+#
+Items.LowQualityAlcohol6: &DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseLiquor
+Items.LowQualityAlcohol7: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.LowQualityAlcohol8: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.LowQualityAlcohol9: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.MediumQualityAlcohol2: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.MediumQualityAlcohol3: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.MediumQualityAlcohol4: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.MediumQualityAlcohol5: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.MediumQualityAlcohol6: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.MediumQualityAlcohol7: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.NomadsAlcohol1: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.GoodQualityAlcohol2: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.GoodQualityAlcohol4: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.MediumQualityAlcohol1: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.TopQualityAlcohol3: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.TopQualityAlcohol5: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.TopQualityAlcohol6: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+Items.TopQualityAlcohol7: *DarkFutureAnimRelaxActionItemUseAlcoholLiquor
+
+## Wine
+#
+Items.GoodQualityAlcohol1: &DarkFutureAnimRelaxActionItemUseAlcoholWine
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseWine
+Items.GoodQualityAlcohol5: *DarkFutureAnimRelaxActionItemUseAlcoholWine
+Items.GoodQualityAlcohol6: *DarkFutureAnimRelaxActionItemUseAlcoholWine
+Items.TopQualityAlcohol2: *DarkFutureAnimRelaxActionItemUseAlcoholWine
+Items.TopQualityAlcohol4: *DarkFutureAnimRelaxActionItemUseAlcoholWine
+
+## Cocktails
+#
+Items.TopQualityAlcohol8: &DarkFutureAnimRelaxActionItemUseAlcoholCocktail
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseCocktail
+Items.TopQualityAlcohol9: *DarkFutureAnimRelaxActionItemUseAlcoholCocktail
+Items.TopQualityAlcohol10: *DarkFutureAnimRelaxActionItemUseAlcoholCocktail
+
+## Beer
+#
+Items.LowQualityAlcohol1: &DarkFutureAnimRelaxActionItemUseAlcoholBeer
+  tags:
+    - !append-once DarkFutureRelaxActionItemUseBeer
+Items.LowQualityAlcohol3: *DarkFutureAnimRelaxActionItemUseAlcoholBeer
+Items.LowQualityAlcohol4: *DarkFutureAnimRelaxActionItemUseAlcoholBeer
+Items.NomadsAlcohol2: *DarkFutureAnimRelaxActionItemUseAlcoholBeer
+Items.LowQualityAlcohol2: *DarkFutureAnimRelaxActionItemUseAlcoholBeer
+Items.LowQualityAlcohol5: *DarkFutureAnimRelaxActionItemUseAlcoholBeer
+Items.TopQualityAlcohol1: *DarkFutureAnimRelaxActionItemUseAlcoholBeer
+Items.GoodQualityAlcohol3: *DarkFutureAnimRelaxActionItemUseAlcoholBeer

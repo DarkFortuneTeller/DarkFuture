@@ -12,7 +12,9 @@ import DarkFuture.DelayHelper.*
 import DarkFuture.Utils.{
     DFBarColorTheme,
     DFBarColorThemeName,
-    GetDarkFutureBarColorTheme
+    GetDarkFutureBarColorTheme,
+    GetDarkFutureHDRColor,
+    DFHDRColor
 }
 import DarkFuture.Services.{
     DFGameStateService,
@@ -119,12 +121,13 @@ public class DFNeedsHUDBarGroup {
     public let needsBarGroupParent: ref<DFNeedsHUDBarGroup>;
     public let displayManagedByParentGroup: Bool = false;
     private let alwaysVisibleInDanger: Bool;
+    private let alwaysVisibleDuringEuphoria: Bool;
     private let visibleInDangerAtCriticalThreshold: Bool;
     public let GameStateService: ref<DFGameStateService>;
     public let HUDSystem: ref<DFHUDSystem>;
     public let DelaySystem: ref<DelaySystem>;
-    private let PlayerStateService: wref<DFPlayerStateService>;
-    private let Settings: ref<DFSettings>;
+    public let PlayerStateService: wref<DFPlayerStateService>;
+    public let Settings: ref<DFSettings>;
     
     public let m_fadeOutDelayID: DelayID;
     private let m_fadeOutDelayInterval: Float = 5.0;
@@ -134,7 +137,7 @@ public class DFNeedsHUDBarGroup {
 
     public let m_groupBeingDisplayedAndIgnoringSceneTier: Bool = false;
 
-    public final func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool, visibleInDangerAtCriticalThreshold: Bool) -> Void {
+    public func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool, visibleInDangerAtCriticalThreshold: Bool, opt alwaysVisibleDuringEuphoria: Bool) -> Void {
         //DFProfile();
         let gameInstance = GetGameInstance();
         this.HUDSystem = DFHUDSystem.GetInstance(gameInstance);
@@ -143,6 +146,7 @@ public class DFNeedsHUDBarGroup {
         this.Settings = DFSettings.GetInstance(gameInstance);
         this.DelaySystem = GameInstance.GetDelaySystem(gameInstance);
         this.alwaysVisibleInDanger = alwaysVisibleInDanger;
+        this.alwaysVisibleDuringEuphoria = alwaysVisibleDuringEuphoria;
         this.visibleInDangerAtCriticalThreshold = visibleInDangerAtCriticalThreshold;
     }
 
@@ -253,6 +257,10 @@ public class DFNeedsHUDBarGroup {
                     return true;
                 }
             } else {
+                if this.alwaysVisibleDuringEuphoria && this.PlayerStateService.HasEuphoria() {
+                    return true;
+                }
+
                 if this.PlayerStateService.GetInDanger() {
                     DFLogNoSystem(this.debugEnabled, this, "alwaysVisibleInDanger false GetInDanger true");
                     if this.visibleInDangerAtCriticalThreshold && lowestValueInGroup <= 0.1 {
@@ -261,6 +269,7 @@ public class DFNeedsHUDBarGroup {
                         return false;
                     }
                 }
+
                 if lowestValueInGroup <= (this.Settings.needHUDUIAlwaysOnThreshold / 100.0) {
                     DFLogNoSystem(this.debugEnabled, this, "alwaysVisibleInDanger false lowestValueInGroup <= always on threshold");
                     return true;
@@ -454,6 +463,8 @@ public class DFNeedsHUDBar extends inkCanvas {
     public let m_setupData: DFNeedsHUDBarSetupData;
     public let m_barGroup: ref<DFNeedsHUDBarGroup>;
 
+    public let m_colorTheme: DFBarColorTheme;
+
     public let m_width: Float;
     public let m_height: Float;
     public let m_hasLock: Bool;
@@ -465,6 +476,7 @@ public class DFNeedsHUDBar extends inkCanvas {
     public let m_barMain: ref<inkFlex>;
     private let m_fullBar: ref<inkRectangle>;
     private let m_emptyBar: ref<inkRectangle>;
+    private let m_overchargeBar: ref<inkRectangle>;
     private let m_barcap: ref<inkRectangle>;
     private let m_changePositiveBar: ref<inkRectangle>;
     private let m_changeNegativeBar: ref<inkRectangle>;
@@ -493,6 +505,7 @@ public class DFNeedsHUDBar extends inkCanvas {
 
     public let m_currentValue: Float = 1.0;
     public let m_previousValue: Float = 1.0;
+    public let m_overchargeValue: Float = 0.0;
     private let m_MaxChangeNegativeBarFlashSize: Float = 500.0;
     private let m_animDuration: Float = 2.0;
     private let m_inDanger: Bool = false;
@@ -509,6 +522,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         //DFProfile();
         this.m_setupData = setupData;
         this.CreateBar();
+        this.UpdateOverchargeAppearance();
         this.CreateAnimations();
         this.SetDefaultValues();
         // Initial Evaluate Visibility to be done after all bars added to group
@@ -541,6 +555,8 @@ public class DFNeedsHUDBar extends inkCanvas {
         //
         // Recreate a custom Stamina-like bar.
         //
+        this.m_colorTheme = this.m_setupData.colorTheme;
+
         let canvas: ref<inkCanvas> = new inkCanvas();
         canvas.SetName(this.m_setupData.widgetName);
         canvas.SetChildOrder(inkEChildOrder.Backward);
@@ -654,6 +670,17 @@ public class DFNeedsHUDBar extends inkCanvas {
         empty.Reparent(wrapper);
         this.m_emptyBar = empty;
 
+        let overcharge: ref<inkRectangle> = new inkRectangle();
+        overcharge.SetName(n"overcharge");
+        overcharge.SetHAlign(inkEHorizontalAlign.Left);
+        overcharge.SetVAlign(inkEVerticalAlign.Center);
+        overcharge.SetShear(Vector2(0.5, 0.0));
+        overcharge.SetTranslation(6.0, 0.0);
+        overcharge.SetSize(Vector2(this.m_setupData.barWidth, 10.0));
+        overcharge.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.Magenta));
+        overcharge.Reparent(wrapper);
+        this.m_overchargeBar = overcharge;
+
         let border: ref<inkBorderConcrete> = new inkBorderConcrete();
         border.SetName(n"border");
         border.SetMargin(inkMargin(5.0, 0.0, 0.0, 0.0));
@@ -718,6 +745,8 @@ public class DFNeedsHUDBar extends inkCanvas {
     public func UpdateColorTheme(themeName: DFBarColorThemeName) {
         //DFProfile();
         let newColorTheme: DFBarColorTheme = GetDarkFutureBarColorTheme(themeName);
+        this.m_colorTheme = newColorTheme;
+
         if this.HasLock() {
             this.m_lock.SetTintColor(newColorTheme.MainColor);
         }
@@ -728,6 +757,8 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_barcap.SetTintColor(newColorTheme.ActiveColor);
         this.m_changePositiveBar.SetTintColor(newColorTheme.ChangePositiveColor);
         this.m_changeNegativeBar.SetTintColor(newColorTheme.ChangeNegativeColor);
+
+        this.UpdateOverchargeAppearance();
     }
 
     public func UpdateShear(shouldShear: Bool) {
@@ -741,6 +772,7 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_emptyBar.SetShear(Vector2(shear, 0.0));
         this.m_border.SetShear(Vector2(shear, 0.0));
         this.m_fullBar.SetShear(Vector2(shear, 0.0));
+        this.m_overchargeBar.SetShear(Vector2(shear, 0.0));
         this.m_barcap.SetShear(Vector2(shear, 0.0));
         this.m_changePositiveBar.SetShear(Vector2(shear, 0.0));
         this.m_changeNegativeBar.SetShear(Vector2(shear, 0.0));
@@ -873,6 +905,13 @@ public class DFNeedsHUDBar extends inkCanvas {
         this.m_emptyBar.SetSize(Vector2(this.m_width * newValue, this.m_height));
     }
 
+    public final func SetProgressOvercharge(newValue: Float) {
+        //DFProfile();
+        this.m_overchargeValue = newValue;
+        this.m_overchargeBar.SetSize(Vector2(this.m_width * newValue, this.m_height));
+        this.UpdateOverchargeAppearance();
+    }
+
     private final func EvaluateBarPulse(currentValue: Float, previousValue: Float) -> Void {
         //DFProfile();
         if this.m_continuousPulseAtLowThresholdInCombat && currentValue <= this.m_continuousPulseThreshold && this.m_inDanger {
@@ -925,6 +964,17 @@ public class DFNeedsHUDBar extends inkCanvas {
         }
     }
 
+    public final func UpdateOverchargeAppearance() {
+        if this.m_overchargeValue > 0.0 {
+            this.m_icon.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActiveMagenta));
+            this.m_border.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActiveMagenta));
+            
+        } else {
+            this.m_icon.SetTintColor(this.m_colorTheme.ActiveColor);
+            this.m_border.SetTintColor(this.m_colorTheme.ActiveColor);
+        }   
+    }
+
     public final func GetFullSize() -> Vector2 {
         //DFProfile();
         return Vector2(this.m_width, this.m_height);
@@ -940,7 +990,6 @@ public class DFNeedsHUDBar extends inkCanvas {
 
         this.StopAnimProxyIfDefined(this.m_fadeIn_anim_proxy);
 
-        //let targetTransparency: Float;
         if this.m_shouldForceBrightOnNextFadeIn {
             DFLogNoSystem(this.debugEnabled, this, "SetFadeIn: Instant or Force Bright, show bright and recheck");
             this.m_fadeInTargetTransparency = 0.8;
@@ -949,7 +998,8 @@ public class DFNeedsHUDBar extends inkCanvas {
             }
         } else {
             let minOpacity: Float = DFSettings.Get().hudUIMinOpacity / 100.0;
-            let possibleTargetTransparency: Float = this.m_currentValue > 0.85 ? minOpacity : (1.0 + minOpacity) - this.m_currentValue;
+            // Nested ternary! Woo!
+            let possibleTargetTransparency: Float = this.m_overchargeValue > 0.0 ? 0.5 : this.m_currentValue > 0.85 ? minOpacity : (1.0 + minOpacity) - this.m_currentValue;
             this.m_fadeInTargetTransparency = MaxF(this.m_fadeInTargetTransparency, possibleTargetTransparency);
         }
 

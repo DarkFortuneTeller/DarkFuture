@@ -1,0 +1,1098 @@
+# Common Records
+#
+DarkFutureStatusEffect.SingleStack_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 1
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.SingleStack:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.SingleStack_StatModifier
+
+DarkFutureWeight.SmallDrug:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.0
+  modifierType: Additive
+  statType: BaseStats.Weight
+
+DarkFuturePrice.MrWhitey:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.0
+  modifierType: Multiplier
+  statType: BaseStats.Price
+
+DarkFuturePrice.IllegalDrugs:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.0
+  modifierType: Multiplier
+  statType: BaseStats.Price
+
+DarkFuturePrereqs.HasNicotinePrereq:
+  $type: gamedataStatusEffectPrereq_Record
+  checkType: CheckType.Tag
+  evaluateOnRegister: False
+  invert: False
+  prereqClassName: StatusEffectPrereq
+  tagToCheck: DarkFutureSmoking
+
+# Note: Both the Base Name and the Status Effect Type are used
+# to prevent stacking behavior.
+DarkFutureConsumableBaseName.Narcotic:
+  $type: gamedataConsumableBaseName_Record
+  enumName: Narcotic
+
+DarkFutureItems.NarcoticItemActionCommon:
+  $type: gamedataItemAction_Record
+  isDefaultLootChoice: False
+  removeAfterUse: True
+  actionName: Consume
+  hackCategory: HackCategory.NotAHack
+  objectActionType: ObjectActionType.Item
+  priority: 0
+  activationTime: []
+  completionEffects: []
+  costs: []
+  durationTime: []
+  instigatorActivePrereqs: []
+  instigatorPrereqs: []
+  rewards: []
+  startEffects: []
+  targetActivePrereqs: []
+  targetPrereqs: []
+
+# Overdose Effect
+#
+DarkFutureStatusEffectTypes.Overdose:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Overdose
+
+DarkFutureStatusEffect.Overdose_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNewNarcoticEffectDescriptionOverdose"
+  displayName: l"DarkFutureOverdoseStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: health_monitor
+  priority: -10
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.OverdoseDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 2
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.OverdoseMaxStacks_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 11
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.OverdoseMaxStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.OverdoseMaxStacks_StatModifier
+
+DarkFutureStatusEffect.OverdoseDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.OverdoseDuration_StatModifier
+
+DarkFutureStatusEffect.Overdose:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.OverdoseDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.OverdoseMaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: False
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Overdose
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Overdose_UIData
+  debugTags: []
+  gameplayTags:
+    - Debuff
+    - DarkFutureOverdose
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+# Narcotic Effect
+#
+DarkFutureStatusEffectTypes.Narcotic:
+  $type: gamedataStatusEffectType_Record
+  enumComment: ''
+  enumName: Narcotic
+
+DarkFutureStatusEffect.NarcoticDuration_StatModifier:
+  $type: gamedataConstantStatModifier_Record
+  value: 600
+  modifierType: Additive
+  statType: BaseStats.MaxDuration
+
+DarkFutureStatusEffect.NarcoticDuration:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.NarcoticDuration_StatModifier
+
+DarkFutureStatusEffect.Narcotic_MaxStacksStatMod:
+  $type: gamedataConstantStatModifier_Record
+  value: 6
+  modifierType: Additive
+  statType: BaseStats.MaxStacks
+
+DarkFutureStatusEffect.Narcotic_MaxStacks:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  saveBasedOnStatType: False
+  statModsLimit: -1
+  relatedModifierGroups: []
+  statModifiers:
+    - DarkFutureStatusEffect.Narcotic_MaxStacksStatMod
+
+DarkFutureStatusEffect.Narcotic_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticStatusEffectDesc"
+  displayName: l"DarkFutureNarcoticStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: Cyberpsychosis
+  priority: -10
+  floatValues: []
+  intValues:
+    - 10
+    - 3
+    - 3
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticTolerance_UIData:
+  $type: gamedataStatusEffectUIData_Record
+  description: l"DarkFutureNarcoticToleranceStatusEffectDesc"
+  displayName: l"DarkFutureNarcoticToleranceStatusEffectDisplayName"
+  fluffText: ''
+  iconPath: Cyberpsychosis
+  priority: -10
+  floatValues: []
+  intValues: []
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Narcotic_StatsPackageModifier_StaminaRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.03
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
+
+DarkFutureStatusEffect.Narcotic_StatsPackageModifier_CritChance:
+  $type: gamedataConstantStatModifier_Record
+  value: 3
+  modifierType: Additive
+  statType: BaseStats.CritChance
+
+DarkFutureStatusEffect.Narcotic_NicotineBuff_StatsPackageModifier_StaminaRegenRate:
+  $type: gamedataConstantStatModifier_Record
+  value: 0.015
+  modifierType: Additive
+  statType: BaseStats.StaminaRegenRateMult
+
+DarkFutureStatusEffect.Narcotic_NicotineBuff_StatsPackageModifier_CritChance:
+  $type: gamedataConstantStatModifier_Record
+  value: 1.5
+  modifierType: Additive
+  statType: BaseStats.CritChance
+
+DarkFutureStatusEffect.Narcotic_NicotineBuff_StatModifierGroup_StaminaRegenRate:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  relatedModifierGroups: []
+  saveBasedOnStatType: False
+  statModifiers:
+    - DarkFutureStatusEffect.Narcotic_NicotineBuff_StatsPackageModifier_StaminaRegenRate
+  statModsLimit: -1
+
+DarkFutureStatusEffect.Narcotic_NicotineBuff_StatModifierGroup_CritChance:
+  $type: gamedataStatModifierGroup_Record
+  drawBasedOnStatType: False
+  optimiseCombinedModifiers: False
+  relatedModifierGroups: []
+  saveBasedOnStatType: False
+  statModifiers:
+    - DarkFutureStatusEffect.Narcotic_NicotineBuff_StatsPackageModifier_CritChance
+  statModsLimit: -1
+
+DarkFutureStatusEffect.Narcotic_NicotineBuff_Effector_StaminaRegenRate:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Player
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: DarkFuturePrereqs.HasNicotinePrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.Narcotic_NicotineBuff_StatModifierGroup_StaminaRegenRate
+  statModifierGroups: []
+
+DarkFutureStatusEffect.Narcotic_NicotineBuff_Effector_CritChance:
+  $type: gamedataApplyStatGroupEffector_Record
+  applicationTarget: Player
+  effectorClassName: ApplyStatGroupEffector
+  prereqRecord: DarkFuturePrereqs.HasNicotinePrereq
+  removeAfterActionCall: False
+  removeAfterPrereqCheck: False
+  removeWithEffector: True
+  statGroup: DarkFutureStatusEffect.Narcotic_NicotineBuff_StatModifierGroup_CritChance
+  statModifierGroups: []
+
+DarkFutureStatusEffect.Narcotic_StatsPackage:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: True
+  animationWrapperOverrides: []
+  effectors:
+    - DarkFutureStatusEffect.Narcotic_NicotineBuff_Effector_StaminaRegenRate
+    - DarkFutureStatusEffect.Narcotic_NicotineBuff_Effector_CritChance
+  items: []
+  statPools: []
+  stats:
+    - DarkFutureStatusEffect.Narcotic_StatsPackageModifier_StaminaRegenRate
+    - DarkFutureStatusEffect.Narcotic_StatsPackageModifier_CritChance
+
+DarkFutureStatusEffect.Narcotic:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.NarcoticDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.Narcotic_MaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: True
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Narcotic
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Narcotic_UIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFutureManagedEffect
+    - DarkFutureAddictionPrimaryEffect
+    - DarkFutureAddictionPrimaryEffectNarcotic
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.Narcotic_StatsPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.NarcoticLasting:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.Narcotic_MaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: True
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Narcotic
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.Narcotic_UIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFutureManagedEffect
+    - DarkFutureLastingEuphoricEffect
+    - DarkFutureInfiniteDurationEffect
+  immunityStats: []
+  packages:
+    - DarkFutureStatusEffect.Narcotic_StatsPackage
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.NarcoticTolerance:
+  $type: gamedataStatusEffect_Record
+  duration: DarkFutureStatusEffect.NarcoticDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.Narcotic_MaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: True
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Narcotic
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticTolerance_UIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFutureManagedEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+DarkFutureStatusEffect.NarcoticToleranceLasting:
+  $type: gamedataStatusEffect_Record
+  duration: BaseStats.InfiniteDuration
+  dynamicDuration: False
+  isAffectedByTimeDilationNPC: True
+  isAffectedByTimeDilationPlayer: True
+  maxStacks: DarkFutureStatusEffect.Narcotic_MaxStacks
+  reapplyPackagesOnMaxStacks: False
+  removeAllStacksWhenDurationEnds: True
+  removeOnStoryTier: False
+  replicated: False
+  savable: True
+  statusEffectType: DarkFutureStatusEffectTypes.Narcotic
+  stopActiveSfxOnDeactivate: True
+  uiData: DarkFutureStatusEffect.NarcoticTolerance_UIData
+  debugTags: []
+  gameplayTags:
+    - Buff
+    - DarkFutureManagedEffect
+  immunityStats: []
+  packages: []
+  SFX: []
+  VFX: []
+
+# UI Data - Item Cards
+#
+DarkFutureStatusEffect.MrWhitey_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNewNarcoticUIDescription"
+  localizedName: ''
+  intValues:
+    - 1
+    - 4
+    - 12
+    - 10
+    - 3
+    - 3
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.BlackLaceV0_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNewNarcoticUIDescription"
+  localizedName: ''
+  intValues:
+    - 4
+    - 6
+    - 12
+    - 10
+    - 3
+    - 3
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.BlackLaceV1_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNewNarcoticUIDescription"
+  localizedName: ''
+  intValues:
+    - 5
+    - 7
+    - 12
+    - 10
+    - 3
+    - 3
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.Glitter_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNewNarcoticUIDescription"
+  localizedName: ''
+  intValues:
+    - 3
+    - 6
+    - 12
+    - 10
+    - 3
+    - 3
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticPill_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNewNarcoticUIDescription"
+  localizedName: ''
+  intValues:
+    - 2
+    - 4
+    - 12
+    - 10
+    - 3
+    - 3
+  nameValues: []
+  stats: []
+
+#DarkFutureStatusEffect.NarcoticOverdoseWeak_OnEquip_UIData:
+#  $type: gamedataGameplayLogicPackageUIData_Record
+#  localizedDescription: l"DarkFutureNewNarcoticUIDescriptionOverdose"
+#  localizedName: ''
+#  intValues:
+#    - -30
+#    - 6
+#  nameValues: []
+#  stats: []
+
+DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNewNarcoticUIDescriptionOverdose"
+  localizedName: ''
+  intValues:
+    - -20
+    - 2
+  nameValues: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticTolerance_OnEquip_UIData:
+  $type: gamedataGameplayLogicPackageUIData_Record
+  localizedDescription: l"DarkFutureNarcoticsToleranceUIDescription"
+  localizedName: ''
+  intValues: []
+  nameValues: []
+  stats: []
+
+#DarkFutureStatusEffect.NarcoticWeak_OnEquip_UIData:
+#  $type: gamedataGameplayLogicPackageUIData_Record
+#  localizedDescription: l"DarkFutureWeakViceUIDescription"
+#  localizedName: ''
+#  intValues:
+#    - 5
+#  nameValues: []
+#  stats: []
+
+#DarkFutureStatusEffect.NarcoticStrong_OnEquip_UIData:
+#  $type: gamedataGameplayLogicPackageUIData_Record
+#  localizedDescription: l"DarkFutureStrongViceUIDescription"
+#  localizedName: ''
+#  intValues: []
+#  nameValues: []
+#  stats: []
+
+# On Equip
+#
+DarkFutureStatusEffect.MrWhitey_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.MrWhitey_OnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.BlackLaceV0_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.BlackLaceV0_OnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.BlackLaceV1_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.BlackLaceV1_OnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.Glitter_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.Glitter_OnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticPill_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.NarcoticPill_OnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+#DarkFutureStatusEffect.NarcoticOverdoseWeak_OnEquip:
+#  $type: gamedataGameplayLogicPackage_Record
+#  stackable: False
+#  UIData: DarkFutureStatusEffect.NarcoticOverdoseWeak_OnEquip_UIData
+#  animationWrapperOverrides: []
+#  effectors: []
+#  items: []
+#  statPools: []
+#  stats: []
+
+DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+DarkFutureStatusEffect.NarcoticTolerance_OnEquip:
+  $type: gamedataGameplayLogicPackage_Record
+  stackable: False
+  UIData: DarkFutureStatusEffect.NarcoticTolerance_OnEquip_UIData
+  animationWrapperOverrides: []
+  effectors: []
+  items: []
+  statPools: []
+  stats: []
+
+##DarkFutureStatusEffect.NarcoticWeak_OnEquip:
+#  $type: gamedataGameplayLogicPackage_Record
+#  stackable: False
+#  UIData: DarkFutureStatusEffect.NarcoticWeak_OnEquip_UIData
+#  animationWrapperOverrides: []
+#  effectors: []
+#  items: []
+#  statPools: []
+#  stats: []
+
+#DarkFutureStatusEffect.NarcoticStrong_OnEquip:
+#  $type: gamedataGameplayLogicPackage_Record
+#  stackable: False
+#  UIData: DarkFutureStatusEffect.NarcoticStrong_OnEquip_UIData
+#  animationWrapperOverrides: []
+#  effectors: []
+#  items: []
+#  statPools: []
+#  stats: []
+
+#
+#
+# Uncommon Drugs
+#
+#
+
+# Mr. Whitey
+Items.LowQualityFood6: &UncommonDrugsMrWhitey
+  consumableBaseName: DarkFutureConsumableBaseName.Narcotic
+  quality: Quality.Uncommon
+  itemType: ItemType.Con_LongLasting
+  itemSecondaryAction: ItemAction.Consume
+  buyPrice:
+    - Price.BasePrice
+    - Price.BuyMultiplier
+    - Price.ItemQualityMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - DarkFuturePrice.MrWhitey
+  sellPrice:
+    - Price.BasePrice
+    - Price.SellMultiplier
+    - Price.ItemQualitySellMultiplier
+    - Price.CraftingTraitMultiplier
+    - Price.SellPriceIntrinsicModMult
+    - DarkFuturePrice.MrWhitey
+  objectActions:
+    - DarkFutureItems.NarcoticItemActionCommon
+    - ItemAction.Drop
+  OnEquip:
+    - DarkFutureStatusEffect.MrWhitey_OnEquip
+    #- DarkFutureStatusEffect.NarcoticWeak_OnEquip
+    #- DarkFutureStatusEffect.Euphoria_OnEquip
+    - DarkFutureStatusEffect.NarcoticTolerance_OnEquip
+    - DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip
+  statModifiers:
+    - !append-once DarkFutureWeight.SmallDrug
+  statModifierGroups:
+    - DarkFutureStatusEffect.NarcoticDuration
+  tags:
+    - !remove Food
+    - !remove Edible
+    - !append-once DarkFutureManagedConsumable
+    - !append-once DarkFutureManagedConsumableNarcotic
+    - !append-once DarkFutureManagedConsumableNarcoticMrWhitey
+    - !append-once DarkFutureConsumableAddictive
+    - !append-once DarkFutureConsumableAddictiveNarcotic
+    - !append-once DarkFutureConsumableOverrideTierWithAddictionHeader
+    - !append-once DarkFutureItemTooltipShowBars
+    - !append-once DarkFutureItemTooltipShowBarsNarcotics
+Items.MediumQualityFood11: *UncommonDrugsMrWhitey
+Items.MediumQualityFood14: *UncommonDrugsMrWhitey
+Items.MediumQualityFood15: *UncommonDrugsMrWhitey
+
+# Mr. Whitey Mint - Needs revised description
+Items.MediumQualityFood11.localizedDescription: l"DarkFutureMrWhiteyMintRevisedDesc"
+
+#
+#
+# Black Lace
+#
+#
+Items.BlackLaceV0: &BlackLace
+  consumableBaseName: DarkFutureConsumableBaseName.Narcotic
+  objectActions:
+    - DarkFutureItems.NarcoticItemActionCommon
+    - ItemAction.Drop
+  statModifiers:
+    - !append-once DarkFutureWeight.SmallDrug
+  statModifierGroups:
+    - DarkFutureStatusEffect.NarcoticDuration
+  tags:
+    - !append-once IllegalItem
+    - !append-once DarkFutureManagedConsumable
+    - !append-once DarkFutureManagedConsumableNarcotic
+    - !append-once DarkFutureConsumableAddictive
+    - !append-once DarkFutureConsumableAddictiveNarcotic
+    - !append-once DarkFutureConsumableOverrideTierWithAddictionHeader
+    - !append-once DarkFutureConsumableCombatUseAllowed
+    - !append-once DarkFutureItemTooltipShowBars
+    - !append-once DarkFutureItemTooltipShowBarsNarcotics
+Items.BlackLaceV1: *BlackLace
+
+Items.BlackLaceV0.tags:
+  - !append-once DarkFutureManagedConsumableNarcoticBlackLaceV0
+
+Items.BlackLaceV1.tags:
+  - !append-once DarkFutureManagedConsumableNarcoticBlackLaceV1
+
+Items.BlackLaceV0.OnEquip:
+  - DarkFutureStatusEffect.BlackLaceV0_OnEquip
+  #- DarkFutureStatusEffect.NarcoticStrong_OnEquip
+  #- DarkFutureStatusEffect.Euphoria_OnEquip
+  - DarkFutureStatusEffect.NarcoticTolerance_OnEquip
+  - DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip
+
+Items.BlackLaceV1.OnEquip:
+  - DarkFutureStatusEffect.BlackLaceV1_OnEquip
+  #- DarkFutureStatusEffect.NarcoticStrong_OnEquip
+  #- DarkFutureStatusEffect.Euphoria_OnEquip
+  - DarkFutureStatusEffect.NarcoticTolerance_OnEquip
+  - DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip
+
+BaseStatusEffect.BlackLaceV0.gameplayTags:
+  - !append-once DarkFutureLegacyBlackLaceEffect
+
+# TODO - 10 stacks
+#BaseStatusEffect.BlackLaceV0.maxStacks: DarkFutureStatusEffect.SingleStack
+#BaseStatusEffect.BlackLaceV0.statusEffectType: DarkFutureStatusEffectTypes.Narcotic
+#BaseStatusEffect.BlackLaceV1.maxStacks: DarkFutureStatusEffect.SingleStack
+#BaseStatusEffect.BlackLaceV1.statusEffectType: DarkFutureStatusEffectTypes.Narcotic
+
+# Bug Fix: Black Lace did not have a Status Effect description in the base game; add one.
+#BaseStatusEffect.BlackLaceV0_inline7.description: l"DarkFutureConsumableBlackLaceStatusEffectDesc"
+#BaseStatusEffect.BlackLaceV0_inline7.intValues:
+#  - 20
+#  - 15
+#  - 5
+#  - 5
+#  - 15
+#  - -35
+
+#BaseStatusEffect.BlackLaceV1_inline7.description: l"DarkFutureConsumableBlackLaceStatusEffectDesc"
+#BaseStatusEffect.BlackLaceV1_inline7.intValues:
+#  - 30
+#  - 25
+#  - 15
+#  - 15
+#  - 25
+#  - -50
+
+#BaseStatusEffect.BlackLaceV0.gameplayTags:
+#  - !append-once DarkFutureAddictionPrimaryEffect
+#  - !append-once DarkFutureAddictionPrimaryEffectNarcotic
+
+#BaseStatusEffect.BlackLaceV1.gameplayTags:
+#  - !append-once DarkFutureAddictionPrimaryEffect
+#  - !append-once DarkFutureAddictionPrimaryEffectNarcotic
+
+#
+# Glitter
+#
+DarkFutureItem.Glitter:
+  $type: gamedataConsumableItem_Record
+  consumableBaseName: DarkFutureConsumableBaseName.Narcotic
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  appearanceName: drug_4
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  dropObject: defaultItemDrop
+  enableNpcRPGData: False
+  entityName: base_inhaler_item
+  equipArea: EquipmentArea.Consumable
+  friendlyName: ''
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: inhaler_7_glitter
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: True
+  itemCategory: ItemCategory.Consumable
+  itemSecondaryAction: ItemAction.Consume
+  itemType: ItemType.Con_LongLasting
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.Epic
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: False
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.ConsumableBasePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Price.LongLastingConsumable
+    - DarkFuturePrice.IllegalDrugs
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureItemNameGlitter"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions:
+    - GameplayRestriction.VehicleCombatNoInterruptions
+  hairSkinnedMeshComponents: []
+  localizedDescription: l"DarkFutureItemDescriptionGlitter"
+  OnAttach: []
+  OnEquip:
+    - DarkFutureStatusEffect.Glitter_OnEquip
+    #- DarkFutureStatusEffect.NarcoticStrong_OnEquip
+    #- DarkFutureStatusEffect.Euphoria_OnEquip
+    - DarkFutureStatusEffect.NarcoticTolerance_OnEquip
+    - DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip
+  OnLooted: []
+  parts: []
+  placementSlots:
+    - AttachmentSlots.WeaponLeft
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.ConsumableBasePrice
+    - Price.SellMultiplier
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.LongLastingConsumable
+    - DarkFuturePrice.IllegalDrugs
+  slotPartList: []
+  slotPartListPreset: []
+  tags:
+    - Preload
+    - Consumable
+    - Drug
+    - Medical
+    - HasModel
+    - IllegalItem
+    - DarkFutureManagedConsumable
+    - DarkFutureManagedConsumableNarcotic
+    - DarkFutureManagedConsumableNarcoticGlitter
+    - DarkFutureConsumableAddictive
+    - DarkFutureConsumableAddictiveNarcotic
+    - DarkFutureConsumableOverrideTierWithAddictionHeader
+    - DarkFutureConsumableCombatUseAllowed
+    - DarkFutureAnimatedConsumable
+    - DarkFutureAnimInhalerGlitter
+    - DarkFutureRelaxActionItemUseGlitter
+    - DarkFutureItemTooltipShowBars
+    - DarkFutureItemTooltipShowBarsNarcotics
+  variants: []
+  visualTags: []
+  effectors: []
+  objectActions:
+    - DarkFutureItems.NarcoticItemActionCommon
+    - ItemAction.Drop
+  statModifierGroups:
+    - DarkFutureStatusEffect.NarcoticDuration
+  statModifiers:
+    - Items.LongLasting_inline0
+    - DarkFutureWeight.SmallDrug
+  statPools: []
+  weakspots: []
+
+#
+#
+# Narcotic Pill
+#
+#
+DarkFutureItem.NarcoticPill:
+  $type: gamedataConsumableItem_Record
+  consumableBaseName: DarkFutureConsumableBaseName.Narcotic
+  consumableType: ConsumableType.Drug
+  animFeatureName: ItemData
+  animName: ui_garment_pose
+  animSetResource: ''
+  appearanceName: base_junk_item_medicine_bottle
+  canDrop: True
+  crosshair: Crosshairs.None
+  deprecated: False
+  dropObject: defaultItemDrop
+  enableNpcRPGData: False
+  entityName: base_junk_item
+  equipArea: EquipmentArea.Consumable
+  friendlyName: ''
+  garmentOffset: 0
+  icon: UIIcon.ItemIcon
+  iconPath: drugs_pseudoendotrisine
+  isCached: False
+  isCoreCW: False
+  isCustomizable: False
+  isGarment: False
+  isPart: False
+  isSingleInstance: True
+  itemCategory: ItemCategory.Consumable
+  itemSecondaryAction: ItemAction.Consume
+  itemType: ItemType.Con_LongLasting
+  localizedName: ''
+  mass: 1
+  minigameInstance: minigame_v2.DefaultItemMinigame
+  powerLevelDeterminedByParent: False
+  quality: Quality.Rare
+  qualityRestrictedByParent: False
+  replicateWhenNotActive: False
+  upgradeCostMult: 1
+  useHeadgearGarmentAggregator: False
+  useNewSpawnMethod: False
+  usesVariants: False
+  savable: False
+  animationParameters: []
+  appearanceSuffixes: []
+  appearanceSuffixesOwnerOverride: []
+  attachmentSlots: []
+  buyPrice:
+    - Price.ConsumableBasePrice
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.BuyPrice_StreetCred_Discount
+    - Price.LongLastingConsumable
+    - DarkFuturePrice.Pharmaceuticals
+  cameraForward: {x: 0, y: 0, z: 0}
+  cameraUp: {x: 0, y: 0, z: 0}
+  connections: []
+  displayName: l"DarkFutureItemNameNarcoticPill"
+  equipAreas: []
+  equipPrereqs: []
+  gameplayRestrictions: []
+  hairSkinnedMeshComponents: []
+  localizedDescription: l"DarkFutureItemDescriptionNarcoticPill"
+  OnAttach: []
+  OnEquip:
+    - DarkFutureStatusEffect.NarcoticPill_OnEquip
+    #- DarkFutureStatusEffect.NarcoticStrong_OnEquip
+    #- DarkFutureStatusEffect.Euphoria_OnEquip
+    - DarkFutureStatusEffect.NarcoticTolerance_OnEquip
+    - DarkFutureStatusEffect.NarcoticOverdoseStrong_OnEquip
+  OnLooted: []
+  parts: []
+  placementSlots:
+    - AttachmentSlots.WeaponLeft
+  previewBBoxOverride: []
+  requiredSlots: []
+  sellPrice:
+    - Price.ConsumableBasePrice
+    - Price.SellMultiplier
+    - Price.ItemQualityMultiplier
+    - Price.PlusTierMultiplier
+    - Price.LongLastingConsumable
+    - DarkFuturePrice.Pharmaceuticals
+  slotPartList: []
+  slotPartListPreset: []
+  tags:
+    - Preload
+    - Consumable
+    - Drug
+    - Medical
+    - HasModel
+    - DarkFutureManagedConsumable
+    - DarkFutureManagedConsumableNarcotic
+    - DarkFutureManagedConsumableNarcoticNarcoticPill
+    - DarkFutureConsumableAddictive
+    - DarkFutureConsumableAddictiveNarcotic
+    - DarkFutureConsumableOverrideTierWithAddictionHeader
+    - DarkFutureAnimatedConsumable
+    - DarkFutureAnimPillBPink
+    - DarkFutureRelaxActionItemUseVanitol
+    - DarkFutureItemTooltipShowBars
+    - DarkFutureItemTooltipShowBarsNarcotics
+  variants: []
+  visualTags: []
+  effectors: []
+  objectActions:
+    - DarkFutureItems.NarcoticItemActionCommon
+    - ItemAction.Drop
+  statModifierGroups:
+    - DarkFutureStatusEffect.NarcoticDuration
+  statModifiers:
+    - Items.LongLasting_inline0
+    - DarkFutureWeight.SmallDrug
+  statPools: []
+  weakspots: []
+
+#
+# Vendors
+#
+DarkFutureVendors.GlitterQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 12.5
+  min: 8.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.BlackLaceQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 10.5
+  min: 6.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.NarcoticPillQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 6.5
+  min: 3.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.NarcoticPillBlackMarketQuantityChance:
+  $type: gamedataRandomStatModifier_Record
+  max: 16.5
+  min: 8.0
+  useControlledRandom: False
+  modifierType: Additive
+  statType: BaseStats.Quantity
+
+DarkFutureVendors.Glitter:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.Glitter
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.GlitterQuantityChance
+
+DarkFutureVendors.BlackLaceV0:
+  $type: gamedataVendorItem_Record
+  item: Items.BlackLaceV0
+  generationPrereqs:
+    - DarkFutureLootPrereqs.PlayerLevelLessThanEliteTierPrereq
+  quantity:
+    - DarkFutureVendors.BlackLaceQuantityChance
+
+DarkFutureVendors.BlackLaceV1:
+  $type: gamedataVendorItem_Record
+  item: Items.BlackLaceV1
+  generationPrereqs:
+    - LootPrereqs.PlayerLevelEliteTierPrereq
+  quantity:
+    - DarkFutureVendors.BlackLaceQuantityChance
+
+DarkFutureVendors.NarcoticPill:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.NarcoticPill
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.NarcoticPillQuantityChance
+
+DarkFutureVendors.NarcoticPillBlackMarket:
+  $type: gamedataVendorItem_Record
+  item: DarkFutureItem.NarcoticPill
+  generationPrereqs: []
+  quantity:
+    - DarkFutureVendors.NarcoticPillBlackMarketQuantityChance
+
+# Black Market Vendors
+#
+Vendors.cz_stadium_medic_01.itemStock:
+  - !append-once DarkFutureVendors.Glitter
+  - !append-once DarkFutureVendors.BlackLaceV0
+  - !append-once DarkFutureVendors.BlackLaceV1
+  - !append-once DarkFutureVendors.NarcoticPill
+
+# Illegal Drug Vendors
+#
+Vendors.wbr_jpn_medicstore_02.itemStock: &IllegalDrugVendors
+  - Vendors.BaseMoney
+  - DarkFutureVendors.NerveRestoreDrug
+  - DarkFutureVendors.Glitter
+  - DarkFutureVendors.BlackLaceV0
+  - DarkFutureVendors.BlackLaceV1
+  - DarkFutureVendors.NarcoticPillBlackMarket
+Vendors.wbr_jpn_medicstore_03.itemStock: *IllegalDrugVendors
+
+# Standard Med Vendors
+#
+Vendors.BlackMarketMedicStore.itemStock: &StandardMedicVendorsNarcotics
+  - !append-once DarkFutureVendors.NarcoticPill
+Vendors.bls_ina_se1_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.cct_cpz_medic_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.cct_dtn_medic_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.hey_spr_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.MedicStore_HUB.itemStock: *StandardMedicVendorsNarcotics
+Vendors.MedicStore.itemStock: *StandardMedicVendorsNarcotics
+Vendors.nw4_spaceport_medic_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.pac_cvi_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.std_arr_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.std_rcr_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.wat_kab_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.wat_lch_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.wat_nid_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.wat_nid_medicstore_02.itemStock: *StandardMedicVendorsNarcotics
+Vendors.wbr_jpn_medicstore_01.itemStock: *StandardMedicVendorsNarcotics
+Vendors.wbr_nok_medic_01.itemStock: *StandardMedicVendorsNarcotics
+
+# TODO - Add to enemy loot
+# TODO - Add to Trauma Kits
