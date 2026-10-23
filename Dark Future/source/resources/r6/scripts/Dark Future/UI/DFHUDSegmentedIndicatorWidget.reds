@@ -55,6 +55,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
 
     public final func EvaluateAllSegmentedIndicatorVisibility(forceMomentaryDisplay: Bool, fromParentUpdate: Bool, momentaryDisplayIgnoresSceneTier: Bool, healthBarVisible: Bool, staminaBarVisible: Bool) -> Void {
         //DFProfile();
+        let indicator: ref<DFHUDSegmentedIndicator>;
         DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility forceMomentaryDisplay: " + ToString(forceMomentaryDisplay));
         if this.displayManagedByParentGroup {
             DFLogNoSystem(this.debugEnabled, this, "EvaluateAllBarVisibility managed by parent group, returning.");
@@ -74,7 +75,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
 
         let anySegmentActive: Bool = false;
         for bar in this.needsBars {
-            let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+            indicator = bar as DFHUDSegmentedIndicator;
             for segment in indicator.m_segments {
                 if Equals(segment.active, true) {
                     anySegmentActive = true;
@@ -105,7 +106,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                 this.SetAllDisplayContinuous();
 
                 for bar in this.needsBars {
-                    let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+                    indicator = bar as DFHUDSegmentedIndicator;
                     indicator.m_shadow.SetVisible(false);
                     indicator.m_iconshadow.SetVisible(false);
                 }
@@ -113,7 +114,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                 // If displaying continuously and the Nerve lock is visible, pulse the Humanity Loss segment (once).
                 if nerveLockVisible {
                     for bar in this.needsBars {
-                        let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+                        indicator = bar as DFHUDSegmentedIndicator;
                         for segment in indicator.m_segments {
                             if Equals(segment.type, DFHUDSegmentedIndicatorSegmentType.HumanityLoss) && Equals(segment.active, true) {
                                 (bar as DFHUDSegmentedIndicator).SetSegmentPulse(segment.type, 0.3);
@@ -134,14 +135,14 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                             this.m_displayingOverStamina = true;
                             
                             for bar in this.needsBars {
-                                let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+                                indicator = bar as DFHUDSegmentedIndicator;
                                 indicator.m_shadow.SetVisible(true);
                                 indicator.m_iconshadow.SetVisible(true);
                             }
                         }
                     } else {
                         for bar in this.needsBars {
-                            let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+                            indicator = bar as DFHUDSegmentedIndicator;
                             indicator.m_shadow.SetVisible(false);
                             indicator.m_iconshadow.SetVisible(false);
                         }
@@ -228,15 +229,16 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
 
     private final func NormalizeAllPreviousValues() -> Void {
         //DFProfile();
+        let indicator: ref<DFHUDSegmentedIndicator>;
 
         for bar in this.needsBars {
-            let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+            indicator = bar as DFHUDSegmentedIndicator;
             indicator.m_previousSegmentValue = indicator.GetCurrentSegmentValue();
         }
 
         for child in this.needsBarGroupChildren {
             for bar in child.needsBars {
-                let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
+                indicator = bar as DFHUDSegmentedIndicator;
                 indicator.m_previousSegmentValue = indicator.GetCurrentSegmentValue();
             }
         }

@@ -1036,9 +1036,10 @@ public final class DFInteractionSystem extends DFSystem {
 				let nutritionStageAtHour: Int32 = this.NutritionSystem.GetNeedStageAtValue(calculatedNutritionAtHour);
 				let energyStageAtHour: Int32 = this.EnergySystem.GetNeedStageAtValue(calculatedEnergyAtHour);
 
+				let nerveChangeTemp: Float;
 				if calculatedEuphoriaAtHour > 0.0 {
 					// Euphoria depletes at a constant rate before Nerve.
-					let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
+					nerveChangeTemp = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
 					calculatedEuphoriaAtHour += nerveChangeTemp;
 					if calculatedEuphoriaAtHour <= 0.0 {
 						calculatedEuphoriaAtHour = 0.0;
@@ -1083,12 +1084,12 @@ public final class DFInteractionSystem extends DFSystem {
 								}
 							}
 						} else {
-							let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
+							nerveChangeTemp = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
 							calculatedNerveAtHour += nerveChangeTemp;
 						}
 
 					} else {
-						let nerveChangeTemp: Float = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
+						nerveChangeTemp = this.NerveSystem.GetNerveChangeFromTimeInProvidedState(calculatedNerveAtHour, calculatedEuphoriaAtHour, hydrationStageAtHour, nutritionStageAtHour, energyStageAtHour);
 						calculatedNerveAtHour += nerveChangeTemp;
 					}
 				}

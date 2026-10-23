@@ -113,9 +113,11 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 				props.uiFlags = uiFlags;
 				let nerveLoss: Float = -nerveSystem.nerveLossOnOverdoseStack;
 				nerveSystem.ChangeNeedValue(nerveLoss, props);
-			} 
+			}
 
-			let overdoseEffect: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this, t"DarkFutureStatusEffect.Overdose");
+			// Re-query the effect after CheckForCriticalNeed(), which may have
+			// removed all Overdose stacks. Stop Overdose behavior if so.
+			overdoseEffect = StatusEffectHelper.GetStatusEffectByID(this, t"DarkFutureStatusEffect.Overdose");
 			if !IsDefined(overdoseEffect) || overdoseEffect.GetStackCount() == 0u {
 				nerveSystem.SetOverdoseBehavior(false);
 			}

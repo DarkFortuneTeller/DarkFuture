@@ -503,11 +503,10 @@ public abstract class DFConditionSystemBase extends DFSystem {
         let notification: DFProgressionNotification;
         notification.value = Cast<Int32>(this.accumulatedPercentTowardNextLevel);
         
+        let maybeDelta: Int32 = notification.value - lastValue;
         if increasing {
-            let maybeDelta: Int32 = notification.value - lastValue;
             notification.barDelta = maybeDelta > 0 ? maybeDelta : (100 - lastValue) + notification.value;
         } else {
-            let maybeDelta: Int32 = notification.value - lastValue;
             notification.barDelta = maybeDelta > 0 ? notification.value - 100 : maybeDelta;
         }
         notification.actualDelta = actualDelta != 0 ? actualDelta : notification.barDelta;

@@ -995,8 +995,8 @@ public final class DFHUDSystem extends DFSystem {
 
 	private final func PulseUI(bar: DFHUDBarType) -> Void {
 		//DFProfile();
-		let bar: ref<DFNeedsHUDBar> = this.GetHUDBarFromType(bar);
-		bar.SetPulse();
+		let hudBar: ref<DFNeedsHUDBar> = this.GetHUDBarFromType(bar);
+		hudBar.SetPulse();
 	}
 
 	private final func UpdateBar(bar: ref<DFNeedsHUDBar>, newValue: Float, forceMomentaryDisplay: Bool, instant: Bool, forceBright: Bool, momentaryDisplayIgnoresSceneTier: Bool, isSoftCapRestrictedChange: Bool, showLock: Bool) -> Void {
@@ -1136,12 +1136,13 @@ public final class DFHUDSystem extends DFSystem {
 
 	public final func UpdateRaceUIPositionCounterWidgetPosition() -> Void {
 		//DFProfile();
+		let widgetChildren: array<ref<inkWidget>>;
 		if IsDefined(this.raceUIPositionCounterWidget) &&
 		   this.Settings.mainSystemEnabled &&
 		   this.Settings.showHUDUI &&
 		   this.Settings.updateRaceUIVerticalPosition {
 				// Drill down to the element.
-				let widgetChildren: array<ref<inkWidget>> = (this.raceUIPositionCounterWidget as inkCanvas).children.children;
+				widgetChildren = (this.raceUIPositionCounterWidget as inkCanvas).children.children;
 				for child in widgetChildren {
 					if Equals(child.GetName(), n"Counter_Horizontal") {
 						child.SetMargin(67.0, 293.0 + this.Settings.raceUIVerticalPositionOffset, 0.0, 0.0);
@@ -1150,7 +1151,7 @@ public final class DFHUDSystem extends DFSystem {
 				}
 			} else {
 				// Drill down to the element.
-				let widgetChildren: array<ref<inkWidget>> = (this.raceUIPositionCounterWidget as inkCanvas).children.children;
+				widgetChildren = (this.raceUIPositionCounterWidget as inkCanvas).children.children;
 				for child in widgetChildren {
 					if Equals(child.GetName(), n"Counter_Horizontal") {
 						child.SetMargin(67.0, 293.0, 0.0, 0.0);

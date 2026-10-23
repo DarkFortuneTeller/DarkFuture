@@ -233,9 +233,10 @@ public final static func Make(statsManager: ref<UIInventoryItemStatsManager>, it
 @wrapMethod(UIInventoryItemWeaponBars)
 public final static func GetDisplayedStats(barsType: UIInventoryItemWeaponBarsType) -> [WeaponBarType] {
 	let result: array<WeaponBarType>;
+	let BiocorruptionCondition: ref<DFBiocorruptionConditionSystem>;
 
 	if Equals(barsType, DFEnum_UIInventoryItemWeaponBarsType(n"DarkFutureAlcohol")) {
-		let BiocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
+		BiocorruptionCondition = DFBiocorruptionConditionSystem.Get();
 		ArrayPush(result, DFEnum_WeaponBarType(n"DarkFutureAlcoholStacks"));
 
 		if IsSystemEnabledAndRunning(BiocorruptionCondition) && BiocorruptionCondition.GetConditionLevel() > 0u && !BiocorruptionCondition.GetHasEuphoria() {
@@ -252,7 +253,7 @@ public final static func GetDisplayedStats(barsType: UIInventoryItemWeaponBarsTy
 		return result;
     
     } else if Equals(barsType, DFEnum_UIInventoryItemWeaponBarsType(n"DarkFutureNarcotic")) {
-		let BiocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
+		BiocorruptionCondition = DFBiocorruptionConditionSystem.Get();
         ArrayPush(result, DFEnum_WeaponBarType(n"DarkFutureNarcoticStacks"));
 
 		if IsSystemEnabledAndRunning(BiocorruptionCondition) && BiocorruptionCondition.GetConditionLevel() > 0u && !BiocorruptionCondition.GetHasEuphoria() {
@@ -464,6 +465,7 @@ public final func DarkFutureSetUpCustomSeparatorOverlay(activeStacks: Uint32, to
 	
 	let parentCanvas: ref<inkCanvas> = inkWidgetRef.Get(this.m_background).GetParentWidget() as inkCanvas;
 	let hPanel: ref<inkHorizontalPanel> = new inkHorizontalPanel();
+	let separator: ref<inkRectangle>;
 	hPanel.SetName(n"DarkFuturePipPanel");
 
 	hPanel.SetVisible(true);
@@ -494,7 +496,7 @@ public final func DarkFutureSetUpCustomSeparatorOverlay(activeStacks: Uint32, to
 		toleranceRange.SetFitToContent(false);
 		toleranceRange.SetAffectsLayoutWhenHidden(true);
 
-		let separator: ref<inkRectangle> = new inkRectangle();
+		separator = new inkRectangle();
 		separator.SetName(n"separator");
 		separator.SetVisible(true);
 		separator.Reparent(hPanel);
@@ -529,7 +531,7 @@ public final func DarkFutureSetUpCustomSeparatorOverlay(activeStacks: Uint32, to
 		let isLast: Bool = i == (activeStacks - 1u);
 
 		if !isLast {
-			let separator: ref<inkRectangle> = new inkRectangle();
+			separator = new inkRectangle();
 			separator.SetName(n"separator");
 			separator.SetVisible(true);
 			separator.Reparent(hPanel);
@@ -680,14 +682,15 @@ private final func DarkFutureGetAnimateBarEuphoriaStackPercentages(type: DFManag
 
 	} else {
 		if percentage < 1.0 {
+			let clampedByMaxActive: Int32;
 			if managedEffect.toleranceEffectCount < maxToleranceStackCount {
 				let afterTolerance: Int32 = (managedEffect.toleranceEffectCount + stacksFromItem) - maxToleranceStackCount;
 				if afterTolerance > 0 {
-					let clampedByMaxActive: Int32 = Min(afterTolerance, maxActiveStackCount - activeStacksAlreadyApplied);
+					clampedByMaxActive = Min(afterTolerance, maxActiveStackCount - activeStacksAlreadyApplied);
 					comparedPercentage = MinF(Cast<Float>(clampedByMaxActive) / Cast<Float>(maxBuildUpStackCount), 1.0 - percentage);
 				}
 			} else {
-				let clampedByMaxActive: Int32 = Min(stacksFromItem, maxActiveStackCount - activeStacksAlreadyApplied);
+				clampedByMaxActive = Min(stacksFromItem, maxActiveStackCount - activeStacksAlreadyApplied);
 				comparedPercentage = MinF(Cast<Float>(clampedByMaxActive) / Cast<Float>(maxBuildUpStackCount), 1.0 - percentage);
 			}
 		}

@@ -804,7 +804,8 @@ public final class DFNotificationService extends DFSystem {
 	//	Overdose
 	//
 	public final func ClearOverdoseNotification() -> Void {
-		let i: Int32 = ArraySize(this.inCombatNotificationQueue);
+		//DFProfile();
+		let i: Int32 = ArraySize(this.inCombatNotificationQueue) - 1;
 		while i >= 0 {
 			if Equals(this.inCombatNotificationQueue[i].message.context, DFMessageContext.Overdose) {
 				ArrayRemove(this.inCombatNotificationQueue, this.inCombatNotificationQueue[i]);
@@ -813,7 +814,7 @@ public final class DFNotificationService extends DFSystem {
 			i -= 1;
 		}
 
-		let i: Int32 = ArraySize(this.outOfCombatNotificationQueue);
+		i = ArraySize(this.outOfCombatNotificationQueue) - 1;
 		while i >= 0 {
 			if Equals(this.outOfCombatNotificationQueue[i].message.context, DFMessageContext.Overdose) {
 				ArrayRemove(this.outOfCombatNotificationQueue, this.outOfCombatNotificationQueue[i]);

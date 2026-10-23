@@ -967,34 +967,34 @@ public final class DFAnimationService extends DFSystem {
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
         //DFProfile();
         if ArrayContains(changedSettings, "consumableAnimationsEnabled") || ArrayContains(changedSettings, "consumableAnimationCooldownTimeInRealTimeSeconds") || ArrayContains(changedSettings, "consumableAnimationCooldownBehavior") {
-            let flags: DFClearQueuedAnimFlags;
-            flags.clearConsumable = true;
-            this.ClearQueuedAnims(flags);
+            let consumableFlags: DFClearQueuedAnimFlags;
+            consumableFlags.clearConsumable = true;
+            this.ClearQueuedAnims(consumableFlags);
             ArrayClear(this.cooldownStack);
         }
 
         if ArrayContains(changedSettings, "withdrawalAnimationsEnabled") {
             this.UnregisterContextuallyDelayedAddictionWithdrawalAnimation();
-            let flags: DFClearQueuedAnimFlags;
-            flags.clearWithdrawal = true;
-            this.ClearQueuedAnims(flags);
+            let withdrawalFlags: DFClearQueuedAnimFlags;
+            withdrawalFlags.clearWithdrawal = true;
+            this.ClearQueuedAnims(withdrawalFlags);
         }
 
         if ArrayContains(changedSettings, "blackoutEnabled") {
             this.UnregisterBlackoutForceBikeDismountRecheckAnimValidity();
             this.UnregisterContextuallyDelayedBlackoutAnimation();
-            let flags: DFClearQueuedAnimFlags;
-            flags.clearBlackout = true;
-            flags.clearCrash = true;
-            this.ClearQueuedAnims(flags);
+            let blackoutFlags: DFClearQueuedAnimFlags;
+            blackoutFlags.clearBlackout = true;
+            blackoutFlags.clearCrash = true;
+            this.ClearQueuedAnims(blackoutFlags);
             this.CheckIfPlayerShouldBlackOut();
         }
 
         if ArrayContains(changedSettings, "crashAnimationSetting") {
             this.UnregisterContextuallyDelayedCrashAnimation();
-            let flags: DFClearQueuedAnimFlags;
-            flags.clearCrash = true;
-            this.ClearQueuedAnims(flags);
+            let crashFlags: DFClearQueuedAnimFlags;
+            crashFlags.clearCrash = true;
+            this.ClearQueuedAnims(crashFlags);
             this.SetVomitAllowedFact();
         }
     }
@@ -3095,23 +3095,21 @@ public final class DFAnimationService extends DFSystem {
         }
 
         // Handle special cases.
+        let invalidAnim: DFAnimDatum;
         if NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid) {
             this.PlayAnim(this.queuedBlackoutAnim);
-            let invalidAnim: DFAnimDatum;
             this.queuedBlackoutAnim = invalidAnim;
             return;
         }
 
         if NotEquals(this.queuedCrashAnim.type, DFAnimType.Invalid) {
             this.PlayAnim(this.queuedCrashAnim);
-            let invalidAnim: DFAnimDatum;
             this.queuedCrashAnim = invalidAnim;
             return;
         }
 
         if NotEquals(this.queuedWithdrawalAnim.type, DFAnimType.Invalid) {
             this.PlayAnim(this.queuedWithdrawalAnim);
-            let invalidAnim: DFAnimDatum;
             this.queuedWithdrawalAnim = invalidAnim;
             return;
         }

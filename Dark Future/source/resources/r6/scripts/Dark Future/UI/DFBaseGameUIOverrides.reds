@@ -162,12 +162,13 @@ public final func TryToShowNewItemWeights(itemData: wref<gameItemData>) -> Void 
 	//DFProfile();
 	let isConsumable: Bool = itemData.HasTag(n"Consumable");
 	let isAmmo: Bool = itemData.HasTag(n"Ammo");
+	let itemWeight: Float;
 
 	if isConsumable {
-		let itemWeight: Float = RPGManager.GetItemWeight(itemData);
+		itemWeight = RPGManager.GetItemWeight(itemData);
 		inkTextRef.SetText(this.m_weightText, s"\(FloatToStringPrec(itemWeight, 1))");
 	} else if isAmmo {
-		let itemWeight: Float = RPGManager.GetItemWeight(itemData);
+		itemWeight = RPGManager.GetItemWeight(itemData);
 		inkTextRef.SetText(this.m_weightText, s"\(FloatToStringPrec(itemWeight, 2))");
 	}
 }
@@ -436,6 +437,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
     let effect: UIBuffInfo;
     let effects: array<UIBuffInfo>;
     let i: Int32;
+	let tags: array<CName>;
     if !this.GetRootWidget().IsVisible() {
       return false;
     };
@@ -445,7 +447,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
 	  // Filter the buff list.
 	  i = 0;
 	  while i < ArraySize(buffs) {
-		let tags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
+		tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
 		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
 	      if (NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
 			ArrayPush(filteredBuffs, buffs[i]);
@@ -486,7 +488,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
 
 	  i = 0;
 	  while i < ArraySize(buffs) {
-		let tags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
+		tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
 
 		if this.DarkFutureOpening {
 			// Autocalculate the type.
@@ -519,7 +521,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
 	  }
 	  i = 0;
 	  while i < ArraySize(debuffs) {
-		let tags: array<CName> = TweakDBInterface.GetStatusEffectRecord(debuffs[i].buffID).GameplayTags();
+		tags = TweakDBInterface.GetStatusEffectRecord(debuffs[i].buffID).GameplayTags();
 
 		if this.DarkFutureOpening {
 			if (NotEquals(tags[2], n"DarkFutureCondition") && (debuffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
@@ -1291,13 +1293,20 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 	let statName: ref<inkText>;
 	let statColon: ref<inkText>;
 	let cyberpsychosisStatHorizPanel: ref<inkHorizontalPanel>;
+	let statsWidget: ref<inkVerticalPanel>;
+	let cyberpsychosisChanceData: DFCyberpsychosisChanceData;
+	let cyberpsychosisChance: Float;
+	let isBlocked: Bool;
+	let furyBonusChance: Float;
+	let precision: Int32;
+	let descriptionWidget: ref<inkText>;
 
     if isEdgerunnerBarAndHumanityOverallocated {
         if !this.DarkFutureCyberpsychosisStatPanelAddedThisMenuSession {
             this.DarkFutureCyberpsychosisStatPanelAddedThisMenuSession = true;
 
             // Crawl up to the Stats panel.
-            let statsWidget: ref<inkVerticalPanel> = inkWidgetRef.Get(this.m_stats3Name).GetParentWidget().GetParentWidget() as inkVerticalPanel;
+            statsWidget = inkWidgetRef.Get(this.m_stats3Name).GetParentWidget().GetParentWidget() as inkVerticalPanel;
 
             // Create new Stat line for Cyberpsychosis chance.
             statName = new inkText();
@@ -1343,8 +1352,8 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
             this.DarkFutureCyberpsychosisStatValue.BindProperty(n"tintColor", n"TooltipRipperdoc.textMainColor");
             this.DarkFutureCyberpsychosisStatValue.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
 
-			let cyberpsychosisChanceData: DFCyberpsychosisChanceData = humanityLossConditionSystem.GetCyberpsychosisChance(overallocatedBy);
-			let cyberpsychosisChance: Float = cyberpsychosisChanceData.chance;
+			cyberpsychosisChanceData = humanityLossConditionSystem.GetCyberpsychosisChance(overallocatedBy);
+			cyberpsychosisChance = cyberpsychosisChanceData.chance;
 			if NotEquals(cyberpsychosisChanceData.reason, "") {
 				this.DarkFutureCyberpsychosisStatValue.SetText(FloatToStringPrec(cyberpsychosisChance, 1) + "% " + cyberpsychosisChanceData.reason);
 			} else {
@@ -1362,8 +1371,8 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
             statsWidget.AddChildWidget(cyberpsychosisStatHorizPanel);
 
 			// Update the Fury chance based on current data.
-			let isBlocked: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(DFHumanityLossConditionSystem.Get().player, n"DarkFutureImmunosuppressant");
-			let furyBonusChance: Float = Cast<Float>(humanityLossConditionSystem.GetCyberpsychosisStacksApplied()) * 0.5;
+			isBlocked = StatusEffectSystem.ObjectHasStatusEffectWithTag(DFHumanityLossConditionSystem.Get().player, n"DarkFutureImmunosuppressant");
+			furyBonusChance = Cast<Float>(humanityLossConditionSystem.GetCyberpsychosisStacksApplied()) * 0.5;
 			if isBlocked {
 				inkTextRef.SetText(this.m_stats3Value, "0% " + GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonImmunosuppressant"));
 			} else {
@@ -1371,8 +1380,8 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 			}
 			
         } else {
-			let cyberpsychosisChanceData: DFCyberpsychosisChanceData = humanityLossConditionSystem.GetCyberpsychosisChance(overallocatedBy);
-			let cyberpsychosisChance: Float = cyberpsychosisChanceData.chance;
+			cyberpsychosisChanceData = humanityLossConditionSystem.GetCyberpsychosisChance(overallocatedBy);
+			cyberpsychosisChance = cyberpsychosisChanceData.chance;
             if NotEquals(cyberpsychosisChanceData.reason, "") {
 				this.DarkFutureCyberpsychosisStatValue.SetText(FloatToStringPrec(cyberpsychosisChance, 2) + "% " + cyberpsychosisChanceData.reason);
 			} else {
@@ -1380,8 +1389,8 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 			}
 
 			// Update the Fury chance based on current data.
-			let isBlocked: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(DFHumanityLossConditionSystem.Get().player, n"DarkFutureImmunosuppressant");
-			let furyBonusChance: Float = Cast<Float>(humanityLossConditionSystem.GetCyberpsychosisStacksApplied()) * 0.5;
+			isBlocked = StatusEffectSystem.ObjectHasStatusEffectWithTag(DFHumanityLossConditionSystem.Get().player, n"DarkFutureImmunosuppressant");
+			furyBonusChance = Cast<Float>(humanityLossConditionSystem.GetCyberpsychosisStacksApplied()) * 0.5;
 			if isBlocked {
 				inkTextRef.SetText(this.m_stats3Value, "0% " + GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonImmunosuppressant"));
 			} else {
@@ -1392,7 +1401,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 	} else if isCapacityBar {
 		// Make the Stats pane visible.
 		// Crawl up to the Stats panel.
-        let statsWidget: ref<inkVerticalPanel> = inkWidgetRef.Get(this.m_stats1Name).GetParentWidget().GetParentWidget() as inkVerticalPanel;
+        statsWidget = inkWidgetRef.Get(this.m_stats1Name).GetParentWidget().GetParentWidget() as inkVerticalPanel;
 		statsWidget.SetVisible(true);
 
 		// Make the Stats 1 line visible, but no others.
@@ -1405,11 +1414,11 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 		inkWidgetRef.SetTintColor(this.m_stats1Name, GetDarkFutureHDRColor(DFHDRColor.PanelRed));
 
 		let humanityLossMult: Float = 0.0;
-		let isBlocked: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(DFHumanityLossConditionSystem.Get().player, n"DarkFutureImmunosuppressant");
+		isBlocked = StatusEffectSystem.ObjectHasStatusEffectWithTag(DFHumanityLossConditionSystem.Get().player, n"DarkFutureImmunosuppressant");
 		if !isBlocked {
 			humanityLossMult = Cast<Float>(data.totalValue) * DFHumanityLossConditionSystem.Get().cyberwareCapacityHumanityLossMult;
 		}
-		let precision: Int32 = humanityLossMult >= 100.0 || humanityLossMult == 0.0 ? 0 : 1;
+		precision = humanityLossMult >= 100.0 || humanityLossMult == 0.0 ? 0 : 1;
 		inkTextRef.SetText(this.m_stats1Value, "+" + FloatToStringPrec(humanityLossMult, precision) + "%");
 		inkWidgetRef.SetTintColor(this.m_stats1Value, GetDarkFutureHDRColor(DFHDRColor.PanelRed));
 		
@@ -1417,7 +1426,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 		if !this.DarkFutureCapacityDescriptionAddedThisMenuSession {
 			this.DarkFutureCapacityDescriptionAddedThisMenuSession = true;
 
-			let descriptionWidget: ref<inkText> = inkWidgetRef.Get(this.m_capacityDescription) as inkText;
+			descriptionWidget = inkWidgetRef.Get(this.m_capacityDescription) as inkText;
 			let updatedCapacityText: String = descriptionWidget.GetText() + "\n\n" + GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberwareCapacityUpdated");
 			(inkWidgetRef.Get(this.m_capacityDescription) as inkText).SetText(updatedCapacityText);
 		}
@@ -1425,7 +1434,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 	} else if isArmorBar {
 		// Make the Stats pane visible.
 		// Crawl up to the Stats panel.
-        let statsWidget: ref<inkVerticalPanel> = inkWidgetRef.Get(this.m_stats1Name).GetParentWidget().GetParentWidget() as inkVerticalPanel;
+        statsWidget = inkWidgetRef.Get(this.m_stats1Name).GetParentWidget().GetParentWidget() as inkVerticalPanel;
 		statsWidget.SetVisible(true);
 
 		// Make the Stats 1 line visible, but no others.
@@ -1438,7 +1447,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 		inkWidgetRef.SetTintColor(this.m_stats1Name, GetDarkFutureHDRColor(DFHDRColor.MainBlue));
 
 		let injuryMult: Float = DFInjuryConditionSystem.Get().GetArmorInjuryMult();
-		let precision: Int32 = injuryMult >= 100.0 ? 0 : injuryMult >= 10.0 ? 1 : 2;
+		precision = injuryMult >= 100.0 ? 0 : injuryMult >= 10.0 ? 1 : 2;
 		inkTextRef.SetText(this.m_stats1Value, "-" + FloatToStringPrec(injuryMult, precision) + "%");
 		inkWidgetRef.SetTintColor(this.m_stats1Value, GetDarkFutureHDRColor(DFHDRColor.MainBlue));
 
@@ -1446,7 +1455,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 		if !this.DarkFutureArmorDescriptionAddedThisMenuSession {
 			this.DarkFutureArmorDescriptionAddedThisMenuSession = true;
 
-			let descriptionWidget: ref<inkText> = inkWidgetRef.Get(this.m_armorDescription) as inkText;
+			descriptionWidget = inkWidgetRef.Get(this.m_armorDescription) as inkText;
 			let updatedArmorText: String = descriptionWidget.GetText() + "\n\n" + GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipArmorDamageReductionUpdated");
 			(inkWidgetRef.Get(this.m_armorDescription) as inkText).SetText(updatedArmorText);
 		}
@@ -1677,9 +1686,10 @@ private final func PreviewChange(change: Float, isHover: Bool, isCyberwareEquipp
 	wrappedMethod(change, isHover, isCyberwareEquipped);
 
 	if NotEquals(this.DarkFutureInjuryMultIndicatorValue, null) {
+		let precision: Int32;
 		if isHover && change != 0.0 {
 			let injuryMult: Float = (change * DFInjuryConditionSystem.Get().armorInjuryMult) + this.DarkFutureLastInjuryMult;
-			let precision: Int32 = injuryMult >= 100.0 ? 0 : injuryMult >= 10.0 ? 1 : 2;
+			precision = injuryMult >= 100.0 ? 0 : injuryMult >= 10.0 ? 1 : 2;
 			this.DarkFutureInjuryMultIndicatorValue.SetText("-" + FloatToStringPrec(injuryMult, precision) + "%");
 			this.StartPulse(this.DarkFutureInjuryMultIndicatorPulse, this.m_pulseAnimationParams, this.DarkFutureInjuryMultIndicatorValue);
 			if change > 0.0 {
@@ -1688,7 +1698,7 @@ private final func PreviewChange(change: Float, isHover: Bool, isCyberwareEquipp
 				this.DarkFutureInjuryMultIndicatorValue.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.MainBlue));
 			}
 		} else {
-			let precision: Int32 = this.DarkFutureLastInjuryMult >= 100.0 ? 0 : this.DarkFutureLastInjuryMult >= 10.0 ? 1 : 2;
+			precision = this.DarkFutureLastInjuryMult >= 100.0 ? 0 : this.DarkFutureLastInjuryMult >= 10.0 ? 1 : 2;
 			this.DarkFutureInjuryMultIndicatorValue.SetText("-" + FloatToStringPrec(this.DarkFutureLastInjuryMult, precision) + "%");
 			this.DarkFutureInjuryMultIndicatorValue.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.MainBlue));
 			this.StopPulse(this.DarkFutureInjuryMultIndicatorPulse);

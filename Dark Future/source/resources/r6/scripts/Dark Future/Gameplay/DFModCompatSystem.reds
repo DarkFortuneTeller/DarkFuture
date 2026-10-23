@@ -319,11 +319,12 @@ public final class DFModCompatSystem extends DFSystem {
             let isSoda: Bool = value == 8;
 
             if NotEquals(consumableTDBID, t"") {
+                let consumableRecord: wref<Item_Record>;
                 if isFood {
                     if this.NerveSystem.GetHasNausea() {
                         this.InteractionSystem.QueueVomitFromInteractionChoice();
                     } else {
-                        let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(consumableTDBID);
+                        consumableRecord = TweakDBInterface.GetItemRecord(consumableTDBID);
                         if IsDefined(consumableRecord) {
                             this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
                             if consumableRecord.TagsContains(n"DarkFutureAppliesBonusEffect") {
@@ -332,7 +333,7 @@ public final class DFModCompatSystem extends DFSystem {
                         }
                     }
                 } else if isSoda {
-                    let consumableRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(consumableTDBID);
+                    consumableRecord = TweakDBInterface.GetItemRecord(consumableTDBID);
                     if IsDefined(consumableRecord) {
                         this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
                     }

@@ -911,8 +911,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 		} else if amount > 0.0 && changeValueProps.isSoftCapRestrictedChange && newValue >= softCap {
 			// We are restoring the Need from a soft cap restricted change, and are at the soft cap. Full bright the UI and display the lock (if softCap below 100) regardless of flag settings.
-			let uiFlags: DFNeedChangeUIFlags = changeValueProps.uiFlags;
-			this.UpdateNeedHUDUI(true, uiFlags.instantUIChange, true, true, true, softCap < 100.0);
+			this.UpdateNeedHUDUI(true, changeValueProps.uiFlags.instantUIChange, true, true, true, softCap < 100.0);
 
 		} else {
 			let uiFlags: DFNeedChangeUIFlags = changeValueProps.uiFlags;

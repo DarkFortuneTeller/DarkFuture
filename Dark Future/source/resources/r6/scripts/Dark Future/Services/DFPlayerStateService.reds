@@ -2135,10 +2135,10 @@ public final class DFPlayerStateService extends DFSystem {
                     }
                     
                     // Re-apply all.
-                    let j: Int32 = 0;
-                    while j < this.managedEffectsState[i].toleranceEffectCount {
+                    let k: Int32 = 0;
+                    while k < this.managedEffectsState[i].toleranceEffectCount {
                         StatusEffectHelper.ApplyStatusEffect(this.player, toleranceEffectID);
-                        j += 1;
+                        k += 1;
                     }
                 }
             }
@@ -2484,8 +2484,8 @@ public final class DFPlayerStateService extends DFSystem {
             DFLog(this, "    Should be active! (Alcohol)");
             shouldConsumableEffectBeActive = true;
             
-            let managedEffect: DFManagedEffect = this.GetManagedEffectByType(DFManagedEffectType.Alcohol);
-            if Equals(managedEffect.effectMode, DFManagedEffectMode.Lasting) {
+            let alcoholManagedEffect: DFManagedEffect = this.GetManagedEffectByType(DFManagedEffectType.Alcohol);
+            if Equals(alcoholManagedEffect.effectMode, DFManagedEffectMode.Lasting) {
                 isAnyEffectLasting = true;
             }
 
@@ -2500,8 +2500,8 @@ public final class DFPlayerStateService extends DFSystem {
             DFLog(this, "    Should be active! (Narcotic)");
             shouldConsumableEffectBeActive = true;
 
-            let managedEffect: DFManagedEffect = this.GetManagedEffectByType(DFManagedEffectType.Narcotic);
-            if Equals(managedEffect.effectMode, DFManagedEffectMode.Lasting) {
+            let narcoticManagedEffect: DFManagedEffect = this.GetManagedEffectByType(DFManagedEffectType.Narcotic);
+            if Equals(narcoticManagedEffect.effectMode, DFManagedEffectMode.Lasting) {
                 isAnyEffectLasting = true;
             }
 
