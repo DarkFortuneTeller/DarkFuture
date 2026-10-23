@@ -211,21 +211,21 @@ private let DFPrevActiveEffectType: InputHintData;
 private let DFNextActiveEffectType: InputHintData;
 
 @wrapMethod(RadialWheelController)
-private final func CacheInputHintData() -> Void {
+private final func CacheAllInputHintData() -> Void {
 	wrappedMethod();
 
 	let source: CName = n"RadialWheel";
 
 	this.DFNextActiveEffectType.action = n"DFNextActiveEffectType";
 	this.DFNextActiveEffectType.source = source;
-	this.DFNextActiveEffectType.queuePriority = 5;
-	this.DFNextActiveEffectType.sortingPriority = 5;
+	this.DFNextActiveEffectType.queuePriority = 9;
+	this.DFNextActiveEffectType.sortingPriority = 9;
 	this.DFNextActiveEffectType.localizedLabel = GetLocalizedTextByKey(n"DarkFutureRadialWheelNextEffectType");
 
 	this.DFPrevActiveEffectType.action = n"DFPrevActiveEffectType";
 	this.DFPrevActiveEffectType.source = source;
-	this.DFPrevActiveEffectType.queuePriority = 6;
-	this.DFPrevActiveEffectType.sortingPriority = 6;
+	this.DFPrevActiveEffectType.queuePriority = 10;
+	this.DFPrevActiveEffectType.sortingPriority = 10;
 	this.DFPrevActiveEffectType.localizedLabel = GetLocalizedTextByKey(n"DarkFutureRadialWheelPrevEffectType");
 }
 
