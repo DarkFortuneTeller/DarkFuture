@@ -1,0 +1,21 @@
+localization:
+  onscreens:
+    en-us: darkfuture_module_consumableanims\localization\en-us\onscreens\darkfuture_module_consumableanims.json
+    ar-ar: darkfuture_module_consumableanims\localization\ar-ar\onscreens\darkfuture_module_consumableanims.json
+    cz-cz: darkfuture_module_consumableanims\localization\cz-cz\onscreens\darkfuture_module_consumableanims.json
+    de-de: darkfuture_module_consumableanims\localization\de-de\onscreens\darkfuture_module_consumableanims.json
+    es-es: darkfuture_module_consumableanims\localization\es-es\onscreens\darkfuture_module_consumableanims.json
+    es-mx: darkfuture_module_consumableanims\localization\es-mx\onscreens\darkfuture_module_consumableanims.json
+    fr-fr: darkfuture_module_consumableanims\localization\fr-fr\onscreens\darkfuture_module_consumableanims.json
+    hu-hu: darkfuture_module_consumableanims\localization\hu-hu\onscreens\darkfuture_module_consumableanims.json
+    it-it: darkfuture_module_consumableanims\localization\it-it\onscreens\darkfuture_module_consumableanims.json
+    jp-jp: darkfuture_module_consumableanims\localization\jp-jp\onscreens\darkfuture_module_consumableanims.json
+    kr-kr: darkfuture_module_consumableanims\localization\kr-kr\onscreens\darkfuture_module_consumableanims.json
+    pl-pl: darkfuture_module_consumableanims\localization\pl-pl\onscreens\darkfuture_module_consumableanims.json
+    pt-br: darkfuture_module_consumableanims\localization\pt-br\onscreens\darkfuture_module_consumableanims.json
+    ru-ru: darkfuture_module_consumableanims\localization\ru-ru\onscreens\darkfuture_module_consumableanims.json
+    th-th: darkfuture_module_consumableanims\localization\th-th\onscreens\darkfuture_module_consumableanims.json
+    tr-tr: darkfuture_module_consumableanims\localization\tr-tr\onscreens\darkfuture_module_consumableanims.json
+    ua-ua: darkfuture_module_consumableanims\localization\ua-ua\onscreens\darkfuture_module_consumableanims.json
+    zh-cn: darkfuture_module_consumableanims\localization\zh-cn\onscreens\darkfuture_module_consumableanims.json
+    zh-tw: darkfuture_module_consumableanims\localization\zh-tw\onscreens\darkfuture_module_consumableanims.json

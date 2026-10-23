@@ -1,0 +1,42 @@
+localization:
+  onscreens:
+    en-us: darkfuture\localization\en-us\onscreens\darkfuture.json
+    ar-ar: darkfuture\localization\ar-ar\onscreens\darkfuture.json
+    cz-cz: darkfuture\localization\cz-cz\onscreens\darkfuture.json
+    de-de: darkfuture\localization\de-de\onscreens\darkfuture.json
+    es-es: darkfuture\localization\es-es\onscreens\darkfuture.json
+    es-mx: darkfuture\localization\es-mx\onscreens\darkfuture.json
+    fr-fr: darkfuture\localization\fr-fr\onscreens\darkfuture.json
+    hu-hu: darkfuture\localization\hu-hu\onscreens\darkfuture.json
+    it-it: darkfuture\localization\it-it\onscreens\darkfuture.json
+    jp-jp: darkfuture\localization\jp-jp\onscreens\darkfuture.json
+    kr-kr: darkfuture\localization\kr-kr\onscreens\darkfuture.json
+    pl-pl: darkfuture\localization\pl-pl\onscreens\darkfuture.json
+    pt-br: darkfuture\localization\pt-br\onscreens\darkfuture.json
+    ru-ru: darkfuture\localization\ru-ru\onscreens\darkfuture.json
+    th-th: darkfuture\localization\th-th\onscreens\darkfuture.json
+    tr-tr: darkfuture\localization\tr-tr\onscreens\darkfuture.json
+    ua-ua: darkfuture\localization\ua-ua\onscreens\darkfuture.json
+    zh-cn: darkfuture\localization\zh-cn\onscreens\darkfuture.json
+    zh-tw: darkfuture\localization\zh-tw\onscreens\darkfuture.json
+
+  subtitles:
+    en-us: darkfuture\localization\en-us\subtitles\darkfuture_subtitles_map.json
+    ar-ar: darkfuture\localization\ar-ar\subtitles\darkfuture_subtitles_map.json
+    cz-cz: darkfuture\localization\cz-cz\subtitles\darkfuture_subtitles_map.json
+    de-de: darkfuture\localization\de-de\subtitles\darkfuture_subtitles_map.json
+    es-es: darkfuture\localization\es-es\subtitles\darkfuture_subtitles_map.json
+    es-mx: darkfuture\localization\es-mx\subtitles\darkfuture_subtitles_map.json
+    fr-fr: darkfuture\localization\fr-fr\subtitles\darkfuture_subtitles_map.json
+    hu-hu: darkfuture\localization\hu-hu\subtitles\darkfuture_subtitles_map.json
+    it-it: darkfuture\localization\it-it\subtitles\darkfuture_subtitles_map.json
+    jp-jp: darkfuture\localization\jp-jp\subtitles\darkfuture_subtitles_map.json
+    kr-kr: darkfuture\localization\kr-kr\subtitles\darkfuture_subtitles_map.json
+    pl-pl: darkfuture\localization\pl-pl\subtitles\darkfuture_subtitles_map.json
+    pt-br: darkfuture\localization\pt-br\subtitles\darkfuture_subtitles_map.json
+    ru-ru: darkfuture\localization\ru-ru\subtitles\darkfuture_subtitles_map.json
+    th-th: darkfuture\localization\th-th\subtitles\darkfuture_subtitles_map.json
+    tr-tr: darkfuture\localization\tr-tr\subtitles\darkfuture_subtitles_map.json
+    ua-ua: darkfuture\localization\ua-ua\subtitles\darkfuture_subtitles_map.json
+    zh-cn: darkfuture\localization\zh-cn\subtitles\darkfuture_subtitles_map.json
+    zh-tw: darkfuture\localization\zh-tw\subtitles\darkfuture_subtitles_map.json

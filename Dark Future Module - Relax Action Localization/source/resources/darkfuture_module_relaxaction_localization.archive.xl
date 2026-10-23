@@ -1,0 +1,42 @@
+localization:
+  onscreens:
+    en-us: darkfuture_module_relaxaction\localization\en-us\onscreens\darkfuture_module_relaxaction.json
+    ar-ar: darkfuture_module_relaxaction\localization\ar-ar\onscreens\darkfuture_module_relaxaction.json
+    cz-cz: darkfuture_module_relaxaction\localization\cz-cz\onscreens\darkfuture_module_relaxaction.json
+    de-de: darkfuture_module_relaxaction\localization\de-de\onscreens\darkfuture_module_relaxaction.json
+    es-es: darkfuture_module_relaxaction\localization\es-es\onscreens\darkfuture_module_relaxaction.json
+    es-mx: darkfuture_module_relaxaction\localization\es-mx\onscreens\darkfuture_module_relaxaction.json
+    fr-fr: darkfuture_module_relaxaction\localization\fr-fr\onscreens\darkfuture_module_relaxaction.json
+    hu-hu: darkfuture_module_relaxaction\localization\hu-hu\onscreens\darkfuture_module_relaxaction.json
+    it-it: darkfuture_module_relaxaction\localization\it-it\onscreens\darkfuture_module_relaxaction.json
+    jp-jp: darkfuture_module_relaxaction\localization\jp-jp\onscreens\darkfuture_module_relaxaction.json
+    kr-kr: darkfuture_module_relaxaction\localization\kr-kr\onscreens\darkfuture_module_relaxaction.json
+    pl-pl: darkfuture_module_relaxaction\localization\pl-pl\onscreens\darkfuture_module_relaxaction.json
+    pt-br: darkfuture_module_relaxaction\localization\pt-br\onscreens\darkfuture_module_relaxaction.json
+    ru-ru: darkfuture_module_relaxaction\localization\ru-ru\onscreens\darkfuture_module_relaxaction.json
+    th-th: darkfuture_module_relaxaction\localization\th-th\onscreens\darkfuture_module_relaxaction.json
+    tr-tr: darkfuture_module_relaxaction\localization\tr-tr\onscreens\darkfuture_module_relaxaction.json
+    ua-ua: darkfuture_module_relaxaction\localization\ua-ua\onscreens\darkfuture_module_relaxaction.json
+    zh-cn: darkfuture_module_relaxaction\localization\zh-cn\onscreens\darkfuture_module_relaxaction.json
+    zh-tw: darkfuture_module_relaxaction\localization\zh-tw\onscreens\darkfuture_module_relaxaction.json
+
+  subtitles:
+    en-us: darkfuture_module_relaxaction\localization\en-us\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    ar-ar: darkfuture_module_relaxaction\localization\ar-ar\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    cz-cz: darkfuture_module_relaxaction\localization\cz-cz\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    de-de: darkfuture_module_relaxaction\localization\de-de\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    es-es: darkfuture_module_relaxaction\localization\es-es\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    es-mx: darkfuture_module_relaxaction\localization\es-mx\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    fr-fr: darkfuture_module_relaxaction\localization\fr-fr\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    hu-hu: darkfuture_module_relaxaction\localization\hu-hu\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    it-it: darkfuture_module_relaxaction\localization\it-it\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    jp-jp: darkfuture_module_relaxaction\localization\jp-jp\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    kr-kr: darkfuture_module_relaxaction\localization\kr-kr\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    pl-pl: darkfuture_module_relaxaction\localization\pl-pl\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    pt-br: darkfuture_module_relaxaction\localization\pt-br\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    ru-ru: darkfuture_module_relaxaction\localization\ru-ru\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    th-th: darkfuture_module_relaxaction\localization\th-th\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    tr-tr: darkfuture_module_relaxaction\localization\tr-tr\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    ua-ua: darkfuture_module_relaxaction\localization\ua-ua\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    zh-cn: darkfuture_module_relaxaction\localization\zh-cn\subtitles\darkfuture_module_relaxaction_subtitles_map.json
+    zh-tw: darkfuture_module_relaxaction\localization\zh-tw\subtitles\darkfuture_module_relaxaction_subtitles_map.json

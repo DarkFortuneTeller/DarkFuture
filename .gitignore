@@ -1,3 +1,14 @@
 *.vscode
 *.pdn
 *.png
+*.zip
+layout.xml
+**/GraphEditorStates/*
+**/.projectFiles/*
+CLAUDE.md
+*.cpmodproj
+custom_refs.txt
+custom_tweaks.txt
+*.code-workspace
+**/packed/*
+*.psd
