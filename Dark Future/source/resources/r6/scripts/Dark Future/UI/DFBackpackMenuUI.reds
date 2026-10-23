@@ -108,7 +108,7 @@ private let startedInOvercharge: Bool;
 @wrapMethod(BackpackMainGameController)
 protected cb func OnInitialize() -> Bool {
 	//DFProfile();
-	let gameInstance = GetGameInstance();
+	let gameInstance: GameInstance = GetGameInstance();
 	this.Settings = DFSettings.GetInstance(gameInstance);
 	this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
 	this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);
@@ -135,8 +135,8 @@ private final func GetStackLimitedNerveToRestore(needsData: DFNeedsDatum, stacki
 	let appliedEffect: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.m_player, stackingEffect);
 	let appliedEffectStackCount: Uint32 = IsDefined(appliedEffect) ? appliedEffect.GetStackCount() : 0u;
 
-	let availableStackCount = maxStacks - appliedEffectStackCount;
-	let stacksToApply = Min(Cast<Int32>(availableStackCount), Cast<Int32>(stacksToTryToApply));
+	let availableStackCount: Uint32 = maxStacks - appliedEffectStackCount;
+	let stacksToApply: Int32 = Min(Cast<Int32>(availableStackCount), Cast<Int32>(stacksToTryToApply));
 	if stacksToApply > 0 {
 		amountToRestore = needsData.nerve.value * Cast<Float>(stacksToApply);
 	}

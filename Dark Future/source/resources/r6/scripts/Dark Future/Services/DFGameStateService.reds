@@ -79,7 +79,7 @@ public class DFGameStateServiceFuryChangedEvent extends CallbackSystemEvent {
 
     public static func Create(data: Bool) -> ref<DFGameStateServiceFuryChangedEvent> {
         //DFProfile();
-        let event = new DFGameStateServiceFuryChangedEvent();
+        let event: ref<DFGameStateServiceFuryChangedEvent> = new DFGameStateServiceFuryChangedEvent();
         event.data = data;
         return event;
     }
@@ -95,7 +95,7 @@ public class DFGameStateServiceCyberspaceChangedEvent extends CallbackSystemEven
 
     public static func Create(data: Bool) -> ref<DFGameStateServiceCyberspaceChangedEvent> {
         //DFProfile();
-        let event = new DFGameStateServiceCyberspaceChangedEvent();
+        let event: ref<DFGameStateServiceCyberspaceChangedEvent> = new DFGameStateServiceCyberspaceChangedEvent();
         event.data = data;
         return event;
     }
@@ -111,7 +111,7 @@ public class DFGameStateServiceSceneTierChangedEvent extends CallbackSystemEvent
 
     public static func Create(data: GameplayTier) -> ref<DFGameStateServiceSceneTierChangedEvent> {
         //DFProfile();
-        let event = new DFGameStateServiceSceneTierChangedEvent();
+        let event: ref<DFGameStateServiceSceneTierChangedEvent> = new DFGameStateServiceSceneTierChangedEvent();
         event.data = data;
         return event;
     }
@@ -240,7 +240,7 @@ public final class DFGameStateService extends DFSystem {
 
     public func GetSystems() -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
     }

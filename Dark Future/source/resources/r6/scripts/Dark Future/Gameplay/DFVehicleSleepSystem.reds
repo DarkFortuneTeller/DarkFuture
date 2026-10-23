@@ -78,7 +78,7 @@ public class DarkFutureVehicleSleepInputListener {
 @wrapMethod(VehicleObject)
 protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {		
@@ -98,7 +98,7 @@ public final func HandleDarkFutureVehicleMountedSleepSystem() -> Void {
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {
@@ -112,7 +112,7 @@ protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
 @wrapMethod(VehicleComponent)
 protected cb func OnVehicleFinishedMountingEvent(evt: ref<VehicleFinishedMountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: wref<GameObject> = evt.character;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {
@@ -299,7 +299,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
 	public func GetSystems() -> Void {
 		//DFProfile();
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
 		this.AutoDriveSystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<AutoDriveSystem>()) as AutoDriveSystem;
 		this.RandomEncounterSystem = DFRandomEncounterSystem.GetInstance(gameInstance);
@@ -429,9 +429,9 @@ public final class DFVehicleSleepSystem extends DFSystem {
 		VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
 		let vehiclePS: wref<VehicleComponentPS> = vehicleObj.GetVehiclePS();
 		let vehicle: wref<VehicleComponent> = vehicleObj.GetVehicleComponent();
-		let isBike = vehicleObj == (vehicleObj as BikeObject);
+		let isBike: Bool = vehicleObj == (vehicleObj as BikeObject);
 
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		let tier: Int32 = this.player.GetPlayerStateMachineBlackboard().GetInt(GetAllBlackboardDefs().PlayerStateMachine.HighLevel);
 		let psmBlackboard: ref<IBlackboard> = this.player.GetPlayerStateMachineBlackboard();
 		
@@ -488,9 +488,9 @@ public final class DFVehicleSleepSystem extends DFSystem {
 		VehicleComponent.GetVehicle(GetGameInstance(), this.player, vehicleObj);
 		let vehiclePS: wref<VehicleComponentPS> = vehicleObj.GetVehiclePS();
 		let vehicle: wref<VehicleComponent> = vehicleObj.GetVehicleComponent();
-		let isBike = vehicleObj == (vehicleObj as BikeObject);
+		let isBike: Bool = vehicleObj == (vehicleObj as BikeObject);
 
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		let vehicleSpeed: Float = VehicleComponent.GetOwnerVehicleSpeed(gameInstance, this.player);
 		let tier: Int32 = this.player.GetPlayerStateMachineBlackboard().GetInt(GetAllBlackboardDefs().PlayerStateMachine.HighLevel);
 		let psmBlackboard: ref<IBlackboard> = this.player.GetPlayerStateMachineBlackboard();
@@ -636,7 +636,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
 	private final func ShowActionBlockedNotification(reason: DFCanPlayerSleepInVehicleResult) -> Void {
 		//DFProfile();
-		let UISystem = GameInstance.GetUISystem(GetGameInstance());
+		let UISystem: ref<UISystem> = GameInstance.GetUISystem(GetGameInstance());
 		let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
 		UISystem.QueueEvent(new UIInGameNotificationRemoveEvent());
 		if Equals(reason, DFCanPlayerSleepInVehicleResult.No_Generic) {

@@ -73,7 +73,7 @@ public class DFAddictionValueChangedEvent extends CallbackSystemEvent {
 
     public static func Create(data: DFAddictionValueChangedEventDatum) -> ref<DFAddictionValueChangedEvent> {
 		//DFProfile();
-        let event = new DFAddictionValueChangedEvent();
+        let event: ref<DFAddictionValueChangedEvent> = new DFAddictionValueChangedEvent();
         event.data = data;
         return event;
     }
@@ -227,7 +227,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
     public func GetSystems() -> Void {
         //DFProfile();
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
         this.TransactionSystem = GameInstance.GetTransactionSystem(gameInstance);
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
         this.MainSystem = DFMainSystem.GetInstance(gameInstance);
@@ -762,7 +762,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     // TODO - Do we need to reregister?
     private final func ReduceAddictionFromTime() -> Void {
         //DFProfile();		
-		let addictionAmountLoss = this.GetAddictionAmountLossPerDay();
+		let addictionAmountLoss: Float = this.GetAddictionAmountLossPerDay();
         this.ModAddictionAmount(-addictionAmountLoss);
         this.DispatchAddictionValueChangedEvent(DFAddictionEventType.UpdateFromTime, -addictionAmountLoss, this.currentAddictionAmountRev2, 0, this.GetAddictionStage());
 		DFLog(this, "ReduceAddictionFromTime currentAddictionAmountRev2 = " + ToString(this.currentAddictionAmountRev2));
@@ -801,7 +801,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         let oldAddictionAmount: Float = this.GetAddictionAmount();
         let oldAddictionStage: Int32 = this.GetAddictionStage();
 
-        let currentAddictionStageRev2 = oldAddictionStage;
+        let currentAddictionStageRev2: Int32 = oldAddictionStage;
         let i: Int32 = 0;
         while i < stackCount {
             if currentAddictionStageRev2 < this.GetAddictionMaxStage() {
@@ -1085,7 +1085,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     //
     public final func DispatchAddictionValueChangedEvent(eventType: DFAddictionEventType, amountChange: Float, newAmount: Float, stageChange: Int32, newStage: Int32) -> Void {
 		//DFProfile();
-		let data = DFAddictionValueChangedEventDatum(this.GetAddictionType(), eventType, amountChange, newAmount, stageChange, newStage);
+		let data: DFAddictionValueChangedEventDatum = DFAddictionValueChangedEventDatum(this.GetAddictionType(), eventType, amountChange, newAmount, stageChange, newStage);
         GameInstance.GetCallbackSystem().DispatchEvent(DFAddictionValueChangedEvent.Create(data));
     }
 }

@@ -93,7 +93,7 @@ public final class DFCyberwareService extends DFSystem {
 
 	public final func GetSystems() -> Void {
 		//DFProfile();
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		this.StatsSystem = GameInstance.GetStatsSystem(gameInstance);
 		this.TransactionSystem = GameInstance.GetTransactionSystem(gameInstance);
 		this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);

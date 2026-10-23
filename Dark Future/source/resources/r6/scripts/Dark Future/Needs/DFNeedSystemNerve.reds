@@ -306,7 +306,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 		//DFProfile();
 		super.GetSystems();
 
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		this.StatPoolsSystem = GameInstance.GetStatPoolsSystem(gameInstance);
 		this.HUDSystem = DFHUDSystem.GetInstance(gameInstance);
 		this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);

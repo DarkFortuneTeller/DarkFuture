@@ -221,7 +221,7 @@ public class MainSystemTimeSkipFinishedEvent extends CallbackSystemEvent {
 
     public static func Create(data: DFTimeSkipData) -> ref<MainSystemTimeSkipFinishedEvent> {
         //DFProfile();
-        let event = new MainSystemTimeSkipFinishedEvent();
+        let event: ref<MainSystemTimeSkipFinishedEvent> = new MainSystemTimeSkipFinishedEvent();
         event.data = data;
         return event;
     }
@@ -249,7 +249,7 @@ public class MainSystemItemConsumedEvent extends CallbackSystemEvent {
 
     public static func Create(itemRecord: wref<Item_Record>, animateUI: Bool, noAnimation: Bool) -> ref<MainSystemItemConsumedEvent> {
         //DFProfile();
-        let event = new MainSystemItemConsumedEvent();
+        let event: ref<MainSystemItemConsumedEvent> = new MainSystemItemConsumedEvent();
         event.itemRecord = itemRecord;
         event.animateUI = animateUI;
         event.noAnimation = noAnimation;
@@ -379,7 +379,7 @@ public final class DFMainSystem extends ScriptableSystem {
 
     private final func StartAll() -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         if !IsDefined(this.player) {
             DFLogNoSystem(DFSystemlessDebugEnabled(), this, "ERROR: PLAYER NOT DEFINED ON DFMainSystem:StartAll()", DFLogLevel.Error);
             return;
@@ -476,7 +476,7 @@ public final class DFMainSystem extends ScriptableSystem {
     private final func ResumeAll() -> Void {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "!!!!! DFMainSystem:ResumeAll !!!!!");
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
 
         // Lifecycle Hook - Start
         this.DispatchLifecycleResumeEvent();
@@ -539,7 +539,7 @@ public final class DFMainSystem extends ScriptableSystem {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "!!!!! DFMainSystem:SuspendAll !!!!!");
 
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
 
         // Lifecycle Hook - Start
         this.DispatchLifecycleSuspendEvent();
@@ -701,7 +701,7 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     public final func UpdateCodexEntries() -> Void {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(gameInstance);
         let injuryConditionSystemEnabled: Bool = DFInjuryConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();
         let humanityLossConditionSystemEnabled: Bool = DFHumanityLossConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();

@@ -143,7 +143,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	public final func GetSystems() -> Void {
 		super.GetSystems();
 
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		this.AnimationService = DFAnimationService.GetInstance(gameInstance);
 		this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
 		this.NutritionSystem = DFNutritionSystem.GetInstance(gameInstance);

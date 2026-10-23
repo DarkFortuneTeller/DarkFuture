@@ -67,7 +67,7 @@ public class UpdateConditionsHUDUIEvent extends CallbackSystemEvent {
 
     public static func Create(data: DFHUDSegmentedIndicatorUIUpdate) -> ref<UpdateConditionsHUDUIEvent> {
 		//DFProfile();
-        let event = new UpdateConditionsHUDUIEvent();
+        let event: ref<UpdateConditionsHUDUIEvent> = new UpdateConditionsHUDUIEvent();
         event.data = data;
         return event;
     }
@@ -78,7 +78,7 @@ public class ConditionRepeatFXDelayCallback extends DFDelayCallback {
 
 	public static func Create(conditionSystemBase: ref<DFConditionSystemBase>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self = new ConditionRepeatFXDelayCallback();
+		let self: ref<ConditionRepeatFXDelayCallback> = new ConditionRepeatFXDelayCallback();
 		self.ConditionSystemBase = conditionSystemBase;
 		return self;
 	}
@@ -179,7 +179,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     public func GetSystems() -> Void {
         //DFProfile();
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
         this.InteractionSystem = DFInteractionSystem.GetInstance(gameInstance);
 		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
         this.NotificationService = DFNotificationService.GetInstance(gameInstance);
@@ -481,7 +481,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     public func CreateAreaDisplayData(conditionType: DFConditionType, area: DFConditionArea) -> ref<DFAreaDisplayData> {
         //DFProfile();
-        let displayData = new DFAreaDisplayData();
+        let displayData: ref<DFAreaDisplayData> = new DFAreaDisplayData();
         displayData.locked = false;
         displayData.condition = conditionType;
         displayData.area = area;

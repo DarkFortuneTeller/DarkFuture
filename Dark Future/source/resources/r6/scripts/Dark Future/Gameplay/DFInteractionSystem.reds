@@ -401,7 +401,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 	public final func GetSystems() -> Void {
 		//DFProfile();
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		
 		this.MainSystem = DFMainSystem.GetInstance(gameInstance);
         this.GameStateService = DFGameStateService.GetInstance(gameInstance);
@@ -852,12 +852,12 @@ public final class DFInteractionSystem extends DFSystem {
 		biocorruptionDataAccumulator.isRestless = false;
 		biocorruptionDataAccumulator.crashOccuredDuringTimeskip = false;
 
-		let i = 0;
+		let i: Int32 = 0;
 		while i < 24 { // Iterate over each hour
-			let needHydration = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
-			let needNutrition = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
-			let needEnergy = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
-			let needNerve = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
+			let needHydration: DFNeedChangeDatum = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
+			let needNutrition: DFNeedChangeDatum = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
+			let needEnergy: DFNeedChangeDatum = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
+			let needNerve: DFNeedChangeDatum = DFNeedChangeDatum(0.0, 0.0, 0.0, 100.0, false, 0.0);
 
 			let basicNeedsData: DFNeedsDatum;
 			basicNeedsData.hydration = needHydration;
@@ -910,7 +910,7 @@ public final class DFInteractionSystem extends DFSystem {
 			let showEnergyLock: Bool = false;
 
 			// Accumulate all of the changes by iterating over each update cycle within the hour (60 / 12, or every 5 minutes)
-			let j = 1;
+			let j: Int32 = 1;
 			while j <= 12 {
 				//
 				// Addiction
@@ -1548,7 +1548,7 @@ public final class DFInteractionSystem extends DFSystem {
 		let increaseHumanityLossDuringQuestMajor: Bool = false;
 		let increaseHumanityLossDuringQuestPivotal: Bool = false;
 
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(gameInstance);
 
 		let entry: wref<JournalEntry> = journalManager.GetEntry(hash);
@@ -1840,7 +1840,7 @@ private final func HideAllCaptionParts() -> Void {
 public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoiceCaptionPart>]>) -> Void {
 	wrappedMethod(argList);
 
-	let gameInstance = GetGameInstance();
+	let gameInstance: GameInstance = GetGameInstance();
 	let HumanityLossConditionSystem: ref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.GetInstance(gameInstance);
 	let InteractionSystem: ref<DFInteractionSystem> = DFInteractionSystem.GetInstance(gameInstance);
 
@@ -1851,7 +1851,7 @@ public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoi
 		currType = Deref(argList)[i].GetType();
 
 		if Equals(currType, gamedataChoiceCaptionPartType.Icon) {
-			let icon = (Deref(argList)[i] as InteractionChoiceCaptionIconPart).iconRecord;
+			let icon: wref<ChoiceCaptionIconPart_Record> = (Deref(argList)[i] as InteractionChoiceCaptionIconPart).iconRecord;
 			
 			let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
 			let romanceLeaveObjectiveBeforeSleep: ref<JournalQuestObjectiveBase> = journalManager.GetEntryByString("quests/minor_quest/mq055_romance_apartment/06_date/leave_end", "gameJournalQuestObjective") as JournalQuestObjectiveBase;

@@ -26,9 +26,9 @@ public func IsDarkFutureProfilingEnabled() -> Bool { return false; }
 
 public func DFProfile() -> Void {
     if IsDarkFutureProfilingEnabled() {
-        let entries = GetStackTrace(1, true);
-        let entry = entries[0];
-        let trace = "";
+        let entries: array<StackTraceEntry> = GetStackTrace(1, true);
+        let entry: StackTraceEntry = entries[0];
+        let trace: String = "";
 
         if IsDefined(entry.object) {
             trace = s"[CLASS:\(entry.class)][FUNC:\(entry.function)]";
@@ -41,9 +41,9 @@ public func DFProfile() -> Void {
 
 public func DFLog(class: ref<DFSystem>, message: String, opt level: DFLogLevel) -> Void {
     if class.IsDebugEnabled() {
-        let entries = GetStackTrace(1, true);
-        let entry = entries[0];
-        let trace = "";
+        let entries: array<StackTraceEntry> = GetStackTrace(1, true);
+        let entry: StackTraceEntry = entries[0];
+        let trace: String = "";
 
         if IsDefined(entry.object) {
             trace = s"[\(entry.class)][\(entry.function)]";
@@ -67,9 +67,9 @@ public func DFLog(class: ref<DFSystem>, message: String, opt level: DFLogLevel) 
 
 public func DFLogNoSystem(enabled: Bool, class: ref<IScriptable>, message: String, opt level: DFLogLevel) -> Void {
     if enabled {
-        let entries = GetStackTrace(1, true);
-        let entry = entries[0];
-        let trace = "";
+        let entries: array<StackTraceEntry> = GetStackTrace(1, true);
+        let entry: StackTraceEntry = entries[0];
+        let trace: String = "";
 
         if IsDefined(entry.object) {
             trace = s"[\(entry.class)][\(entry.function)]";

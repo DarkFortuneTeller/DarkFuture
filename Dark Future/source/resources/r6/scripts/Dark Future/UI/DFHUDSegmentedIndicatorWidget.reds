@@ -198,7 +198,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
             }
             
             for bar in this.needsBars {
-                let indicator = bar as DFHUDSegmentedIndicator;
+                let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
                 if NotEquals(indicator.GetCurrentSegmentValue(), indicator.m_previousSegmentValue) {
                     DFLogNoSystem(this.debugEnabled, this, "ShouldDisplayMomentarily different segments active");
                     return true;
@@ -230,13 +230,13 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
         //DFProfile();
 
         for bar in this.needsBars {
-            let indicator = bar as DFHUDSegmentedIndicator;
+            let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
             indicator.m_previousSegmentValue = indicator.GetCurrentSegmentValue();
         }
 
         for child in this.needsBarGroupChildren {
             for bar in child.needsBars {
-                let indicator = bar as DFHUDSegmentedIndicator;
+                let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
                 indicator.m_previousSegmentValue = indicator.GetCurrentSegmentValue();
             }
         }

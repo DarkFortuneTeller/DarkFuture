@@ -139,7 +139,7 @@ public class DFNeedsHUDBarGroup {
 
     public func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool, visibleInDangerAtCriticalThreshold: Bool, opt alwaysVisibleDuringEuphoria: Bool) -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.HUDSystem = DFHUDSystem.GetInstance(gameInstance);
         this.GameStateService = DFGameStateService.GetInstance(gameInstance);
         this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);

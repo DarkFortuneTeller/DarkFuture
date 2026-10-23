@@ -654,7 +654,7 @@ private final func DarkFutureGetAnimateBarActiveStackPercentages(type: DFManaged
 
 @addMethod(NewItemTooltipStatBarController)
 private final func DarkFutureGetAnimateBarEuphoriaStackPercentages(type: DFManagedEffectType) -> DFStatsBarData {
-	let gameInstance = GetGameInstance();
+	let gameInstance: GameInstance = GetGameInstance();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.GetInstance(gameInstance);
 	let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
 	let percentage: Float;

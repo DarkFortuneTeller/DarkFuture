@@ -112,7 +112,7 @@ public final class DFModCompatSystem extends DFSystem {
     
     public func GetSystems() -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
         this.TransactionSystem = GameInstance.GetTransactionSystem(gameInstance);
         this.MainSystem = DFMainSystem.GetInstance(gameInstance);

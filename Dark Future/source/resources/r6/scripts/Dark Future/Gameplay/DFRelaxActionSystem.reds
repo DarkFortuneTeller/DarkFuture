@@ -473,7 +473,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     public func GetSystems() -> Void {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.UIInventorySystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<UIInventoryScriptableSystem>()) as UIInventoryScriptableSystem;
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
         this.TransactionSystem = GameInstance.GetTransactionSystem(gameInstance);
@@ -518,7 +518,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     */
     
     private func RegisterListeners() -> Void {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.factListenerRelaxActionModeChangedID = GameInstance.GetQuestsSystem(gameInstance).RegisterListener(this.GetRelaxActionModeFact(), this, n"OnRelaxActionModeFactSet");
         this.factListenerEvaluateInventoryID = GameInstance.GetQuestsSystem(gameInstance).RegisterListener(this.GetEvaluateInventoryFact(), this, n"OnEvaluateInventoryFactSet");
         this.factListenerConsumeItemID = GameInstance.GetQuestsSystem(gameInstance).RegisterListener(this.GetConsumeItemFact(), this, n"OnConsumeItemFactSet");
@@ -841,7 +841,7 @@ public final class DFRelaxActionSystem extends DFSystem {
         this.InvalidateAllItemFlagFacts();
         ArrayClear(this.cachedSelectedItems);
         
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         if !DFNerveSystem.GetInstance(gameInstance).GetHasNausea() {
             this.SetCachedItemData(DFRelaxActionItemUseItemType.FoodSpecial, n"DarkFutureRelaxActionItemUseSpecialFood", this.GetHasSpecialFoodFact(), this.GetHasAnyFoodFact());
             this.SetCachedItemData(DFRelaxActionItemUseItemType.FoodMeal, n"DarkFutureRelaxActionItemUseMeal", this.GetHasMealFact(), this.GetHasAnyFoodFact());
@@ -996,7 +996,7 @@ public final class DFRelaxActionSystem extends DFSystem {
             item = this.UIInventorySystem.GetPlayerItem(ItemID.FromTDBID(cachedItemTDBID));
             identifiedTooltipData = new IdentifiedWrappedTooltipData();
 
-            let context = ItemDisplayContextData.Make(this.player, ItemDisplayContext.Tooltip);
+            let context: ref<ItemDisplayContextData> = ItemDisplayContextData.Make(this.player, ItemDisplayContext.Tooltip);
             context.AddTag(n"RelaxAction");
 
             uiInventoryItemTooltip = UIInventoryItemTooltipWrapper.Make(item, context);

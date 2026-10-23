@@ -252,7 +252,7 @@ public class DisplayNeedsHUDUIEvent extends CallbackSystemEvent {
 
     public static func Create(data: DFBarUIDisplay) -> ref<DisplayNeedsHUDUIEvent> {
 		//DFProfile();
-        let event = new DisplayNeedsHUDUIEvent();
+        let event: ref<DisplayNeedsHUDUIEvent> = new DisplayNeedsHUDUIEvent();
         event.data = data;
         return event;
     }
@@ -345,7 +345,7 @@ public final class DFNotificationService extends DFSystem {
 
 	public func GetSystems() -> Void {
 		//DFProfile();
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
 		this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
 		this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);

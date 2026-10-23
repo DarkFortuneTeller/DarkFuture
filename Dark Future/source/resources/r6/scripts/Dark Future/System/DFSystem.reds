@@ -161,7 +161,7 @@ public abstract class DFSystem extends ScriptableSystem {
 
     private func GetRequiredSystems() -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.Settings = DFSettings.GetInstance(gameInstance);
         this.DelaySystem = GameInstance.GetDelaySystem(gameInstance);
     }

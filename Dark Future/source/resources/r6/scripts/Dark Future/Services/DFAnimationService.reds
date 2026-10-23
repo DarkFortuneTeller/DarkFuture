@@ -159,8 +159,8 @@ public final func DFGetSelectedItemSecondaryActionName() -> CName {
 //
 @addMethod(LootingController)
 private final func DFUpdateAnimatedConsumeChoice(data: LootData) -> LootData {
-    let Settings = DFSettings.Get();
-    let AnimService = DFAnimationService.Get();
+    let Settings: ref<DFSettings> = DFSettings.Get();
+    let AnimService: ref<DFAnimationService> = DFAnimationService.Get();
 
     if Settings.consumableAnimationsEnabled && 
         Settings.consumableAnimationLootActionEnabled && 
@@ -223,7 +223,7 @@ private final func RefreshChoicesPool(choices: script_ref<array<InteractionChoic
 @wrapMethod(LootingController)
 public final func Hide() -> Void {
     wrappedMethod();
-    let AnimService = DFAnimationService.Get();
+    let AnimService: ref<DFAnimationService> = DFAnimationService.Get();
     AnimService.player.UnregisterInputListener(AnimService, n"DFAnimatedConsumableManualChoiceAction");
 }
 
@@ -268,7 +268,7 @@ public final func DarkFutureForceBikeDismount(player: ref<PlayerPuppet>) -> Void
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsSystemEnabledAndRunning(DFAnimationService.Get()) && IsDefined(mountChild) && mountChild.IsPlayer() {
@@ -318,7 +318,7 @@ public class ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback extend
 
     public static func Create(addictionData: DFAddictionDatum, timeSkipType: DFTimeSkipType) -> ref<DFDelayCallback> {
         //DFProfile();
-        let self = new ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback();
+        let self: ref<ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback> = new ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback();
 		self.addictionData = addictionData;
         self.timeSkipType = timeSkipType;
         return self;
@@ -887,7 +887,7 @@ public final class DFAnimationService extends DFSystem {
 
     public func GetSystems() -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.QuestsSystem = gameInstance.GetQuestsSystem();
         this.AutoDriveSystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<AutoDriveSystem>()) as AutoDriveSystem;
 		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
@@ -1115,7 +1115,7 @@ public final class DFAnimationService extends DFSystem {
 
             } else {
                 // Try to find space in the queue by removing a lower-priority item.
-                let ableToQueue = true;
+                let ableToQueue: Bool = true;
                 let i: Int32 = 0;
                 while i < ArraySize(this.queuedAnims) {
                     let alreadyQueuedConsumableAnim: DFConsumableAnimDatum = this.queuedAnims[i].consumableAnimData;
@@ -1246,7 +1246,7 @@ public final class DFAnimationService extends DFSystem {
             return;
         }
 
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
 
         let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
@@ -1493,7 +1493,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func PlayerHasSpaceBehind(areaWidth: Float, areaLength: Float, areaHeight: Float) -> Bool {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let SQS: ref<SpatialQueriesSystem> = GameInstance.GetSpatialQueriesSystem(gameInstance);
 
         let boxDimensions: Vector4;
@@ -1501,7 +1501,7 @@ public final class DFAnimationService extends DFSystem {
         let fitTestOvelap: TraceResult;
         let overlapSuccessStatic: Bool;
         let overlapSuccessVehicle: Bool;
-        let queryDirection = this.player.GetWorldForward() * -1.0;
+        let queryDirection: Vector4 = this.player.GetWorldForward() * -1.0;
         queryDirection.Z = 0.00;
         queryDirection = Vector4.Normalize(queryDirection);
         boxDimensions.X = areaWidth * 0.50;
@@ -1521,7 +1521,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func PlayerHasSpaceLeft(areaWidth: Float, areaLength: Float, areaHeight: Float) -> Bool {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let SQS: ref<SpatialQueriesSystem> = GameInstance.GetSpatialQueriesSystem(gameInstance);
 
         let boxDimensions: Vector4;
@@ -1529,7 +1529,7 @@ public final class DFAnimationService extends DFSystem {
         let fitTestOvelap: TraceResult;
         let overlapSuccessStatic: Bool;
         let overlapSuccessVehicle: Bool;
-        let queryDirection = this.player.GetWorldRight() * -1.0;
+        let queryDirection: Vector4 = this.player.GetWorldRight() * -1.0;
         queryDirection.Z = 0.00;
         queryDirection = Vector4.Normalize(queryDirection);
         boxDimensions.X = areaWidth * 0.50;
@@ -1549,7 +1549,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func PlayerHasSpaceRight(areaWidth: Float, areaLength: Float, areaHeight: Float) -> Bool {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let SQS: ref<SpatialQueriesSystem> = GameInstance.GetSpatialQueriesSystem(gameInstance);
 
         let boxDimensions: Vector4;
@@ -1557,7 +1557,7 @@ public final class DFAnimationService extends DFSystem {
         let fitTestOvelap: TraceResult;
         let overlapSuccessStatic: Bool;
         let overlapSuccessVehicle: Bool;
-        let queryDirection = this.player.GetWorldRight();
+        let queryDirection: Vector4 = this.player.GetWorldRight();
         queryDirection.Z = 0.00;
         queryDirection = Vector4.Normalize(queryDirection);
         boxDimensions.X = areaWidth * 0.50;
@@ -1587,7 +1587,7 @@ public final class DFAnimationService extends DFSystem {
     private final func IsExitVehicleBlocked() -> Bool {
         let vehicle: ref<VehicleObject>;
         let vehicleWeak: wref<VehicleObject>;
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
 
         if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"VehicleScene") {
             return true;
@@ -1657,7 +1657,7 @@ public final class DFAnimationService extends DFSystem {
         }
 
         if NotEquals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) {
-            let gameInstance = GetGameInstance();
+            let gameInstance: GameInstance = GetGameInstance();
 
             let vehicleObj: wref<VehicleObject>;
             VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
@@ -2361,7 +2361,7 @@ public final class DFAnimationService extends DFSystem {
 
     public final func IsPlayerInAllowedStateForAnyAnimation(opt ignoreVehicle: Bool, opt vehicleExitBlocked: Bool, opt ignoreGroundCheck: Bool) -> Bool {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
 
         let validGameState: Bool = this.GameStateService.IsValidGameState(this);
@@ -2475,7 +2475,7 @@ public final class DFAnimationService extends DFSystem {
 
     public final func IsPlayerInAllowedStateForConsumableAnimation() -> Bool {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
         let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).GetLocalInstanced(this.player.GetEntityID(), bbDefs.PlayerStateMachine);
 
@@ -2493,7 +2493,7 @@ public final class DFAnimationService extends DFSystem {
 
     public final func IsPlayerInAllowedStateForRelaxActionModeEnterAndShowMessage() -> Bool {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
 
         let validGameState: Bool = this.GameStateService.IsValidGameState(this);
@@ -2556,7 +2556,7 @@ public final class DFAnimationService extends DFSystem {
             isUploadingQuickhacks || 
             isPlayerPursuedByNCPD {
                 // Show message
-                let UISystem = GameInstance.GetUISystem(GetGameInstance());
+                let UISystem: ref<UISystem> = GameInstance.GetUISystem(GetGameInstance());
 		        let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
                 notificationEvent.m_notificationType = UIInGameNotificationType.ActionRestriction;
                 UISystem.QueueEvent(notificationEvent);
@@ -2629,7 +2629,7 @@ public final class DFAnimationService extends DFSystem {
         // Only check for states that might change since we last checked.
 
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
 
         let validGameState: Bool = this.GameStateService.IsValidGameState(this);
 
@@ -2655,7 +2655,7 @@ public final class DFAnimationService extends DFSystem {
 
     public final func IsPlayerInAllowedStateForAddictionWithdrawalAnimation() -> Bool {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
         
         let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).Get(bbDefs.UIInteractions);
@@ -2715,7 +2715,7 @@ public final class DFAnimationService extends DFSystem {
     // TODO - Guard against being in a "Hostile" location.
     public final func IsPlayerInAllowedStateForCrashAnimation() -> Bool {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
         
         let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).Get(bbDefs.UIInteractions);
@@ -2918,7 +2918,7 @@ public final class DFAnimationService extends DFSystem {
 
     private final func ConsumeSelectedLootItemAndAnimate() -> Void {
         let inv: InventoryItemData = this.lootingController.DFGetSelectedLootInventoryItemData();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(gameInstance);
         let itemQuantity: Int32 = InventoryItemData.GetQuantity(inv);
         let actionName: CName = this.lootingController.DFGetSelectedItemSecondaryActionName();

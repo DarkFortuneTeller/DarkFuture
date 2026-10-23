@@ -119,7 +119,7 @@ public func GetTopLevelParentDistrictNameRecursive(districtRecord: wref<District
     //DFProfile();
     let topLevelDistrictRecord: wref<District_Record>;
     
-    let parent = districtRecord.ParentDistrict();
+    let parent: wref<District_Record> = districtRecord.ParentDistrict();
     if IsDefined(parent) {
         topLevelDistrictRecord = GetTopLevelParentDistrictNameRecursive(parent);
     } else {

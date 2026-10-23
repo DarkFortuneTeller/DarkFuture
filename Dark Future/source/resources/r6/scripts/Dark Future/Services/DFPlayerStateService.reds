@@ -196,7 +196,7 @@ public class PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent extends
 
     public static func Create(data: Float) -> ref<PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent> {
         //DFProfile();
-        let event = new PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent();
+        let event: ref<PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent> = new PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent();
         event.data = data;
         return event;
     }
@@ -212,7 +212,7 @@ public class PlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneE
 
     public static func Create(data: DFAddictionDatum) -> ref<PlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent> {
         //DFProfile();
-        let event = new PlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent();
+        let event: ref<PlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent> = new PlayerStateServiceAddictionTreatmentDurationUpdateFromTimeSkipDoneEvent();
         event.data = data;
         return event;
     }
@@ -240,7 +240,7 @@ public class PlayerStateServiceAddictionManagedEffectAppliedEvent extends Callba
 
     public static func Create(type: DFManagedEffectType, stackCount: Int32, activeEffectApplied: Bool) -> ref<PlayerStateServiceAddictionManagedEffectAppliedEvent> {
         //DFProfile();
-        let event = new PlayerStateServiceAddictionManagedEffectAppliedEvent();
+        let event: ref<PlayerStateServiceAddictionManagedEffectAppliedEvent> = new PlayerStateServiceAddictionManagedEffectAppliedEvent();
         event.type = type;
         event.stackCount = stackCount;
         event.activeEffectApplied = activeEffectApplied;
@@ -258,7 +258,7 @@ public class PlayerStateServiceAddictionManagedEffectRemovedEvent extends Callba
 
     public static func Create(type: DFManagedEffectType) -> ref<PlayerStateServiceAddictionManagedEffectRemovedEvent> {
         //DFProfile();
-        let event = new PlayerStateServiceAddictionManagedEffectRemovedEvent();
+        let event: ref<PlayerStateServiceAddictionManagedEffectRemovedEvent> = new PlayerStateServiceAddictionManagedEffectRemovedEvent();
         event.type = type;
         return event;
     }
@@ -1007,7 +1007,7 @@ public final class DFPlayerStateService extends DFSystem {
 
     public func GetSystems() -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.BlackboardSystem = GameInstance.GetBlackboardSystem(gameInstance);
         this.PreventionSystem = this.player.GetPreventionSystem();
         this.DelaySystem = GameInstance.GetDelaySystem(gameInstance);
@@ -1136,7 +1136,7 @@ public final class DFPlayerStateService extends DFSystem {
 
     private final func UpdateFastTravelState() -> Void {
         //DFProfile();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
 
         if this.Settings.mainSystemEnabled {
             if Equals(this.Settings.fastTravelSettingV2, DFFastTravelSetting.Enabled) {
@@ -1169,8 +1169,8 @@ public final class DFPlayerStateService extends DFSystem {
             
             // Bug Fix - Due to a base game bug, the player character can sometimes be stuck in this.player.IsBeingRevealed() == true.
             // Instead, test if the Being Traced progress bar is on the screen.
-            let progressBarIsActive = this.HUDProgressBarBlackboard.GetBool(this.BlackboardDefs.UI_HUDProgressBar.Active);
-            let progressBarTypeIsReveal = Equals(FromVariant<SimpleMessageType>(this.HUDProgressBarBlackboard.GetVariant(this.BlackboardDefs.UI_HUDProgressBar.MessageType)), SimpleMessageType.Reveal);
+            let progressBarIsActive: Bool = this.HUDProgressBarBlackboard.GetBool(this.BlackboardDefs.UI_HUDProgressBar.Active);
+            let progressBarTypeIsReveal: Bool = Equals(FromVariant<SimpleMessageType>(this.HUDProgressBarBlackboard.GetVariant(this.BlackboardDefs.UI_HUDProgressBar.MessageType)), SimpleMessageType.Reveal);
 
             dangerState.BeingRevealed = progressBarIsActive && progressBarTypeIsReveal;
         }
@@ -1942,7 +1942,7 @@ public final class DFPlayerStateService extends DFSystem {
     private final func ApplyManagedEffectStacks(type: DFManagedEffectType, itemDef: DFManagedEffectItemDefinition, stateIdx: Int32, stacksToApply: Int32, animateUI: Bool) -> Void {
         let j: Int32 = 0;
         while j < stacksToApply {
-            let energyToChange = itemDef.energyChangeWhileActive;
+            let energyToChange: Float = itemDef.energyChangeWhileActive;
 
             // Cyberware bonus.
             if Equals(type, DFManagedEffectType.Alcohol) {
@@ -1967,7 +1967,7 @@ public final class DFPlayerStateService extends DFSystem {
             props.uiFlags = uiFlags;
             this.EnergySystem.ChangeNeedValue(energyToChange, props);
 
-            let nerveToChange = itemDef.nerveChangeWhenApplied;
+            let nerveToChange: Float = itemDef.nerveChangeWhenApplied;
             if nerveToChange > 0.0 {
                 this.NerveSystem.ChangeNeedValue(nerveToChange, props);
             }
@@ -2768,9 +2768,9 @@ protected cb func OnCombatStateChanged(newState: Int32) -> Bool {
 @addMethod(PlayerPuppet)
 public final func DFReportDangerStateChanged() -> Void {
     //DFProfile();
-    let gameInstance = GetGameInstance();
+    let gameInstance: GameInstance = GetGameInstance();
     
-    let dangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
+    let dangerState: DFPlayerDangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
 	DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
     DFHumanityLossConditionSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
 }
@@ -2789,9 +2789,9 @@ public final func UpdateProgressBarActive(active: Bool) -> Void {
 @addMethod(HUDProgressBarController)
 public final func DFReportDangerStateChanged() -> Void {
     //DFProfile();
-    let gameInstance = GetGameInstance();
+    let gameInstance: GameInstance = GetGameInstance();
     
-    let dangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
+    let dangerState: DFPlayerDangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
 	DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
     DFHumanityLossConditionSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
 }
@@ -2931,7 +2931,7 @@ protected final func ActionOpenWorldMap() -> ref<OpenWorldMapDeviceAction> {
 @wrapMethod(VehicleObject)
 protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() && VehicleComponent.IsDriverSlot(evt.request.lowLevelMountingInfo.slotId.id) {		
@@ -2946,7 +2946,7 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {

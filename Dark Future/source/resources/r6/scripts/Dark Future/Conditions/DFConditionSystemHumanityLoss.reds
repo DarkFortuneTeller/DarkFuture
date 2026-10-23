@@ -275,7 +275,7 @@ public class CyberpsychosisFXStopDelayCallback extends DFDelayCallback {
 
 	public static func Create(humanityLossSystem: ref<DFHumanityLossConditionSystem>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self = new CyberpsychosisFXStopDelayCallback();
+		let self: ref<CyberpsychosisFXStopDelayCallback> = new CyberpsychosisFXStopDelayCallback();
 		self.HumanityLossSystem = humanityLossSystem;
 		return self;
 	}
@@ -296,7 +296,7 @@ public final class DFCyberpsychosisVFXStopCallback extends DFNotificationCallbac
 
 	public static func Create(delay: Float) -> ref<DFCyberpsychosisVFXStopCallback> {
         //DFProfile();
-        let self = new DFCyberpsychosisVFXStopCallback();
+        let self: ref<DFCyberpsychosisVFXStopCallback> = new DFCyberpsychosisVFXStopCallback();
         self.delay = delay;
         return self;
 	}
@@ -483,7 +483,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public func GetSystems() -> Void {
         //DFProfile();
         super.GetSystems();
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
         this.AutoDriveSystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<AutoDriveSystem>()) as AutoDriveSystem;
         this.StatusEffectSystem = GameInstance.GetStatusEffectSystem(gameInstance);
@@ -1619,7 +1619,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 	}
 
     public final func CheckShouldShowCorpoFreshStartLifePathHumanityLossRestoreChoice(opt fromDistrictChange: Bool) -> Void {
-        let FreshStartLifePathRecord = TweakDBInterface.GetLifePathRecord(t"LifePaths.NewStart");
+        let FreshStartLifePathRecord: ref<LifePath_Record> = TweakDBInterface.GetLifePathRecord(t"LifePaths.NewStart");
         let FreshStartLifePathType: gamedataLifePath;
         if IsDefined(FreshStartLifePathRecord) {
             FreshStartLifePathType = FreshStartLifePathRecord.Type();

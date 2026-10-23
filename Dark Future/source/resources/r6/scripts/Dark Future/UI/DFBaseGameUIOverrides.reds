@@ -445,7 +445,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
 	  // Filter the buff list.
 	  i = 0;
 	  while i < ArraySize(buffs) {
-		let tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
+		let tags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
 		if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
 	      if (NotEquals(tags[2], n"DarkFutureCondition") && (buffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
 			ArrayPush(filteredBuffs, buffs[i]);
@@ -486,7 +486,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
 
 	  i = 0;
 	  while i < ArraySize(buffs) {
-		let tags = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
+		let tags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buffs[i].buffID).GameplayTags();
 
 		if this.DarkFutureOpening {
 			// Autocalculate the type.
@@ -519,7 +519,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
 	  }
 	  i = 0;
 	  while i < ArraySize(debuffs) {
-		let tags = TweakDBInterface.GetStatusEffectRecord(debuffs[i].buffID).GameplayTags();
+		let tags: array<CName> = TweakDBInterface.GetStatusEffectRecord(debuffs[i].buffID).GameplayTags();
 
 		if this.DarkFutureOpening {
 			if (NotEquals(tags[2], n"DarkFutureCondition") && (debuffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
@@ -702,7 +702,7 @@ public final func Update(timeLeft: Float, stackCount: Uint32) -> Void {
 @wrapMethod(SingleplayerMenuGameController)
 protected cb func OnInitialize() -> Bool {
 	//DFProfile();
-	let r = wrappedMethod();
+	let r: Bool = wrappedMethod();
 
 	let srh: wref<inkISystemRequestsHandler> = this.GetSystemRequestsHandler();
 
@@ -712,8 +712,8 @@ protected cb func OnInitialize() -> Bool {
 		let subtitleVar: ref<ConfigVarListName> = langGroup.GetVar(n"Subtitles") as ConfigVarListName;
 		let onscreenVar: ref<ConfigVarListName> = langGroup.GetVar(n"OnScreen") as ConfigVarListName;
 
-		let subtitleValue = subtitleVar.GetValue();
-		let onscreenValue = onscreenVar.GetValue();
+		let subtitleValue: CName = subtitleVar.GetValue();
+		let onscreenValue: CName = onscreenVar.GetValue();
 
 		if NotEquals(subtitleValue, onscreenValue) {
 			srh.RequestSystemNotificationGeneric(n"DarkFutureWarningInvalidLanguageSettingTitle", n"DarkFutureWarningInvalidLanguageSetting");
@@ -1078,7 +1078,7 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
     inkWidgetRef.SetState(this.m_root, this.progression_data.notificationColorTheme);
 
 	// Edit - Fix a base game bug where delta was used incorrectly on the bar.
-	let deltaAsPct = (Cast<Float>(this.progression_data.delta) * this.progression_data.expProgress) / Cast<Float>(this.progression_data.expValue);
+	let deltaAsPct: Float = (Cast<Float>(this.progression_data.delta) * this.progression_data.expProgress) / Cast<Float>(this.progression_data.expValue);
     barStartSize = Vector2(AbsF((this.progression_data.expProgress - deltaAsPct) * this.m_expBarWidthSize), this.m_expBarHeightSize);
 	//
     barEndSize = Vector2(this.progression_data.expProgress * this.m_expBarWidthSize, this.m_expBarHeightSize);

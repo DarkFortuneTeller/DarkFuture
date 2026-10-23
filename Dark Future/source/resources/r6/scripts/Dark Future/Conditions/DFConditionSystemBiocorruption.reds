@@ -166,7 +166,7 @@ public class BiocorruptionApplyDelayedNeedLossEvent extends CallbackSystemEvent 
 
     public static func Create(data: DFBiocorruptionDelayedNeedLossDatum) -> ref<BiocorruptionApplyDelayedNeedLossEvent> {
         //DFProfile();
-        let self = new BiocorruptionApplyDelayedNeedLossEvent();
+        let self: ref<BiocorruptionApplyDelayedNeedLossEvent> = new BiocorruptionApplyDelayedNeedLossEvent();
         self.data = data;
         return self;
     }
@@ -281,7 +281,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         //DFProfile();
         super.GetSystems();
             
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
         this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
         this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);

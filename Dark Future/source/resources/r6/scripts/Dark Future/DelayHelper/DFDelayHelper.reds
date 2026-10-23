@@ -38,7 +38,7 @@ public func RegisterDFDelayCallback(delaySystem: ref<DelaySystem>, callback: ref
 }
 
 public func UnregisterDFDelayCallback(delaySystem: ref<DelaySystem>, out delayID: DelayID) -> Void {
-    let invalidDelayID = GetInvalidDelayID();
+    let invalidDelayID: DelayID = GetInvalidDelayID();
     if delayID != invalidDelayID {
         GameInstance.GetDelaySystem(GetGameInstance()).CancelCallback(delayID);
         delayID = invalidDelayID;

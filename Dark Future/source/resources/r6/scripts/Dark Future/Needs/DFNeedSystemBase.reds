@@ -133,7 +133,7 @@ public class NeedUpdateDelayCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new NeedUpdateDelayCallback();
+		let self: ref<NeedUpdateDelayCallback> = new NeedUpdateDelayCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -156,7 +156,7 @@ public class NeedStageChangeFXStartDelayCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>, needStage: Int32, suppressRecoveryNotification: Bool) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new NeedStageChangeFXStartDelayCallback();
+		let self: ref<NeedStageChangeFXStartDelayCallback> = new NeedStageChangeFXStartDelayCallback();
 		self.NeedSystemBase = needSystemBase;
 		self.needStage = needStage;
 		self.suppressRecoveryNotification = suppressRecoveryNotification;
@@ -179,7 +179,7 @@ public class InsufficientNeedFXStopDelayCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new InsufficientNeedFXStopDelayCallback();
+		let self: ref<InsufficientNeedFXStopDelayCallback> = new InsufficientNeedFXStopDelayCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -200,7 +200,7 @@ public class InsufficientNeedRepeatFXDelayCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new InsufficientNeedRepeatFXDelayCallback();
+		let self: ref<InsufficientNeedRepeatFXDelayCallback> = new InsufficientNeedRepeatFXDelayCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -221,7 +221,7 @@ public class ContextuallyDelayedNeedValueChangeDelayCallback extends DFDelayCall
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new ContextuallyDelayedNeedValueChangeDelayCallback();
+		let self: ref<ContextuallyDelayedNeedValueChangeDelayCallback> = new ContextuallyDelayedNeedValueChangeDelayCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -242,7 +242,7 @@ public class SceneTierChangedCheckFXCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new SceneTierChangedCheckFXCallback();
+		let self: ref<SceneTierChangedCheckFXCallback> = new SceneTierChangedCheckFXCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -263,7 +263,7 @@ public class StatusEffectRefreshDebounceCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new StatusEffectRefreshDebounceCallback();
+		let self: ref<StatusEffectRefreshDebounceCallback> = new StatusEffectRefreshDebounceCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -289,7 +289,7 @@ public class UpdateNeedsHUDUIEvent extends CallbackSystemEvent {
 
     public static func Create(data: DFNeedHUDUIUpdate) -> ref<UpdateNeedsHUDUIEvent> {
 		//DFProfile();
-        let event = new UpdateNeedsHUDUIEvent();
+        let event: ref<UpdateNeedsHUDUIEvent> = new UpdateNeedsHUDUIEvent();
         event.data = data;
         return event;
     }
@@ -305,7 +305,7 @@ public class DFNeedValueChangedEvent extends CallbackSystemEvent {
 
     public static func Create(data: DFNeedValueChangedEventDatum) -> ref<DFNeedValueChangedEvent> {
 		//DFProfile();
-        let event = new DFNeedValueChangedEvent();
+        let event: ref<DFNeedValueChangedEvent> = new DFNeedValueChangedEvent();
         event.data = data;
         return event;
     }
@@ -316,7 +316,7 @@ public class PlayerDeathCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new PlayerDeathCallback();
+		let self: ref<PlayerDeathCallback> = new PlayerDeathCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -337,7 +337,7 @@ public class PostPlayerDeathCallback extends DFDelayCallback {
 
 	public static func Create(needSystemBase: ref<DFNeedSystemBase>) -> ref<DFDelayCallback> {
 		//DFProfile();
-		let self = new PostPlayerDeathCallback();
+		let self: ref<PostPlayerDeathCallback> = new PostPlayerDeathCallback();
 		self.NeedSystemBase = needSystemBase;
 		return self;
 	}
@@ -504,7 +504,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	
 	public func GetSystems() -> Void {
 		//DFProfile();
-		let gameInstance = GetGameInstance();
+		let gameInstance: GameInstance = GetGameInstance();
 		this.MainSystem = DFMainSystem.GetInstance(gameInstance);
 		this.InteractionSystem = DFInteractionSystem.GetInstance(gameInstance);
 		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
@@ -911,11 +911,11 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
 		} else if amount > 0.0 && changeValueProps.isSoftCapRestrictedChange && newValue >= softCap {
 			// We are restoring the Need from a soft cap restricted change, and are at the soft cap. Full bright the UI and display the lock (if softCap below 100) regardless of flag settings.
-			let uiFlags = changeValueProps.uiFlags;
+			let uiFlags: DFNeedChangeUIFlags = changeValueProps.uiFlags;
 			this.UpdateNeedHUDUI(true, uiFlags.instantUIChange, true, true, true, softCap < 100.0);
 
 		} else {
-			let uiFlags = changeValueProps.uiFlags;
+			let uiFlags: DFNeedChangeUIFlags = changeValueProps.uiFlags;
 			this.UpdateNeedHUDUI(uiFlags.forceMomentaryUIDisplay, uiFlags.instantUIChange, uiFlags.forceBright, uiFlags.momentaryDisplayIgnoresSceneTier, changeValueProps.isSoftCapRestrictedChange, false);
 		}
 
@@ -1228,7 +1228,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 		//DFProfile();
 		DFLog(this, "UpdateNeedFX");
 
-		let currentStage = this.GetNeedStage();
+		let currentStage: Int32 = this.GetNeedStage();
 		
 		if NotEquals(currentStage, this.lastNeedStage) && (currentStage > this.lastNeedStage || currentStage == 0) {
 			this.RegisterNeedStageChangeFXStartCallback(currentStage, suppressRecoveryNotification);
@@ -1555,7 +1555,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     //
     public final func DispatchNeedValueChangedEvent(change: Float, newValue: Float, isMaxValueUpdate: Bool, opt fromDanger: Bool) -> Void {
 		//DFProfile();
-		let data = DFNeedValueChangedEventDatum(this.GetNeedType(), change, newValue, isMaxValueUpdate, fromDanger);
+		let data: DFNeedValueChangedEventDatum = DFNeedValueChangedEventDatum(this.GetNeedType(), change, newValue, isMaxValueUpdate, fromDanger);
         GameInstance.GetCallbackSystem().DispatchEvent(DFNeedValueChangedEvent.Create(data));
     }
 }

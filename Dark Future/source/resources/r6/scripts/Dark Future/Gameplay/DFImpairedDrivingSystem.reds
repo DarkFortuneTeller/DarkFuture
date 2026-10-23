@@ -39,7 +39,7 @@ import DarkFuture.UI.DFHUDBarType
 @wrapMethod(VehicleObject)
 protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {		
@@ -52,7 +52,7 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
 	//DFProfile();
-	let r = wrappedMethod(evt);
+	let r: Bool = wrappedMethod(evt);
 
 	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
 	if IsDefined(mountChild) && mountChild.IsPlayer() {
@@ -279,7 +279,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
     
     public func GetSystems() -> Void {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
 
         this.AutoDriveSystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<AutoDriveSystem>()) as AutoDriveSystem;
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
@@ -406,7 +406,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
             return;
         }
 
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
 
@@ -546,7 +546,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     private final func GetIsPlayerVehicleSpeedOverThreshold() -> Bool {
-        let gameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
 

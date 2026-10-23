@@ -129,8 +129,8 @@ public final class DFRandomEncounterSystem extends DFSystem {
     // System-Specific Methods
     private cb func OnPuppetUpdate(event: ref<DynamicEntityEvent>) {
         //DFProfile();
-		let type = event.GetEventType();
-		let id = event.GetEntityID();
+		let type: DynamicEntityEventType = event.GetEventType();
+		let id: EntityID = event.GetEntityID();
 
 		if Equals(type, DynamicEntityEventType.Spawned) {
 			let puppet: ref<NPCPuppet> = this.DynamicEntitySystem.GetEntity(id) as NPCPuppet;
@@ -146,11 +146,11 @@ public final class DFRandomEncounterSystem extends DFSystem {
 
         let currentDistrictRecord: ref<District_Record> = this.player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord();
         if IsDefined(currentDistrictRecord) {
-            let hostileGangData = this.GetHostileDistrictGang(currentDistrictRecord);
+            let hostileGangData: DFGangData = this.GetHostileDistrictGang(currentDistrictRecord);
             
             let encounterChance: Float = this.GetRandomEncounterChanceForDistrict(hostileGangData);
 
-            let randomChance = RandRangeF(0.0, 1.0);
+            let randomChance: Float = RandRangeF(0.0, 1.0);
             DFLog(this, "SetupRandomEncounterOnSleep roll: " + ToString(randomChance) + ", encounterChance: " + ToString(encounterChance));
 
             if encounterChance >= randomChance {
@@ -291,7 +291,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
 			// a parent district, check that one.
             DFLog(this, "No gang found for district: " + selectedGangData.districtName);
 
-			let parent = districtRecord.ParentDistrict();
+			let parent: wref<District_Record> = districtRecord.ParentDistrict();
 			if IsDefined(parent) {
 				selectedGangData = this.GetHostileDistrictGangRecursive(parent);
 			}
@@ -517,7 +517,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
         let reservedSpawnSlots: array<DFNPCSpawnSlot>;
 
         for id in ids {
-            let npcSpec = new DynamicEntitySpec();
+            let npcSpec: ref<DynamicEntitySpec> = new DynamicEntitySpec();
             let reservedSpawnSlot: DFNPCSpawnSlot = this.ReserveSpawnSlot(reservedSpawnSlots);
 
             npcSpec.recordID = id;
@@ -546,7 +546,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
 	private final func GetPositionBySpawnSlot(spawnSlot: DFNPCSpawnSlot) -> Vector4 {
         //DFProfile();
 		let positionAwayFromPlayer: Vector4 = this.player.GetWorldPosition() + this.GetDirection(this.GetWorldAngleOffsetBySpawnSlot(spawnSlot)) * this.GetSpawnDistance();
-		let groundPosition = GameInstance.GetNavigationSystem(GetGameInstance()).GetNearestNavmeshPointBelowOnlyHumanNavmesh(positionAwayFromPlayer, 1.0, 5);
+		let groundPosition: Vector4 = GameInstance.GetNavigationSystem(GetGameInstance()).GetNearestNavmeshPointBelowOnlyHumanNavmesh(positionAwayFromPlayer, 1.0, 5);
 		return groundPosition;
 	}
 

@@ -116,7 +116,7 @@ protected cb func OnPhoneCall(value: Variant) -> Bool {
 	let val: Bool = wrappedMethod(value);
 
 	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
-	let phoneWidget = this.GetRootCompoundWidget();
+	let phoneWidget: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
 
 	if IsDefined(phoneWidget) {
 		HUDSystem.UpdateNewHudPhoneWidgetPosition(phoneWidget);
@@ -131,7 +131,7 @@ protected cb func OnHoloAudioCallSpawned(widget: ref<inkWidget>, userData: ref<I
 	let val: Bool = wrappedMethod(widget, userData);
 
 	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
-	let phoneWidget = this.GetRootCompoundWidget();
+	let phoneWidget: wref<inkCompoundWidget> = this.GetRootCompoundWidget();
 
 	if IsDefined(phoneWidget) {
 		HUDSystem.UpdateNewHudPhoneWidgetPosition(phoneWidget);
@@ -1109,9 +1109,9 @@ public final class DFHUDSystem extends DFSystem {
 	public final func UpdateNewHudPhoneWidgetPosition(widget: wref<inkCompoundWidget>) -> Void {
 		//DFProfile();
 		if IsDefined(widget) {
-			let incomingCallSlot = widget.GetWidgetByPathName(n"incomming_call_slot");
-			let holoAudioCallSlot = widget.GetWidgetByPathName(n"holoaudio_call_slot");
-			let holoAudioCallMarker = widget.GetWidgetByPathName(n"holoaudio_call_marker");
+			let incomingCallSlot: wref<inkWidget> = widget.GetWidgetByPathName(n"incomming_call_slot");
+			let holoAudioCallSlot: wref<inkWidget> = widget.GetWidgetByPathName(n"holoaudio_call_slot");
+			let holoAudioCallMarker: wref<inkWidget> = widget.GetWidgetByPathName(n"holoaudio_call_marker");
 
 			if IsDefined(incomingCallSlot) && IsDefined(holoAudioCallSlot) && IsDefined(holoAudioCallMarker) {
 				if this.Settings.mainSystemEnabled &&
@@ -1183,7 +1183,7 @@ public final class DFHUDSystem extends DFSystem {
 
 	public final func OnPhoneIconCheckCallback(widget: ref<inkCompoundWidget>) -> Void {
 		//DFProfile();
-		let phoneIconSlot = widget.GetWidgetByPathName(n"phone_icon_slot");
+		let phoneIconSlot: wref<inkWidget> = widget.GetWidgetByPathName(n"phone_icon_slot");
 
 		if IsDefined(phoneIconSlot) {
 			if Equals(phoneIconSlot.GetTranslation(), Vector2(-50.0, 300.0)) {

@@ -125,7 +125,7 @@ protected cb func OnTimeSkipButtonPressed(e: ref<inkPointerEvent>) -> Bool {
 @wrapMethod(TimeskipGameController)
 protected cb func OnInitialize() -> Bool {
 	//DFProfile();
-	let gameInstance = GetGameInstance();
+	let gameInstance: GameInstance = GetGameInstance();
 
 	this.Settings = DFSettings.GetInstance(gameInstance);
 	this.MainSystem = DFMainSystem.GetInstance(gameInstance);
@@ -406,7 +406,7 @@ private final func UpdateUI() -> Void {
 	if !this.GameStateService.IsValidGameState(this, true) { return; }
 	let timeskipAllowedReasonKey: CName = n"";
 	let index: Int32 = this.m_hoursToSkip - 1;
-	let isSleeping = DFIsSleeping(this.timeSkipType);
+	let isSleeping: Bool = DFIsSleeping(this.timeSkipType);
 	let hasInsomniaNow: Bool = this.NerveSystem.GetNeedStage() >= this.NerveSystem.insomniaNeedStageThreshold;
 	let hasHungerThirstPangsNow: Bool = this.NutritionSystem.GetNeedStage() >= this.NutritionSystem.hungerPangNeedStageThreshold || this.HydrationSystem.GetNeedStage() >= this.HydrationSystem.thirstPangNeedStageThreshold;
 
