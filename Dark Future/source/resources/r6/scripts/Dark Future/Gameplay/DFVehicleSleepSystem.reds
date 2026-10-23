@@ -171,12 +171,12 @@ protected final const func RemoveVehiclePassengerInputHints(stateContext: ref<St
 }
 
 @replaceMethod(VehicleEventsTransition)
-protected final func HandleCameraInput(scriptInterface: ref<StateGameScriptInterface>) -> Void {
+protected final func HandleCameraInput(const stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
 	// Dark Future 2.0 - Optimize this function (called every frame) to always have new input behavior regardless of system state.
 	if scriptInterface.IsActionJustTapped(n"ToggleVehCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) {
 		this.RequestToggleVehicleCamera(scriptInterface);
 	};
-	if scriptInterface.IsActionJustHeld(n"HoldCinematicCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) {
+	if scriptInterface.IsActionJustHeld(n"HoldCinematicCamera") && !this.IsInItemWheelState(stateContext) && !this.IsVehicleCameraChangeBlocked(scriptInterface) {
 		this.RequestVehicleCinematicCamera(scriptInterface);
 	};
 }

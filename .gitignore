@@ -12,3 +12,5 @@ custom_tweaks.txt
 *.code-workspace
 **/packed/*
 *.psd
+/build/
+/excluded/

@@ -2369,14 +2369,13 @@ public final class DFAnimationService extends DFSystem {
         let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).GetLocalInstanced(this.player.GetEntityID(), bbDefs.PlayerStateMachine);
         let upperBodyState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.UpperBody);
         let inLoreAnimationScene: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsInLoreAnimationScene);
-        let isCrouching: Bool = bboard.GetInt(bbDefs.PlayerStateMachine.Locomotion) == 1;
         let isCarryingBody: Bool = bboard.GetInt(bbDefs.PlayerStateMachine.BodyCarrying) > 0;
         let isControllingDevice: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsControllingDevice);
         let isControllingCamera: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsControllingCamera);
         let isForceOpeningDoor: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsForceOpeningDoor);
 
         let locomotionState: gamePSMDetailedLocomotionStates = IntEnum<gamePSMDetailedLocomotionStates>(bboard.GetInt(bbDefs.PlayerStateMachine.LocomotionDetailed));
-        let isLocomotionStateAllowed: Bool = Equals(locomotionState, gamePSMDetailedLocomotionStates.Stand) || Equals(locomotionState, gamePSMDetailedLocomotionStates.Crouch);
+        let isLocomotionStateAllowed: Bool = Equals(locomotionState, gamePSMDetailedLocomotionStates.Stand);
         
         let combatGadgetState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.CombatGadget);
         let leftHandCyberwareState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.LeftHandCyberware);
@@ -2411,7 +2410,6 @@ public final class DFAnimationService extends DFSystem {
             !isInCombat && 
             !isReplacer && 
             !inLoreAnimationScene &&
-            !isCrouching &&
             !isCarryingBody &&
             !isControllingDevice &&
             !isControllingCamera &&
@@ -2437,7 +2435,6 @@ public final class DFAnimationService extends DFSystem {
         DFLog(this, "        isInCombat (expected false): "  + ToString(isInCombat));
         DFLog(this, "        isReplacer (expected false): "  + ToString(isReplacer));
         DFLog(this, "        inLoreAnimationScene (expected false): " + ToString(inLoreAnimationScene));
-        DFLog(this, "        isCrouching (expected false): " + ToString(isCrouching));
         DFLog(this, "        isCarryingBody (expected false): " + ToString(isCarryingBody));
         DFLog(this, "        isControllingDevice (expected false): " + ToString(isControllingDevice));
         DFLog(this, "        isControllingCamera (expected false): " + ToString(isControllingCamera));
@@ -2511,7 +2508,8 @@ public final class DFAnimationService extends DFSystem {
         let isCrouchSprinting: Bool = psmLocomotion == 11;
         let isCrouchDodging: Bool = psmLocomotion == 12;
         let meleeState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.MeleeWeapon);
-        let rangedState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.Weapon);
+        let leftRangedState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.LeftWeapon);
+        let rightRangedState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.RightWeapon);
 
         let isCarryingBody: Bool = bboard.GetInt(bbDefs.PlayerStateMachine.BodyCarrying) > 0;
         let isControllingDevice: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsControllingDevice);
@@ -2569,7 +2567,8 @@ public final class DFAnimationService extends DFSystem {
         if validGameState &&
             !isInCombat && 
             meleeState == 0 &&
-            rangedState == 0 &&
+            leftRangedState == 0 &&
+            rightRangedState == 0 &&
             noDialogueChoiceHubsShown &&
             !isReplacer && 
             !inLoreAnimationScene &&
@@ -2597,6 +2596,10 @@ public final class DFAnimationService extends DFSystem {
         DFLog(this, "    Returning false. State: ");
         DFLog(this, "        validGameState (expected true): " + ToString(validGameState));
         DFLog(this, "        isInCombat (expected false): "  + ToString(isInCombat));
+        DFLog(this, "        meleeState (expected 0): " + ToString(meleeState));
+        DFLog(this, "        leftRangedState (expected 0): " + ToString(leftRangedState));
+        DFLog(this, "        rightRangedState (expected 0): " + ToString(rightRangedState));
+        DFLog(this, "        noDialogueChoiceHubsShown (expected true): " + ToString(noDialogueChoiceHubsShown));
         DFLog(this, "        isReplacer (expected false): "  + ToString(isReplacer));
         DFLog(this, "        inLoreAnimationScene (expected false): " + ToString(inLoreAnimationScene));
         DFLog(this, "        isCrouching (expected false): " + ToString(isCrouching));
@@ -2674,27 +2677,27 @@ public final class DFAnimationService extends DFSystem {
 
     public final func IsPlayerInAllowedStateForBlackoutAnimation() -> Bool {
         //DFProfile();
-        let gameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
         
-        let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).Get(bbDefs.UIInteractions);
-        let dialogChoiceHubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(bboard.GetVariant(bbDefs.UIInteractions.DialogChoiceHubs));
+        let psmBBoard: ref<IBlackboard> = this.player.GetPlayerStateMachineBlackboard();
+        let uiBBoard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(GetGameInstance()).Get(bbDefs.UIInteractions);
+        let dialogChoiceHubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(uiBBoard.GetVariant(bbDefs.UIInteractions.DialogChoiceHubs));
         let noDialogueChoiceHubsShown: Bool = ArraySize(dialogChoiceHubs.choiceHubs) == 0;
         let inRelaxActionMode: Bool = this.RelaxActionSystem.GetInRelaxActionMode();
 
-        let variantData: Variant = bboard.GetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData);
+        let variantData: Variant = psmBBoard.GetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData);
         let securityData: SecurityAreaData;
         if IsDefined(variantData) {
             securityData = FromVariant<SecurityAreaData>(variantData);
         };
 
-        let blockTimeSkip: Bool = bboard.GetInt(bbDefs.PlayerStateMachine.Combat) == 1 || 
+        let blockTimeSkip: Bool = psmBBoard.GetInt(bbDefs.PlayerStateMachine.Combat) == 1 || 
                                   StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") || 
                                   this.player.IsMovingVertically() || 
                                   PlayerPuppet.IsSwimming(this.player) || 
                                   securityData.securityAreaType > ESecurityAreaType.SAFE ||
                                   GameInstance.GetPhoneManager(GetGameInstance()).IsPhoneCallActive() ||
-                                  bboard.GetBool(bbDefs.PlayerStateMachine.Carrying);
+                                  psmBBoard.GetBool(bbDefs.PlayerStateMachine.Carrying);
 
         if this.IsPlayerInAllowedStateForAnyAnimation(true, this.IsExitVehicleBlocked()) && 
             (noDialogueChoiceHubsShown || inRelaxActionMode) && 
