@@ -19,7 +19,7 @@ import DarkFuture.Utils.{
     DFResourceUtils,
     RandRangeInclusive
 }
-import DarkFuture.Main.{ 
+import DarkFuture.Main.{
     DFAddictionDatum,
     DFMainSystem,
     DFTimeSkipData,
@@ -380,7 +380,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
 
     if IsSystemEnabledAndRunning(playerStateService) {
         // DARK FUTURE ENABLED
-        
+
         // Addiction
         if ArrayContains(effectTags, n"DarkFutureAddictionProxyEffectAlcohol") {
             playerStateService.HandleAddictionProxyEffectApplied(DFAddictionProxyEffectType.Alcohol, evt.staticData.GetID(), evt.stackCount);
@@ -490,7 +490,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
             PlayerStateService.OnManagedEffectRemoved(evt);
         }
     }
-    
+
     return wrappedMethod(evt);
 }
 
@@ -865,7 +865,7 @@ public final class DFPlayerStateService extends DFSystem {
         ArrayPush(this.managedEffectItemDefinitions, blackLaceV1ItemDef);
         ArrayPush(this.managedEffectItemDefinitions, compat_juiceItemDef);
 
-        
+
         //
         // Managed Effect Definitions
         //
@@ -947,14 +947,14 @@ public final class DFPlayerStateService extends DFSystem {
 
         this.PrintManagedEffectsState();
     }
-    
+
     private func RegisterListeners() -> Void {
         //DFProfile();
         this.locomotionListener = this.PSMBlackboard.RegisterListenerInt(this.BlackboardDefs.PlayerStateMachine.Locomotion, this, n"OnLocomotionStateChanged");
     }
-    
+
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
-    
+
     private func UnregisterListeners() -> Void {
         //DFProfile();
         this.PSMBlackboard.UnregisterListenerInt(this.BlackboardDefs.PlayerStateMachine.Locomotion, this.locomotionListener);
@@ -1031,7 +1031,7 @@ public final class DFPlayerStateService extends DFSystem {
         this.HumanityLossConditionSystem = DFHumanityLossConditionSystem.GetInstance(gameInstance);
         this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     }
-    
+
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
         //DFProfile();
         this.RegisterPlayerStateEffectsDurationUpdateCallback();
@@ -1112,7 +1112,7 @@ public final class DFPlayerStateService extends DFSystem {
     protected cb func OnLocomotionStateChanged(value: Int32) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-        
+
         if this.GameStateService.IsValidGameState(this) {
             // 0 = Default, 2 = Sprinting, 7 = Dashing
 
@@ -1144,12 +1144,12 @@ public final class DFPlayerStateService extends DFSystem {
                 GameInstance.GetQuestsSystem(gameInstance).SetFactStr("df_fact_metro_fast_travel_disabled", 0);
                 TweakDBManager.SetFlat(t"WorldMap.FastTravelFilterGroup.filterName", n"UI-Menus-WorldMap-Filter-FastTravel");
                 TweakDBManager.UpdateRecord(t"WorldMap.FastTravelFilterGroup");
-                
+
             } else if Equals(this.Settings.fastTravelSettingV2, DFFastTravelSetting.DisabledAllowMetro) {
                 GameInstance.GetQuestsSystem(gameInstance).SetFactStr("df_fact_metro_fast_travel_disabled", 0);
                 TweakDBManager.SetFlat(t"WorldMap.FastTravelFilterGroup.filterName", n"DarkFutureUILabelMapFilterFastTravel");
                 TweakDBManager.UpdateRecord(t"WorldMap.FastTravelFilterGroup");
-                
+
             } else if Equals(this.Settings.fastTravelSettingV2, DFFastTravelSetting.Disabled) {
                 GameInstance.GetQuestsSystem(gameInstance).SetFactStr("df_fact_metro_fast_travel_disabled", 1);
                 TweakDBManager.SetFlat(t"WorldMap.FastTravelFilterGroup.filterName", n"DarkFutureUILabelMapFilterFastTravel");
@@ -1167,7 +1167,7 @@ public final class DFPlayerStateService extends DFSystem {
         let dangerState: DFPlayerDangerState;
         if this.GameStateService.IsValidGameState(this, true) {
             dangerState.InCombat = this.player.IsInCombat();
-            
+
             // Bug Fix - Due to a base game bug, the player character can sometimes be stuck in this.player.IsBeingRevealed() == true.
             // Instead, test if the Being Traced progress bar is on the screen.
             let progressBarIsActive: Bool = this.HUDProgressBarBlackboard.GetBool(this.BlackboardDefs.UI_HUDProgressBar.Active);
@@ -1208,7 +1208,7 @@ public final class DFPlayerStateService extends DFSystem {
 
         let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
         let hasStaminaBooster: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureStaminaBooster");
-        
+
         DFLog(this, "    hydrationStage = " + ToString(hydrationStage));
 
         if !hasStaminaBooster {
@@ -1246,7 +1246,7 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final func HasIncompatibleVFXApplied() -> Bool {
         //DFProfile();
-        if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury") || 
+        if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury") ||
            StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"PreventFuryVFX") {
             return true;
         }
@@ -1275,7 +1275,7 @@ public final class DFPlayerStateService extends DFSystem {
             if this.NerveSystem.currentNerveBreathingFXStage != 0 {
                 return;
             }
-            
+
             let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
             if hydrationStage >= 3 {
                 this.StartOutOfBreathBreathingEffects(DFOutOfBreathReason.SprintingDashingWithLowHydration);
@@ -1308,7 +1308,7 @@ public final class DFPlayerStateService extends DFSystem {
             this.playingOutOfBreathFX = true;
 
             // Play the camera wobble from low Hydration notifications, and after sprinting or dashing with low Hydration.
-            if (this.Settings.hydrationNeedVFXEnabled && Equals(reason, DFOutOfBreathReason.LowHydrationNotification)) || 
+            if (this.Settings.hydrationNeedVFXEnabled && Equals(reason, DFOutOfBreathReason.LowHydrationNotification)) ||
                (this.Settings.outOfBreathCameraEffectEnabled && Equals(reason, DFOutOfBreathReason.SprintingDashingWithLowHydration)) {
                 StatusEffectHelper.ApplyStatusEffect(this.player, t"BaseStatusEffect.BreathingHeavy");
             }
@@ -1328,7 +1328,7 @@ public final class DFPlayerStateService extends DFSystem {
     private final func StopOutOfBreathEffects() -> Void {
         //DFProfile();
         DFLog(this, "StopOutOfBreathEffects");
-        
+
         StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.BreathingHeavy");
         this.playingOutOfBreathFX = false;
     }
@@ -1395,19 +1395,19 @@ public final class DFPlayerStateService extends DFSystem {
     private final func RegisterManagedEffectVFXRecheckDelayCallback(useLastingDuration: Bool) -> Void {
         //DFProfile();
         let interval: Float;
-        if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.LowToHigh) || 
+        if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.LowToHigh) ||
            Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.HighToLow) ||
            Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.AnyToLow) ||
            Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.AnyToHigh) {
               interval = this.managedEffectVFXRecheckDelayInterval_Transition;
-        
+
         } else if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.High) {
             if useLastingDuration {
                 interval = this.managedEffectVFXRecheckDelayInterval_High_NormalLasting + RandRangeF(0.0, this.managedEffectVFXRecheckDelayInterval_Low_NormalVariance);
             } else {
                 interval = this.managedEffectVFXRecheckDelayInterval_High_NormalTimed + RandRangeF(0.0, this.managedEffectVFXRecheckDelayInterval_Low_NormalVariance);
             }
-        
+
         } else if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.Low) {
             if useLastingDuration {
                 interval = this.managedEffectVFXRecheckDelayInterval_Low_NormalLasting + RandRangeF(0.0, this.managedEffectVFXRecheckDelayInterval_Low_NormalVariance);
@@ -1475,7 +1475,7 @@ public final class DFPlayerStateService extends DFSystem {
 
             this.DispatchAddictionTreatmentDurationUpdateDoneEvent(gameTimeSecondsToReduce);
         }
-        
+
         this.RegisterPlayerStateEffectsDurationUpdateCallback();
     }
 
@@ -1513,7 +1513,7 @@ public final class DFPlayerStateService extends DFSystem {
 
         if shouldApply {
             if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
-                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment");       
+                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment");
             }
         } else {
             if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
@@ -1661,7 +1661,7 @@ public final class DFPlayerStateService extends DFSystem {
             }
         }
     }
-    
+
     public final func UnregisterForVehicleSpeedChange(veh: ref<VehicleObject>) -> Void {
         //DFProfile();
         let vehicleBlackboard: ref<IBlackboard> = veh.GetBlackboard();
@@ -1740,7 +1740,7 @@ public final class DFPlayerStateService extends DFSystem {
         let itemTags: array<CName> = itemRecord.Tags();
         if ArrayContains(itemTags, n"DarkFutureConsumableAddictionTreatmentDrug") {
             this.OnAddictionTreatmentDrugConsumed();
-        
+
         } else if ArrayContains(itemTags, n"DarkFutureManagedConsumable") {
             this.HandleManagedConsumable(itemRecord, animateUI);
         }
@@ -1749,7 +1749,7 @@ public final class DFPlayerStateService extends DFSystem {
     public final func GetItemManagedEffectStateIndex(itemRecord: ref<Item_Record>) -> Int32 {
         //DFProfile();
         let itemTags: array<CName> = itemRecord.Tags();
-        
+
         let i: Int32 = 0;
         while i < ArraySize(this.managedEffectsState) {
             let def: DFManagedEffectDefinition = this.GetManagedEffectDefinitionByType(this.managedEffectsState[i].type);
@@ -1810,7 +1810,7 @@ public final class DFPlayerStateService extends DFSystem {
             maxStacksAllowed = managedEffectDef.maxStacksPerAddictionStage[addictionStage];
             toleranceStacksAtThisStage = managedEffectDef.toleranceStacksPerAddictionStage[addictionStage];
             DFLog(this, "maxStacksAllowed: " + ToString(maxStacksAllowed) + ", toleranceStacksAtThisStage: " + ToString(toleranceStacksAtThisStage));
-        
+
         } else {
             maxStacksAllowed = managedEffectDef.maxStacks;
         }
@@ -1834,12 +1834,12 @@ public final class DFPlayerStateService extends DFSystem {
             pipelineResult.triggerExcessStackEffect = false;
             return pipelineResult;
         }
-        
+
         // How many stacks would this item apply?
         let stacksToApplyBeforeTolerance: Int32 = 0;
         if Equals(managedEffectItemDef.stackCountDef.mode, DFManagedEffectStackCountMode.Specific) {
             stacksToApplyBeforeTolerance = managedEffectItemDef.stackCountDef.countToApply;
-        
+
         } else if Equals(managedEffectItemDef.stackCountDef.mode, DFManagedEffectStackCountMode.Random) {
             stacksToApplyBeforeTolerance = RandRangeInclusive(managedEffectItemDef.stackCountDef.countToApply, managedEffectItemDef.stackCountDef.countToApplyMax);
         }
@@ -1865,7 +1865,7 @@ public final class DFPlayerStateService extends DFSystem {
             if stacksToApplyAfterToleranceUnclamped > 0 {
                 stacksToApplyAfterActive = Max(stacksToApplyAfterToleranceUnclamped - stacksAvailable, 0);
                 let activeStacksToApply: Int32 = stacksToApplyAfterToleranceUnclamped - stacksToApplyAfterActive;
-                
+
                 if activeStacksToApply > 0 {
                     pipelineResult.activeStacksToApply = activeStacksToApply;
                 }
@@ -1891,7 +1891,7 @@ public final class DFPlayerStateService extends DFSystem {
         let pipelineResult: DFManagedEffectPipelineResult;
 
         if !IsDefined(itemRecord) { return; }
-        
+
         if IsDefined(overridePipeline.addictionSystem) {
             // Allows injecting custom results for special circumstances (like the Dum Dum Black Lace inhaler scene.)
             pipelineResult = overridePipeline;
@@ -1967,7 +1967,7 @@ public final class DFPlayerStateService extends DFSystem {
             if Equals(type, DFManagedEffectType.Alcohol) {
                 energyToChange += this.CyberwareService.GetAlcoholEnergyLossBonus();
             }
-            
+
             // Handle if the Energy change would exceed the min or the max.
             let energyValue: Float = this.EnergySystem.GetNeedValue();
             if energyValue + energyToChange > 100.0 {
@@ -2007,13 +2007,13 @@ public final class DFPlayerStateService extends DFSystem {
             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
             notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureMaxStacksNotification");
             notificationEvent.m_overrideCurrentNotification = true;
-        
+
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
-        
+
         } else if IsDefined(addictionSystem) && IsSystemEnabledAndRunning(addictionSystem) {
             if Equals(excessStackDef.excessStackItemActionType, DFManagedEffectExcessStackItemActionType.Alcohol) {
                 this.TriggerAlcoholExcessStackEffect();
-                
+
             } else if Equals(excessStackDef.excessStackItemActionType, DFManagedEffectExcessStackItemActionType.Narcotic) {
                 this.TriggerNarcoticExcessStackEffect();
             }
@@ -2049,7 +2049,7 @@ public final class DFPlayerStateService extends DFSystem {
             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
             notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureOverdoseAppliedNotification");
             notificationEvent.m_overrideCurrentNotification = true;
-        
+
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
         }
 
@@ -2060,7 +2060,7 @@ public final class DFPlayerStateService extends DFSystem {
         //DFProfile();
         // Ensures that the State and the actual applied Status Effects match.
         // Also performs the swap between Timed and Lasting effects.
-        if this.isReconcilingStatusEffects { 
+        if this.isReconcilingStatusEffects {
             this.repeatStatusEffectReconciliationOnComplete = true;
             return;
         }
@@ -2156,7 +2156,7 @@ public final class DFPlayerStateService extends DFSystem {
                         // Nuke them.
                         StatusEffectHelper.RemoveStatusEffect(this.player, toleranceEffectID, Cast<Uint32>(managedEffectDef.maxStacks));
                     }
-                    
+
                     // Re-apply all.
                     let k: Int32 = 0;
                     while k < this.managedEffectsState[i].toleranceEffectCount {
@@ -2198,7 +2198,7 @@ public final class DFPlayerStateService extends DFSystem {
 
         } else if Equals(type, DFManagedEffectType.Narcotic) {
             return this.NarcoticAddictionSystem;
-        
+
         } else {
             return null;
         }
@@ -2235,7 +2235,7 @@ public final class DFPlayerStateService extends DFSystem {
         let stateIdx: Int32 = -1;
         let wasActiveEffect: Bool = false;
         let type: DFManagedEffectType;
-        
+
         // Match this status effect to a Managed Effect.
         let i: Int32 = 0;
         while i < ArraySize(this.managedEffectsState) {
@@ -2264,7 +2264,7 @@ public final class DFPlayerStateService extends DFSystem {
         }
 
         if stateIdx == -1 { return; }
-        
+
         let stackCount: Int32 = 0;
         let status: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.player, statusEffectID);
         if IsDefined(status) {
@@ -2412,7 +2412,7 @@ public final class DFPlayerStateService extends DFSystem {
     public final func GetAllManagedEffectEuphoriaActiveStacks() -> Uint32 {
         //DFProfile();
         let stacks: Uint32;
-        
+
         for managedEffect in this.managedEffectsState {
             let def: DFManagedEffectDefinition = this.GetManagedEffectDefinitionByType(managedEffect.type);
             if def.contributesToEuphoria {
@@ -2449,14 +2449,14 @@ public final class DFPlayerStateService extends DFSystem {
             if Equals(type, managedEffect.type) {
                 let addictionSystem: ref<DFAddictionSystemBase> = this.GetAddictionSystemFromManagedEffectType(type);
                 let managedEffectDef: DFManagedEffectDefinition = this.GetManagedEffectDefinitionByType(managedEffect.type);
-                
+
                 if !IsDefined(addictionSystem) {
                     return Cast<Uint32>(managedEffectDef.maxStacks);
 
                 } else {
                     return Cast<Uint32>(managedEffectDef.maxStacksPerAddictionStage[addictionSystem.GetAddictionStage()]);
                 }
-                break;        
+                break;
             }
         }
     }
@@ -2485,7 +2485,7 @@ public final class DFPlayerStateService extends DFSystem {
                 } else {
                     return Cast<Uint32>(managedEffectDef.maxStacks);
                 }
-                
+
                 break;
             }
         }
@@ -2523,7 +2523,7 @@ public final class DFPlayerStateService extends DFSystem {
         if alcoholActiveStackCount > 0u {
             DFLog(this, "    Should be active! (Alcohol)");
             shouldConsumableEffectBeActive = true;
-            
+
             let alcoholManagedEffect: DFManagedEffect = this.GetManagedEffectByType(DFManagedEffectType.Alcohol);
             if Equals(alcoholManagedEffect.effectMode, DFManagedEffectMode.Lasting) {
                 isAnyEffectLasting = true;
@@ -2551,7 +2551,7 @@ public final class DFPlayerStateService extends DFSystem {
                 this.currentNarcoticVFXSeverityHigh = false;
             }
         }
-        
+
         let alcoholChangedSeverities: Bool = NotEquals(lastAlcoholVFXSeverityHigh, this.currentAlcoholVFXSeverityHigh);
         let narcoticChangedSeverities: Bool = NotEquals(lastNarcoticVFXSeverityHigh, this.currentNarcoticVFXSeverityHigh);
 
@@ -2641,7 +2641,7 @@ public final class DFPlayerStateService extends DFSystem {
             // Stop any effects.
             DFLog(this, "    Stopping VFX!");
             this.StopManagedEffectVFX();
-        
+
         } else if transitionedStates {
             // Switch to the new intensity.
             if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.High) {
@@ -2676,13 +2676,13 @@ public final class DFPlayerStateService extends DFSystem {
                 } else if narcoticActiveStackCount >= 1u || alcoholActiveStackCount >= 1u {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.chomaticAbberationLowEffect, false, null, true);
                 }
-            
+
             } else if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.HighToLow) {
-                
+
                 GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.alcoholWaveEffect);
                 GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.narcoticsBloomHighColorEffect);
                 GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.narcoticsBloomLowColorEffect);
-            
+
             } else if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.Low) {
                 if alcoholActiveStackCount == 0u {
                     GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.alcoholMotionBlurEffect);
@@ -2704,7 +2704,7 @@ public final class DFPlayerStateService extends DFSystem {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.narcoticsBloomLowColorEffect, false, null, true);
                     GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 1.00);
                 }
-            
+
             } else if Equals(this.currentManagedEffectVFXIntensity, DFManagedEffectVFXIntensity.LowToHigh) {
                 GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.narcoticsBloomHighColorEffect);
                 GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.narcoticsBloomLowColorEffect);
@@ -2813,7 +2813,7 @@ protected cb func OnCombatStateChanged(newState: Int32) -> Bool {
 public final func DFReportDangerStateChanged() -> Void {
     //DFProfile();
     let gameInstance: GameInstance = GetGameInstance();
-    
+
     let dangerState: DFPlayerDangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
     DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
     DFHumanityLossConditionSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
@@ -2834,7 +2834,7 @@ public final func UpdateProgressBarActive(active: Bool) -> Void {
 public final func DFReportDangerStateChanged() -> Void {
     //DFProfile();
     let gameInstance: GameInstance = GetGameInstance();
-    
+
     let dangerState: DFPlayerDangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
     DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
     DFHumanityLossConditionSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
@@ -2964,10 +2964,10 @@ public func GetActions(out actions: [ref<DeviceAction>], context: GetActionsCont
 protected final func ActionOpenWorldMap() -> ref<OpenWorldMapDeviceAction> {
     //DFProfile();
     let Settings: ref<DFSettings> = DFSettings.Get();
-    if Settings.mainSystemEnabled && 
-    (Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.DisabledAllowMetro) || Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.Disabled)) && 
+    if Settings.mainSystemEnabled &&
+    (Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.DisabledAllowMetro) || Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.Disabled)) &&
     NotEquals(this.GetFastravelDeviceType(), EFastTravelDeviceType.SubwayGate) {
-        return null;   
+        return null;
     } else {
         return wrappedMethod();
     }
@@ -2981,7 +2981,7 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
     let r: Bool = wrappedMethod(evt);
 
     let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-    if IsDefined(mountChild) && mountChild.IsPlayer() && VehicleComponent.IsDriverSlot(evt.request.lowLevelMountingInfo.slotId.id) {        
+    if IsDefined(mountChild) && mountChild.IsPlayer() && VehicleComponent.IsDriverSlot(evt.request.lowLevelMountingInfo.slotId.id) {
         DFPlayerStateService.Get().TryToRegisterForVehicleSpeedChange(this);
     }
 
@@ -2999,6 +2999,6 @@ protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
     if IsDefined(mountChild) && mountChild.IsPlayer() {
         DFPlayerStateService.Get().UnregisterForVehicleSpeedChange(this);
     }
-    
+
     return r;
 }

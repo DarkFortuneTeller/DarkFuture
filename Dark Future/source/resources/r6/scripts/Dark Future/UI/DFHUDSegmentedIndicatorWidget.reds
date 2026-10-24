@@ -102,7 +102,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
             if !nerveLockVisible {
                 this.m_hasPulsedOnThisLockDisplay = false;
             }
-            
+
             if this.ShouldDisplayContinuously(anySegmentActive, currentSceneTier, healthBarVisible, staminaBarVisible, nerveLockVisible) {
                 this.SetAllDisplayContinuous();
 
@@ -111,7 +111,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                     indicator.m_shadow.SetVisible(false);
                     indicator.m_iconshadow.SetVisible(false);
                 }
-                
+
                 // If displaying continuously and the Nerve lock is visible, pulse the Humanity Loss segment (once).
                 if nerveLockVisible {
                     for bar in this.needsBars {
@@ -134,7 +134,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                     if staminaBarVisible {
                         if this.Settings.syncConditionsUIWithHealthStamina {
                             this.m_displayingOverStamina = true;
-                            
+
                             for bar in this.needsBars {
                                 indicator = bar as DFHUDSegmentedIndicator;
                                 indicator.m_shadow.SetVisible(true);
@@ -148,7 +148,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                             indicator.m_iconshadow.SetVisible(false);
                         }
                     }
-                
+
                 } else {
                     this.SetAllFadeOut();
                 }
@@ -156,11 +156,11 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
             } else {
                 this.SetAllFadeOut();
             }
-        
+
         } else {
             this.SetAllFadeOut();
         }
-        
+
         // Now that we have made decisions using the previous value at least once, consume it.
         this.NormalizeAllPreviousValues();
     }
@@ -173,12 +173,12 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
             // Contextual Display (Synced with Health and Stamina)
             // Show continuously when any segment is active, the health bar is displayed, and the stamina bar is not displayed.
             return true;
-        
+
         } else if !this.Settings.syncConditionsUIWithHealthStamina && (Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) && anySegmentActive) {
             // Contextual Display (Unsynced with Health and Stamina)
             // Show continuously when any segment is active.
             return true;
-        
+
         } else if !staminaBarVisible && nerveLockVisible {
             // Humanity Loss
             return true;
@@ -193,12 +193,12 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
 
         let validStaminaBarState: Bool = ((!staminaBarVisible || !this.Settings.syncConditionsUIWithHealthStamina) || forceMomentaryDisplay);
         let validSceneTierState: Bool = (momentaryDisplayIgnoresSceneTier || (Equals(currentSceneTier, GameplayTier.Tier1_FullGameplay) || Equals(currentSceneTier, GameplayTier.Tier2_StagedGameplay)));
-        
+
         if validStaminaBarState && validSceneTierState {
             if forceMomentaryDisplay {
                 return true;
             }
-            
+
             for bar in this.needsBars {
                 let indicator: ref<DFHUDSegmentedIndicator> = bar as DFHUDSegmentedIndicator;
                 if NotEquals(indicator.GetCurrentSegmentValue(), indicator.m_previousSegmentValue) {
@@ -207,7 +207,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -546,11 +546,11 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
     public final func GetCurrentSegmentValue() -> array<Bool> {
         //DFProfile();
         let currentSegmentValue: array<Bool>;
-        
+
         for segment in this.m_segments {
             ArrayPush(currentSegmentValue, segment.active);
         }
-        
+
         return currentSegmentValue;
     }
 
@@ -580,7 +580,7 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
         for segment in this.m_segments {
             if Equals(segment.type, DFHUDSegmentedIndicatorSegmentType.Injury) && Equals(segment.active, true) {
                 this.SetSegmentPulse(DFHUDSegmentedIndicatorSegmentType.Injury, 0.5);
-                break;       
+                break;
             }
         }
     }

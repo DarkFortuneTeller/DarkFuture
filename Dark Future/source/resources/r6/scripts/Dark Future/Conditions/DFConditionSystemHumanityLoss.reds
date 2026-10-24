@@ -142,7 +142,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
     if IsSystemEnabledAndRunning(nerveSystem) && IsSystemEnabledAndRunning(humanityLossCondition) {
         let effectID: TweakDBID = evt.staticData.GetID();
         if Equals(effectID, t"DarkFutureStatusEffect.CyberpsychosisApplicationDone") {
-            
+
             let cyberpsychosisStackCountApplied: Uint32 = StatusEffectHelper.GetStatusEffectByID(this, t"DarkFutureStatusEffect.Cyberpsychosis").GetStackCount();
 
             RWLock.Acquire(this.DarkFutureSetLastKnownCyberpsychosisStackCountLock);
@@ -183,7 +183,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
             } else if cyberpsychosisStackCountApplied > 0u &&
                     FloorF(Cast<Float>(cyberpsychosisStackCountApplied) / 5.0) < FloorF(Cast<Float>(lastKnownCyberpsychosisStackCount) / 5.0) {
                 humanityLossConditionSystem.TryToPlayCyberpsychosisEffectsPeriodicKill();
-            
+
             } else if cyberpsychosisStackCountApplied == 0u && evt.isFinalRemoval {
                 if !StatusEffectSystem.ObjectHasStatusEffectWithTag(this, n"DarkFutureImmunosuppressant") {
                     humanityLossConditionSystem.TryToPlayCyberpsychosisEffectsExitFromKill();
@@ -471,10 +471,10 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public func DoPostSuspendActions() -> Void {
         //DFProfile();
         super.DoPostSuspendActions();
-        
+
         this.timeUntilNextCyberpsychosisAllowedDurationInGameTimeSeconds = 0.0;
         this.remainingEndotrisineEffectDurationInGameTimeSeconds = 0.0;
-        
+
         this.RefreshEndotrisineStatusEffect();
         this.ClearCyberpsychosisAndReturnIfStacksRemoved();
         this.UpdateEdgerunnerPerkDescription();
@@ -604,7 +604,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"default_jackie_phone_dead", n"OnQ005VCallsJackieDeadFactChanged", true);     // V calls Jackie after his death
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"q105_03a_lie_down", n"OnQ105DollLieDownFactChanged", true);                  // Automatic Love (Lied Down With Doll)
         CreateDFFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"q305_medal_given_away", n"OnQ305MedalGivenAwayFactChanged", true);           // Gave away NUSA Medal to homeless person
-        
+
 
         this.UINotificationsBlackboardDef = GetAllBlackboardDefs().UI_Notifications;
         this.UINotificationsBlackboard = GameInstance.GetBlackboardSystem(GetGameInstance()).Get(this.UINotificationsBlackboardDef);
@@ -631,8 +631,8 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         if DFRunGuard(this) { return; }
 
         DFLog(this, "OnNeedValueChanged: evt: " + ToString(evt));
-        if this.GameStateService.IsValidGameState(this) && 
-          Equals(evt.needType, DFNeedType.Nerve) && 
+        if this.GameStateService.IsValidGameState(this) &&
+          Equals(evt.needType, DFNeedType.Nerve) &&
           !evt.isMaxValueUpdate &&
           evt.change < 0.0 &&
           evt.fromDanger {
@@ -722,7 +722,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(3, n"DarkFutureHumanityLoss03Name", n"DarkFutureConditionHumanityLoss03NoCyberpsychosisDesc"));
             ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(4, n"DarkFutureHumanityLoss04Name", n"DarkFutureConditionHumanityLoss04NoCyberpsychosisDesc"));
         }
-        
+
 
         return data;
     }
@@ -730,7 +730,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     private final func QueueConditionMessage(level: Uint32) -> Void {
         //DFProfile();
         if !this.Settings.conditionMessagesEnabled { return; }
-        
+
         let conditionLevelUpMessage: DFMessage;
         conditionLevelUpMessage.type = SimpleMessageType.Negative;
         conditionLevelUpMessage.key = StringToName("DarkFutureMagicMessageStringConditionHumanityLoss" + IntToString(Cast<Int32>(level)));
@@ -819,11 +819,11 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         if DFRunGuard(this) { return; }
         let transitionedOn: Bool = false;
         let possibleStationChange: Bool = false;
-        
+
         if Equals(this.currentRadioState, DFHumanityLossRadioState.Off) && Equals(state, DFHumanityLossRadioState.Off) { return; }
         if NotEquals(this.currentRadioState, DFHumanityLossRadioState.On) && Equals(state, DFHumanityLossRadioState.On) { transitionedOn = true; }
         if Equals(this.currentRadioState, DFHumanityLossRadioState.On) && Equals(state, DFHumanityLossRadioState.On) { possibleStationChange = true; }
-        
+
         this.currentRadioState = state;
         let pocketRadio: ref<PocketRadio> = this.player.GetPocketRadio();
         let station: Int32 = pocketRadio.m_selectedStation;
@@ -832,7 +832,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             DFLog(this, "!!!!!!@@@@@@@ Radio On!");
             this.lastKnownRadioStation = station;
             this.RegisterForRadioTrackRecheck(true);
-        
+
         } else if Equals(state, DFHumanityLossRadioState.On) {
             DFLog(this, "!!!!!!@@@@@@@ Radio On! (Duplicate -- Might have been station change)");
             if possibleStationChange {
@@ -905,7 +905,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
         if shouldApply {
             if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Endotrisine") {
-                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Endotrisine");       
+                StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Endotrisine");
             }
         } else {
             if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Endotrisine") {
@@ -929,11 +929,11 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         //DFProfile();
         if this.Settings.humanityLossConditionEnabled && this.Settings.humanityLossCyberpsychosisEnabled {
             TweakDBManager.SetFlat(t"NewPerks.Tech_Master_Perk_3.loc_desc_key", GetLocalizedTextByKey(n"DarkFutureTechMasterPerk3UpdatedCyberpsychosisDesc"));
-        
+
         } else {
             TweakDBManager.SetFlat(t"NewPerks.Tech_Master_Perk_3.loc_desc_key", GetLocalizedTextByKey(n"DarkFutureTechMasterPerk3UpdatedDesc"));
         }
-        
+
         TweakDBManager.UpdateRecord(t"NewPerks.Tech_Master_Perk_3");
     }
 
@@ -948,7 +948,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.HumanityLoss03_UIData.description", GetLocalizedTextByKey(n"DarkFutureHumanityLoss03NoCyberpsychosisDesc"));
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.HumanityLoss04_UIData.description", GetLocalizedTextByKey(n"DarkFutureHumanityLoss04NoCyberpsychosisDesc"));
         }
-        
+
         TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.HumanityLoss02_UIData");
         TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.HumanityLoss03_UIData");
         TweakDBManager.UpdateRecord(t"DarkFutureStatusEffect.HumanityLoss04_UIData");
@@ -967,13 +967,13 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         } else {
             pointsExceeded = this.CyberwareService.GetPointsOfCyberwareCapacityExceeded();
         }
-        
+
         let chanceData: DFCyberpsychosisChanceData;
 
         if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureImmunosuppressant") {
             chanceData.chance = 0.0;
             chanceData.reason = GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonImmunosuppressant");
-        
+
         } else if this.BiocorruptionCondition.GetHasEuphoria() {
             chanceData.chance = 0.0;
             chanceData.reason = GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonEuphoria");
@@ -985,7 +985,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         } else if Cast<Int32>(this.GetConditionLevel()) < this.GetCyberpsychosisMinConditionLevel() {
             chanceData.chance = 0.0;
             chanceData.reason = GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberpsychosisReasonHumanityLoss");
-            
+
         } else {
             chanceData.chance = pointsExceeded * this.cyberpsychosisChancePerCyberwareCapacityPointExceeded;
             // TEST chanceData.chance = 100.0;
@@ -1034,7 +1034,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                             DFLog(this, "Applying " + ToString(cyberpsychosisStacksToApply) + " stacks of Cyberpsychosis!");
 
                             this.TryToPlayCyberpsychosisEffectsEnter();
-                            
+
                             // Unfortunately, it appears that we can't apply multiple stacks of a status effect at once.
                             // Apply them one at a time.
                             while cyberpsychosisStacksToApply > 0u {
@@ -1045,7 +1045,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                             // As a workaround optimization, signal that we have completed adding Cyberpsychosis effects.
                             StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.CyberpsychosisApplicationDone");
                         }
-                    }                        
+                    }
                 }
             }
         }
@@ -1081,7 +1081,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             cyberpsychosisStartEffectRedScreen.allowPlaybackInCombat = true;
             cyberpsychosisStartEffectRedScreen.preventVFXIfIncompatibleVFXApplied = true;
             this.NotificationService.QueueNotification(cyberpsychosisStartEffectRedScreen, true);
-            
+
             // Auxiliary Effects - Slow Time
             StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.CyberpsychosisSlowTime");
         }
@@ -1091,7 +1091,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                 cyberpsychosisEffect.sfx = DFAudioCue(n"ono_v_laughs_hard", -5);
             }
         }
-        
+
         // Play immediately.
         this.NotificationService.QueueNotification(cyberpsychosisEffect, true);
     }
@@ -1151,7 +1151,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                     shouldPlay = true;
                 }
             }
-            
+
             if shouldPlay {
                 this.NotificationService.QueueNotification(cyberpsychosisEffect);
             }
@@ -1322,7 +1322,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             } else if this.queueAllFutureProgressionNotifications {
                 shouldQueue = true;
             }
-            
+
             if shouldQueue {
                 this.QueueConditionProgressionNotification(this.lastDisplayedProgressionNotificationValue, true);
             }
@@ -1454,7 +1454,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                 DFLog(this, "remainingEndotrisineEffectDurationInGameTimeSeconds = " + ToString(this.remainingEndotrisineEffectDurationInGameTimeSeconds));
             }
         }
-        
+
         this.RegisterHumanityLossDurationUpdateCallback();
     }
 
@@ -1472,7 +1472,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             this.RefreshEndotrisineStatusEffect();
         }
         DFLog(this, "remainingEndotrisineEffectDurationInGameTimeSeconds = " + ToString(this.remainingEndotrisineEffectDurationInGameTimeSeconds));
-        
+
         this.RegisterHumanityLossDurationUpdateCallback();
     }
 
@@ -1533,13 +1533,13 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         }
 
         DFLog(this, "RestoreHumanityLoss ---- bonusMult = " + ToString(bonusMult));
-        
+
         if Equals(restoreType, DFHumanityLossRestorationType.RepeatableMinor) {
             this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMinorRev2 + (this.Settings.humanityLossRegenerationAmountRepeatableMinorRev2 * bonusMult));
-            
+
         } else if Equals(restoreType, DFHumanityLossRestorationType.RepeatableMajor) {
             this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatableMajorRev2 + (this.Settings.humanityLossRegenerationAmountRepeatableMajorRev2 * bonusMult));
-        
+
         } else if Equals(restoreType, DFHumanityLossRestorationType.RepeatablePivotal) {
             this.RestoreCondition(this.Settings.humanityLossRegenerationAmountRepeatablePivotalRev2 + (this.Settings.humanityLossRegenerationAmountRepeatablePivotalRev2 * bonusMult));
 
@@ -1597,11 +1597,11 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         } else if Equals(type, DFHumanityLossRestorationActivityType.Speed) && this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.Speed) {
             this.lastHumanityLossRestorationChoiceType = EnumInt(DFHumanityLossRestoreChoiceType.Speed);
             this.QuestsSystem.SetFact(this.GetShowTimedHumanityLossRestoreChoiceFactAction(), EnumInt(DFHumanityLossRestoreChoiceType.Speed));
-        
+
         } else if Equals(type, DFHumanityLossRestorationActivityType.ConfessionBooth) && this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.ConfessionBooth) {
             this.lastHumanityLossRestorationChoiceType = EnumInt(DFHumanityLossRestoreChoiceType.ConfessionBooth);
             this.QuestsSystem.SetFact(this.GetShowTimedHumanityLossRestoreChoiceFactAction(), EnumInt(DFHumanityLossRestoreChoiceType.ConfessionBooth));
-        
+
         } else if Equals(type, DFHumanityLossRestorationActivityType.Radio) && this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.Radio) {
             this.lastHumanityLossRestorationChoiceType = EnumInt(DFHumanityLossRestoreChoiceType.Radio);
             this.QuestsSystem.SetFact(this.GetShowTimedHumanityLossRestoreChoiceFactAction(), EnumInt(DFHumanityLossRestoreChoiceType.Radio));
@@ -1643,7 +1643,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         } else {
             FreshStartLifePathType = gamedataLifePath.Invalid;
         }
-        
+
         let playerControlledObject: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerControlledGameObject();
         let lifePath: gamedataLifePath = PlayerDevelopmentSystem.GetInstance(playerControlledObject).GetLifePath(playerControlledObject);
 
@@ -1793,7 +1793,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                     }
                     this.lastDayRestored_LifePath = GetGameInstance().GetGameTime().Days();
                 }
-            
+
             // Speed
             } else if this.lastHumanityLossRestorationChoiceType == EnumInt(DFHumanityLossRestoreChoiceType.Speed) {
                 if Equals(value, 1) {
@@ -1808,7 +1808,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                     }
                     this.lastDayRestored_Speed = GetGameInstance().GetGameTime().Days();
                 }
-            
+
             // Radio
             } else if this.lastHumanityLossRestorationChoiceType == EnumInt(DFHumanityLossRestoreChoiceType.Radio) {
                 if Equals(value, 1) {
@@ -1832,7 +1832,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                     }
                     this.lastDayRestored_Radio = GetGameInstance().GetGameTime().Days();
                 }
-            
+
             // Confession Booth
             /*} else if this.lastHumanityLossRestorationChoiceType == EnumInt(DFHumanityLossRestoreChoiceType.ConfessionBooth) {
                 if Equals(value, 1) {
@@ -1849,7 +1849,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
                 }
             */
             }
-            
+
             this.QuestsSystem.SetFact(this.humanityLossRestoreChoiceActivatedActionFactListener.fact, 0);
         }
     }
@@ -1870,7 +1870,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             } else {
                 this.QuestsSystem.SetFact(n"df_fact_speed_voiceline_is_in_badlands", 0);
             }
-            
+
             this.QuestsSystem.SetFact(this.speedVoicelineGetInBadlandsActionFactListener.fact, 0);
         }
     }
@@ -1910,7 +1910,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         vtd.expectedValueFrom = 1;
         vtd.valueTo = value;
         vtd.expectedValueTo = 0;
-        
+
         if DFFactListenerCanRunOnExpectedValueTransition(vtd, this.factListenerRegistry, this.onceOnlyDFFactListenersFired) {
             this.TryToRestoreHumanityLossFromTarotReading();
         }
@@ -2085,7 +2085,7 @@ private final func TurnOn(playSFX: Bool) -> Void {
     wrappedMethod(playSFX);
 
     DFHumanityLossConditionSystem.Get().OnUpdateRadioState(DFHumanityLossRadioState.On);
-    
+
     //let track = GetRadioStationCurrentTrackName(RadioStationDataProvider.GetStationNameByIndex(this.m_selectedStation));
     //FTLog(GetLocalizedTextByKey(track)");
 }*/

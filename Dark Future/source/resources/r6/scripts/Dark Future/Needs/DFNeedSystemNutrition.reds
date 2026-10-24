@@ -100,7 +100,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
         //DFProfile();
         this.debugEnabled = false;
     }
-    
+
     public final func GetSystemToggleSettingValue() -> Bool {
         //DFProfile();
         // This system does not have a system-specific toggle.
@@ -132,7 +132,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
         DFLog(this, "OnUpdateActual");
         if !StatusEffectSystem.ObjectHasStatusEffect(this.player, this.GetBonusEffectTDBID()) {
             let props: DFChangeNeedValueProps;
-            
+
             if this.BiocorruptionConditionSystem.GetHasEuphoria() {
                 props.delayPercent = 1.0;
             }
@@ -188,7 +188,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
     private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
         //DFProfile();
         DFLog(this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
-        
+
         let notification: DFNotification;
         if stage == 4 || stage == 3 {
             if this.Settings.needNegativeSFXEnabled {
@@ -331,7 +331,7 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 
         // (Points to Lose) / ((Target In-Game Hours * 60 In-Game Minutes) / In-Game Update Interval (5 Minutes))
         let loss: Float = (100.0 / ((22.0 * 60.0) / 5.0) * -1.0) * (this.Settings.nutritionLossRatePct / 100.0);
-        
+
         return loss;
     }
 

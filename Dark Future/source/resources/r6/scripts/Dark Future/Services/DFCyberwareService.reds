@@ -85,7 +85,7 @@ public final class DFCyberwareService extends DFSystem {
         //DFProfile();
         this.UpdateEquippedCyberwareAndBonuses();
     }
-    
+
     private final func SetupDebugLogging() -> Void {
         //DFProfile();
         this.debugEnabled = false;
@@ -131,7 +131,7 @@ public final class DFCyberwareService extends DFSystem {
     private final func UpdateEquippedCyberwareItemIDs(out itemIDs: array<ItemID>) -> Void {
         //DFProfile();
         ArrayClear(itemIDs);
-        
+
         let i: Int32 = 0;
         while i < ArraySize(this.cyberwareEquipmentAreas) {
             let j: Int32 = 0;
@@ -157,7 +157,7 @@ public final class DFCyberwareService extends DFSystem {
             let cyberwareType: CName = TweakDBInterface.GetCName(ItemID.GetTDBID(itemID) + t".cyberwareType", n"None");
             if NotEquals(cyberwareType, n"None") {
                 let quality: gamedataQuality = TweakDBInterface.GetItemRecord(ItemID.GetTDBID(itemID)).QualityHandle().Type();
-                
+
                 if Equals(cyberwareType, n"IronLungs") {
                     switch quality {
                         case gamedataQuality.Rare:
@@ -236,7 +236,7 @@ public final class DFCyberwareService extends DFSystem {
         //DFProfile();
         return this.cyberwareAlcoholEnergyLossBonus;
     }
-    
+
     public final func GetNarcoticExcessStacksAllowedBonus() -> Int32 {
         //DFProfile();
         return this.cyberwareNarcoticExcessStacksAllowedBonus;

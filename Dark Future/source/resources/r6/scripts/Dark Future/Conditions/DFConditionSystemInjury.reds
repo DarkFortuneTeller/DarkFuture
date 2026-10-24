@@ -91,7 +91,7 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
     public func GetSystems() -> Void {
         //DFProfile();
         super.GetSystems();
-        
+
         this.StatsSystem = GameInstance.GetStatsSystem(GetGameInstance());
     }
 
@@ -197,7 +197,7 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
     private final func QueueConditionMessage(level: Uint32) -> Void {
         //DFProfile();
         if !this.Settings.conditionMessagesEnabled { return; }
-        
+
         let conditionLevelUpMessage: DFMessage;
         conditionLevelUpMessage.type = SimpleMessageType.Negative;
         conditionLevelUpMessage.key = StringToName("DarkFutureMagicMessageStringConditionInjury" + IntToString(Cast<Int32>(level)));

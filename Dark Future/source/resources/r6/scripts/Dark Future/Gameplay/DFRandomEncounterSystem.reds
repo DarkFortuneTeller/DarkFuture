@@ -114,12 +114,12 @@ public final class DFRandomEncounterSystem extends DFSystem {
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-    
+
     private func UnregisterListeners() -> Void {
         //DFProfile();
         this.DynamicEntitySystem.UnregisterListener(n"DarkFuture.SpawnedNPC", this, n"OnPuppetUpdate");
     }
-    
+
     public func UnregisterAllDelayCallbacks() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
@@ -148,7 +148,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
         let currentDistrictRecord: ref<District_Record> = this.player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord();
         if IsDefined(currentDistrictRecord) {
             let hostileGangData: DFGangData = this.GetHostileDistrictGang(currentDistrictRecord);
-            
+
             let encounterChance: Float = this.GetRandomEncounterChanceForDistrict(hostileGangData);
 
             let randomChance: Float = RandRangeF(0.0, 1.0);
@@ -219,7 +219,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
         } else if Equals(gangData.districtName, "CityCenter") {
             return this.Settings.randomEncounterChanceCityCenter / 100.0;
 
-        // Other Gang-Controlled Locations    
+        // Other Gang-Controlled Locations
         } else if ArrayContains(this.hostileGangs, gangData.gangName) {
             return this.Settings.randomEncounterChanceGangDistrict / 100.0;
 
@@ -236,7 +236,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
 
         if !StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoCombat") && IsDefined(districtRecord) {
             selectedGangData = this.GetHostileDistrictGangRecursive(districtRecord);
-            
+
             // Exceptions
             if Equals(selectedGangData.gangName, n"") {
                 if Equals(selectedGangData.districtName, "Badlands") || Equals(selectedGangData.districtName, "NorthBadlands") || Equals(selectedGangData.districtName, "SouthBadlands") {
@@ -259,10 +259,10 @@ public final class DFRandomEncounterSystem extends DFSystem {
         //DFProfile();
         // May return nothing if no hostile gang is found.
         let selectedGangData: DFGangData;
-        
+
         let gangs: array<wref<Affiliation_Record>>;
         let districtHostileGangs: array<wref<Affiliation_Record>>;
-        
+
         let districtName: String = districtRecord.EnumName();
         selectedGangData.districtName = districtName;
 

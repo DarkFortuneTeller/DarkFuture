@@ -6,7 +6,7 @@
 //
 
 import DarkFuture.Logging.*
-import DarkFuture.Main.{ 
+import DarkFuture.Main.{
     DFNeedsDatum,
     DFNeedChangeDatum,
     DFEnergyChangePreview,
@@ -122,7 +122,7 @@ protected cb func OnInitialize() -> Bool {
     this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
 
     let parentWidget: ref<inkCompoundWidget> = this.GetRootCompoundWidget();
-    
+
     this.CreateNeedsBarCluster(parentWidget);
     this.SetOriginalValuesInUI();
 
@@ -151,7 +151,7 @@ private final func GetStackLimitedNerveToRestore(needsData: DFNeedsDatum, stacki
 protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) -> Bool {
     //DFProfile();
     let val: Bool = wrappedMethod(evt);
-    
+
     if this.Settings.mainSystemEnabled {
         let sortingDropdown: ref<DropdownListController> = inkWidgetRef.GetController(this.m_sortingDropdown) as DropdownListController;
         if !sortingDropdown.IsOpened() && IsDefined(evt.uiInventoryItem) {
@@ -178,7 +178,7 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
                 if this.NerveSystem.GetHasNausea() {
                     // Player has nausea from low Nerve.
                     this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), nutritionMax);
-                    
+
                 } else {
                     let nPrev: Float = this.NutritionSystem.GetNeedValue() + needsData.nutrition.value;
                     this.nutritionBar.SetUpdatedValue(nPrev, MinF(MaxF(needsData.nutrition.ceiling, this.NutritionSystem.GetNeedValue()), nutritionMax));
@@ -219,7 +219,7 @@ protected cb func OnItemDisplayHoverOver(evt: ref<ItemDisplayHoverOverEvent>) ->
             };
         };
     }
-    
+
 
     return val;
 }
@@ -234,7 +234,7 @@ protected cb func OnItemFilterClick(evt: ref<inkPointerEvent>) -> Bool {
     if this.GameStateService.IsValidGameState(this, true) {
         if evt.IsAction(n"click") {
             let filter: ItemFilterCategory = this.m_activeFilter.GetFilterType();
-            
+
             // More Inventory Filters Compatibility
             let moreInventoryFiltersFoodFilterID: Int32 = 24;
 
@@ -336,7 +336,7 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 
     let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\widgets\\healthbar\\atlas_buffinfo.inkatlas";
     let hydrationIconName: CName = n"hydrated";
-    
+
     let nutritionIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
     let nutritionIconName: CName = n"food_vendor";
 
@@ -352,7 +352,7 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
     barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, true, false, "");
     this.hydrationBar = new DFNeedsMenuBar();
     this.hydrationBar.Init(barSetupData);
-    
+
     barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, true, false, "");
     this.nutritionBar = new DFNeedsMenuBar();
     this.nutritionBar.Init(barSetupData);

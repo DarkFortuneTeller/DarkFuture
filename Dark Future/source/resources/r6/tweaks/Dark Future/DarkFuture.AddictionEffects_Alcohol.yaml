@@ -37,7 +37,7 @@ UIIcon.DarkFutureAlcoholWithdrawalIcon:
   $type: gamedataUIIcon_Record
   atlasPartName: drunk
   atlasResourcePath: base\gameplay\gui\widgets\healthbar\atlas_buffinfo.inkatlas
- 
+
 #
 #
 # Alcohol Withdrawal Cessation

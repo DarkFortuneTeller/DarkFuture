@@ -86,7 +86,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
             nerveSystem.UpdateWeaponShake();
         }
     }
-    
+
     return wrappedMethod(evt);
 }
 
@@ -294,7 +294,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
     public final func GetSystemToggleSettingValue() -> Bool {
         //DFProfile();
-        // This system does not have a system-specific toggle. 
+        // This system does not have a system-specific toggle.
         return true;
     }
 
@@ -410,7 +410,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         queuedChange.targetValueMode = true;
         queuedChange.skipSevereNeedMessage = data.skipSevereNeedMessage;
         queuedChange.biocorruptionData = data.targetBiocorruptionValues;
-        
+
         this.QueueContextuallyDelayedNeedValueChange(queuedChange);
     }
 
@@ -449,7 +449,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         changeNeedValueProps.uiFlags = uiFlags;
         changeNeedValueProps.suppressRecoveryNotification = isNicotine;
         changeNeedValueProps.maxOverride = this.GetNeedMaxAfterItemUse(itemRecord);
-        
+
         let clampedValue: Float = this.GetClampedNeedChangeFromData(itemNerve);
         this.ChangeNeedValue(clampedValue, changeNeedValueProps);
 
@@ -472,7 +472,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
     //
     private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
         //DFProfile();
-        
+
         if itemRecord.TagsContains(n"DarkFutureConsumableOverdoseCureDrug") {
             // Remove all stacks of Narcotics.
             let energyToChange: Float = DFPlayerStateService.Get().ClearManagedEffectOfTypeAndReturnEnergyToChange(DFManagedEffectType.Narcotic);
@@ -500,13 +500,13 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         let r: DFNerveChangePreview;
         let pipelineResult: DFManagedEffectPipelineResult = this.PlayerStateService.ManagedConsumablePipeline(itemRecord);
         if pipelineResult.managedEffectStateIndex == -1 || Equals(pipelineResult.managedEffectItemDef.itemRecordTag, n"") { return r; }
-        
+
         // If the stack count granted is random, we can't know the effect on the player's Nerve.
-        if Equals(pipelineResult.managedEffectItemDef.stackCountDef.mode, DFManagedEffectStackCountMode.Random) { 
+        if Equals(pipelineResult.managedEffectItemDef.stackCountDef.mode, DFManagedEffectStackCountMode.Random) {
             r.indeterminate = true;
             return r;
         }
-        
+
         // If no active effect applied, bail.
         if pipelineResult.activeStacksToApply == 0 { return r; }
 
@@ -514,12 +514,12 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
         return r;
     }
-    
+
     private final func StartNarcoticFX() -> Void {
         //DFProfile();
         GameObjectEffectHelper.StartEffectEvent(this.player, n"status_drugged_heavy", false, null, true);
         GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 3.00);
-        
+
         let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
         evt.soundName = n"vfx_fullscreen_drugged_start";
         this.player.QueueEvent(evt);
@@ -545,7 +545,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         let needMax: Float = 100.0;
 
         if !IsDefined(itemRecord) {return this.needMax; }
-        
+
         let managedEffectStateIdx: Int32 = this.PlayerStateService.GetItemManagedEffectStateIndex(itemRecord);
         if managedEffectStateIdx == -1 { return this.needMax; }
 
@@ -564,8 +564,8 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         let theAddictionSystem: ref<DFAddictionSystemBase> = this.PlayerStateService.GetAddictionSystemFromManagedEffectType(managedEffect.type);
         if IsDefined(theAddictionSystem) && Equals(managedEffectItemDef.stackCountDef.mode, DFManagedEffectStackCountMode.Specific) {
             if pipelineResult.activeStacksToApply > 0 {
-                if Equals(managedEffect.type, DFManagedEffectType.Alcohol) { alcoholWithdrawalLevel = 0; } 
-                else if Equals(managedEffect.type, DFManagedEffectType.Nicotine) { nicotineWithdrawalLevel = 0; } 
+                if Equals(managedEffect.type, DFManagedEffectType.Alcohol) { alcoholWithdrawalLevel = 0; }
+                else if Equals(managedEffect.type, DFManagedEffectType.Nicotine) { nicotineWithdrawalLevel = 0; }
                 else if Equals(managedEffect.type, DFManagedEffectType.Narcotic) { narcoticWithdrawalLevel = 0; }
             }
         }
@@ -609,7 +609,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
                     this.NicotineAddictionSystem.GetWithdrawalLevel(),
                     this.NarcoticAddictionSystem.GetWithdrawalLevel(),
                     this.BiocorruptionConditionSystem.GetHasEuphoria());
-        
+
         DFLog(this, "Nerve System Need Max: " + ToString(max));
         return max;
     }
@@ -627,7 +627,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
     private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
         //DFProfile();
         DFLog(this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
-        
+
         let notification: DFNotification;
         let notOverdosing: Bool = !this.PlayerStateService.GetInOverdose();
 
@@ -685,7 +685,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
                 } else {
                     notification.sfx = DFAudioCue(n"ono_v_pre_insert_splinter", 30);
                 }
-                
+
             }
 
             // Don't show the UI when recovering if it is the result of
@@ -766,7 +766,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         //DFProfile();
         if DFRunGuard(this, true) { return; }
         super.OnSceneTierChanged(value);
-        
+
         if Equals(value, GameplayTier.Tier1_FullGameplay) || Equals(value, GameplayTier.Tier2_StagedGameplay) {
             // When transitioning back to a playable Gameplay Tier, remove any interaction-based
             // Nerve Regen target. Hide the lock.
@@ -784,7 +784,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
     public final func SetUpdateMode(mode: DFNerveSystemUpdateMode) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-        
+
         DFLog(this, "---- SetUpdateMode ----");
         this.updateMode = mode;
 
@@ -794,7 +794,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         } else {
             this.UnregisterUpdateCallback();
         }
-        
+
         if Equals(mode, DFNerveSystemUpdateMode.Danger) {
             DFLog(this, "     Setting mode: Danger");
             this.RegisterDangerUpdateCallback();
@@ -880,7 +880,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         }
 
         let amountToChange: Float = 0.0;
-        
+
         if overchargeValue > 0.0 {
             // Deplete Overcharge over time.
             // (Points to Lose) / Hours in Day / Updates per Hour
@@ -922,11 +922,11 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 
             let totalNerveLossBonusMult: Float = MaxF(nerveLossBonusMult, 0.0);
             let nerveLossInDangerWithBonus: Float = baseNerveLossInDanger * totalNerveLossBonusMult;
-        
+
             DFLog(this, "GetNerveChangeFromDanger() nerveLossInDangerWithBonus: " + ToString(nerveLossInDangerWithBonus));
 
             return nerveLossInDangerWithBonus;
-        
+
         } else {
             // Failsafe - Not in danger, but this function was called anyway.
             return 0.0;
@@ -952,7 +952,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         if hasEuphoria {
             return needTarget;
         }
-        
+
         let alcoholNeedTargets: array<Float> = this.AlcoholAddictionSystem.GetAddictionNeedLimits();
         let nicotineNeedTargets: array<Float> = this.NicotineAddictionSystem.GetAddictionNeedLimits();
         let narcoticNeedTargets: array<Float> = this.NarcoticAddictionSystem.GetAddictionNeedLimits();
@@ -985,7 +985,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.Blackmarket_MemoryBooster") {
             return this.boosterMemoryBlackMarketTraceNerveLossBonusMult;
         } else if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.MemoryBooster") {
-            return this.boosterMemoryTraceNerveLossBonusMult; 
+            return this.boosterMemoryTraceNerveLossBonusMult;
         } else {
             return 0.0;
         }
@@ -1007,7 +1007,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
             } else {
                 this.TryToTransitionNerveBreathingEffects();
             }
-            
+
         } else {
             this.RegisterNerveBreathingDangerTransitionCallback();
 
@@ -1024,7 +1024,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
                     let changeValueProps: DFChangeNeedValueProps;
                     changeValueProps.fromDanger = true;
                     changeValueProps.uiFlags = uiFlags;
-                    
+
                     if deltaToMinThreshold >= AbsF(this.GetAccumulatedDelayedNeedLoss()) {
                         this.ChangeNeedValue(this.GetAccumulatedDelayedNeedLoss(), changeValueProps);
                     } else {
@@ -1050,7 +1050,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         let inOverdose: Bool = this.PlayerStateService.GetInOverdose();
 
         DFLog(this, "TryToTransitionNerveBreathingEffects needStage = " + ToString(needStage) + ", inDanger = " + ToString(inDanger));
-        
+
         if inOverdose {
             DFLog(this, "TryToTransitionNerveBreathingEffects: Starting high breathing FX (In Overdose)");
             this.StopNerveBreathingEffects();
@@ -1094,7 +1094,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         if this.inDeathState { return; }
 
         let currentNerve: Float = this.GetNeedValue();
-        
+
         if this.GameStateService.IsValidGameState(this) {
             if currentNerve <= 0.0 && this.GetNeedDeathSettingValue() {
                 if this.CyberwareService.GetHasSecondHeart() && !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.SecondHeartCooldown") {
@@ -1113,7 +1113,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
                         notification.sfx = DFAudioCue(n"q101_sc_03_v_gasp", 0);
                         this.NotificationService.QueueNotification(notification);
                     }
-                    
+
                     this.ChangeNeedValue(this.CyberwareService.GetSecondHeartNerveRestoreAmount(), changeNeedValueProps);
                     StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SecondHeartNerveRestore");
 
@@ -1147,7 +1147,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
                     this.QueueCriticalNeedWarningNotification();
                 }
             }
-            
+
             this.lastValueForCriticalNeedCheck = currentNerve;
         }
     }
@@ -1253,7 +1253,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
             changeNeedValueProps.isSoftCapRestrictedChange = true;
             this.ChangeNeedValue(this.nerveRegenAmountRapid, changeNeedValueProps);
         }
-        
+
         this.AutoSetUpdateMode();
     }
 
@@ -1307,7 +1307,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         let hasNervesOfTungstenSteel: Bool = PlayerDevelopmentSystem.GetData(this.player).IsNewPerkBoughtAnyLevel(gamedataNewPerkType.Cool_Master_Perk_1);
         let inFury: Bool = this.GameStateService.PlayerHasAnyFuryEffect();
         let ignoreWeaponShake: Bool = !this.Settings.nerveWeaponSwayEnabled || (hasFocusActive && hasNervesOfTungstenSteel) || inFury;
-        
+
         if this.player.m_isAiming && !ignoreWeaponShake {
             let needStage: Int32 = this.GetNeedStage();
             if needStage == 2 {
@@ -1338,7 +1338,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
             if flatlineStacks > 5u {
                 let notification: DFNotification;
                 notification.allowPlaybackInCombat = true;
-                
+
                 let message: DFMessage;
                 message.key = n"DarkFutureOverdoseNotification";
                 message.type = SimpleMessageType.Negative;
@@ -1356,7 +1356,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
             let i: Uint32 = 0u;
             while i < flatlineStacks {
                 StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Overdose");
-                i += 1u;    
+                i += 1u;
             }
 
         } else if wasInOverdose && !inOverdose {
@@ -1396,7 +1396,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
         //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, NerveRegenCallback.Create(), this.nerveRegenDelayID, this.nerveRegenDelayInterval);
     }
-    
+
     private final func RegisterRemoveNarcoticFXInitialCallback() -> Void {
         //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, RemoveNarcoticFXCallback.Create(), this.removeNarcoticFXDelayID, this.removeNarcoticFXDelayInterval);

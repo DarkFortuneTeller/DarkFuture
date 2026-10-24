@@ -134,7 +134,7 @@ public class DFNeedsMenuBar extends inkCanvas {
             shadow.SetTexturePart(n"shadowBlobText");
             shadow.Reparent(canvas);
             this.m_shadow = shadow;
-        
+
         } else {
             this.m_hasLock = false;
         }
@@ -373,10 +373,10 @@ public class DFNeedsMenuBar extends inkCanvas {
 
             if !this.m_lastStateWasOvercharge && canAnimate {
                 this.m_lastStateWasOvercharge = true;
-                
+
                 this.PlayOverchargeIconAnim();
             }
-            
+
         } else {
             this.m_barLabel.SetText(this.m_setupData.barLabel);
             this.m_barLabel.SetTintColor(barLabelColor);
@@ -394,7 +394,7 @@ public class DFNeedsMenuBar extends inkCanvas {
             this.m_border.SetTintColor(tintColor);
 
             this.m_lastStateWasOvercharge = false;
-        }   
+        }
     }
 
     private final func PlayOverchargeIconAnim() -> Void {
@@ -402,7 +402,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         this.StopAnimProxyIfDefined(this.m_overchargeIcon_anim_proxy);
 
         this.m_overchargeIcon_anim = new inkAnimDef();
-        
+
         let fadeInInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
         fadeInInterp.SetStartTransparency(0.0);
         fadeInInterp.SetEndTransparency(1.0);
@@ -410,7 +410,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         fadeInInterp.SetType(inkanimInterpolationType.Linear);
         fadeInInterp.SetDuration(0.6);
         this.m_overchargeIcon_anim.AddInterpolator(fadeInInterp);
-        
+
         let scaleInterp: ref<inkAnimScale> = new inkAnimScale();
         scaleInterp.SetStartScale(Vector2(1.8, 1.8));
         scaleInterp.SetEndScale(Vector2(1.0, 1.0));
@@ -418,7 +418,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         scaleInterp.SetType(inkanimInterpolationType.Quartic);
         scaleInterp.SetDuration(0.6);
         this.m_overchargeIcon_anim.AddInterpolator(scaleInterp);
-        
+
         this.m_overchargeIcon_anim_proxy = this.m_icon.PlayAnimation(this.m_overchargeIcon_anim);
     }
 
@@ -442,13 +442,13 @@ public class DFNeedsMenuBar extends inkCanvas {
         this.m_barLabel.SetTintColor(barLabelColor);
         this.m_valueLabel.SetTintColor(tintColor);
         this.m_originalValueLabelTintColor = tintColor;
-        
+
         this.m_bg.SetTintColor(faintTintColor);
         this.m_bg.SetShear(Vector2(shear, 0.0));
 
         this.m_border.SetTintColor(tintColor);
         this.m_border.SetShear(Vector2(shear, 0.0));
-        
+
         this.m_fullBar.SetTintColor(mildTintColor);
         this.m_fullBar.SetShear(Vector2(shear, 0.0));
 

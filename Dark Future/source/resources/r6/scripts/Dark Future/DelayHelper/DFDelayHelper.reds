@@ -31,7 +31,7 @@ public func RegisterDFDelayCallback(delaySystem: ref<DelaySystem>, callback: ref
     if allowRestart {
         UnregisterDFDelayCallback(delaySystem, delayID);
     }
-    
+
     if delayID == GetInvalidDelayID() {
         delayID = delaySystem.DelayCallback(callback, delayInterval, true);
     }
@@ -49,11 +49,11 @@ public abstract class DFDelayCallback extends DelayCallback {
     public func InvalidateDelayID() -> Void {
         //FTLog("MISSING REQUIRED METHOD OVERRIDE FOR InvalidateDelayID()");
     }
-    
+
     public func Callback() -> Void {
         //FTLog("MISSING REQUIRED METHOD OVERRIDE FOR Callback()");
     }
-    
+
     public func Call() -> Void {
         this.InvalidateDelayID();
         this.Callback();

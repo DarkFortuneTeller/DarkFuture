@@ -100,7 +100,7 @@ public abstract class DFSystem extends ScriptableSystem {
         this.player = attachedPlayer;
         this.DoInitActions(attachedPlayer);
         this.InitSpecific(attachedPlayer);
-        
+
         // Now that all data has been set correctly, if this system should be
         // toggled off, suspend it.
         if Equals(this.GetSystemToggleSettingValue(), false) {
@@ -178,7 +178,7 @@ public abstract class DFSystem extends ScriptableSystem {
                 }
             }
         }
-        
+
         this.OnSettingChangedSpecific(changedSettings);
     }
 

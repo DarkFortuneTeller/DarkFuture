@@ -26,7 +26,7 @@ import DarkFuture.Settings.{
 import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Main.DFTimeSkipData
-import DarkFuture.Main.{ 
+import DarkFuture.Main.{
     DFNeedsDatum,
     DFNeedChangeDatum,
     DFEnergyChangePreview,
@@ -70,7 +70,7 @@ class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventItemHoverOut>(), this, n"OnRevisedCustomEventItemHoverOutEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventCategorySelected>(), this, n"OnRevisedCustomEventCategorySelectedEvent", true);
     }
-    
+
     private cb func OnRevisedBackpackOpenedEvent(event: ref<RevisedCustomEventBackpackOpened>) {
         //DFProfile();
         this.GetSystemInstance().OnRevisedBackpackOpened(event.opened);
@@ -154,7 +154,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
             this.virtualResolutionWatcher.ScaleWidget(fullScreenSlot);
 
             this.widgetSlot.SetVisible(this.Settings.mainSystemEnabled);
-        
+
         } else {
             this.widgetSlot.SetVisible(false);
             this.widgetSlot = null;
@@ -184,7 +184,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                 if itemData.HasTag(n"Consumable") {
                     let itemRecord: wref<Item_Record> = TweakDBInterface.GetItemRecord(itemData.GetID().GetTDBID());
                     let needsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
-                    
+
                     // Show the change in Energy if player meets the energy management effect criteria.
                     let energyMax: Float = this.EnergySystem.GetNeedMaxAfterItemUse(itemRecord);
                     let ePrev: DFEnergyChangePreview = this.EnergySystem.GetItemEnergyChangePreviewAmountWithCrashInfo(itemRecord);
@@ -202,7 +202,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                     if this.NerveSystem.GetHasNausea() {
                         // Player has nausea from low Nerve.
                         this.nutritionBar.SetUpdatedValue(this.NutritionSystem.GetNeedValue(), nutritionMax);
-                        
+
                     } else {
                         let nPrev: Float = this.NutritionSystem.GetNeedValue() + needsData.nutrition.value;
                         this.nutritionBar.SetUpdatedValue(nPrev, MinF(MaxF(needsData.nutrition.ceiling, this.NutritionSystem.GetNeedValue()), nutritionMax));
@@ -236,7 +236,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                     }
 
                     this.nerveBar.SetUpdatedValue(potentialNewValue, nerveMax, false, nervePrev.indeterminate);
-                    
+
                     this.UpdateBarLimit(this.nerveBar, nerveMax);
                     this.UpdateNerveBarOvercharge(this.NerveSystem.GetOverchargeValue());
                 }
@@ -294,7 +294,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
         // This system does not have a system-specific toggle.
         return true;
     }
-    
+
     private final func GetSystemToggleSettingString() -> String {
         //DFProfile();
         // This system does not have a system-specific toggle.
@@ -383,7 +383,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 
         let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\widgets\\healthbar\\atlas_buffinfo.inkatlas";
         let hydrationIconName: CName = n"hydrated";
-        
+
         let nutritionIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
         let nutritionIconName: CName = n"food_vendor";
 
@@ -399,7 +399,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
         barSetupData = DFNeedsMenuBarSetupData(rowOne, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 400.0, 100.0, 0.0, 0.0, true, false, "");
         this.hydrationBar = new DFNeedsMenuBar();
         this.hydrationBar.Init(barSetupData);
-        
+
         barSetupData = DFNeedsMenuBarSetupData(rowOne, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 400.0, 100.0, 0.0, 0.0, true, false, "");
         this.nutritionBar = new DFNeedsMenuBar();
         this.nutritionBar.Init(barSetupData);

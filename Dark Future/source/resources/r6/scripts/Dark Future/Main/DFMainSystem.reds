@@ -150,7 +150,7 @@ protected cb func OnLateInit(evt: ref<LateInit>) -> Bool {
     // Now that we know that the Radial Wheel is done initializing, it's now safe to act on systems
     // that might apply status effects.
     DFMainSystem.Get().OnRadialWheelLateInitDone();
-    
+
     let widgetSlot: ref<inkWidget> = inkWidgetRef.Get(this.statusEffects.slotAnchorRef);
     DFHUDSystem.Get().SetRadialWheelStatusEffectListWidget(widgetSlot);
 
@@ -161,7 +161,7 @@ protected cb func OnLateInit(evt: ref<LateInit>) -> Bool {
 protected cb func OnInitialize() -> Bool {
     //DFProfile();
     let val: Bool = wrappedMethod();
-    
+
     let DFMainSystem: ref<DFMainSystem> = DFMainSystem.Get();
     DFMainSystem.DispatchPlayerDeathEvent();
 
@@ -555,7 +555,7 @@ public final class DFMainSystem extends ScriptableSystem {
         DFBiocorruptionConditionSystem.GetInstance(gameInstance).Suspend();
         DFHumanityLossConditionSystem.GetInstance(gameInstance).Suspend();
         DFInjuryConditionSystem.GetInstance(gameInstance).Suspend();
-        
+
         // Cyberware Service
         DFCyberwareService.GetInstance(gameInstance).Suspend();
 
@@ -566,12 +566,12 @@ public final class DFMainSystem extends ScriptableSystem {
 
         // Impaired Driving
         DFImpairedDrivingSystem.GetInstance(gameInstance).Suspend();
-        
+
         // Basic Needs
         DFEnergySystem.GetInstance(gameInstance).Suspend();
         DFNutritionSystem.GetInstance(gameInstance).Suspend();
         DFHydrationSystem.GetInstance(gameInstance).Suspend();
-        
+
         // Gameplay Systemss
         DFRelaxActionSystem.GetInstance(gameInstance).Suspend();
         DFRandomEncounterSystem.GetInstance(gameInstance).Suspend();
@@ -597,7 +597,7 @@ public final class DFMainSystem extends ScriptableSystem {
         let settings: ref<DFSettings> = DFSettings.Get();
         if settings.mainSystemEnabled {
             StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnStaminaRegen");
-            
+
             if Equals(settings.reducedCarryWeight, DFReducedCarryWeightAmount.Full) {
                 if !StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull") {
                     StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityFull");
@@ -668,7 +668,7 @@ public final class DFMainSystem extends ScriptableSystem {
             } else if newLevel >= 5 {
                 StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.StrengthSkillPenaltyHalf5");
             }
-        
+
         } else if Equals(reducedCarryWeightSettingValue, DFReducedCarryWeightAmount.Off) {
             strengthSkillLevel5NewBonus = 50;
             strengthSkillLevel25NewBonus = 100;
@@ -704,7 +704,7 @@ public final class DFMainSystem extends ScriptableSystem {
         let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(gameInstance);
         let injuryConditionSystemEnabled: Bool = DFInjuryConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();
         let humanityLossConditionSystemEnabled: Bool = DFHumanityLossConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();
-        let biocorruptionConditionSystemEnabled: Bool = DFBiocorruptionConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();        
+        let biocorruptionConditionSystemEnabled: Bool = DFBiocorruptionConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();
         let Settings: ref<DFSettings> = DFSettings.GetInstance(gameInstance);
 
         // Always on.
@@ -722,7 +722,7 @@ public final class DFMainSystem extends ScriptableSystem {
         let humanityLossCodexState: gameJournalEntryState = humanityLossConditionSystemEnabled ? gameJournalEntryState.Active : gameJournalEntryState.Inactive;
         let cyberpsychosisCodexState: gameJournalEntryState = (humanityLossConditionSystemEnabled && Settings.humanityLossCyberpsychosisEnabled) ? gameJournalEntryState.Active : gameJournalEntryState.Inactive;
         let biocorruptionCodexState: gameJournalEntryState = biocorruptionConditionSystemEnabled ? gameJournalEntryState.Active : gameJournalEntryState.Inactive;
-        
+
         journalManager.ChangeEntryState("codex/tutorials/playercharacter/addiction", "gameJournalCodexEntry", addictionCodexState, JournalNotifyOption.Notify);
         journalManager.ChangeEntryState("codex/tutorials/playercharacter/addiction/desc", "gameJournalCodexDescription", addictionCodexState, JournalNotifyOption.Notify);
 
@@ -815,13 +815,13 @@ public final class DFMainSystem extends ScriptableSystem {
         // Dark Future 2.0 Preview Release Fix: Remove the consolidated Condition Icon.
         StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureBuffBarConditionIndicator");
     }
-    
+
     private final func TryToInfer20Upgrade() -> Void {
         //DFProfile();
         // Infer whether or not this is a clean installation, or an upgrade from legacy 1.x.
         // If a clean install, only show the activation message unless settings specify otherwise.
         // If an upgrade, show the 2.0 Upgrade message.
-        
+
         /*let Settings: ref<DFSettings> = DFSettings.Get();
         if (DFGameStateService.Get().hasShownActivationMessage && Settings.upgradeMessagesEnabled) ||
            (Settings.forceShowUpgradeMessageOnNewGame && this.lastKnownVersion < 2.0) {
@@ -949,7 +949,7 @@ public final class DFMainSystem extends ScriptableSystem {
         if !this.hasShownUpgradeMessage_20 {
             this.hasShownUpgradeMessage_20 = true;
             this.ShowSystemMessage(
-                n"DarkFutureTutorialActivateUpdateTitle", 
+                n"DarkFutureTutorialActivateUpdateTitle",
                 n"DarkFutureTutorialActivate_V20",
                 t"",
                 r"darkfuture\\movies\\dark_future_update_2_0.bk2"
@@ -962,7 +962,7 @@ public final class DFMainSystem extends ScriptableSystem {
         if !this.hasShownUpgradeMessage_30 {
             this.hasShownUpgradeMessage_30 = true;
             this.ShowSystemMessage(
-                n"DarkFutureTutorialActivateUpdateTitle", 
+                n"DarkFutureTutorialActivateUpdateTitle",
                 n"DarkFutureTutorialActivate_V30",
                 t"",
                 r"darkfuture\\movies\\dark_future_update_3_0.bk2"

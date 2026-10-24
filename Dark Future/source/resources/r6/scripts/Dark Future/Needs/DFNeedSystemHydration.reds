@@ -85,13 +85,13 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
         //DFProfile();
         this.debugEnabled = false;
     }
-    
+
     public func DoPostSuspendActions() -> Void {
         //DFProfile();
         super.DoPostSuspendActions();
         this.PlayerStateService.UpdateStaminaCosts();
     }
-    
+
 
     public final func GetSystemToggleSettingValue() -> Bool {
         //DFProfile();
@@ -180,7 +180,7 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
     private final func QueueNeedStageNotification(stage: Int32, opt suppressRecoveryNotification: Bool) -> Void {
         //DFProfile();
         DFLog(this, "QueueNeedStageNotification stage = " + ToString(stage) + ", suppressRecoveryNotification = " + ToString(suppressRecoveryNotification));
-        
+
         let notification: DFNotification;
         if stage >= 3 {
             if this.Settings.needNegativeSFXEnabled {
@@ -268,7 +268,7 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 
             let props: DFChangeNeedValueProps;
             props.uiFlags = uiFlags;
-            
+
             if NotEquals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) {
                 props.skipSevereNeedMessage = true;
             }
@@ -322,7 +322,7 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 
         // (Points to Lose) / ((Target In-Game Hours * 60 In-Game Minutes) / In-Game Update Interval (5 Minutes))
         let loss: Float = (100.0 / ((18.0 * 60.0) / 5.0) * -1.0) * (this.Settings.hydrationLossRatePct / 100.0);
-        
+
         return loss;
     }
 

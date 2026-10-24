@@ -67,14 +67,14 @@ public enum DFCrashAnimSetting {
 
 //  ModSettings - Register if Mod Settings installed
 //
-@if(ModuleExists("ModSettingsModule")) 
+@if(ModuleExists("ModSettingsModule"))
 public func RegisterDFSettingsListener(listener: ref<IScriptable>) {
     //DFProfile();
     ModSettings.RegisterListenerToClass(listener);
     ModSettings.RegisterListenerToModifications(listener);
 }
 
-@if(ModuleExists("ModSettingsModule")) 
+@if(ModuleExists("ModSettingsModule"))
 public func UnregisterDFSettingsListener(listener: ref<IScriptable>) {
     //DFProfile();
     ModSettings.UnregisterListenerToClass(listener);
@@ -83,12 +83,12 @@ public func UnregisterDFSettingsListener(listener: ref<IScriptable>) {
 
 //  ModSettings - No-op if Mod Settings not installed
 //
-@if(!ModuleExists("ModSettingsModule")) 
+@if(!ModuleExists("ModSettingsModule"))
 public func RegisterDFSettingsListener(listener: ref<IScriptable>) {
     //DFProfile();
     //FTLog("WARN: Mod Settings was not installed, or not installed correctly; listener registration aborted.");
 }
-@if(!ModuleExists("ModSettingsModule")) 
+@if(!ModuleExists("ModSettingsModule"))
 public func UnregisterDFSettingsListener(listener: ref<IScriptable>) {
     //DFProfile();
     //FTLog("WARN: Mod Settings was not installed, or not installed correctly; listener unregistration aborted.");
@@ -124,7 +124,7 @@ public class DFSettings extends ScriptableSystem {
     public final func OnSessionStart(evt: ref<GameSessionEvent>) {
         //DFProfile();
         DFLogNoSystem(this.debugEnabled, this, "OnSessionStart - Injecting TweakDB updates.");
-        
+
         // Ammo Changes
         //
         if Equals(this.ammoWeightEnabledV2, DFAmmoWeightSetting.EnabledLimitedAmmo) || Equals(this.ammoWeightEnabledV2, DFAmmoWeightSetting.EnabledUnlimitedAmmo) {
@@ -148,7 +148,7 @@ public class DFSettings extends ScriptableSystem {
             TweakDBManager.SetFlat(t"DarkFutureItem.AmmoRifleQuantityOverride.value", 99999001.0);   // +999
             TweakDBManager.SetFlat(t"DarkFutureItem.AmmoShotgunQuantityOverride.value", 99999800.0); // +200
             TweakDBManager.SetFlat(t"DarkFutureItem.AmmoSniperQuantityOverride.value", 99999825.0);  // +175
-            
+
             TweakDBManager.UpdateRecord(t"DarkFutureItem.AmmoHandgunQuantityOverride");
             TweakDBManager.UpdateRecord(t"DarkFutureItem.AmmoRifleQuantityOverride");
             TweakDBManager.UpdateRecord(t"DarkFutureItem.AmmoShotgunQuantityOverride");
@@ -178,7 +178,7 @@ public class DFSettings extends ScriptableSystem {
             TweakDBManager.UpdateRecord(t"Ammo.HandicapRifleAmmoPreset");
             TweakDBManager.UpdateRecord(t"Ammo.HandicapShotgunAmmoPreset");
             TweakDBManager.UpdateRecord(t"Ammo.HandicapSniperRifleAmmoPreset");
-            
+
         } else if Equals(this.ammoHandicapDrops, DFAmmoHandicapSetting.Disabled) {
             TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapLimit", 0);
             TweakDBManager.SetFlat(t"Ammo.HandicapHandgunAmmoPreset.handicapMaxQty", 0);
@@ -328,7 +328,7 @@ public class DFSettings extends ScriptableSystem {
             TweakDBManager.SetFlat(t"DarkFuturePrice.EpicFood.value", this.priceFoodEpic);
             TweakDBManager.SetFlat(t"DarkFuturePrice.LegendaryFoodSnack.value", this.priceFoodIllegalSnack);
             TweakDBManager.SetFlat(t"DarkFuturePrice.LegendaryFoodMeal.value", this.priceFoodIllegalMeal);
-            
+
             TweakDBManager.SetFlat(t"DarkFuturePrice.Cigarettes.value", this.priceCigarettes);
             TweakDBManager.SetFlat(t"DarkFuturePrice.MrWhitey.value", this.priceMrWhitey);
             TweakDBManager.SetFlat(t"DarkFuturePrice.Pharmaceuticals.value", this.pricePharmaceuticals);
@@ -637,7 +637,7 @@ public class DFSettings extends ScriptableSystem {
         //DFProfile();
         return DFSettings.GetInstance(GetGameInstance());
     }
-    
+
     public func OnDetach() -> Void {
         //DFProfile();
         UnregisterDFSettingsListener(this);
@@ -987,7 +987,7 @@ public class DFSettings extends ScriptableSystem {
             this._crashAnimationSetting = this.crashAnimationSetting;
             ArrayPush(changedSettings, "crashAnimationSetting");
         }
-        
+
         if ArraySize(changedSettings) > 0 {
             DFLogNoSystem(this.debugEnabled, this, "        ...the following settings have changed: " + ToString(changedSettings));
             GameInstance.GetCallbackSystem().DispatchEvent(SettingChangedEvent.Create(changedSettings));
@@ -1028,7 +1028,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayValues.Half", "DarkFutureReducedCarryWeightAmountHalf")
     @runtimeProperty("ModSettings.displayValues.Off", "DarkFutureReducedCarryWeightAmountOff")
     public let reducedCarryWeight: DFReducedCarryWeightAmount = DFReducedCarryWeightAmount.Full;
-    
+
     /*
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayGeneral")
@@ -1071,7 +1071,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "DarkFutureSettingHideFastTravelMarkers")
     @runtimeProperty("ModSettings.description", "DarkFutureSettingHideFastTravelMarkersDesc")
     public let hideFastTravelMarkers: Bool = true;
-    
+
     // -------------------------------------------------------------------------
     // Gameplay - Vehicle Summoning
     // -------------------------------------------------------------------------
@@ -1111,7 +1111,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "DarkFutureSettingSleepingInVehiclesKeybindingMain")
     @runtimeProperty("ModSettings.description", "DarkFutureSettingSleepingInVehiclesKeybindingMainDesc")
     public let DFVehicleSleepButtonMain: EInputKey = EInputKey.IK_LShift;
- 
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleeping")
     @runtimeProperty("ModSettings.category.order", "45")
@@ -1189,7 +1189,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "DarkFutureSettingAdvancedSettings")
     @runtimeProperty("ModSettings.description", "DarkFutureSettingAdvancedSettingsDesc")
     public let randomEncountersAdvancedSettings: Bool = false;
-    
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayVehicleSleepEncounters")
     @runtimeProperty("ModSettings.category.order", "48")
@@ -1271,7 +1271,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.min", "0.0")
     @runtimeProperty("ModSettings.max", "800.0")
     public let hydrationLossRatePct: Float = 100.0;
-    
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryGameplayBasicNeeds")
     @runtimeProperty("ModSettings.category.order", "50")
@@ -1850,7 +1850,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "DarkFutureSettingSyncConditionsUIWithHealthStamina")
     @runtimeProperty("ModSettings.description", "DarkFutureSettingSyncConditionsUIWithHealthStaminaDesc")
     public let syncConditionsUIWithHealthStamina: Bool = true;
-    
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryUI")
     @runtimeProperty("ModSettings.category.order", "110")
@@ -2048,7 +2048,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "DarkFutureSettingLowNerveBreathingEffectEnabled")
     @runtimeProperty("ModSettings.description", "DarkFutureSettingLowNerveBreathingEffectEnabledDesc")
     public let lowNerveBreathingEffectEnabled: Bool = true;
-    
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryFX")
     @runtimeProperty("ModSettings.category.order", "120")
@@ -2210,7 +2210,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "ConsumableAnimSettingLootActionManualKeyKBM")
     @runtimeProperty("ModSettings.description", "ConsumableAnimSettingLootActionManualKeyKBMDesc")
     public let consumableAnimationLootActionKeyKBM: EInputKey = EInputKey.IK_R;
- 
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "ConsumableAnimSettingsCategoryMain")
     @runtimeProperty("ModSettings.category.order", "145")
@@ -2383,7 +2383,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "RelaxActionSettingKeyKBM")
     @runtimeProperty("ModSettings.description", "RelaxActionSettingKeyKBMDesc")
     public let relaxActionKeyKBM: EInputKey = EInputKey.IK_LControl;
- 
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "RelaxActionSettingsCategoryMain")
     @runtimeProperty("ModSettings.category.order", "146")
@@ -2508,7 +2508,7 @@ public class DFSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.displayName", "DarkFutureSettingCompatibilityWannabeEdgerunner")
     @runtimeProperty("ModSettings.description", "DarkFutureSettingCompatibilityWannabeEdgerunnerDesc")
     public let compatibilityWannabeEdgerunner: Bool = true;
-    
+
     @runtimeProperty("ModSettings.mod", "DarkFutureSettingsModName")
     @runtimeProperty("ModSettings.category", "DarkFutureSettingsCategoryCompatibility")
     @runtimeProperty("ModSettings.category.order", "165")

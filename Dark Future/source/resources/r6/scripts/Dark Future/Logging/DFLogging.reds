@@ -50,7 +50,7 @@ public func DFLog(class: ref<DFSystem>, message: String, opt level: DFLogLevel) 
         } else {
             trace = s"[\(entry.function)]";
         }
-        
+
         switch level {
             case DFLogLevel.Warning:
                 //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);
@@ -76,7 +76,7 @@ public func DFLogNoSystem(enabled: Bool, class: ref<IScriptable>, message: Strin
         } else {
             trace = s"[\(entry.function)]";
         }
-        
+
         switch level {
             case DFLogLevel.Warning:
                 //LogChannelWarning(n"DEBUG", "[DarkFuture]$WARN$ " + trace + ": " + message);

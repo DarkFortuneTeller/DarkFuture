@@ -188,7 +188,7 @@ protected cb func OnOpenCraft(evt: ref<OpenCraft>) -> Bool {
     this.TryOpenCraftingMenu();
 }
 
-//  Stash - Open the Crafting Menu using the gameuiInGameMenuGameController, 
+//  Stash - Open the Crafting Menu using the gameuiInGameMenuGameController,
 //  identically to using a HotKey. Let the Stash Crafting System know that it's OK
 //  to open crafting.
 //
@@ -289,7 +289,7 @@ protected cb func OnOpenCraft(evt: ref<OpenCraft>) -> Bool {
     this.TryOpenCraftingMenu();
 }
 
-//  VehicleComponent - Open the Crafting Menu using the gameuiInGameMenuGameController, 
+//  VehicleComponent - Open the Crafting Menu using the gameuiInGameMenuGameController,
 //  identically to using a HotKey. Let the Stash Crafting System know that it's OK
 //  to open crafting.
 //

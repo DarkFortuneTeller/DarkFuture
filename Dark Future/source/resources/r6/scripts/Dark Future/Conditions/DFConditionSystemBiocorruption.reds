@@ -125,7 +125,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
             biocorruptionCondition.RefreshCrashStatusEffectAndUpdateLimit();
         }
     }
-    
+
     return wrappedMethod(evt);
 }
 
@@ -140,7 +140,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
             biocorruptionCondition.RefreshCrashStatusEffectAndUpdateLimit();
         }
     }
-    
+
     return wrappedMethod(evt);
 }
 
@@ -257,7 +257,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                 this.Resume();
             }
         }
-        
+
         if ArrayContains(changedSettings, "humanityLossCyberpsychosisEnabled") || ArrayContains(changedSettings, "humanityLossConditionEnabled") {
             this.RefreshEuphoria();
         }
@@ -281,7 +281,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     public func GetSystems() -> Void {
         //DFProfile();
         super.GetSystems();
-            
+
         let gameInstance: GameInstance = GetGameInstance();
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
         this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
@@ -302,12 +302,12 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         this.factListenerOnCrashEvent = GameInstance.GetQuestsSystem(GetGameInstance()).RegisterListener(this.GetOnCrashEventFact(), this, n"OnCrashEventFactSet");
         this.factListenerOnShowCrashTutorialActionFactSet = GameInstance.GetQuestsSystem(GetGameInstance()).RegisterListener(this.GetShowCrashTutorialActionFact(), this, n"OnDinoTextShowBiocorruptionCrashTutorialActionFactChanged");
     }
-    
+
     private func UnregisterListeners() -> Void {
         //DFProfile();
         GameInstance.GetQuestsSystem(GetGameInstance()).UnregisterListener(this.GetShowBiocorruptionTutorialActionFact(), this.FactListenerShowBiocorruptionTutorial);
         this.FactListenerShowBiocorruptionTutorial = 0u;
-        
+
         GameInstance.GetQuestsSystem(GetGameInstance()).UnregisterListener(this.GetOnCrashEventFact(), this.factListenerOnCrashEvent);
         this.factListenerOnCrashEvent = 0u;
 
@@ -513,20 +513,20 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(1, n"DarkFutureBiocorruption01Name", n"DarkFutureConditionBiocorruption01Desc"));
         ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(2, n"DarkFutureBiocorruption02Name", n"DarkFutureConditionBiocorruption02Desc"));
         ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(3, n"DarkFutureBiocorruption03Name", n"DarkFutureConditionBiocorruption03Desc"));
-        
+
         if Equals(this.player.GetResolvedGenderName(), n"Female") {
-            ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(4, n"DarkFutureBiocorruption04FemaleName", n"DarkFutureConditionBiocorruption04Desc"));    
+            ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(4, n"DarkFutureBiocorruption04FemaleName", n"DarkFutureConditionBiocorruption04Desc"));
         } else {
             ArrayPush(data.conditionEffectsData, this.CreateConditionEffectDisplayData(4, n"DarkFutureBiocorruption04MaleName", n"DarkFutureConditionBiocorruption04Desc"));
         }
-        
+
         return data;
     }
 
     private final func QueueConditionMessage(level: Uint32) -> Void {
         //DFProfile();
         if !this.Settings.conditionMessagesEnabled { return; }
-        
+
         let conditionLevelUpMessage: DFMessage;
         conditionLevelUpMessage.type = SimpleMessageType.Negative;
         conditionLevelUpMessage.key = StringToName("DarkFutureMagicMessageStringConditionBiocorruption" + IntToString(Cast<Int32>(level)));
@@ -595,7 +595,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         if value == 1 {
             this.CheckBiocorruptionTutorial();
             this.QuestsSystem.SetFact(this.GetShowBiocorruptionTutorialActionFact(), 0);
-            
+
         }
     }
 
@@ -650,7 +650,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             DFLog(this, "narcoticAddictionAmount: " + ToString(narcoticAddictionAmount));
 
             let conditionProgressFromAmounts: Float = (nicotineAddictionAmount * this.conditionProgressPerNicotineAddictionStage) + (alcoholAddictionAmount * this.conditionProgressPerAlcoholAddictionStage) + (narcoticAddictionAmount * this.conditionProgressPerNarcoticAddictionStage);
-            
+
             let totalConditionProgress: Float = RoundTo(MinF(conditionProgressFromStages + conditionProgressFromAmounts, 5.0), 4);
 
             DFLog(this, "totalConditionProgress: " + ToString(totalConditionProgress));
@@ -688,8 +688,8 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                                 notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
                                 notificationEvent.m_title = GetLocalizedTextByKey(n"DarkFutureConditionBiocorruptionProgressMenuNotification");
                                 notificationEvent.m_overrideCurrentNotification = true;
-                
-                                GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);    
+
+                                GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
                             }
 
                             // We went up a level.
@@ -697,7 +697,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                                 // If increasing from 0, update Euphoria based on what's currently applied and start the Restless timer.
                                 this.RefreshEuphoria();
                                 this.remainingDurationUntilRestlessInGameTimeSeconds = this.durationUntilRestlessPerBiocorruptionLevelInGameTimeSeconds[Cast<Int32>(this.GetConditionLevel())];
-                                
+
                             } else {
                                 // If increasing in level, but not from 0, set the remaining Restless duration to the new duration for this level, if it is lower
                                 // than the current duration.
@@ -705,8 +705,8 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                                     this.remainingDurationUntilRestlessInGameTimeSeconds = this.durationUntilRestlessPerBiocorruptionLevelInGameTimeSeconds[Cast<Int32>(this.GetConditionLevel())];
                                 }
 
-                                // 
-                                // (Race Condition Workaround) 
+                                //
+                                // (Race Condition Workaround)
                                 //
                                 // If the current Euphoria amount is exactly the maximum for the previous level, that means that we likely went up in level the moment
                                 // we gained Euphoria. Grant the player the highest available amount from the new, higher level.
@@ -727,7 +727,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
                     this.accumulatedPercentTowardNextLevel = (totalConditionProgress % 1.0) * 100.0;
                     DFLog(this, "...incrementing. accumulatedPercentTowardNextLevel: " + ToString(this.accumulatedPercentTowardNextLevel));
-                    
+
                 } else {
                     this.accumulatedPercentTowardNextLevel = (totalConditionProgress % 1.0) * 100.0;
                     DFLog(this, "...incrementing. accumulatedPercentTowardNextLevel: " + ToString(this.accumulatedPercentTowardNextLevel));
@@ -741,7 +741,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                 } else if this.queueAllFutureProgressionNotifications {
                     shouldQueue = true;
                 }
-                
+
                 if shouldQueue {
                     this.QueueConditionProgressionNotification(this.lastDisplayedProgressionNotificationValue, true);
                 }
@@ -778,7 +778,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
         let conditionProgressFromAmounts: Float = (nicotineAmountAsPercentage * this.conditionProgressPerNicotineAddictionStage) + (alcoholAmountAsPercentage * this.conditionProgressPerAlcoholAddictionStage) + (narcoticAmountAsPercentage * this.conditionProgressPerNarcoticAddictionStage);
         DFLog(this, "GetCalculatedBiocorruptionLevelInProvidedState - conditionProgressFromAmounts: " + ToString(conditionProgressFromAmounts));
-        
+
         let totalConditionProgress: Float = MinF(conditionProgressFromStages + conditionProgressFromAmounts, 5.0);
         DFLog(this, "GetCalculatedBiocorruptionLevelInProvidedState - totalConditionProgress: " + ToString(Cast<Uint32>(FloorF(totalConditionProgress))));
         return Cast<Uint32>(FloorF(totalConditionProgress));
@@ -832,7 +832,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                     return;
                 }
             }
-            
+
             DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: REMOVING: Suffering from Crash");
             this.RemoveEuphoriaIfApplied();
             return;
@@ -875,8 +875,8 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
             // If suffering from any Withdrawal, don't continue. (Withdrawal is delayed by Euphoria, so
             // no need to clear Euphoria; you had to have gained Withdrawal while not Euphoric.)
-            if this.NicotineAddictionSystem.GetWithdrawalLevel() > 0 || 
-                this.AlcoholAddictionSystem.GetWithdrawalLevel() > 0 || 
+            if this.NicotineAddictionSystem.GetWithdrawalLevel() > 0 ||
+                this.AlcoholAddictionSystem.GetWithdrawalLevel() > 0 ||
                 this.NarcoticAddictionSystem.GetWithdrawalLevel() > 0 {
                 DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Withdrawal, returning");
                 return;
@@ -971,13 +971,13 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         //DFProfile();
         if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
             return DFEuphoriaBlockedReason.AddictionTreatment;
-        
+
         } else if this.HumanityLossSystem.GetLastKnownCyberpsychosisStackCount() > 0u {
             return DFEuphoriaBlockedReason.Cyberpsychosis;
-        
+
         } else if this.PlayerStateService.GetInOverdose() {
             return DFEuphoriaBlockedReason.Overdose;
-        
+
         } else if this.AlcoholAddictionSystem.GetWithdrawalLevel() > 0 || this.NicotineAddictionSystem.GetWithdrawalLevel() > 0 || this.NarcoticAddictionSystem.GetWithdrawalLevel() > 0 {
             return DFEuphoriaBlockedReason.Withdrawal;
         }
@@ -1048,7 +1048,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         }
 
         this.RefreshCrashStatusEffectAndUpdateLimit(true);
-        
+
         // Clear all Euphoric status effects. Party's over.
         let energyPenalty: Float;
         energyPenalty += this.PlayerStateService.ClearManagedEffectOfTypeAndReturnEnergyToChange(DFManagedEffectType.Alcohol);
@@ -1064,11 +1064,11 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         if NotEquals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) {
             props.skipSevereNeedMessage = true;
         }
-        
+
         this.EnergySystem.ChangeNeedValue(energyPenalty, props);
         this.HydrationSystem.ForceNeedMaxValueUpdate();
         this.NutritionSystem.ForceNeedMaxValueUpdate();
-        
+
         let data: DFBiocorruptionDelayedNeedLossDatum;
         data.depleteEnergy = true;
         data.depleteNutrition = true;
@@ -1153,7 +1153,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
         // Drink
         hasDrinkEffect = StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureHangoverTreatmentDrink") || ArrayContains(itemPreviewTags, n"DarkFutureConsumableHangoverTreatmentDrink");
-        
+
         let suppressionCount: Int32 = 0;
         if hasDrugEffect { suppressionCount += drugSuppressionValue; }
         if hasFoodEffect { suppressionCount += foodSuppressionValue; }
@@ -1202,7 +1202,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         if value == 1 {
             // We had a headache, or puked!
             this.SetCrashQueued(DFQueuedCrashType.None);
-            
+
         } else if value == 2 {
             // We played a blackout animation, but it did not include vomiting. Queue a separate Crash Animation.
             this.AnimationService.TryToQueueCrashAnimation(DFCrashAnimMode.FromCrash);
@@ -1244,7 +1244,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                         } else {
                             this.remainingCrashStackDurationInGameTimeSeconds = 0.0;
                         }
-                        
+
                     } else {
                         this.remainingCrashStackDurationInGameTimeSeconds = 0.0;
                     }
@@ -1264,7 +1264,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             }
             DFLog(this, "remainingDurationUntilRestlessInGameTimeSeconds = " + ToString(this.remainingDurationUntilRestlessInGameTimeSeconds));
         }
-        
+
         this.RegisterBiocorruptionDurationUpdateCallback();
     }
 
@@ -1296,12 +1296,12 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Nourishment_UIData.intValues", [2]);
             TweakDBManager.SetFlat(t"BaseStatusEffect.WellFed_inline4.description", GetLocalizedTextByKey(n"DarkFutureEffectDescriptionWellFed"));
             TweakDBManager.SetFlat(t"BaseStatusEffect.WellFed_inline4.intValues", [2]);
-            
+
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Hydrated_UIData.localizedDescription", GetLocalizedTextByKey(n"DarkFutureConsumableUIDescriptionHydrated"));
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Hydrated_UIData.intValues", [5, 2]);
             TweakDBManager.SetFlat(t"BaseStatusEffect.Sated_inline2.description", GetLocalizedTextByKey(n"DarkFutureEffectDescriptionSated"));
             TweakDBManager.SetFlat(t"BaseStatusEffect.Sated_inline2.intValues", [5, 2]);
-            
+
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.HangoverTreatmentDrug_OnEquip_UIData.localizedDescription", GetLocalizedTextByKey(n"DarkFutureConsumableUIDescriptionHangoverTreatment"));
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.HangoverTreatmentDrug_OnEquip_UIData.intValues", [4, 5]);
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.HangoverTreatment_UIData.description", GetLocalizedTextByKey(n"DarkFutureConsumableHangoverTreatmentEffectDesc"));
@@ -1350,7 +1350,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
                 TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Biocorruption04Female_UIData.intValues", [11, 24]);
                 TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Biocorruption04Male_UIData.description", GetLocalizedTextByKey(n"DarkFutureBiocorruptionDescAllNoHL"));
                 TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Biocorruption04Male_UIData.intValues", [11, 24]);
-                
+
                 TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Euphoria_UIData.description", GetLocalizedTextByKey(n"DarkFutureEuphoriaStatusEffectDescriptionNoHumanityLoss"));
                 TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Euphoria_UIData.intValues", emptyIntArray);
             }
@@ -1360,7 +1360,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Nourishment_UIData.intValues", emptyIntArray);
             TweakDBManager.SetFlat(t"BaseStatusEffect.WellFed_inline4.description", GetLocalizedTextByKey(n"DarkFutureEffectDescriptionWellFedNoBiocorruption"));
             TweakDBManager.SetFlat(t"BaseStatusEffect.WellFed_inline4.intValues", emptyIntArray);
-            
+
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Hydrated_UIData.localizedDescription", n"DarkFutureConsumableUIDescriptionHydratedNoBiocorruption");
             TweakDBManager.SetFlat(t"DarkFutureStatusEffect.Hydrated_UIData.intValues", [5]);
             TweakDBManager.SetFlat(t"BaseStatusEffect.Sated_inline2.description", GetLocalizedTextByKey(n"DarkFutureEffectDescriptionSatedNoBiocorruption"));

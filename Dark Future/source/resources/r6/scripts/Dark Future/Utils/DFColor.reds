@@ -139,7 +139,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(0.30588, 1.0, 0.57254, 1.0);
         case DFHDRColor.ChangePositiveHotPink:
             return HDRColor(0.30588, 1.0, 0.98823, 1.0);
-        
+
         case DFHDRColor.ActiveAqua:
             return HDRColor(0.19803, 0.94705, 1.3, 1.0);
         case DFHDRColor.Aqua:
@@ -150,7 +150,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(1.0, 0.25098, 0.09803, 1.0);
         case DFHDRColor.ChangePositiveAqua:
             return HDRColor(1.0, 0.79215, 0.09803, 1.0);
-        
+
         case DFHDRColor.ActiveMainBlue:
             return HDRColor(0.158299997, 1.30330002, 1.41419995, 1.0);
         case DFHDRColor.MainBlue:
@@ -161,7 +161,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(1.0, 0.40392, 0.36862, 1.0);
         case DFHDRColor.ChangePositiveMainBlue:
             return HDRColor(1.0, 0.78431, 0.36862, 1.0);
-        
+
         case DFHDRColor.ActiveSpringGreen:
             return HDRColor(0.19803, 1.2, 0.711764, 1.0);
         case DFHDRColor.SpringGreen:
@@ -183,7 +183,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(0.84313, 0.725490, 0.666666, 1.0);
         case DFHDRColor.ChangePositivePigeonPost:
             return HDRColor(0.78431, 0.843137, 0.666666, 1.0);
-        
+
         case DFHDRColor.ActiveStreetCredGreen:
             return HDRColor(0.0, 1.2, 0.935294, 1.0);
         case DFHDRColor.StreetCredGreen:
@@ -194,7 +194,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(1.0, 0.0, 0.164705, 1.0);
         case DFHDRColor.ChangePositiveStreetCredGreen:
             return HDRColor(1.0, 0.435294, 0.0, 1.0);
-        
+
         case DFHDRColor.ActiveMagenta:
             return HDRColor(1.23, 0.198039, 1.037254, 1.0);
         case DFHDRColor.Magenta:
@@ -205,7 +205,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(1.0, 0.341176, 0.098039, 1.0);
         case DFHDRColor.ChangePositiveMagenta:
             return HDRColor(0.098039, 1.0, 0.701960, 1.0);
-        
+
         case DFHDRColor.ActivePanelRed:
             return HDRColor(1.36979997, 0.443699986, 0.404900014, 1.0);
         case DFHDRColor.PanelRed:
@@ -216,7 +216,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(1.23, 0.198039, 1.037254, 1.0);
         case DFHDRColor.ChangePositivePanelRed:
             return HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
-        
+
         case DFHDRColor.ActiveYellow:
             return HDRColor(1.33099997, 1.00380003, 0.305000007, 1.0);
         case DFHDRColor.Yellow:
@@ -227,7 +227,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(0.545, 0.255, 1.0, 1.0);
         case DFHDRColor.ChangePositiveYellow:
             return HDRColor(0.263, 1.0, 0.255, 1.0);
-        
+
         case DFHDRColor.ActiveWhite:
             return HDRColor(1.5, 1.5, 1.5, 1.0);
         case DFHDRColor.White:
@@ -238,7 +238,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
             return HDRColor(1.23, 0.198039, 1.037254, 1.0);
         case DFHDRColor.ChangePositiveWhite:
             return HDRColor(0.368627459, 0.964705944, 1.0, 1.0);
-        
+
         case DFHDRColor.ActiveMainRed:
             return HDRColor(1.0, 0.203921571, 0.290196091, 1.0);
         case DFHDRColor.MainRed:
@@ -259,7 +259,7 @@ public func GetDarkFutureHDRColor(color: DFHDRColor) -> HDRColor {
 
         case DFHDRColor.MildWhite:
             return HDRColor(0.537, 0.651, 0.643, 1.0);
-        
+
         case DFHDRColor.ActiveGreen:
             return HDRColor(0.160899997, 1.31439996, 0.726499975, 1.0);
     }
@@ -277,7 +277,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeRose);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveRose);
             return theme;
-        
+
         case DFBarColorThemeName.HotPink:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveHotPink);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.HotPink);
@@ -285,7 +285,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeHotPink);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveHotPink);
             return theme;
-        
+
         case DFBarColorThemeName.Aqua:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveAqua);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.Aqua);
@@ -293,7 +293,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeAqua);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveAqua);
             return theme;
-        
+
         case DFBarColorThemeName.MainBlue:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveMainBlue);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.MainBlue);
@@ -301,7 +301,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeMainBlue);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveMainBlue);
             return theme;
-        
+
         case DFBarColorThemeName.SpringGreen:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveSpringGreen);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.SpringGreen);
@@ -309,7 +309,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeSpringGreen);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveSpringGreen);
             return theme;
-        
+
         case DFBarColorThemeName.PigeonPost:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActivePigeonPost);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.PigeonPost);
@@ -317,7 +317,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativePigeonPost);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositivePigeonPost);
             return theme;
-        
+
         case DFBarColorThemeName.StreetCredGreen:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveStreetCredGreen);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.StreetCredGreen);
@@ -325,7 +325,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeStreetCredGreen);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveStreetCredGreen);
             return theme;
-        
+
         case DFBarColorThemeName.Magenta:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveMagenta);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.Magenta);
@@ -333,7 +333,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeMagenta);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveMagenta);
             return theme;
-        
+
         case DFBarColorThemeName.PanelRed:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActivePanelRed);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.PanelRed);
@@ -341,7 +341,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativePanelRed);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositivePanelRed);
             return theme;
-        
+
         case DFBarColorThemeName.Yellow:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveYellow);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.Yellow);
@@ -349,7 +349,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeYellow);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveYellow);
             return theme;
-        
+
         case DFBarColorThemeName.White:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveWhite);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.White);
@@ -357,7 +357,7 @@ public func GetDarkFutureBarColorTheme(themeName: DFBarColorThemeName) -> DFBarC
             theme.ChangeNegativeColor = GetDarkFutureHDRColor(DFHDRColor.ChangeNegativeWhite);
             theme.ChangePositiveColor = GetDarkFutureHDRColor(DFHDRColor.ChangePositiveWhite);
             return theme;
-        
+
         case DFBarColorThemeName.MainRed:
             theme.ActiveColor = GetDarkFutureHDRColor(DFHDRColor.ActiveMainRed);
             theme.MainColor = GetDarkFutureHDRColor(DFHDRColor.MainRed);

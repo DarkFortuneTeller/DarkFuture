@@ -3,18 +3,18 @@
 #   Stamina Regen Start Delay
 #     This is a change to the delay between using Stamina, and when it begins to regen.
 #     Increasing this delay causes V to actually be able to run out of Stamina, significantly
-#     altering gameplay and requiring more tactical play. This is different from Stamina Regen Rate, 
+#     altering gameplay and requiring more tactical play. This is different from Stamina Regen Rate,
 #     which affects the speed Stamina regenerates once this delay has expired.
 #
-#     It also causes V to slow their traversal speed while on foot, as they can no 
+#     It also causes V to slow their traversal speed while on foot, as they can no
 #     longer dash infinitely.
 #
 #     Further Dark Future effects (i.e. Nerve) dial this up to majorly impact V's survivability in
 #     combat.
 #
 #   Carry Capacity
-#     Nerf V's default Carry Capacity. (New: 120, default: 200) In the base game, the player never 
-#     really becomes overencumbered or actually needs use their Stash. Solo Skill bonuses to Carry 
+#     Nerf V's default Carry Capacity. (New: 120, default: 200) In the base game, the player never
+#     really becomes overencumbered or actually needs use their Stash. Solo Skill bonuses to Carry
 #     Weight, and the Booster consumable are also adjusted. The Titanium Bones Cyberware benefit
 #     and permanent Carry Capacity Shards were not modified.
 

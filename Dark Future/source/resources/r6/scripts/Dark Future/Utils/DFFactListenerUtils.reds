@@ -30,7 +30,7 @@ public func CreateDFFactListener(questsSystem: ref<QuestsSystem>, listener: ref<
     newFactListener.fact = fact;
     newFactListener.callback = callback;
     newFactListener.fireOnceOnly = fireOnceOnly;
-    
+
     RegisterDFFactListener(newFactListener, listener, questsSystem);
     ArrayPush(Deref(registry), newFactListener);
 }
@@ -43,7 +43,7 @@ public func CreateDFActionFactListener(questsSystem: ref<QuestsSystem>, listener
     newFactListener.fact = fact;
     newFactListener.callback = callback;
     newFactListener.fireOnceOnly = fireOnceOnly;
-    
+
     RegisterDFFactListener(newFactListener, listener, questsSystem);
     ArrayPush(Deref(registry), newFactListener);
 
@@ -69,7 +69,7 @@ public func DFFactListenerCanRun(value: Int32, registry: script_ref<array<DFFact
 
     if value < 1 {
         // Invalid value; fail.
-        return false; 
+        return false;
     }
 
     // Coerce the caller's function name through reflection. Used to look up the DFFactListener in the registry.
@@ -107,7 +107,7 @@ public func DFFactListenerCanRunOnExpectedValueTransition(valueData: DFFactListe
 
     if valueData.valueFrom != valueData.expectedValueFrom || valueData.valueTo != valueData.expectedValueTo {
         // Invalid value; fail.
-        return false; 
+        return false;
     }
 
     // Coerce the caller's function name through reflection. Used to look up the DFFactListener in the registry.

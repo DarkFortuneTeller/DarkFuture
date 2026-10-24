@@ -2,7 +2,7 @@
 // DFGameStateService
 // -----------------------------------------------------------------------------
 //
-// - A service that allows querying whether or not the game's current state is 
+// - A service that allows querying whether or not the game's current state is
 //   "valid" for the purposes of Dark Future in order to avoid intrusion into
 //   cinematic moments, and other cases where we want to suspend the behavior
 //   of the mod (while playing as Johnny Silverhand, while in the Edgerunner Fury
@@ -199,7 +199,7 @@ public final class DFGameStateService extends DFSystem {
         //DFProfile();
         this.UnregisterDelayedSleepCinematicExit();
     }
-    
+
     public func SetupData() -> Void {}
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
@@ -414,7 +414,7 @@ public final class DFGameStateService extends DFSystem {
             DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.Settings.mainSystemEnabled=" + ToString(this.Settings.mainSystemEnabled));
             return GameState.Invalid;
         }
-        
+
         if !this.baseGameIntroMissionDone && !this.baseGameQ101ShowerDone && !this.phantomLibertyIntroDone && !this.prologueAllowedStartDone {
             DFLog(this, "GetGameState() returned Invalid for caller " + callerName + ": this.baseGameIntroMissionDone=" + ToString(this.baseGameIntroMissionDone) + ", this.baseGameQ101ShowerDone=" + ToString(this.baseGameQ101ShowerDone) + ", this.phantomLibertyIntroDone=" + ToString(this.phantomLibertyIntroDone)  + ", this.prologueAllowedStartDone=" + ToString(this.prologueAllowedStartDone));
             return GameState.Invalid;
@@ -462,8 +462,8 @@ public final class DFGameStateService extends DFSystem {
 
     public final func PlayerHasAnyFuryEffect() -> Bool {
         //DFProfile();
-        return StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury") || 
-                (this.Settings.compatibilityWannabeEdgerunner && 
+        return StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"InFury") ||
+                (this.Settings.compatibilityWannabeEdgerunner &&
                     (
                         StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.NewPsychosisEffectNormalFx") ||
                         StatusEffectSystem.ObjectHasStatusEffect(this.player, t"BaseStatusEffect.NewPsychosisEffectLightFx")

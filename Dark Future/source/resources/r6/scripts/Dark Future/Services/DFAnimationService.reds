@@ -138,7 +138,7 @@ public func DFIsConsumptionAllowed() -> Bool {
     let inOverdose: Bool = DFPlayerStateService.Get().GetInOverdose();
     let hasNausea: Bool = DFNerveSystem.Get().GetHasNausea();
     let isFood: Bool = itemData.HasTag(n"Food");
-    
+
     if inOverdose {
         return false;
 
@@ -148,7 +148,7 @@ public func DFIsConsumptionAllowed() -> Bool {
     } else {
         return true;
     }
-    
+
 }
 
 // LootingContainer - Helper method to obtain the selected item's Secondary Action Name.
@@ -170,11 +170,11 @@ private final func DFUpdateAnimatedConsumeChoice(data: LootData) -> LootData {
     let Settings: ref<DFSettings> = DFSettings.Get();
     let AnimService: ref<DFAnimationService> = DFAnimationService.Get();
 
-    if Settings.consumableAnimationsEnabled && 
-        Settings.consumableAnimationLootActionEnabled && 
-        this.DFIsAnimatedConsumable() && 
+    if Settings.consumableAnimationsEnabled &&
+        Settings.consumableAnimationLootActionEnabled &&
+        this.DFIsAnimatedConsumable() &&
         this.DFIsConsumptionAllowed() &&
-        !this.m_isLocked && 
+        !this.m_isLocked &&
         !AnimService.player.m_inCrouch {
         if !this.DFIsAnimatedConsumeChoiceShown(data) {
             AnimService.SetLootingController(this);
@@ -209,7 +209,7 @@ private final func DFUpdateAnimatedConsumeChoice(data: LootData) -> LootData {
             ArrayPush(data.choices, choiceData);
         }
         AnimService.player.RegisterInputListener(AnimService, n"DFAnimatedConsumableManualChoiceAction");
-    
+
     } else {
         AnimService.player.UnregisterInputListener(AnimService, n"DFAnimatedConsumableManualChoiceAction");
     }
@@ -286,7 +286,7 @@ protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
     if IsSystemEnabledAndRunning(DFAnimationService.Get()) && IsDefined(mountChild) && mountChild.IsPlayer() {
         DFAnimationService.Get().CheckIfPlayerShouldBlackOut();
     }
-    
+
     return r;
 }
 
@@ -427,7 +427,7 @@ private enum DFConsumableAnimPropType {
     ThinPackagedFood = 17,
     ThinPackagedDrink = 18,
     LargeFood = 19,
-    CatFood = 20   
+    CatFood = 20
 }
 
 private enum DFConsumableAnimPropSubType {
@@ -942,7 +942,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
-    
+
     private func UnregisterListeners() -> Void {
         //DFProfile();
         this.QuestsSystem.UnregisterListener(this.GetAnimDebugQuestPhaseGraphMessageIDQuestFact(), this.factListenerAnimQuestPhaseDebugMessageID);
@@ -1063,10 +1063,10 @@ public final class DFAnimationService extends DFSystem {
             }
         }
 
-        if DFRunGuard(this) { 
+        if DFRunGuard(this) {
             DFLog(this, "    RETURNING: RunGuard");
             this.QueueFallbackFX(anim.consumableAnimData.fallbackFX);
-            return; 
+            return;
         }
 
         if !this.Settings.consumableAnimationsEnabled {
@@ -1075,7 +1075,7 @@ public final class DFAnimationService extends DFSystem {
             return;
         }
 
-        if !this.GameStateService.IsValidGameState(this) { 
+        if !this.GameStateService.IsValidGameState(this) {
             DFLog(this, "    RETURNING: GameState");
             this.QueueFallbackFX(anim.consumableAnimData.fallbackFX);
             return;
@@ -1087,7 +1087,7 @@ public final class DFAnimationService extends DFSystem {
             return;
         }
 
-        if !this.IsPlayerInAllowedStateForConsumableAnimation() { 
+        if !this.IsPlayerInAllowedStateForConsumableAnimation() {
             DFLog(this, "    RETURNING: AllowedState");
             this.QueueFallbackFX(anim.consumableAnimData.fallbackFX);
             return;
@@ -1108,11 +1108,11 @@ public final class DFAnimationService extends DFSystem {
 
             } else if forceAnimation {
                 // This originated from the consumable animation prompt; ignore cooldown and always play.
-                DFLog(this, "    IGNORE COOLDOWN: Action Prompt Used"); 
+                DFLog(this, "    IGNORE COOLDOWN: Action Prompt Used");
                 useCooldown = false;
 
             } else {
-                DFLog(this, "    USE COOLDOWN: Originated from other source"); 
+                DFLog(this, "    USE COOLDOWN: Originated from other source");
                 // Originated from other source (i.e. Custom Quickslots) - Use normal Cooldown behavior
             }
         }
@@ -1125,7 +1125,7 @@ public final class DFAnimationService extends DFSystem {
                 return;
             }
         }
-    
+
         if ArraySize(this.queuedAnims) > 0 {
             for a in this.queuedAnims {
                 if Equals(a, anim) {
@@ -1185,7 +1185,7 @@ public final class DFAnimationService extends DFSystem {
         } else {
             // The animation queue is empty. Queue the animation.
             this.QueueAnimation(anim);
-            
+
         }
     }
 
@@ -1208,12 +1208,12 @@ public final class DFAnimationService extends DFSystem {
             }
         }
 
-        if DFRunGuard(this) { 
+        if DFRunGuard(this) {
             DFLog(this, "    RETURNING: RunGuard");
             cannotPlay = true;
         }
 
-        if !this.IsPlayerInAllowedStateForRelaxActionAnimation() { 
+        if !this.IsPlayerInAllowedStateForRelaxActionAnimation() {
             DFLog(this, "    RETURNING: AllowedState");
             cannotPlay = true;
         }
@@ -1256,7 +1256,7 @@ public final class DFAnimationService extends DFSystem {
             DFLog(this, "    Ignoring request, a blackout animation is currently playing!");
             return;
         }
-        
+
         let gs: GameState = this.GameStateService.GetGameState(this);
         if Equals(gs, GameState.Valid) {
             DFLog(this, "    Game State is Valid, continuing.");
@@ -1322,7 +1322,7 @@ public final class DFAnimationService extends DFSystem {
                 let vehicleRecord: ref<Vehicle_Record> = TweakDBInterface.GetVehicleRecord(recordID);
                 let vehicleDataPackage: ref<VehicleDataPackage_Record> = vehicleRecord.VehDataPackage();
                 let collisionForce: Vector4 = -vehicleObj.GetLinearVelocity();
-                
+
                 if Vector4.Length(collisionForce) > (vehicleDataPackage.KnockOffForce() * 1.5) && Vector4.Length(collisionForce) <= (vehicleDataPackage.KnockOffForce() * 1.75) {
                     DFLog(this, "    On a motorcycle and within speed tolerance; starting sequence!");
                     vc.DarkFutureForceBikeDismount(this.player);
@@ -1333,10 +1333,10 @@ public final class DFAnimationService extends DFSystem {
                         DFLog(this, "        Forcing brakes!");
                         vehicleObj.ForceBrakesUntilStoppedOrFor(4.0);
                     }
-                    
+
                     this.RegisterContextuallyDelayedBlackoutAnimation();
                     return;
-                } 
+                }
             } else if VehicleComponent.IsDriver(gameInstance, this.player) {
                 if this.AutoDriveSystem.GetAutodriveEnabled() {
                     if this.AutoDriveSystem.GetAutodriveIsDelamain() {
@@ -1373,7 +1373,7 @@ public final class DFAnimationService extends DFSystem {
 
         } else {
             DFLog(this, "    Playing blocked anim!");
-            
+
             blackoutAnim.blackoutAnimData.type = DFBlackoutAnimType.Blocked;
             this.QueueAnimation(blackoutAnim);
         }
@@ -1449,7 +1449,7 @@ public final class DFAnimationService extends DFSystem {
         } else if this.IsFloorTooSteep() || !this.PlayerHasSpaceBehind(0.90, 1.50, 1.25) || this.IsCliffBehind() {
             DFLog(this, "    Floor too steep or no room behind; playing blocked anim!");
             this.QuestsSystem.SetFact(this.GetBlackoutForceBikeDismountAnimValidityStateFact(), EnumInt<DFBlackoutBikeDismountAnimType>(DFBlackoutBikeDismountAnimType.Blocked));
-            
+
         } else {
             DFLog(this, "    Playing full anim!");
             this.QuestsSystem.SetFact(this.GetBlackoutForceBikeDismountAnimValidityStateFact(), EnumInt<DFBlackoutBikeDismountAnimType>(DFBlackoutBikeDismountAnimType.Full));
@@ -1687,7 +1687,7 @@ public final class DFAnimationService extends DFSystem {
             DFLog(this, "    Ignoring request, a crash animation is currently playing!");
             return;
         }
-        
+
         let gs: GameState = this.GameStateService.GetGameState(this);
         if Equals(gs, GameState.Valid) {
             DFLog(this, "    Game State is Valid, continuing.");
@@ -1715,10 +1715,10 @@ public final class DFAnimationService extends DFSystem {
 
             if Equals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.HeadacheOnly) {
                 crashAnim.crashAnimData.severity = DFCrashAnimSeverity.Headache;
-            
+
             } else if Equals(mode, DFCrashAnimMode.ForceVomit) {
                 crashAnim.crashAnimData.severity = DFCrashAnimSeverity.Vomit;
-            
+
             } else if Equals(mode, DFCrashAnimMode.ForceHeadache) {
                 crashAnim.crashAnimData.severity = DFCrashAnimSeverity.Headache;
 
@@ -1726,11 +1726,11 @@ public final class DFAnimationService extends DFSystem {
                 let biocorruptionLevel: Uint32 = this.BiocorruptionCondition.GetConditionLevel();
                 if biocorruptionLevel == 0u {
                     crashAnim.crashAnimData.severity = DFCrashAnimSeverity.Vomit;
-                
+
                 } else if biocorruptionLevel >= 1u {
                     let queuedCrashType: DFQueuedCrashType = this.BiocorruptionCondition.GetCrashQueued();
                     let crashStacks: Uint32;
-                    
+
                     if Equals(queuedCrashType, DFQueuedCrashType.FromTime) {
                         crashStacks = this.BiocorruptionCondition.GetLastKnownCrashStackCount();
 
@@ -1749,7 +1749,7 @@ public final class DFAnimationService extends DFSystem {
 
             } else if this.IsFloorTooSteep() || !this.PlayerHasSpaceInFront() || this.IsCliffInFront() {
                 DFLog(this, "    Floor too steep, cliff in front, or no room in front; checking again.");
-                
+
                 this.RegisterContextuallyDelayedCrashAnimation(mode);
 
             } else {
@@ -1791,13 +1791,13 @@ public final class DFAnimationService extends DFSystem {
     public final func TryToQueueAddictionWithdrawalAnimation(addictionData: DFAddictionDatum, timeSkipType: DFTimeSkipType) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-        
+
         DFLog(this, "-----------");
         DFLog(this, "-----------");
         DFLog(this, "TryToQueueAddictionWithdrawalAnimation");
         DFLog(this, "-----------");
         DFLog(this, "-----------");
-        
+
         let gs: GameState = this.GameStateService.GetGameState(this);
         if Equals(gs, GameState.Valid) {
             DFLog(this, "    Game State is Valid, continuing.");
@@ -1933,7 +1933,7 @@ public final class DFAnimationService extends DFSystem {
                 this.futureAllowedWithdrawalAnims.allowNarcotic = true;
             }
 
-            // Did this Timeskip originate from a Blackout? If so, stop here and don't queue the animation. (We've already watched a lot.) We can try to play 
+            // Did this Timeskip originate from a Blackout? If so, stop here and don't queue the animation. (We've already watched a lot.) We can try to play
             // it later on the next timeskip (futureAllowedWithdrawalAnims), if the condition is still valid.
             if Equals(timeSkipType, DFTimeSkipType.Blackout) {
                 DFLog(this, "    Timeskip originated from Blackout. Exiting!");
@@ -2013,7 +2013,7 @@ public final class DFAnimationService extends DFSystem {
         //DFProfile();
         return n"df_fact_anim_debug_questphase_graph_message_id";
     }
-    
+
     private final func GetQueuedAnimTypeQuestFact() -> CName {
         //DFProfile();
         return n"df_fact_queued_anim_type";
@@ -2103,7 +2103,7 @@ public final class DFAnimationService extends DFSystem {
     public final func OnPlayQueuedAnimByID(value: Int32) -> Void {
         //DFProfile();
         if value == 0 {
-            // Slight delay in lifting the Pocket Radio restriction override to avoid a 
+            // Slight delay in lifting the Pocket Radio restriction override to avoid a
             // race condition when consuming certain consumables, like pills.
             this.RegisterUnsetRadioRestrictionOverrideCallback();
 
@@ -2142,7 +2142,7 @@ public final class DFAnimationService extends DFSystem {
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.EatLookDownRightHand, DFConsumableAnimSubType.EatLookDownRightHand, DFConsumableAnimPropType.LargeFood, DFConsumableAnimPropSubType.Cupcake, DFConsumableAnimCooldownExceptionType.Unique, EnumInt(DFEatLookDownRightHandAnimID.CupcakeUnique), n"DarkFutureAnimFoodCupcakeUnique", 0, fallbackEatFX, this.maxPlaybackCountFood, false));
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkSipRightHand, DFConsumableAnimSubType.DrinkSipRightHand, DFConsumableAnimPropType.CoffeeTeaOpenCup, DFConsumableAnimPropSubType.CoffeeTeaOpenCup, DFConsumableAnimCooldownExceptionType.Unique, EnumInt(DFDrinkSipRightHandAnimID.CoffeeTeaOpenCup), n"DarkFutureAnimCoffeeTeaOpenCupUnique", 0, fallbackDrinkFX, this.maxPlaybackCountDrinks, false)); // TODOFUTURE - Visual error
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkChugLeftHand, DFConsumableAnimSubType.DrinkChugLeftHand, DFConsumableAnimPropType.LargeBottle, DFConsumableAnimPropSubType.CentzonIndigoUnique, DFConsumableAnimCooldownExceptionType.Unique, EnumInt(DFDrinkChugLeftHandAnimID.CentzonIndigoUnique), n"DarkFutureAnimAlcoholCentzonUnique", 0, fallbackDrinkFX, this.maxPlaybackCountDrinksChug, false));
-        
+
         // P10
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.EatDrinkThinPackagedLeftHand, DFConsumableAnimSubType.EatDrinkThinPackagedLeftHand, DFConsumableAnimPropType.CatFood, DFConsumableAnimPropSubType.CatFood, DFConsumableAnimCooldownExceptionType.None, EnumInt(DFEatDrinkThinPackagedLeftHandAnimID.CatFood), n"DarkFutureAnimFoodCatFood", 10, fallbackEatFX, this.maxPlaybackCountFood, false));
 
@@ -2177,7 +2177,7 @@ public final class DFAnimationService extends DFSystem {
 
         // P80
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkChugLeftHand, DFConsumableAnimSubType.DrinkChugLeftHand, DFConsumableAnimPropType.LargeBottle, DFConsumableAnimPropSubType.PingoPalido, DFConsumableAnimCooldownExceptionType.Alcohol, EnumInt(DFDrinkChugLeftHandAnimID.PingoPalido), n"DarkFutureAnimAlcoholPingoPalido", 80, fallbackDrinkFX, this.maxPlaybackCountDrinksChug, false));
-        
+
         // P90
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkSipRightHand, DFConsumableAnimSubType.DrinkSipRightHand, DFConsumableAnimPropType.Cocktail, DFConsumableAnimPropSubType.Cocktail, DFConsumableAnimCooldownExceptionType.Alcohol, EnumInt(DFDrinkSipRightHandAnimID.Cocktail), n"DarkFutureAnimAlcoholCocktail", 90, fallbackDrinkFX, this.maxPlaybackCountDrinks, false));
 
@@ -2203,7 +2203,7 @@ public final class DFAnimationService extends DFSystem {
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkChugLeftHand, DFConsumableAnimSubType.DrinkChugLeftHand, DFConsumableAnimPropType.LargeBottle, DFConsumableAnimPropSubType.TequilaEspecialInverted, DFConsumableAnimCooldownExceptionType.Alcohol, EnumInt(DFDrinkChugLeftHandAnimID.TequilaEspecialInverted), n"DarkFutureAnimAlcoholTequilaEspecialInverted", 120, fallbackDrinkFX, this.maxPlaybackCountDrinksChug, false));
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkChugLeftHand, DFConsumableAnimSubType.DrinkChugLeftHand, DFConsumableAnimPropType.LargeBottle, DFConsumableAnimPropSubType.GenericHooch, DFConsumableAnimCooldownExceptionType.Alcohol, EnumInt(DFDrinkChugLeftHandAnimID.GenericHooch), n"DarkFutureAnimAlcoholGenericHooch", 120, fallbackDrinkFX, this.maxPlaybackCountDrinksChug, false));
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkChugLeftHand, DFConsumableAnimSubType.DrinkChugLeftHand, DFConsumableAnimPropType.LargeBottle, DFConsumableAnimPropSubType.ChamparadiseInverted, DFConsumableAnimCooldownExceptionType.Alcohol, EnumInt(DFDrinkChugLeftHandAnimID.ChamparadiseInverted), n"DarkFutureAnimAlcoholChamparadiseInverted", 120, fallbackDrinkFX, this.maxPlaybackCountDrinksChug, false));
-        
+
         // P130
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkChugLeftHand, DFConsumableAnimSubType.DrinkChugLeftHand, DFConsumableAnimPropType.LargeBottle, DFConsumableAnimPropSubType.AbydosLarge, DFConsumableAnimCooldownExceptionType.Alcohol, EnumInt(DFDrinkChugLeftHandAnimID.AbydosLarge), n"DarkFutureAnimAlcoholAbydosLarge", 130, fallbackDrinkFX, this.maxPlaybackCountDrinksChug, false));
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.DrinkChugLeftHand, DFConsumableAnimSubType.DrinkChugLeftHand, DFConsumableAnimPropType.LargeBottle, DFConsumableAnimPropSubType.TwentyFirstStout, DFConsumableAnimCooldownExceptionType.Alcohol, EnumInt(DFDrinkChugLeftHandAnimID.TwentyFirstStout), n"DarkFutureAnimAlcoholTwentyFirstStout", 130, fallbackDrinkFX, this.maxPlaybackCountDrinksChug, false));
@@ -2254,7 +2254,7 @@ public final class DFAnimationService extends DFSystem {
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.EatDrinkThinPackagedLeftHand, DFConsumableAnimSubType.EatDrinkThinPackagedLeftHand, DFConsumableAnimPropType.ThinPackagedFood, DFConsumableAnimPropSubType.PopTurd, DFConsumableAnimCooldownExceptionType.None, EnumInt(DFEatDrinkThinPackagedLeftHandAnimID.PopTurd), n"DarkFutureAnimFoodPopTurd", 160, fallbackEatFX, this.maxPlaybackCountFood, false));
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.EatDrinkThinPackagedLeftHand, DFConsumableAnimSubType.EatDrinkThinPackagedLeftHand, DFConsumableAnimPropType.ThinPackagedFood, DFConsumableAnimPropSubType.ShwabShwab, DFConsumableAnimCooldownExceptionType.None, EnumInt(DFEatDrinkThinPackagedLeftHandAnimID.ShwabShwab), n"DarkFutureAnimFoodShwabShwab", 160, fallbackEatFX, this.maxPlaybackCountFood, false));
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.EatDrinkThinPackagedLeftHand, DFConsumableAnimSubType.EatDrinkThinPackagedLeftHand, DFConsumableAnimPropType.ThinPackagedFood, DFConsumableAnimPropSubType.SynthSnack, DFConsumableAnimCooldownExceptionType.None, EnumInt(DFEatDrinkThinPackagedLeftHandAnimID.SynthSnack), n"DarkFutureAnimFoodSynthSnack", 160, fallbackEatFX, this.maxPlaybackCountFood, false));
-        
+
         // P900
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.EatDrinkThinPackagedLeftHand, DFConsumableAnimSubType.EatDrinkThinPackagedLeftHand, DFConsumableAnimPropType.ThinPackagedDrink, DFConsumableAnimPropSubType.LeelouBeansInverted, DFConsumableAnimCooldownExceptionType.None, EnumInt(DFEatDrinkThinPackagedLeftHandAnimID.LeelouBeansInverted), n"DarkFutureAnimDrinkLeelouBeansInverted", 900, fallbackDrinkFX, this.maxPlaybackCountDrinks, false));
         ArrayPush(this.consumableAnimData, DFConsumableAnimDatum(DFConsumableAnimType.EatDrinkThinPackagedLeftHand, DFConsumableAnimSubType.EatDrinkThinPackagedLeftHand, DFConsumableAnimPropType.ThinPackagedFood, DFConsumableAnimPropSubType.ThinPackagedGeneric, DFConsumableAnimCooldownExceptionType.None, EnumInt(DFEatDrinkThinPackagedLeftHandAnimID.ThinPackagedGeneric), n"DarkFutureAnimFoodThinPackagedGeneric", 900, fallbackEatFX, this.maxPlaybackCountFood, false));
@@ -2340,7 +2340,7 @@ public final class DFAnimationService extends DFSystem {
                 let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
                 evt.soundName = this.queuedFallbackFX.audio;
                 this.player.QueueEvent(evt);
-            }    
+            }
         }
     }
 
@@ -2437,10 +2437,10 @@ public final class DFAnimationService extends DFSystem {
 
         let locomotionState: gamePSMDetailedLocomotionStates = IntEnum<gamePSMDetailedLocomotionStates>(bboard.GetInt(bbDefs.PlayerStateMachine.LocomotionDetailed));
         let isLocomotionStateAllowed: Bool = Equals(locomotionState, gamePSMDetailedLocomotionStates.Stand);
-        
+
         let combatGadgetState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.CombatGadget);
         let leftHandCyberwareState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.LeftHandCyberware);
-        
+
         let isPlayerInsideElevator: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsPlayerInsideElevator);
         let isPlayerInsideMovingElevator: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsPlayerInsideMovingElevator);
         isPlayerInsideElevator = isPlayerInsideElevator || isPlayerInsideMovingElevator;
@@ -2468,25 +2468,25 @@ public final class DFAnimationService extends DFSystem {
         let allowedGroundCondition: Bool = (isOnGround || (isMountedToVehicle && inValidVehicleState));
 
         if validGameState &&
-            !isInCombat && 
-            !isReplacer && 
+            !isInCombat &&
+            !isReplacer &&
             !inLoreAnimationScene &&
             !isCarryingBody &&
             !isControllingDevice &&
             !isControllingCamera &&
             !isForceOpeningDoor &&
-            allowedSceneTier && 
-            !isSwimming && 
-            allowedVehicleCondition && 
+            allowedSceneTier &&
+            !isSwimming &&
+            allowedVehicleCondition &&
             allowedWorkspotCondition &&
-            upperBodyState != 4 && 
-            isLocomotionStateAllowed && 
-            combatGadgetState == 0 && 
-            leftHandCyberwareState == 0 && 
+            upperBodyState != 4 &&
+            isLocomotionStateAllowed &&
+            combatGadgetState == 0 &&
+            leftHandCyberwareState == 0 &&
             !isPhoneCallActive &&
-            !isPlayerInsideElevator && 
-            allowedGroundCondition && 
-            !isUploadingQuickhacks && 
+            !isPlayerInsideElevator &&
+            allowedGroundCondition &&
+            !isUploadingQuickhacks &&
             !isPlayerPursuedByNCPD {
                 return true;
         }
@@ -2579,10 +2579,10 @@ public final class DFAnimationService extends DFSystem {
 
         let locomotionState: gamePSMDetailedLocomotionStates = IntEnum<gamePSMDetailedLocomotionStates>(bboard.GetInt(bbDefs.PlayerStateMachine.LocomotionDetailed));
         let isLocomotionStateAllowed: Bool = Equals(locomotionState, gamePSMDetailedLocomotionStates.Stand);
-        
+
         let combatGadgetState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.CombatGadget);
         let leftHandCyberwareState: Int32 = bboard.GetInt(bbDefs.PlayerStateMachine.LeftHandCyberware);
-        
+
         let isPlayerInsideElevator: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsPlayerInsideElevator);
         let isPlayerInsideMovingElevator: Bool = bboard.GetBool(bbDefs.PlayerStateMachine.IsPlayerInsideMovingElevator);
         isPlayerInsideElevator = isPlayerInsideElevator || isPlayerInsideMovingElevator;
@@ -2609,12 +2609,12 @@ public final class DFAnimationService extends DFSystem {
             inLoreAnimationScene ||
             isForceOpeningDoor ||
             (!isLocomotionStateAllowed && !isCrouching && !isPlayerInWorkspot && !isSprinting && !isJumping && !isCrouchSprinting && !isCrouchDodging) ||
-            combatGadgetState != 0 || 
-            leftHandCyberwareState != 0 || 
+            combatGadgetState != 0 ||
+            leftHandCyberwareState != 0 ||
             isPhoneCallActive ||
-            isPlayerInsideElevator || 
+            isPlayerInsideElevator ||
             !isOnGround ||
-            isUploadingQuickhacks || 
+            isUploadingQuickhacks ||
             isPlayerPursuedByNCPD {
                 // Show message
                 let UISystem: ref<UISystem> = GameInstance.GetUISystem(GetGameInstance());
@@ -2626,30 +2626,30 @@ public final class DFAnimationService extends DFSystem {
 
 
         if validGameState &&
-            !isInCombat && 
+            !isInCombat &&
             meleeState == 0 &&
             leftRangedState == 0 &&
             rightRangedState == 0 &&
             noDialogueChoiceHubsShown &&
-            !isReplacer && 
+            !isReplacer &&
             !inLoreAnimationScene &&
             !isCrouching &&
             !isCarryingBody &&
             !isControllingDevice &&
             !isControllingCamera &&
             !isForceOpeningDoor &&
-            allowedSceneTier && 
-            !isSwimming && 
-            !isMountedToVehicle && 
+            allowedSceneTier &&
+            !isSwimming &&
+            !isMountedToVehicle &&
             !isPlayerInWorkspot &&
-            upperBodyState != 4 && 
-            isLocomotionStateAllowed && 
-            combatGadgetState == 0 && 
-            leftHandCyberwareState == 0 && 
+            upperBodyState != 4 &&
+            isLocomotionStateAllowed &&
+            combatGadgetState == 0 &&
+            leftHandCyberwareState == 0 &&
             !isPhoneCallActive &&
-            !isPlayerInsideElevator && 
-            isOnGround && 
-            !isUploadingQuickhacks && 
+            !isPlayerInsideElevator &&
+            isOnGround &&
+            !isUploadingQuickhacks &&
             !isPlayerPursuedByNCPD {
                 return true;
         }
@@ -2699,7 +2699,7 @@ public final class DFAnimationService extends DFSystem {
         let isPlayerPursuedByNCPD: Bool = this.player.GetPreventionSystem().IsChasingPlayer();
 
         if validGameState &&
-            !isInCombat && 
+            !isInCombat &&
             !isPhoneCallActive &&
             !isPlayerPursuedByNCPD {
                 return true;
@@ -2718,7 +2718,7 @@ public final class DFAnimationService extends DFSystem {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
-        
+
         let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).Get(bbDefs.UIInteractions);
         let dialogChoiceHubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(bboard.GetVariant(bbDefs.UIInteractions.DialogChoiceHubs));
         let noDialogueChoiceHubsShown: Bool = ArraySize(dialogChoiceHubs.choiceHubs) == 0;
@@ -2739,7 +2739,7 @@ public final class DFAnimationService extends DFSystem {
     public final func IsPlayerInAllowedStateForBlackoutAnimation() -> Bool {
         //DFProfile();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
-        
+
         let psmBBoard: ref<IBlackboard> = this.player.GetPlayerStateMachineBlackboard();
         let uiBBoard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(GetGameInstance()).Get(bbDefs.UIInteractions);
         let dialogChoiceHubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(uiBBoard.GetVariant(bbDefs.UIInteractions.DialogChoiceHubs));
@@ -2752,16 +2752,16 @@ public final class DFAnimationService extends DFSystem {
             securityData = FromVariant<SecurityAreaData>(variantData);
         };
 
-        let blockTimeSkip: Bool = psmBBoard.GetInt(bbDefs.PlayerStateMachine.Combat) == 1 || 
-                                  StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") || 
-                                  this.player.IsMovingVertically() || 
-                                  PlayerPuppet.IsSwimming(this.player) || 
+        let blockTimeSkip: Bool = psmBBoard.GetInt(bbDefs.PlayerStateMachine.Combat) == 1 ||
+                                  StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") ||
+                                  this.player.IsMovingVertically() ||
+                                  PlayerPuppet.IsSwimming(this.player) ||
                                   securityData.securityAreaType > ESecurityAreaType.SAFE ||
                                   GameInstance.GetPhoneManager(GetGameInstance()).IsPhoneCallActive() ||
                                   psmBBoard.GetBool(bbDefs.PlayerStateMachine.Carrying);
 
-        if this.IsPlayerInAllowedStateForAnyAnimation(true, this.IsExitVehicleBlocked()) && 
-            (noDialogueChoiceHubsShown || inRelaxActionMode) && 
+        if this.IsPlayerInAllowedStateForAnyAnimation(true, this.IsExitVehicleBlocked()) &&
+            (noDialogueChoiceHubsShown || inRelaxActionMode) &&
             (!blockTimeSkip || inRelaxActionMode) {
                 return true;
         }
@@ -2778,7 +2778,7 @@ public final class DFAnimationService extends DFSystem {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let bbDefs: ref<AllBlackboardDefinitions> = GetAllBlackboardDefs();
-        
+
         let bboard: ref<IBlackboard> = GameInstance.GetBlackboardSystem(gameInstance).Get(bbDefs.UIInteractions);
         let dialogChoiceHubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(bboard.GetVariant(bbDefs.UIInteractions.DialogChoiceHubs));
         let noDialogueChoiceHubsShown: Bool = ArraySize(dialogChoiceHubs.choiceHubs) == 0;
@@ -3017,7 +3017,7 @@ public final class DFAnimationService extends DFSystem {
             event.layerData = InteractionLayerData(n"Loot");
 
             this.lootingController.DFGetOwningLootEntity().QueueEvent(event);
-        }   
+        }
     }
 
     protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
@@ -3077,14 +3077,14 @@ public final class DFAnimationService extends DFSystem {
                 slow = true; // Use the slow update here to debounce against Blackout and Crash.
                 this.RelaxActionSystem.ForceStopRelaxActionMode();
             }
-        
+
         } else {
             // Consumable Anim
             // Try to add the animation to the queue.
             if anim.consumableAnimData.fromRelaxAction {
                 ArrayInsert(this.queuedAnims, 0, anim);
                 shouldProcessQueue = true;
-            
+
             } else if useIndex && ArraySize(this.queuedAnims) >= (atIndex + 1) {
                 this.queuedAnims[atIndex] = anim;
                 shouldProcessQueue = true;
@@ -3108,9 +3108,9 @@ public final class DFAnimationService extends DFSystem {
             this.RegisterProcessAnimQueueCallback(slow);
         }
 
-        DFLog(this, "########## QueueAnimation, Withdrawal?: " + ToString(NotEquals(this.queuedWithdrawalAnim.type, DFAnimType.Invalid)) + 
-            ", Blackout?: " + ToString(NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid)) + 
-            ", Crash?: " + ToString(NotEquals(this.queuedCrashAnim.type, DFAnimType.Invalid)) + 
+        DFLog(this, "########## QueueAnimation, Withdrawal?: " + ToString(NotEquals(this.queuedWithdrawalAnim.type, DFAnimType.Invalid)) +
+            ", Blackout?: " + ToString(NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid)) +
+            ", Crash?: " + ToString(NotEquals(this.queuedCrashAnim.type, DFAnimType.Invalid)) +
             ", queue: " + ToString(this.queuedAnims));
     }
 
@@ -3121,7 +3121,7 @@ public final class DFAnimationService extends DFSystem {
         }
 
         let invalidAnim: DFAnimDatum;
-        
+
         if flags.clearBlackout {
             this.queuedBlackoutAnim = invalidAnim;
         }
@@ -3144,8 +3144,8 @@ public final class DFAnimationService extends DFSystem {
         //DFProfile();
         this.currentlyPlayingAnimType = DFAnimType.Invalid;
         DFLog(this, "########## OnAnimFinishedPlaying, Withdrawal?: " + ToString(NotEquals(this.queuedWithdrawalAnim.type, DFAnimType.Invalid)) + ", Blackout?: " + ToString(NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid)) + ", Crash?: " + ToString(NotEquals(this.queuedCrashAnim.type, DFAnimType.Invalid)) + ", queue: " + ToString(this.queuedAnims));
-        if ArraySize(this.queuedAnims) > 0 || 
-            NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid) || 
+        if ArraySize(this.queuedAnims) > 0 ||
+            NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid) ||
             NotEquals(this.queuedWithdrawalAnim.type, DFAnimType.Invalid) ||
             NotEquals(this.queuedCrashAnim.type, DFAnimType.Invalid) {
             this.OnProcessAnimQueue();
@@ -3195,13 +3195,13 @@ public final class DFAnimationService extends DFSystem {
             this.currentlyPlayingAnimType = DFAnimType.Consumable;
             this.QuestsSystem.SetFact(this.GetQueuedAnimTypeQuestFact(), EnumInt<DFConsumableAnimType>(anim.consumableAnimData.type));
             this.QuestsSystem.SetFact(this.GetPlayQueuedAnimByIDActionQuestFact(), anim.consumableAnimData.id);
-        
+
         } else if Equals(anim.type, DFAnimType.Blackout) {
             this.HandleRadioOnBlackout(false);
             this.currentlyPlayingAnimType = DFAnimType.Blackout;
             this.QuestsSystem.SetFact(this.GetFullBlackoutAnimSubtypeFactAction(), EnumInt<DFBlackoutAnimFullSubtype>(anim.blackoutAnimData.subType));
             this.QuestsSystem.SetFact(this.GetStartBlackoutFactAction(), EnumInt<DFBlackoutAnimType>(anim.blackoutAnimData.type));
-        
+
         } else if Equals(anim.type, DFAnimType.Withdrawal) {
             // Set first time playback and message data, and clear flags that would have allowed this anim to play in the future.
             if Equals(anim.withdrawalAnimData.type, DFAddictionType.Nicotine) {
@@ -3221,7 +3221,7 @@ public final class DFAnimationService extends DFSystem {
             this.QuestsSystem.SetFact(this.GetAddictionWithdrawalAnimSeverityFact(), EnumInt<DFAddictionWithdrawalAnimSeverity>(anim.withdrawalAnimData.severity));
             this.QuestsSystem.SetFact(this.GetAddictionWithdrawalAnimType(), EnumInt<DFAddictionType>(anim.withdrawalAnimData.type));
             this.QuestsSystem.SetFact(this.GetStartWithdrawalFactAction(), 1);
-        
+
         } else if Equals(anim.type, DFAnimType.Crash) {
             this.currentlyPlayingAnimType = DFAnimType.Crash;
             this.QuestsSystem.SetFact(this.GetCrashAnimSeverityFact(), EnumInt<DFCrashAnimSeverity>(anim.crashAnimData.severity));
@@ -3267,8 +3267,6 @@ public final class DFAnimationService extends DFSystem {
     lcm_mvs_normal_medium <---- used by other base game stuff
     lcm_mvs_slow_light <----- same
 
-
-
     synced claire gives shard c 01 player
     synced q005 06 undercover jackie gives shard to v
     stand 2h on sides__show cyberdeck 01   <---- drink done rh
@@ -3279,6 +3277,6 @@ public final class DFAnimationService extends DFSystem {
 
     synced_idle_player_holds_gun_on_rinder__01__player <<<< Super nice idle for holding cig
     stand wall lean0 2h on wall 01 turn radio off 01 <<<< leaning against wall, motioning away
-    
+
 
 */

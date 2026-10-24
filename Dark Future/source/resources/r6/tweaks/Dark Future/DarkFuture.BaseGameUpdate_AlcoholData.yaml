@@ -331,8 +331,6 @@ DarkFutureStatusEffect.AlcoholNausea_OnEquip:
   statPools: []
   stats: []
 
-
-
 DarkFutureStatusEffect.AlcoholBlackout_OnEquip:
   $type: gamedataGameplayLogicPackage_Record
   stackable: False

@@ -121,7 +121,7 @@ public func GetTopLevelParentDistrictName(districtRecord: wref<District_Record>)
 public func GetTopLevelParentDistrictNameRecursive(districtRecord: wref<District_Record>) -> wref<District_Record> {
     //DFProfile();
     let topLevelDistrictRecord: wref<District_Record>;
-    
+
     let parent: wref<District_Record> = districtRecord.ParentDistrict();
     if IsDefined(parent) {
         topLevelDistrictRecord = GetTopLevelParentDistrictNameRecursive(parent);
@@ -141,11 +141,11 @@ public func DarkFutureSendRadioEvent(player: ref<PlayerPuppet>, toggle: Bool, se
     vehRadioEvent.toggle = toggle;
     vehRadioEvent.setStation = setStation;
     vehRadioEvent.station = stationIndex >= 0 ? EnumInt(RadioStationDataProvider.GetRadioStationByUIIndex(stationIndex)) : -1;
-    
+
     if IsDefined(vehicleObj) {
         player.QueueEventForEntityID(vehicleObj.GetEntityID(), vehRadioEvent);
     }
-    
+
     player.QueueEvent(vehRadioEvent);
 }
 

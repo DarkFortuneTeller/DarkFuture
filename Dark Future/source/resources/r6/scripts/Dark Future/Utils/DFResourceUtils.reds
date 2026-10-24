@@ -54,7 +54,7 @@ public class DFResourceUtils extends ScriptableService {
     /*protected cb func OnLoadSceneResource(event: ref<ResourceEvent>) -> Void {
         // scnscreenplayChoiceOption.itemId.id -> respective dialogue localization id
         let localizationMap: ref<inkStringMap>;
-        
+
         let scene: ref<scnSceneResource> = event.GetResource() as scnSceneResource;
         for option in scene.screenplayStore.options {
             localizationMap.Insert(ToString(option.itemId.id), CRUIDToHash(option.locstringId.ruid));
@@ -161,7 +161,7 @@ public class DFResourceUtils extends ScriptableService {
                     fastTravelChoiceNode = node as scnChoiceNode;
                     break;
                 }
-            }            
+            }
         }
 
         if NotEquals(fastTravelChoiceNode, null) {
@@ -176,7 +176,7 @@ public class DFResourceUtils extends ScriptableService {
         if Equals(fastTravelOption.caption, n"FT") {
             DFLogNoSystem(DFSystemlessDebugEnabled(), this, "DFResourceUtils: Injecting Fast Travel condition into ue_metro_02_station_v3.scene...");
             let metroFastTravelCondition: ref<questFactsDBCondition> = new questFactsDBCondition();
-            
+
             let varComparisonConditionType: ref<questVarComparison_ConditionType> = new questVarComparison_ConditionType();
             varComparisonConditionType.comparisonType = EComparisonType.Equal;
             varComparisonConditionType.factName = "df_fact_metro_fast_travel_disabled";
@@ -270,7 +270,7 @@ public class DFResourceUtils extends ScriptableService {
         // Update the base game apartment scenes.
         let vendingMachineEntityTemplate: ref<entEntityTemplate> = event.GetResource() as entEntityTemplate;
         FTLog("vending_machine_b_cirrus_cage found!");
-        
+
         let vendingMachineAsyncResource: ResourceAsyncRef = new ResourceAsyncRef();
         vendingMachineEntityTemplate.includes;
     }
@@ -370,7 +370,7 @@ public class DFResourceUtils extends ScriptableService {
             let endNode: ref<scnEndNode> = this.CreateSceneEndNode(endNodeId);
             ArrayPush(sceneGraph, endNode);
             this.AddExitPointToScene(sceneResource, endNode, StringToName(startEndNodeNameRoot + "_suspend"));
-            
+
             let outputSocket: scnOutputSocket = this.CreateSceneOutputSocket(endNodeId);
             injectionNodeA.outputSockets[nodeAOutputSocketOverrideIndex] = outputSocket;
             FTLog("Set up scene injection node A");
@@ -396,7 +396,7 @@ public class DFResourceUtils extends ScriptableService {
         node.nodeId.id = id;
 
         let inputSocketId: scnInputSocketId = new scnInputSocketId();
-        
+
         let inputSocketStamp: scnInputSocketStamp = new scnInputSocketStamp();
         inputSocketStamp.name = Cast<Uint16>(0u);
         inputSocketStamp.ordinal = Cast<Uint16>(0u);
@@ -444,9 +444,9 @@ public class DFResourceUtils extends ScriptableService {
     private final func CreateSceneOutputSocket(destinationNodeId: Uint32) -> scnOutputSocket {
     //DFProfile();
         let outputSocket: scnOutputSocket = new scnOutputSocket();
-        
+
         let outputSocketDestination: scnInputSocketId = new scnInputSocketId();
-        
+
         let outputSocketDestinationIsockStamp: scnInputSocketStamp = new scnInputSocketStamp();
         outputSocketDestinationIsockStamp.name = Cast<Uint16>(0u);
         outputSocketDestinationIsockStamp.ordinal = Cast<Uint16>(0u);

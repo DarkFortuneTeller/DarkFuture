@@ -155,7 +155,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     public let NotificationService: ref<DFNotificationService>;
 
     public let conditionStatusEffects: array<TweakDBID>;
-    
+
     public let queueAllFutureProgressionNotifications: Bool = false;
 
     //
@@ -315,7 +315,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
         this.LogMissingOverrideError("GetHUDSegmentedIndicatorSegmentType");
         return DFHUDSegmentedIndicatorSegmentType.None;
     }
-    
+
     //
     //  RunGuard Protected Methods
     //
@@ -328,7 +328,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
         let itemTags: array<CName> = itemRecord.Tags();
         if ArrayContains(itemTags, this.GetConditionCureItemTag()) {
             this.RestoreCondition(this.GetConditionCureItemAmountRestored());
-            
+
         } else if ArrayContains(itemTags, this.GetConditionSecondaryCureItemTag()) {
             this.DoSecondaryConditionCure();
         }
@@ -396,7 +396,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
             this.currentConditionLevel += value;
             this.UpdateConditionsHUDUI(true);
         }
-        
+
         return this.currentConditionLevel;
     }
 
@@ -468,7 +468,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
             notificationEvent.m_title = notificationTitle;
             notificationEvent.m_overrideCurrentNotification = true;
-            
+
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
         }*/
     }
@@ -500,10 +500,10 @@ public abstract class DFConditionSystemBase extends DFSystem {
     public final func QueueConditionProgressionNotification(lastValue: Int32, increasing: Bool, opt actualDelta: Int32) {
         //DFProfile();
         if !this.Settings.conditionMessagesEnabled { return; }
-        
+
         let notification: DFProgressionNotification;
         notification.value = Cast<Int32>(this.accumulatedPercentTowardNextLevel);
-        
+
         let maybeDelta: Int32 = notification.value - lastValue;
         if increasing {
             notification.barDelta = maybeDelta > 0 ? maybeDelta : (100 - lastValue) + notification.value;

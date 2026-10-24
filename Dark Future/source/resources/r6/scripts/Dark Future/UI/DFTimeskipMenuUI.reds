@@ -115,7 +115,7 @@ protected cb func OnTimeSkipButtonPressed(e: ref<inkPointerEvent>) -> Bool {
     if e.IsAction(n"click") {
         DFInteractionSystem.GetInstance(GetGameInstance()).SetSkippingTimeFromHubMenu(true);
     }
-    
+
     return wrappedMethod(e);
 }
 
@@ -138,7 +138,7 @@ protected cb func OnInitialize() -> Bool {
     this.NerveSystem = DFNerveSystem.GetInstance(gameInstance);
     this.BiocorruptionCondition = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     let timeSystem: ref<TimeSystem> = GameInstance.GetTimeSystem(gameInstance);
-    
+
     if this.Settings.mainSystemEnabled {
         this.MainSystem.DispatchTimeSkipStartEvent();
         this.timeSkipType = this.GetTimeskipType(this.NerveSystem.GetNeedStage());
@@ -154,7 +154,7 @@ protected cb func OnInitialize() -> Bool {
     this.UpdateAllBarsAppearance();
     this.nerveBar.UpdateOverchargeAppearance(this.NerveSystem.GetOverchargeValue(), this.Settings.compatibilityProjectE3UI);
     this.UpdateUI();
-    
+
     return value;
 }
 
@@ -203,7 +203,7 @@ protected cb func OnUpdate(timeDelta: Float) -> Bool {
                 } else {
                     diff = Rad2Deg(this.m_targetTimeAngle - angle);
                 };
-                
+
                 h = RoundF(diff / 360.00 * 24.00);  // h = The remaining number of hours to wait.
                 this.UpdateUIDuringTimeskip(h);
             };
@@ -237,7 +237,7 @@ protected cb func OnCloseAfterFinishing(proxy: ref<inkAnimProxy>) -> Bool {
 
         // If blacking out or crashing with appropriate setting enabled, skip any severe need messages from this change.
         tsd.skipSevereNeedMessage = (NotEquals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) && this.calculatedFutureValues.futureBiocorruptionData[this.m_hoursToSkip - 1].crashOccuredDuringTimeskip) || (this.Settings.blackoutEnabled && this.calculatedFutureValues.futureNeedsData[this.m_hoursToSkip - 1].energy.value == 0.0);
-        
+
         this.MainSystem.DispatchTimeSkipFinishedEvent(tsd);
     }
     return wrappedMethod(proxy);
@@ -264,7 +264,7 @@ protected cb func OnUninitialize() -> Bool {
         this.GameStateService.RegisterDelayedSleepCinematicExit();
         this.InteractionSystem.SetSkippingTimeFromHubMenu(false);
     }
-    
+
     return wrappedMethod();
 }
 
@@ -281,7 +281,7 @@ private final func UpdateTargetTime(angle: Float) -> Void {
 private final func SetTimeSkipText(textWidgetRef: inkTextRef, textParamsRef: ref<inkTextParams>, hours: Int32) -> Void {
     //DFProfile();
     wrappedMethod(textWidgetRef, textParamsRef, hours);
-    
+
     if DFIsSleeping(this.timeSkipType) {
         textParamsRef = new inkTextParams();
         textParamsRef.AddNumber("value", hours);
@@ -343,7 +343,7 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
 
     let hydrationIconPath: ResRef = r"base\\gameplay\\gui\\widgets\\healthbar\\atlas_buffinfo.inkatlas";
     let hydrationIconName: CName = n"hydrated";
-    
+
     let nutritionIconPath: ResRef = r"base\\gameplay\\gui\\common\\icons\\mappin_icons.inkatlas";
     let nutritionIconName: CName = n"food_vendor";
 
@@ -363,10 +363,10 @@ private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void
     barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"hydrationBar", hydrationIconPath, hydrationIconName, GetLocalizedTextByKey(n"DarkFutureUILabelHydration"), 485.0, 100.0, 0.0, 0.0, true, false, "");
     this.hydrationBar = new DFNeedsMenuBar();
     this.hydrationBar.Init(barSetupData);
-    
+
     barSetupData = DFNeedsMenuBarSetupData(rowTwo, n"nutritionBar", nutritionIconPath, nutritionIconName, GetLocalizedTextByKey(n"DarkFutureUILabelNutrition"), 485.0, 0.0, 0.0, 0.0, true, false, "");
     this.nutritionBar = new DFNeedsMenuBar();
-    this.nutritionBar.Init(barSetupData);   
+    this.nutritionBar.Init(barSetupData);
 }
 
 @addMethod(TimeskipGameController)
@@ -415,7 +415,7 @@ private final func UpdateUI() -> Void {
     let nutrition: Float = this.calculatedFutureValues.futureNeedsData[index].nutrition.value;
     let energy: Float = this.calculatedFutureValues.futureNeedsData[index].energy.value;
     let nerve: Float = this.calculatedFutureValues.futureNeedsData[index].nerve.value;
-    
+
     let euphoria: Float = this.calculatedFutureValues.futureNeedsData[index].nerve.overcharge;
     let isRestless: Bool = this.calculatedFutureValues.futureBiocorruptionData[index].isRestless;
 
@@ -431,7 +431,7 @@ private final func UpdateUI() -> Void {
     let showEnergyLock: Bool = this.calculatedFutureValues.futureNeedsData[index].energy.showLock;
     this.energyBar.SetUpdatedValue(energy, energyMax, showEnergyLock);
     this.UpdateBarLimit(this.energyBar, energyMax);
-    
+
     let nerveMax: Float = this.calculatedFutureValues.futureNeedsData[index].nerve.ceiling;
     let showNerveLock: Bool = this.calculatedFutureValues.futureNeedsData[index].nerve.showLock;
     this.nerveBar.SetUpdatedValue(nerve, nerveMax, showNerveLock);
@@ -441,12 +441,12 @@ private final func UpdateUI() -> Void {
     if (this.Settings.nerveLossIsFatal && nerve <= 1.0) {
         this.timeskipAllowed = false;
         timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonFatal";
-    
+
     } else if isSleeping && euphoria > 0.0 {
         // The player cannot sleep for less time than it would take for Euphoria to wear off.
         this.timeskipAllowed = false;
         timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonEuphoria";
-    
+
     } else if energy <= 1.0 && this.Settings.blackoutEnabled {
         this.timeskipAllowed = true;
         timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonBlackout";
@@ -454,11 +454,11 @@ private final func UpdateUI() -> Void {
     } else if isSleeping && hasInsomniaNow {
         this.timeskipAllowed = true;
         timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNerveNoRecovery";
-    
+
     } else if isSleeping && hasHungerThirstPangsNow {
         this.timeskipAllowed = true;
         timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonNutritionHydrationNoRecovery";
-    
+
     } else if isSleeping && isRestless && energy >= this.EnergySystem.GetRestlessEnergyRecoveryLimit() {
         this.timeskipAllowed = true;
         timeskipAllowedReasonKey = n"DarkFutureTimeskipReasonRestlessNoRecovery";
@@ -483,7 +483,7 @@ private final func GetTimeskipType(nerveStage: Int32) -> DFTimeSkipType {
 
     if sleepingInVehicle {
         let inBadlands: Bool = IsPlayerInBadlands(this.GameStateService.player);
-        
+
         if (inBadlands && Equals(this.Settings.vehicleSleepQualityBadlandsV2, DFSleepQualitySetting.Limited)) {
             return DFTimeSkipType.LimitedSleep;
 
@@ -493,7 +493,7 @@ private final func GetTimeskipType(nerveStage: Int32) -> DFTimeSkipType {
         } else {
             return DFTimeSkipType.FullSleep;
         }
-    
+
     } else if sleepingInBed {
         return DFTimeSkipType.FullSleep;
 
@@ -539,7 +539,7 @@ private final func UpdateUIDuringTimeskip(remainingHoursToSkip: Int32) -> Void {
     let hydrationMax: Float = this.calculatedFutureValues.futureNeedsData[newIndex].hydration.ceiling;
     this.hydrationBar.SetUpdatedValue(newHydration, 100.0);
     this.UpdateBarLimit(this.hydrationBar, hydrationMax);
-    
+
     let nutritionMax: Float = this.calculatedFutureValues.futureNeedsData[newIndex].nutrition.ceiling;
     this.nutritionBar.SetUpdatedValue(newNutrition, 100.0);
     this.UpdateBarLimit(this.nutritionBar, nutritionMax);
@@ -548,7 +548,7 @@ private final func UpdateUIDuringTimeskip(remainingHoursToSkip: Int32) -> Void {
     let showEnergyLock: Bool = this.calculatedFutureValues.futureNeedsData[newIndex].energy.showLock;
     this.energyBar.SetUpdatedValue(newEnergy, energyMax, showEnergyLock);
     this.UpdateBarLimit(this.energyBar, energyMax);
-    
+
     let nerveMax: Float = this.calculatedFutureValues.futureNeedsData[newIndex].nerve.ceiling;
     let showNerveLock: Bool = this.calculatedFutureValues.futureNeedsData[newIndex].nerve.showLock;
     this.nerveBar.SetUpdatedValue(newNerve, nerveMax, showNerveLock);

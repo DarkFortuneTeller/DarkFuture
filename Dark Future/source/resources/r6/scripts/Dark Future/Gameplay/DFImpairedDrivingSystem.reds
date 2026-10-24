@@ -42,7 +42,7 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
     let r: Bool = wrappedMethod(evt);
 
     let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-    if IsDefined(mountChild) && mountChild.IsPlayer() {     
+    if IsDefined(mountChild) && mountChild.IsPlayer() {
         DFImpairedDrivingSystem.Get().HandlePlayerMountedVehicle(this);
     }
 
@@ -58,7 +58,7 @@ protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
     if IsDefined(mountChild) && mountChild.IsPlayer() {
         DFImpairedDrivingSystem.Get().HandlePlayerUnmountedVehicle();
     }
-    
+
     return r;
 }
 
@@ -283,7 +283,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
         //DFProfile();
         this.TryToStartControlLossBehavior();
     }
-    
+
     public func GetSystems() -> Void {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
@@ -298,13 +298,13 @@ public final class DFImpairedDrivingSystem extends DFSystem {
 
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
     public func SetupData() -> Void {}
-    
+
     private func RegisterListeners() -> Void {
         //DFProfile();
         this.factListenerImpairedDrivingDebugID = GameInstance.GetQuestsSystem(GetGameInstance()).RegisterListener(this.GetImpairedDrivingDebugFact(), this, n"OnImpairedDrivingDebugFactSet");
         this.factListenerImpairedDrivingVFXDebugID = GameInstance.GetQuestsSystem(GetGameInstance()).RegisterListener(this.GetImpairedDrivingDebugVFXFact(), this, n"OnImpairedDrivingVFXDebugFactSet");
     }
-    
+
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
 
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -321,7 +321,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
         GameInstance.GetQuestsSystem(GetGameInstance()).UnregisterListener(this.GetImpairedDrivingDebugVFXFact(), this.factListenerImpairedDrivingVFXDebugID);
         this.factListenerImpairedDrivingVFXDebugID = 0u;
     }
-    
+
     public func UnregisterAllDelayCallbacks() -> Void {
         //DFProfile();
         this.UnregisterForControlLossInitialDelay();
@@ -329,7 +329,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
         this.UnregisterForControlLossStart();
         this.UnregisterForControlLossFinish();
     }
-    
+
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
     public func OnTimeSkipBegin() -> Void {}
@@ -411,7 +411,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
 
     private final func TryToStartControlLossBehavior() -> Void {
         //DFProfile();
-        if DFRunGuard(this) { 
+        if DFRunGuard(this) {
             DFLog(this, "Failed to start: RunGuard");
             return;
         }
@@ -512,7 +512,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
                 } else {
                     vfxCommand = DFImpairedDrivingVFXCommand.HighDuration;
                 }
-                
+
             } else {
                 DFLog(this, "~~~~~~~~~ Selected SHORT DURATION");
                 controlLossDuration = this.controlLossDuration_Short;
@@ -527,7 +527,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
             if this.GetIsPlayerVehicleSpeedOverThreshold() {
                 this.ApplyControlLossVFX(vfxCommand);
             }
-            
+
             this.RegisterForControlLossStart(controlLossDuration);
 
         } else {
@@ -596,7 +596,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
         if this.player.IsInCombat() {
             return DFImpairedDrivingMode.Off;
         }
-        
+
         if this.AutoDriveSystem.GetAutodriveEnabled() {
             return DFImpairedDrivingMode.Off;
         }

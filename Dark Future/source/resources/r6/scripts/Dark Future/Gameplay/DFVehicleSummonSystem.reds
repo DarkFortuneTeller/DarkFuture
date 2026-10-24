@@ -144,7 +144,7 @@ protected cb func OnSummonStartedEvent(evt: ref<SummonStartedEvent>) -> Bool {
     //DFProfile();
     wrappedMethod(evt);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
-    
+
     if IsSystemEnabledAndRunning(vehicleSummonSystem) && IsDefined(evt) {
         if Equals(evt.state, vehicleSummonState.EnRoute) {
             // If this caused the vehicle to spawn or move, it is now the "last summoned" vehicle.
@@ -174,13 +174,13 @@ public final func SetActiveVehicle(vehicleData: PlayerVehicle) -> Void {
 public final func SummonActiveVehicle(force: Bool) -> Void {
     //DFProfile();
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
-    
+
     if IsSystemEnabledAndRunning(vehicleSummonSystem) && DFGameStateService.Get().IsValidGameState(this) {
         let canSummonVehicle: Bool = force || !GameInstance.GetVehicleSystem(GetGameInstance()).IsActivePlayerVehicleOnCooldown(this.GetActiveVehicleType());
         if !canSummonVehicle {
             return;
         };
-    
+
         if vehicleSummonSystem.GetRemainingSummonCredits() > 0 && this.DFActiveVehicleJustSet {
             // We have summon credits, OR we do not, but the vehicle we selected was the Delamain cab, AND we used the menu to select it; summon a vehicle.
             vehicleSummonSystem.UseSummonCredit();
@@ -198,7 +198,7 @@ public final func SummonActiveVehicle(force: Bool) -> Void {
             let lastSummonedVehicle: ref<VehicleComponent> = vehicleSummonSystem.GetLastSummonedVehicle();
             if IsDefined(lastSummonedVehicle) && lastSummonedVehicle.GetEntity().IsAttached() && !lastSummonedVehicle.GetPS().GetIsDestroyed() {
                 // Simulate the "pinging" vehicle behavior of when tapping the summon button
-                // when near a vehicle, without actually summoning it. 
+                // when near a vehicle, without actually summoning it.
                 lastSummonedVehicle.CreateMappin();
                 lastSummonedVehicle.HonkAndFlash();
             }
@@ -228,7 +228,7 @@ protected cb func OnPlayerAttach(player: ref<GameObject>) -> Bool {
     //DFProfile();
     wrappedMethod(player);
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
-    
+
     // Create a quantity widget for the Call Vehicle HUD Widget
     let counterCanvas: ref<inkCanvas> = new inkCanvas();
     counterCanvas.SetVisible(false);    // Initialize to being invisible.
@@ -302,7 +302,7 @@ protected func ResolveState() -> Void {
     //DFProfile();
     super.ResolveState();
     let vehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
-    
+
     let state: CName = this.GetRootWidget().GetState();
     if Equals(state, n"Unavailable") {
         vehicleSummonSystem.SetHotkeySummonCreditState(false);
@@ -381,7 +381,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
     public let summonCreditCooldownDelayID: DelayID;
     private let summonCreditCooldownDelayIntervalGameTimeSeconds: Float = 300.0;
-    
+
     private let hotkeySummonCreditCanvas: ref<inkCanvas>;
     private let hotkeySummonCreditLabel: ref<inkText>;
     private let hotkeySummonCreditBackground: ref<inkImage>;
@@ -428,7 +428,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
         this.summonCreditCooldownDurationGameTimeSeconds = HoursToGameTimeSeconds(this.Settings.hoursPerSummonCredit);
     }
 
-    public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void { 
+    public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
         //DFProfile();
         this.UpdateWidgetVisibility();
     }
@@ -603,7 +603,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
         let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
         evt.soundName = n"ui_grenade_recharged";
         this.player.QueueEvent(evt);
-        
+
         evt = new SoundPlayEvent();
         evt.soundName = n"ui_jingle_vehicle_arrive";
         this.player.QueueEvent(evt);
@@ -698,7 +698,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
         }
 
         this.RegisterForSummonCooldown();
-        
+
         DFLog(this, "OnTimeSkip() hoursSkipped = " + ToString(data.hoursSkipped) + " remainingSummonCredits = " + ToString(this.remainingSummonCredits) + ", remainingCooldownTime = " + ToString(this.remainingCooldownTime));
     }
 

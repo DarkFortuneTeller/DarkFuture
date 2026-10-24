@@ -27,7 +27,7 @@ import DarkFuture.Conditions.{
 /*
     General guidelines for notifications to help ensure good UX:
 
-      * Audio cues *should not* play simultaneously, as they are often "grunts" in the player's voice. 
+      * Audio cues *should not* play simultaneously, as they are often "grunts" in the player's voice.
           * The highest-priority cue should win (random if tie).
 
       * VFX can play simultaneously; most VFX seem to stack well with each other.
@@ -277,7 +277,7 @@ public final class DFNotificationService extends DFSystem {
     private let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem>;
 
     public let backpackController: ref<BackpackMainGameController>;
-    
+
     private let inCombatNotificationQueue: array<DFNotification>;
     private let outOfCombatNotificationQueue: array<DFNotification>;
     private let messageQueue: array<DFMessage>;
@@ -362,7 +362,7 @@ public final class DFNotificationService extends DFSystem {
         this.HumanityLossConditionSystem = DFHumanityLossConditionSystem.GetInstance(gameInstance);
         this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     }
-    
+
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
         //DFProfile();
         this.ClearAllNotificationQueues();
@@ -400,7 +400,7 @@ public final class DFNotificationService extends DFSystem {
     public final func QueueNotification(notification: DFNotification, opt forceImmediatePlayback: Bool) -> Void {
         //DFProfile();
         DFLog(this, "QueueNotification notification: " + ToString(notification));
-        
+
         if notification.allowPlaybackInCombat && this.player.IsInCombat() {
             ArrayPush(this.inCombatNotificationQueue, notification);
             if forceImmediatePlayback {
@@ -408,7 +408,7 @@ public final class DFNotificationService extends DFSystem {
             } else {
                 this.RegisterProcessInCombatNotificationQueueCallback();
             }
-            
+
         } else {
             ArrayPush(this.outOfCombatNotificationQueue, notification);
             if forceImmediatePlayback {
@@ -434,7 +434,7 @@ public final class DFNotificationService extends DFSystem {
 
             } else if Equals(gs, GameState.TemporarilyInvalid) {
                 this.RegisterProcessOutOfCombatNotificationQueueCallback(allowLimitedGameplay);
-            
+
             } else {
                 // We are in an invalid game state, dispose of the notification queue.
                 ArrayClear(this.outOfCombatNotificationQueue);
@@ -452,7 +452,7 @@ public final class DFNotificationService extends DFSystem {
 
             } else if Equals(gs, GameState.TemporarilyInvalid) {
                 this.RegisterProcessInCombatNotificationQueueCallback();
-            
+
             } else {
                 // We are in an invalid game state, dispose of the notification queue.
                 ArrayClear(this.inCombatNotificationQueue);
@@ -473,7 +473,7 @@ public final class DFNotificationService extends DFSystem {
                 Find any UI display notifications and store in an array. These can play simultaneously.
                 Find any messages. Combine any messages that share the same context as appropriate.
                 Find any progression notifications. Select the latest one of any type. Discard the rest.
-            
+
             Then:
                 Play the audio cue.
                 Play all stored VFX.
@@ -500,7 +500,7 @@ public final class DFNotificationService extends DFSystem {
                 ArrayPush(factsToSet, notification.audioSceneFact);
                 audioSceneFactSet = true;
             }
-            
+
             // SFX
             if !audioSceneFactSet && NotEquals(notification.sfx.audio, n"") {
                 if notification.sfx.priority < sfxToPlay.priority { // Lower is higher priority
@@ -550,7 +550,7 @@ public final class DFNotificationService extends DFSystem {
 
             // Message
             if NotEquals(notification.message.key, n"") {
-                let i: Int32 = 0;   
+                let i: Int32 = 0;
                 let duplicateContextFound: Bool = false;
                 while i < ArraySize(messagesToShow) && !duplicateContextFound {
                     if Equals(messagesToShow[i].context, notification.message.context) {
@@ -657,7 +657,7 @@ public final class DFNotificationService extends DFSystem {
     //  to use the combined context key instead of storing a new one. This allows
     //  one message to stand in for multiple at once, cutting down on spam.
     //
-    //  Warning messages can become annoying, or meaningless noise, very fast. 
+    //  Warning messages can become annoying, or meaningless noise, very fast.
     //  They should be used sparingly and combined with contexts whenever possible
     //  in order for them to retain their impact.
 
@@ -671,14 +671,14 @@ public final class DFNotificationService extends DFSystem {
 
             if Equals(gs, GameState.Valid) {
                 let message: DFMessage = ArrayPop(this.messageQueue);
-                
+
                 if message.useCombinedContextKey {
                     if message.passKeyAsString {
                         this.SetMessage(NameToString(message.combinedContextKey), message.type, message.duration);
                     } else {
                         this.SetMessage(GetLocalizedTextByKey(message.combinedContextKey), message.type, message.duration);
                     }
-                    
+
                 } else {
                     if message.passKeyAsString {
                         this.SetMessage(NameToString(message.key), message.type, message.duration);
@@ -690,7 +690,7 @@ public final class DFNotificationService extends DFSystem {
                 if ArraySize(this.messageQueue) > 0 {
                     this.RegisterDisplayNextMessageCallback(this.displayNextMessageBackoffDelayInterval);
                 }
-            
+
             } else if Equals(gs, GameState.TemporarilyInvalid) {
                 this.RegisterDisplayNextMessageCallback(this.displayNextMessageDelayInterval);
 
@@ -731,7 +731,7 @@ public final class DFNotificationService extends DFSystem {
         if ArraySize(this.tutorialQueue) > 0 {
             if this.GameStateService.IsValidGameState(this) && !this.player.IsInCombat() {
                 let tutorial: DFTutorial = ArrayPop(this.tutorialQueue);
-                
+
                 let blackboardDef: ref<IBlackboard> = this.BlackboardSystem.Get(GetAllBlackboardDefs().UIGameData);
                 let myMargin: inkMargin = inkMargin(0.0, 0.0, 0.0, 0.0);
                 let popupSettingsDatum: PopupSettings;
@@ -741,7 +741,7 @@ public final class DFNotificationService extends DFSystem {
                 popupSettingsDatum.position = PopupPosition.LowerLeft;
                 popupSettingsDatum.hideInMenu = true;
                 popupSettingsDatum.margin = myMargin;
-                
+
 
                 let tutorialTitle: String = tutorial.title;
                 let tutorialMessage: String = tutorial.message;

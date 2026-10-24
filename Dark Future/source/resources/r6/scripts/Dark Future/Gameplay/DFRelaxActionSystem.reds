@@ -2,7 +2,7 @@
 // DFRelaxActionSystem
 // -----------------------------------------------------------------------------
 //
-// - Gameplay System that handles relaxation actions, including immersive item use 
+// - Gameplay System that handles relaxation actions, including immersive item use
 //   via Consumable Animations.
 //
 
@@ -106,7 +106,7 @@ private final func DarkFutureEvaluateRelaxActionInputHint(show: Bool, stateConte
         let inputString: String;
         // Relax
         inputString = GetLocalizedTextByKey(n"DarkFutureRelaxActionPrompt");
-        
+
         this.ShowInputHint(scriptInterface, n"DFRelaxAction", source, inputString, inkInputHintHoldIndicationType.Hold, true, 127);
     } else {
         this.RemoveInputHint(scriptInterface, n"DFRelaxAction", source);
@@ -252,7 +252,7 @@ public final func FadeOutItems(fadeOutTime: Float) -> Void {
     }
 }
 
-// DialogChoiceLogicController - Add a field on each dialog choice entry that tracks whether or not this 
+// DialogChoiceLogicController - Add a field on each dialog choice entry that tracks whether or not this
 //                               is an Immersive Item Use choice, and of what type.
 //
 @addField(DialogChoiceLogicController)
@@ -432,7 +432,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     private let cachedSelectedItems: array<DFRelaxActionItemUseCachedItem>;
 
     private let danceAllowedSetThisSession: Bool = false;
-    
+
     private let factListenerRelaxActionModeChangedID: Uint32;
     private let factListenerEvaluateInventoryID: Uint32;
     private let factListenerConsumeItemID: Uint32;
@@ -531,7 +531,7 @@ public final class DFRelaxActionSystem extends DFSystem {
         this.RegisterRaycastTest();
     }
     */
-    
+
     private func RegisterListeners() -> Void {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
@@ -545,7 +545,7 @@ public final class DFRelaxActionSystem extends DFSystem {
         this.factListenerRelaxActionEvaluateOptionsID = GameInstance.GetQuestsSystem(gameInstance).RegisterListener(this.GetRelaxActionEvaluateOptionsFact(), this, n"OnRelaxActionEvaluateOptionsFactSet");
         this.factListenerPlayBraindanceID = GameInstance.GetQuestsSystem(gameInstance).RegisterListener(this.GetPlayBraindanceFact(), this, n"OnPlayBraindanceFactSet");
     }
-    
+
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
 
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
@@ -921,7 +921,7 @@ public final class DFRelaxActionSystem extends DFSystem {
 
         this.InvalidateAllItemFlagFacts();
         ArrayClear(this.cachedSelectedItems);
-        
+
         let gameInstance: GameInstance = GetGameInstance();
         if !DFNerveSystem.GetInstance(gameInstance).GetHasNausea() {
             this.SetCachedItemData(DFRelaxActionItemUseItemType.FoodSpecial, n"DarkFutureRelaxActionItemUseSpecialFood", this.GetHasSpecialFoodFact(), this.GetHasAnyFoodFact());
@@ -929,7 +929,7 @@ public final class DFRelaxActionSystem extends DFSystem {
             this.SetCachedItemData(DFRelaxActionItemUseItemType.FoodSnack, n"DarkFutureRelaxActionItemUseSnack", this.GetHasSnackFact(), this.GetHasAnyFoodFact());
             this.SetCachedItemData(DFRelaxActionItemUseItemType.FoodJunk, n"DarkFutureRelaxActionItemUseJunkFood", this.GetHasJunkFoodFact(), this.GetHasAnyFoodFact());
         }
-        
+
         this.SetCachedItemData(DFRelaxActionItemUseItemType.DrinkSpecial, n"DarkFutureRelaxActionItemUseSpecialDrink", this.GetHasSpecialDrinkFact(), this.GetHasAnyDrinkFact());
         this.SetCachedItemData(DFRelaxActionItemUseItemType.DrinkWater, n"DarkFutureRelaxActionItemUseWater", this.GetHasWaterFact(), this.GetHasAnyDrinkFact());
         this.SetCachedItemData(DFRelaxActionItemUseItemType.DrinkTeaDecaf, n"DarkFutureRelaxActionItemUseTeaDecaf", this.GetHasTeaDecafFact(), this.GetHasAnyDrinkFact());
@@ -991,7 +991,7 @@ public final class DFRelaxActionSystem extends DFSystem {
         let outList: array<wref<gameItemData>>;
         let cachedItem: DFRelaxActionItemUseCachedItem;
         this.TransactionSystem.GetItemListByTag(this.player, tag, outList);
-        
+
         if ArraySize(outList) > 0 {
             // TODO - Sort by best, worst
             this.QuestsSystem.SetFact(hasItemTypeFact, 1);
@@ -1050,7 +1050,7 @@ public final class DFRelaxActionSystem extends DFSystem {
             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
             notificationEvent.m_title = notificationTitle;
             notificationEvent.m_overrideCurrentNotification = true;
-            
+
             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
 
             this.QuestsSystem.SetFact(this.GetDisplayNoItemMessageActionFact(), 0);
@@ -1081,7 +1081,7 @@ public final class DFRelaxActionSystem extends DFSystem {
         let uiInventoryItemTooltip: ref<UIInventoryItemTooltipWrapper>;
 
         let cachedItemTDBID: TweakDBID = this.GetCachedItemTDBIDFromType(type);
-        
+
         if ItemID.IsValid(ItemID.FromTDBID(cachedItemTDBID)) {
             item = this.UIInventorySystem.GetPlayerItem(ItemID.FromTDBID(cachedItemTDBID));
             identifiedTooltipData = new IdentifiedWrappedTooltipData();
@@ -1110,10 +1110,10 @@ public final class DFRelaxActionSystem extends DFSystem {
     private final func SetUpDataAndQueueAnimForItem(itemTDBID: TweakDBID) {
         //DFProfile();
         let anim: DFAnimDatum = this.AnimationService.GetAnimFromItemTDBIDIfPlaybackValid(itemTDBID);
-        
+
         if NotEquals(anim.type, DFAnimType.Invalid) {
             anim.consumableAnimData.fromRelaxAction = true;
-            
+
             if Equals(itemTDBID, this.lastConsumedTDBID) && this.animPlaybackCountRemaining > 0 {
                 // This is a repeat playback.
             } else {
@@ -1122,8 +1122,8 @@ public final class DFRelaxActionSystem extends DFSystem {
                 this.QuestsSystem.SetFact(this.AnimationService.GetAnimPlaybackCountRemainingFact(), this.animPlaybackCountRemaining);
             }
 
-            this.lastConsumedTDBID = itemTDBID;    
-            
+            this.lastConsumedTDBID = itemTDBID;
+
             this.AnimationService.QueueAnimation(anim);
         }
     }
@@ -1157,7 +1157,7 @@ public final class DFRelaxActionSystem extends DFSystem {
                         ItemActionsHelper.ConsumeItem(this.player, ItemID.FromTDBID(this.lastConsumedTDBID), true);
                         DFLog(this, "[~][~][~][~][~][~][~][~][~] Item consumed!");
                     }
-                    
+
                 } else {
                     DFLog(this, "[~][~][~][~][~][~][~][~][~] ERROR: The Item_Record of lastConsumedTDBID was invalid!");
                 }
@@ -1223,7 +1223,7 @@ public final class DFRelaxActionSystem extends DFSystem {
             this.EvaluateInventory();
 
             this.player.m_pocketRadio.DFSetRestrictionOverride(true);
-            
+
             // Allow the graph to continue.
             this.QuestsSystem.SetFact(this.GetRelaxActionEvaluateOptionsFact(), 0);
         }

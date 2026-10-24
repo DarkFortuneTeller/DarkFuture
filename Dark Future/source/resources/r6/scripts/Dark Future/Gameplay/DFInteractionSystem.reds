@@ -109,7 +109,7 @@ protected cb func OnStateChanges(hash: Uint32, className: CName, notifyOption: J
     if Equals(className, n"gameJournalQuestObjective") {
         DFInteractionSystem.Get().OnQuestObjectiveUpdate(hash);
     }
-    
+
     return wrappedMethod(hash, className, notifyOption, changeType);
 }
 
@@ -187,7 +187,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
     let interactionSystem: ref<DFInteractionSystem> = DFInteractionSystem.Get();
     let effectID: TweakDBID = evt.staticData.GetID();
 
-    if IsSystemEnabledAndRunning(interactionSystem) {       
+    if IsSystemEnabledAndRunning(interactionSystem) {
         if Equals(effectID, t"HousingStatusEffect.Energized") {
             interactionSystem.DrankCoffeeFromChoice();
         }
@@ -403,7 +403,7 @@ public final class DFInteractionSystem extends DFSystem {
     public final func GetSystems() -> Void {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
-        
+
         this.MainSystem = DFMainSystem.GetInstance(gameInstance);
         this.GameStateService = DFGameStateService.GetInstance(gameInstance);
         this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
@@ -594,13 +594,13 @@ public final class DFInteractionSystem extends DFSystem {
         // Meditation
         if Equals(choiceIconName, n"Sit") && Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_Meditate)) {
             this.HumanityLossConditionSystem.TryToRestoreHumanityLossFromMeditation();
-        
+
         // Zen Masters
         } else if Equals(choiceIconName, n"GetUp") && (Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptA)) ||
                                                        Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptB)) ||
-                                                       Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptC)) || 
+                                                       Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptC)) ||
                                                        Equals(choiceCaption, GetLocalizedTextByKey(this.locKey_Interaction_MQ014MonkFinishPromptD))) {
-                    
+
                     this.HumanityLossConditionSystem.RestoreHumanityLoss(DFHumanityLossRestorationType.OneTimeEventMinor);
 
         // Rollercoaster
@@ -620,7 +620,7 @@ public final class DFInteractionSystem extends DFSystem {
             if apartmentRomanceActive {
                 this.HumanityLossConditionSystem.TryToRestoreHumanityLossFromIntimacy();
             }
-        
+
         // Metro Beggar
         } else if onMetro {
             let foundMetroBeggarChoice: Bool = false;
@@ -673,17 +673,17 @@ public final class DFInteractionSystem extends DFSystem {
         addictionSystem: ref<DFAddictionSystemBase>,
         addictionAmount: Float,
         addictionAmountAsPercentage: Float,
-        addictionStage: Int32, 
-        activeEffectApplied: Bool, 
-        backoffDuration: Float, 
-        withdrawalLevel: Int32, 
+        addictionStage: Int32,
+        activeEffectApplied: Bool,
+        backoffDuration: Float,
+        withdrawalLevel: Int32,
         withdrawalDuration: Float,
         currentHour: Int32,
         hasLostAddictionAmountToday: Bool,
         hasEuphoria: Bool
     ) -> DFAddictionTimeSkipIterationStateDatum {
         //DFProfile();
-        
+
         let withdrawalDurations: array<Float> = addictionSystem.GetAddictionWithdrawalDurationsInGameTimeSeconds();
         let addictionBackoffDurations: array<Float> = addictionSystem.GetAddictionBackoffDurationsInGameTimeSecondsByStage();
 
@@ -738,7 +738,7 @@ public final class DFInteractionSystem extends DFSystem {
 
             } else if activeEffectApplied && !hasEuphoria {
                 activeEffectApplied = false;
-                
+
                 // The primary effect expired; start a fake back-off timer.
                 backoffDuration = addictionBackoffDurations[addictionStage];
             }
@@ -865,7 +865,7 @@ public final class DFInteractionSystem extends DFSystem {
             basicNeedsData.nutrition = needNutrition;
             basicNeedsData.energy = needEnergy;
             basicNeedsData.nerve = needNerve;
-            
+
             let addictionAlcohol: DFAddictionUpdateDatum;
             addictionAlcohol.addictionAmount = alcoholDataAccumulator.addictionAmount;
             addictionAlcohol.addictionAmountAsPercentage = alcoholDataAccumulator.addictionAmountAsPercentage;
@@ -922,42 +922,42 @@ public final class DFInteractionSystem extends DFSystem {
                 }
                 DFLog(this, "startingHour = " + ToString(startingHour) + ", currentHour = " + ToString(currentHour));
 
-                let nicotineDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Nicotine", 
+                let nicotineDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Nicotine",
                     this.NicotineAddictionSystem,
                     nicotineDataAccumulator.addictionAmount,
                     nicotineDataAccumulator.addictionAmountAsPercentage,
-                    nicotineDataAccumulator.addictionStage, 
-                    nicotineDataAccumulator.activeEffectApplied, 
+                    nicotineDataAccumulator.addictionStage,
+                    nicotineDataAccumulator.activeEffectApplied,
                     nicotineDataAccumulator.backoffDuration,
-                    nicotineDataAccumulator.withdrawalLevel, 
+                    nicotineDataAccumulator.withdrawalLevel,
                     nicotineDataAccumulator.withdrawalDuration,
                     currentHour,
                     nicotineDataAccumulator.hasLostAddictionAmountToday,
                     calculatedEuphoriaAtHour > 0.0
                 );
 
-                let alcoholDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Alcohol", 
+                let alcoholDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Alcohol",
                     this.AlcoholAddictionSystem,
                     alcoholDataAccumulator.addictionAmount,
                     alcoholDataAccumulator.addictionAmountAsPercentage,
-                    alcoholDataAccumulator.addictionStage, 
-                    alcoholDataAccumulator.activeEffectApplied, 
+                    alcoholDataAccumulator.addictionStage,
+                    alcoholDataAccumulator.activeEffectApplied,
                     alcoholDataAccumulator.backoffDuration,
-                    alcoholDataAccumulator.withdrawalLevel, 
+                    alcoholDataAccumulator.withdrawalLevel,
                     alcoholDataAccumulator.withdrawalDuration,
                     currentHour,
                     alcoholDataAccumulator.hasLostAddictionAmountToday,
                     calculatedEuphoriaAtHour > 0.0
                 );
 
-                let narcoticDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Narcotic", 
+                let narcoticDataForIter: DFAddictionTimeSkipIterationStateDatum = this.CalculateAddictionWithdrawalStateFromTimeSkip("Narcotic",
                     this.NarcoticAddictionSystem,
                     narcoticDataAccumulator.addictionAmount,
                     narcoticDataAccumulator.addictionAmountAsPercentage,
-                    narcoticDataAccumulator.addictionStage, 
-                    narcoticDataAccumulator.activeEffectApplied, 
+                    narcoticDataAccumulator.addictionStage,
+                    narcoticDataAccumulator.activeEffectApplied,
                     narcoticDataAccumulator.backoffDuration,
-                    narcoticDataAccumulator.withdrawalLevel, 
+                    narcoticDataAccumulator.withdrawalLevel,
                     narcoticDataAccumulator.withdrawalDuration,
                     currentHour,
                     narcoticDataAccumulator.hasLostAddictionAmountToday,
@@ -1015,7 +1015,7 @@ public final class DFInteractionSystem extends DFSystem {
                             biocorruptionDataAccumulator.newCrashDuration = HoursToGameTimeSeconds(0.5);
                         } else {
                             biocorruptionDataAccumulator.newCrashDuration = 0.0;
-                        }                       
+                        }
                     }
                 }
 
@@ -1027,7 +1027,7 @@ public final class DFInteractionSystem extends DFSystem {
 
                 let hydrationChangeTemp: DFNeedChangeWithRecoverLimit = this.HydrationSystem.GetNeedChangeWithRecoverLimit(calculatedHydrationAtHour, isSleeping, calculatedEuphoriaAtHour > 0.0);
                 calculatedDelayedHydrationAtHour += hydrationChangeTemp.delayedLoss;
-                
+
                 //
                 // Nerve
                 //
@@ -1054,7 +1054,7 @@ public final class DFInteractionSystem extends DFSystem {
                         }
 
                         biocorruptionDataAccumulator.crashOccuredDuringTimeskip = true;
-                        
+
                         // Track the highest Crash stack count so that we can play the most severe animation even if the player waits for all of them to expire.
                         if biocorruptionDataAccumulator.newCrashStackCount > biocorruptionDataAccumulator.highestCrashStackCount {
                             biocorruptionDataAccumulator.highestCrashStackCount = biocorruptionDataAccumulator.newCrashStackCount;
@@ -1098,7 +1098,7 @@ public final class DFInteractionSystem extends DFSystem {
                 //
                 // Biocorruption
                 //
-                
+
                 // Does the player have a Restless duration?
                 if biocorruptionDataAccumulator.newTimeUntilRestless > 0.0 {
                     biocorruptionDataAccumulator.newTimeUntilRestless = ClampF(biocorruptionDataAccumulator.newTimeUntilRestless - 300.0, 0.0, HoursToGameTimeSeconds(48));
@@ -1115,8 +1115,8 @@ public final class DFInteractionSystem extends DFSystem {
                 // Energy
                 //
                 let energyChangeTemp: DFNeedChangeWithRecoverLimit = this.EnergySystem.GetNeedChangeWithRecoverLimit(
-                                                                           calculatedEnergyAtHour, 
-                                                                           timeSkipType, 
+                                                                           calculatedEnergyAtHour,
+                                                                           timeSkipType,
                                                                            calculatedEuphoriaAtHour > 0.0,
                                                                            biocorruptionDataAccumulator.isRestless,
                                                                            calculatedDelayedEnergyAtHour);
@@ -1137,7 +1137,7 @@ public final class DFInteractionSystem extends DFSystem {
                             energyChangeTemp.change += -activeEffectEnergyChange;
                         }
                     }
-                    
+
                     if canClear {
                         ArrayClear(managedEffectState[energy_i].activeEffectEnergyChanges);
                         managedEffectState[energy_i].toleranceEffectCount = 0;
@@ -1312,7 +1312,7 @@ public final class DFInteractionSystem extends DFSystem {
         if DFRunGuard(this) { return; }
 
         let hubs: DialogChoiceHubs = FromVariant<DialogChoiceHubs>(value);
-        
+
         for hub in hubs.choiceHubs {
             DFLog(this, "Hub Title: " + GetLocalizedText(hub.title));
             if Equals(GetLocalizedText(hub.title), GetLocalizedTextByKey(n"Story-base-quest-minor_quests-mq006-scenes-mq006_02_finale-mq006_02_ch_rc_get_in_displayNameOverride")) {
@@ -1344,7 +1344,7 @@ public final class DFInteractionSystem extends DFSystem {
                         break;
                     }
                 }
-                
+
                 if injectedInteractionIcon {
                     injectedInteractionIconName = icon.EnumName();
                 } else {
@@ -1361,16 +1361,16 @@ public final class DFInteractionSystem extends DFSystem {
         this.RegisterClearLastAttemptedChoiceForFXCheckCallback();
 
         this.HandleIsHumanityLossRestoreChoice(choiceCaptionParts, choiceCaption, choiceIconName);
-        
+
         // If this originated from Relax Action Mode, stop here.
         if this.RelaxActionSystem.GetInRelaxActionMode() { return; }
 
         if this.IsSleepChoice(choiceCaption, choiceIconName) {
             this.SleepChoiceSelected();
-        
+
         } else if this.IsDrinkTeaInCorpoPlazaChoice(choiceCaption) {
             this.DrankTeaFromChoice();
-        
+
         } else if this.IsDrinkTeaWithMrHandsChoice(choiceCaption) {
             this.DrankTeaFromChoice();
 
@@ -1382,7 +1382,7 @@ public final class DFInteractionSystem extends DFSystem {
 
         } else if this.IsNerveRegenInteractionChoice(choiceCaption, choiceIconName) {
             this.NerveSystem.SetNerveRegenTarget(100.0);
-            
+
         } else if this.IsNerveRestorationChoice(choiceCaption, choiceIconName) {
             let queuedChange: DFQueuedNeedValueChange;
             queuedChange.value = 100.0;
@@ -1406,7 +1406,7 @@ public final class DFInteractionSystem extends DFSystem {
 
         } else if this.IsNutritionRestorationChoice(choiceCaption, choiceIconName) {
             this.PlayerStateService.HandleManagedConsumable(TweakDBInterface.GetItemRecord(t"Items.GoodQualityFood9"), true); // Gojilla
-        
+
         } else if this.IsDumDumBlackLaceChoice(choiceCaption, choiceIconName) {
             // Specifically apply as many Narcotic stacks as the player can currently handle.
             let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(t"Items.BlackLaceV0");
@@ -1424,7 +1424,7 @@ public final class DFInteractionSystem extends DFSystem {
             if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"HousingStatusEffect.Energized") {
                 StatusEffectHelper.RemoveStatusEffect(this.player, t"HousingStatusEffect.Energized");
             }
-            
+
             // Since the player can repeatedly activate the coffee machine to obtain max Hydration,
             // just grant all of it on the first use.
             let queuedChange: DFQueuedNeedValueChange;
@@ -1452,7 +1452,7 @@ public final class DFInteractionSystem extends DFSystem {
             if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
                 StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureSmoking");
             }
-            
+
             // TODO - Needed still? Should just bail on the fallback FX when in a higher scene tier
             // Smoking status effect variant to suppress additional unneeded FX
             StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.SmokingFromChoice");
@@ -1583,7 +1583,7 @@ public final class DFInteractionSystem extends DFSystem {
                         // Judy: Talkin' Bout A Revolution - Waking up after crashing on Judy's couch
                         sleptDuringQuest = true;
                         restoreHumanityLossDuringQuestMinor = true;
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Suicide_sq026) {
                         // Both Sides, Now - Evelyn's suicide
                         increaseHumanityLossDuringQuestMajor = true;
@@ -1610,7 +1610,7 @@ public final class DFInteractionSystem extends DFSystem {
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq021) {
                         // River: The Hunt - Waking up after sleeping at Joss' place
                         sleptDuringQuest = true;
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_q103a) {
                         // Panam: Ghost Town - Slept in upstairs room of Sunset Motel
                         sleptDuringQuest = true;
@@ -1618,7 +1618,7 @@ public final class DFInteractionSystem extends DFSystem {
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_q103b) {
                         // Panam: Ghost Town - Slept in downstairs room of Sunset Motel
                         sleptDuringQuest = true;
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Sleep_sq004) {
                         // Panam: Riders On The Storm - Slept in the abandoned farmhouse on the couch with Panam
                         sleptDuringQuest = true;
@@ -1627,16 +1627,16 @@ public final class DFInteractionSystem extends DFSystem {
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Romance_q003) {
                         // Stout: Venus in Furs - Spent the evening with Meredith Stout
                         romanceDuringQuest = true;
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_LizziesBDs) {
                         // Lizzie's Braindances - Finished a BD of any type
                         romanceDuringQuest = true;
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Ripperdoc_q001) {
                         // The Ripperdoc - Took Victor's Immunosuppressant
                         StatusEffectHelper.ApplyStatusEffect(this.player, t"DarkFutureStatusEffect.Immunosuppressant");
                         GameInstance.GetTransactionSystem(GetGameInstance()).GiveItemByTDBID(this.player, t"DarkFutureItem.ImmunosuppressantDrug", 2);
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Funeral_sq018) {
                         // Participate in Jackie's Funeral
                         restoreHumanityLossDuringQuestPivotal = true;
@@ -1644,11 +1644,11 @@ public final class DFInteractionSystem extends DFSystem {
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_XBD_STSWatNID04) {
                         // Gig: Dirty Biz
                         increaseHumanityLossDuringQuestMajor = true;
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_BD_sq021) {
                         // The Hunt (Finish BD)
                         increaseHumanityLossDuringQuestMinor = true;
-                    
+
                     } else if this.JournalEntryUpdateEquals(journalEntryUpdate, this.journalEntryUpdate_Biocorruption_sq031) {
                         // A Cool Metal Fire (complete)
                         this.BiocorruptionConditionSystem.ApplyCrash(10u, true);
@@ -1666,7 +1666,7 @@ public final class DFInteractionSystem extends DFSystem {
         } else if romanceDuringQuest {
             // TODO - Does this still make sense?
             this.PlayerStateService.ClearAllManagedEffects();
-            
+
             let queuedChange: DFQueuedNeedValueChange;
             queuedChange.value = 100.0;
             queuedChange.forceMomentaryUIDisplay = true;
@@ -1691,9 +1691,9 @@ public final class DFInteractionSystem extends DFSystem {
 
     private final func JournalEntryUpdateEquals(journalUpdateA: DFJournalEntryUpdate, journalUpdateB: DFJournalEntryUpdate) -> Bool {
         //DFProfile();
-        if Equals(journalUpdateA.questID, journalUpdateB.questID) && 
-           Equals(journalUpdateA.phaseID, journalUpdateB.phaseID) && 
-           Equals(journalUpdateA.entryID, journalUpdateB.entryID) && 
+        if Equals(journalUpdateA.questID, journalUpdateB.questID) &&
+           Equals(journalUpdateA.phaseID, journalUpdateB.phaseID) &&
+           Equals(journalUpdateA.entryID, journalUpdateB.entryID) &&
            Equals(journalUpdateA.state, journalUpdateB.state) {
             return true;
         }
@@ -1714,14 +1714,14 @@ public final class DFInteractionSystem extends DFSystem {
         queuedNerveChange.value = 100.0;
         queuedNerveChange.forceMomentaryUIDisplay = true;
         queuedNerveChange.isSoftCapRestrictedChange = true;
-        
+
         this.EnergySystem.QueueContextuallyDelayedNeedValueChange(queuedEnergyChange);
         this.NerveSystem.QueueContextuallyDelayedNeedValueChange(queuedNerveChange);
     }
 
     public final func CheckHotscene() -> Void {
     /*  Reproducible crash with code below - Needs debugging
-    
+
         let appliedEffects: array<ref<StatusEffect>>;
 
         GameInstance.GetStatusEffectSystem(GetGameInstance()).GetAppliedEffectsWithID(this.player.GetEntityID(), t"GameplayRestriction.NoMovement", appliedEffects);
@@ -1859,7 +1859,7 @@ public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoi
 
         if Equals(currType, gamedataChoiceCaptionPartType.Icon) {
             let icon: wref<ChoiceCaptionIconPart_Record> = (Deref(argList)[i] as InteractionChoiceCaptionIconPart).iconRecord;
-            
+
             let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(GetGameInstance());
             let romanceLeaveObjectiveBeforeSleep: ref<JournalQuestObjectiveBase> = journalManager.GetEntryByString("quests/minor_quest/mq055_romance_apartment/06_date/leave_end", "gameJournalQuestObjective") as JournalQuestObjectiveBase;
             let apartmentRomanceActive: Bool = Equals(journalManager.GetEntryState(romanceLeaveObjectiveBeforeSleep), gameJournalEntryState.Active) && journalManager.GetIsObjectiveOptional(romanceLeaveObjectiveBeforeSleep);
@@ -1870,7 +1870,7 @@ public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoi
                     if HumanityLossConditionSystem.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.Meditation) {
                         shouldAddHumanityLossRestoreIconWidget = true;
                     }
-                
+
                 } else if Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MistyTarotFirst)) || Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MistyTarotRepeat)) {
                     if HumanityLossConditionSystem.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.TarotReading) {
                         shouldAddHumanityLossRestoreIconWidget = true;
@@ -1884,12 +1884,12 @@ public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoi
                         shouldAddHumanityLossRestoreIconWidget = true;
                     }
                 }
-            
+
             } else if Equals(icon.EnumName(), n"GetUp") {
                 // Meditation (Monks)
                 if (Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MQ014MonkFinishPromptA)) ||
                         Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MQ014MonkFinishPromptB)) ||
-                        Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MQ014MonkFinishPromptC)) || 
+                        Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MQ014MonkFinishPromptC)) ||
                         Equals(this.m_fullChoiceText, GetLocalizedTextByKey(InteractionSystem.locKey_Interaction_MQ014MonkFinishPromptD))) {
                             shouldAddHumanityLossRestoreIconWidget = true;
                 }

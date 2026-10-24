@@ -149,9 +149,9 @@ public func DarkFutureMakeAlcohol(statsManager: ref<UIInventoryItemStatsManager>
     let alcoholToleranceStackCount: Uint32 = PlayerStateService.GetManagedEffectToleranceStacksByType(DFManagedEffectType.Alcohol);
     let alcoholActiveStackCount: Uint32 = PlayerStateService.GetManagedEffectActiveStacksByType(DFManagedEffectType.Alcohol);
     let euphoriaBuildUpStackCount: Uint32 = PlayerStateService.GetAllManagedEffectEuphoriaActiveStacks();
-    
+
     ArrayPush(instance.Values, UIInventoryItemWeaponBar.MakeCurve(DFEnum_WeaponBarType(n"DarkFutureAlcoholStacks"), Cast<Float>(alcoholToleranceStackCount + alcoholActiveStackCount), statsManager));
-    
+
     if IsSystemEnabledAndRunning(BiocorruptionCondition) && BiocorruptionCondition.GetConditionLevel() > 0u && !BiocorruptionCondition.GetHasEuphoria() {
         ArrayPush(instance.Values, UIInventoryItemWeaponBar.MakeCurve(DFEnum_WeaponBarType(n"DarkFutureEuphoriaBuildUpStacksAlcohol"), Cast<Float>(euphoriaBuildUpStackCount), statsManager));
     }
@@ -172,7 +172,7 @@ public func DarkFutureMakeNicotine(statsManager: ref<UIInventoryItemStatsManager
     let nicotineActiveStackCount: Uint32 = PlayerStateService.GetManagedEffectActiveStacksByType(DFManagedEffectType.Nicotine);
 
     ArrayPush(instance.Values, UIInventoryItemWeaponBar.MakeCurve(DFEnum_WeaponBarType(n"DarkFutureNicotineStacks"), Cast<Float>(nicotineToleranceStackCount + nicotineActiveStackCount), statsManager));
-    
+
     return instance;
 }
 
@@ -204,11 +204,11 @@ public func DarkFutureMakeNarcotic(statsManager: ref<UIInventoryItemStatsManager
     let euphoriaBuildUpStackCount: Uint32 = PlayerStateService.GetAllManagedEffectEuphoriaActiveStacks();
 
     ArrayPush(instance.Values, UIInventoryItemWeaponBar.MakeCurve(DFEnum_WeaponBarType(n"DarkFutureNarcoticStacks"), Cast<Float>(narcoticToleranceStackCount + narcoticActiveStackCount), statsManager));
-    
+
     if IsSystemEnabledAndRunning(BiocorruptionCondition) && BiocorruptionCondition.GetConditionLevel() > 0u {
         ArrayPush(instance.Values, UIInventoryItemWeaponBar.MakeCurve(DFEnum_WeaponBarType(n"DarkFutureEuphoriaBuildUpStacksNarcotic"), Cast<Float>(euphoriaBuildUpStackCount), statsManager));
     }
-    
+
     return instance;
 }
 
@@ -231,7 +231,7 @@ public final static func Make(statsManager: ref<UIInventoryItemStatsManager>, it
         } else if itemData.HasTag(n"DarkFutureItemTooltipShowBarsNarcotics") {
             return DarkFutureMakeNarcotic(statsManager, itemData, itemType);
         }
-        
+
     } else {
         return wrappedMethod(statsManager, itemData, itemType, type);
     }
@@ -257,11 +257,11 @@ public final static func GetDisplayedStats(barsType: UIInventoryItemWeaponBarsTy
     } else if Equals(barsType, DFEnum_UIInventoryItemWeaponBarsType(n"DarkFutureNicotine")) {
         ArrayPush(result, DFEnum_WeaponBarType(n"DarkFutureNicotineStacks"));
         return result;
-    
+
     } else if Equals(barsType, DFEnum_UIInventoryItemWeaponBarsType(n"DarkFutureCaffeinated")) {
         ArrayPush(result, DFEnum_WeaponBarType(n"DarkFutureCaffeinatedStacks"));
         return result;
-    
+
     } else if Equals(barsType, DFEnum_UIInventoryItemWeaponBarsType(n"DarkFutureNarcotic")) {
         BiocorruptionCondition = DFBiocorruptionConditionSystem.Get();
         ArrayPush(result, DFEnum_WeaponBarType(n"DarkFutureNarcoticStacks"));
@@ -286,22 +286,22 @@ private final func BarTypeToName(barType: WeaponBarType) -> String {
 
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureNicotineStacks")) {
         return GetLocalizedTextByKey(n"DarkFutureCigaretteStatusEffectDisplayName");
-    
+
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureNarcoticStacks")) {
         return GetLocalizedTextByKey(n"DarkFutureNarcoticStatusEffectDisplayName");
-    
+
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureCaffeinatedStacks")) {
         return GetLocalizedTextByKey(n"DarkFutureEffectNameCaffeinated");
-    
+
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureEuphoriaBuildUpStacksAlcohol")) || Equals(barType, DFEnum_WeaponBarType(n"DarkFutureEuphoriaBuildUpStacksNarcotic")) {
         return GetLocalizedTextByKey(n"DarkFutureEuphoriaBuildUpStatBarDisplayName");
-    
-    } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureAlcoholTolerance")) || 
+
+    } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureAlcoholTolerance")) ||
               Equals(barType, DFEnum_WeaponBarType(n"DarkFutureNicotineTolerance")) ||
               Equals(barType, DFEnum_WeaponBarType(n"DarkFutureNarcoticTolerance")) {
-        
+
         return GetLocalizedTextByKey(n"DarkFutureToleranceStatsBarDisplayName");
-    
+
     } else {
         return wrappedMethod(barType);
     }
@@ -320,7 +320,7 @@ public final func DarkFutureSetActiveStackStatBarValues(bar: wref<UIInventoryIte
 public final func DarkFutureSetToleranceStackStatBarValues(bar: wref<UIInventoryItemWeaponBar>, effectType: DFManagedEffectType) -> Void {
     //DFProfile();
     let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
-    
+
     let toleranceStacksAtThisStage: Int32 = Cast<Int32>(PlayerStateService.GetManagedEffectToleranceStacksAtThisAddictionStageByType(effectType));
     let toleranceRemaining: Int32 = toleranceStacksAtThisStage - Cast<Int32>(PlayerStateService.GetManagedEffectToleranceStacksByType(effectType));
     bar.Value = Cast<Float>(toleranceRemaining);
@@ -354,7 +354,7 @@ public final func DarkFutureSetEuphoriaBuildUpStackStatBarText(bar: wref<UIInven
             if Equals(blockedReason, DFEuphoriaBlockedReason.AddictionTreatment) {
                 inkWidgetRef.Get(this.m_statValue).SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActivePanelRed));
                 inkTextRef.SetText(this.m_statValue, GetLocalizedTextByKey(n"DarkFutureEuphoriaBlockedStatBarDescAddictionTreatment"));
-            
+
             } else if Equals(blockedReason, DFEuphoriaBlockedReason.Cyberpsychosis) {
                 inkWidgetRef.Get(this.m_statValue).SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActivePanelRed));
                 inkTextRef.SetText(this.m_statValue, GetLocalizedTextByKey(n"DarkFutureEuphoriaBlockedStatBarDescCyberpsychosis"));
@@ -362,7 +362,7 @@ public final func DarkFutureSetEuphoriaBuildUpStackStatBarText(bar: wref<UIInven
             } else if Equals(blockedReason, DFEuphoriaBlockedReason.Overdose) {
                 inkWidgetRef.Get(this.m_statValue).SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActivePanelRed));
                 inkTextRef.SetText(this.m_statValue, GetLocalizedTextByKey(n"DarkFutureEuphoriaBlockedStatBarDescOverdose"));
-            
+
             } else if Equals(blockedReason, DFEuphoriaBlockedReason.Withdrawal) {
                 inkWidgetRef.Get(this.m_statValue).SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActivePanelRed));
                 inkTextRef.SetText(this.m_statValue, GetLocalizedTextByKey(n"DarkFutureEuphoriaBlockedStatBarDescWithdrawal"));
@@ -397,7 +397,7 @@ public final func DarkFutureSetUpCustomIconOverlay(type: DFManagedEffectType) ->
     }
 
     let pipWidth: Float = ((1.0 / Cast<Float>(activeStacks + toleranceStacks)) * 654.0);
-    
+
     let parentCanvas: ref<inkCanvas> = inkWidgetRef.Get(this.m_background).GetParentWidget() as inkCanvas;
     let hPanel: ref<inkHorizontalPanel> = new inkHorizontalPanel();
     hPanel.SetName(n"DarkFutureIconPanel");
@@ -444,7 +444,7 @@ public final func DarkFutureSetUpCustomIconOverlay(type: DFManagedEffectType) ->
             icon.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.MildRed));
         }
         icon.Reparent(toleranceRange);
-        
+
         i += 1u;
     }
 
@@ -480,7 +480,7 @@ public final func DarkFutureSetUpCustomSeparatorOverlayByType(type: DFManagedEff
 public final func DarkFutureSetUpCustomSeparatorOverlay(activeStacks: Uint32, toleranceStacks: Uint32) -> Void {
     //DFProfile();
     let pipWidth: Float = ((1.0 / Cast<Float>(activeStacks + toleranceStacks)) * 654.0) - 5.0;
-    
+
     let parentCanvas: ref<inkCanvas> = inkWidgetRef.Get(this.m_background).GetParentWidget() as inkCanvas;
     let hPanel: ref<inkHorizontalPanel> = new inkHorizontalPanel();
     let separator: ref<inkRectangle>;
@@ -593,19 +593,19 @@ public final func Setup(itemType: gamedataItemType, bar: wref<UIInventoryItemWea
         wrappedMethod(itemType, bar, comparedBar);
         this.DarkFutureSetUpCustomSeparatorOverlayByType(DFManagedEffectType.Alcohol);
         this.DarkFutureSetUpCustomIconOverlay(DFManagedEffectType.Alcohol);
-            
+
     } else if Equals(bar.Type, DFEnum_WeaponBarType(n"DarkFutureNicotineStacks")) {
         this.DarkFutureSetActiveStackStatBarValues(bar, DFManagedEffectType.Nicotine);
         wrappedMethod(itemType, bar, comparedBar);
         this.DarkFutureSetUpCustomSeparatorOverlayByType(DFManagedEffectType.Nicotine);
         this.DarkFutureSetUpCustomIconOverlay(DFManagedEffectType.Nicotine);
-    
+
     } else if Equals(bar.Type, DFEnum_WeaponBarType(n"DarkFutureNarcoticStacks")) {
         this.DarkFutureSetActiveStackStatBarValues(bar, DFManagedEffectType.Narcotic);
         wrappedMethod(itemType, bar, comparedBar);
         this.DarkFutureSetUpCustomSeparatorOverlayByType(DFManagedEffectType.Narcotic);
         this.DarkFutureSetUpCustomIconOverlay(DFManagedEffectType.Narcotic);
-    
+
     } else if Equals(bar.Type, DFEnum_WeaponBarType(n"DarkFutureEuphoriaBuildUpStacksAlcohol")) || Equals(bar.Type, DFEnum_WeaponBarType(n"DarkFutureEuphoriaBuildUpStacksNarcotic")) {
         this.DarkFutureSetEuphoriaBuildUpStackStatBarValues(bar);
         wrappedMethod(itemType, bar, comparedBar);
@@ -661,16 +661,16 @@ private final func DarkFutureGetAnimateBarActiveStackPercentages(type: DFManaged
         let cyberwareBonus: Int32 = totalStacksAlreadyApplied < maxTotalStackCount ? CyberwareService.GetNarcoticExcessStacksAllowedBonus() : 0;
         let stacksOverMin: Int32 = Max(((stacksFromItem + totalStacksAlreadyApplied) - cyberwareBonus) - maxTotalStackCount, 0);
         let stacksOverMax: Int32 = Max(((maxStacksFromItem + totalStacksAlreadyApplied) - cyberwareBonus) - maxTotalStackCount, 0);
-        
+
         r.overLimit = stacksOverMin > 0;
         r.overLimitRisk = stacksOverMax > 0;
-    
+
     } else {
         r.overLimit = percentage + rawComparedPercentage > 1.0;
         r.overLimitRisk = percentage + rawComparedPercentageMax > 1.0;
     }
 
-    
+
     return r;
 }
 
@@ -736,17 +736,17 @@ private final func AnimateBars(barType: WeaponBarType, percentage: Float, compar
     if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureAlcoholStacks")) {
         statsBarData = this.DarkFutureGetAnimateBarActiveStackPercentages(DFManagedEffectType.Alcohol);
         useStatsBarData = true;
-    
+
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureNicotineStacks")) {
         statsBarData = this.DarkFutureGetAnimateBarActiveStackPercentages(DFManagedEffectType.Nicotine);
         useStatsBarData = true;
         ignoreOverLimitWarning = true;
-    
+
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureCaffeinatedStacks")) {
         statsBarData = this.DarkFutureGetAnimateBarActiveStackPercentages(DFManagedEffectType.Caffeine);
         useStatsBarData = true;
         ignoreOverLimitWarning = true;
-    
+
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureNarcoticStacks")) {
         statsBarData = this.DarkFutureGetAnimateBarActiveStackPercentages(DFManagedEffectType.Narcotic);
         useStatsBarData = true;
@@ -755,7 +755,7 @@ private final func AnimateBars(barType: WeaponBarType, percentage: Float, compar
         statsBarData = this.DarkFutureGetAnimateBarEuphoriaStackPercentages(DFManagedEffectType.Alcohol);
         useStatsBarData = true;
         isEuphoria = true;
-    
+
     } else if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureEuphoriaBuildUpStacksNarcotic")) {
         statsBarData = this.DarkFutureGetAnimateBarEuphoriaStackPercentages(DFManagedEffectType.Narcotic);
         useStatsBarData = true;

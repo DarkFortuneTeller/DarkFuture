@@ -78,7 +78,7 @@ public final func TryToShowAddictiveConsumableHeader(itemData: wref<gameItemData
     //DFProfile();
     if itemData.HasTag(n"DarkFutureConsumableAddictive") {
         let addictionLabel: String = "";
-        
+
         if IsSystemEnabledAndRunning(DFNicotineAddictionSystem.Get()) && itemData.HasTag(n"DarkFutureConsumableAddictiveNicotine") {
             addictionLabel = GetLocalizedTextByKey(n"DarkFutureAddictiveItemTooltipHeaderNicotine");
         }
@@ -195,7 +195,7 @@ protected final func UpdateWeight() -> Void {
     } else {
         itemData = InventoryItemData.GetGameItemData(this.m_gameData);
     }
-    
+
     let weight: Float = RPGManager.GetItemWeight(itemData) * Cast<Float>(this.m_choosenQuantity);
     let isConsumable: Bool = itemData.HasTag(n"Consumable");
     let isAmmo: Bool = itemData.HasTag(n"Ammo");
@@ -318,10 +318,10 @@ private final func GetFilteredBuffList(value: Variant) -> array<BuffInfo> {
     let filteredBuffDataList: array<BuffInfo>;
 
     let hidePersistent: Bool = DFSettings.Get().hidePersistentStatusIconsV2;
-    
+
     for buff in buffDataList {
         let buffTags: array<CName> = TweakDBInterface.GetStatusEffectRecord(buff.buffID).GameplayTags();
-        
+
         if hidePersistent && Equals(buffTags[0], n"DarkFutureCanHideOnBuffBar") {
             // Filter out buffs that should be hidden on the buff bar.
         } else {
@@ -377,7 +377,7 @@ private final func UpdateBuffDebuffList() -> Void {
         } else {
           if data != currBuffLoc.GetStatusEffectRecord() {
             currBuffLoc.SetStatusEffectRecord(data);
-            
+
             // Edit Start
             // Don't play the intro animation.
             // currBuffLoc.PlayLibraryAnimation(n"intro");
@@ -499,7 +499,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
             } else if Equals(tags[2], n"DarkFutureCondition") {
                 ArrayPush(conditionBuffs, buffs[i]);
             }
-        
+
         } else {
             // Use the provided type.
             if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
@@ -516,7 +516,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
                 }
             }
         }
-        
+
         i += 1;
       }
       i = 0;
@@ -531,7 +531,7 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
             } else if Equals(tags[2], n"DarkFutureCondition") {
                 ArrayPush(conditionDebuffs, debuffs[i]);
             }
-        
+
         } else {
             if Equals(this.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
                 if (NotEquals(tags[2], n"DarkFutureCondition") && (debuffs[i].timeRemaining > -1.0)) || Equals(tags[0], n"DarkFutureForceShortTermFilter") {
@@ -547,13 +547,13 @@ protected cb func OnEffectUpdate(v: Variant) -> Bool {
                 }
             }
         }
-        
+
         i += 1;
       }
-      
+
       if this.DarkFutureOpening {
         // Finish calculating the category to show.
-        
+
         let statusEffectSize: Int32 = ArraySize(statusEffectBuffs) + ArraySize(statusEffectDebuffs);
         typeToShowOnOpen = DFRadialMenuActiveEffectType.StatusEffects;
 
@@ -721,7 +721,7 @@ protected cb func OnInitialize() -> Bool {
             srh.RequestSystemNotificationGeneric(n"DarkFutureWarningInvalidLanguageSettingTitle", n"DarkFutureWarningInvalidLanguageSetting");
         }
     }
-    
+
     return r;
 }
 
@@ -747,7 +747,7 @@ private final func UpdateWidgets() -> Void {
 
         let textToSet: String = this.DarkFutureGetMessageTextFromMagicString(this.m_simpleMessage.message);
         inkTextRef.SetText(this.m_mainTextWidget, textToSet);
-        
+
         // Custom icon
         this.m_root.SetState(n"Default");
         this.HideAllIcon();
@@ -762,12 +762,12 @@ private final func UpdateWidgets() -> Void {
                 iconImage.SetSize(Vector2(91, 91));
             }
         }
-        
+
         inkWidgetRef.SetVisible(this.m_twintoneIcon, true);
 
         GameInstance.GetAudioSystem(this.GetPlayerControlledObject().GetGame()).Play(n"ui_menu_full_screen_perk_espionage_blue_highlite_01_Play"); // Front-half chirps
         GameInstance.GetAudioSystem(this.GetPlayerControlledObject().GetGame()).Play(n"ui_menu_full_screen_perk_espionage_select_01_Play");  // Back-half chirps
-         
+
         if this.m_simpleMessage.isInstant {
             playbackOptions.fromMarker = n"idle_start";
         };
@@ -813,7 +813,7 @@ private final func DarkFutureGetMessageTextFromMagicString(magicString: String) 
             return GetLocalizedTextByKey(n"DarkFutureConditionNotificationBiocorruption03");
         case "DarkFutureMagicMessageStringConditionBiocorruption4":
             return GetLocalizedTextByKey(n"DarkFutureConditionNotificationBiocorruption04");
-        
+
         default:
             return "";
     }
@@ -915,7 +915,7 @@ public final func ProgressCyberpsychosisMessage() -> Void {
     //DFProfile();
     this.DarkFutureCyberpsychosisMessageIndex += 1;
     if this.DarkFutureCyberpsychosisMessageIndex < this.DarkFutureCyberpsychosisMessageIndexMax {
-        
+
         let glitchOffsetX: Float = RandRangeF(-10.0, 50.0);
         let glitchOffsetY: Float = RandRangeF(-50.0, 50.0);
         let shouldShear: Bool = RandRangeInclusive(1, 100) <= 20;
@@ -1019,7 +1019,7 @@ public final func PushDarkFutureProgressNotification(value: Int32, remainingPoin
     let userData: ref<DFProgressionViewData>;
     let sum: Int32 = remainingPointsToLevelUp + value;
     let progress: Float = Cast<Float>(value) / Cast<Float>(sum);
-    
+
     // If maximum value, force progress to full.
     if progress == 0.0 && isLevelMaxed {
         progress = Cast<Float>(sum);
@@ -1094,7 +1094,7 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
     //
 
     inkTextRef.SetText(this.m_currentLevel, IntToString(this.progression_data.currentLevel));
-    
+
     // Edit - Support "Fully Restored" message when incrementing to 0.
     if this.progression_data.isLevelMaxed {
         inkTextRef.SetText(this.m_nextLevel, "LocKey#42198");
@@ -1114,7 +1114,7 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
     //
 
     this.PlayAnim(n"intro");
-    
+
     // Does nothing?
     GameInstance.GetAudioSystem(this.GetPlayerControlledObject().GetGame()).Play(n"ui_menu_perk_level_up");
 
@@ -1126,7 +1126,7 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
         if Equals(asProgressionViewData.type, DFEnum_gamedataProficiencyType(n"DarkFutureHumanityLoss")) ||
            Equals(asProgressionViewData.type, DFEnum_gamedataProficiencyType(n"DarkFutureInjury")) ||
            Equals(asProgressionViewData.type, DFEnum_gamedataProficiencyType(n"DarkFutureBiocorruption")) {
-            
+
             // Hide the plus symbol when the value is decreasing.
             let deltaToCheck: Int32 = IsDefined(asDFProgressionViewData) ? asDFProgressionViewData.actualDelta : this.progression_data.delta;
             // Increasing (Worsening)
@@ -1146,7 +1146,7 @@ public native func SetNotificationData(notificationData: ref<GenericNotification
                 expTextLabel.SetText(GetLocalizedTextByKey(n"DarkFutureProgressionNotificationPoints"));
             }
             this.DFBarProgressAnim(this.m_expBar, barStartSize, barEndSize);
-            
+
         } else {
             let soundController: ref<InitializationSoundController> = inkWidgetRef.Get(this.m_root).parentWidget.GetController() as InitializationSoundController;
             if IsDefined(soundController) {
@@ -1176,7 +1176,7 @@ public final func DFBarProgressAnim(animatingObject: inkWidgetRef, barStartSize:
     sizeInterpolator.SetType(inkanimInterpolationType.Quintic);
     sizeInterpolator.SetMode(inkanimInterpolationMode.EasyInOut);
     barProgress.AddInterpolator(sizeInterpolator);
-    
+
     this.m_barAnimationProxy = inkWidgetRef.PlayAnimation(animatingObject, barProgress);
 
     // Custom callback
@@ -1265,7 +1265,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
         if Equals(data.barType, BarType.Edgerunner) {
             if !settings.humanityLossConditionEnabled { return; }
             if !settings.humanityLossCyberpsychosisEnabled { return; }
-            
+
             if data.capacityPerk1Bought {
                 let i: Int32 = 0;
                 while i < ArraySize(data.statsData) {
@@ -1281,7 +1281,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
         } else if Equals(data.barType, BarType.CurrentCapacity) {
             if !settings.humanityLossConditionEnabled { return; }
             isCapacityBar = true;
-        
+
         } else if Equals(data.barType, BarType.Armor) {
             if !settings.injuryConditionEnabled { return; }
             isArmorBar = true;
@@ -1378,7 +1378,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
             } else {
                 inkTextRef.SetText(this.m_stats3Value, FloatToStringPrec(baseFuryChance + furyBonusChance, 1) + "%");
             }
-            
+
         } else {
             cyberpsychosisChanceData = humanityLossConditionSystem.GetCyberpsychosisChance(overallocatedBy);
             cyberpsychosisChance = cyberpsychosisChanceData.chance;
@@ -1397,7 +1397,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
                 inkTextRef.SetText(this.m_stats3Value, FloatToStringPrec(baseFuryChance + furyBonusChance, 1) + "%");
             }
         }
-    
+
     } else if isCapacityBar {
         // Make the Stats pane visible.
         // Crawl up to the Stats panel.
@@ -1421,7 +1421,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
         precision = humanityLossMult >= 100.0 || humanityLossMult == 0.0 ? 0 : 1;
         inkTextRef.SetText(this.m_stats1Value, "+" + FloatToStringPrec(humanityLossMult, precision) + "%");
         inkWidgetRef.SetTintColor(this.m_stats1Value, GetDarkFutureHDRColor(DFHDRColor.PanelRed));
-        
+
         // Set the description text.
         if !this.DarkFutureCapacityDescriptionAddedThisMenuSession {
             this.DarkFutureCapacityDescriptionAddedThisMenuSession = true;
@@ -1430,7 +1430,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
             let updatedCapacityText: String = descriptionWidget.GetText() + "\n\n" + GetLocalizedTextByKey(n"DarkFutureRipperdocTooltipCyberwareCapacityUpdated");
             (inkWidgetRef.Get(this.m_capacityDescription) as inkText).SetText(updatedCapacityText);
         }
-    
+
     } else if isArmorBar {
         // Make the Stats pane visible.
         // Crawl up to the Stats panel.
@@ -1468,7 +1468,7 @@ public func SetData(tooltipData: ref<ATooltipData>) -> Void {
 public final func CreateDarkFutureConditionIndicator(root: ref<inkCompoundWidget>, iconPart: CName, color: DFHDRColor, leftMargin: Float, opt isBlocked: Bool, opt blockedMessage: CName) -> ref<inkText> {
     //DFProfile();
     // Create the Humanity Loss / Injury Multiplier Widget
-    
+
     // Canvas
     let indicatorCanvas: ref<inkCanvas> = new inkCanvas();
     indicatorCanvas.SetName(n"DFIndicatorCanvas");
@@ -1543,7 +1543,7 @@ public final func CreateDarkFutureConditionIndicator(root: ref<inkCompoundWidget
     indicatorImmunosuppressantLabel.SetTintColor(GetDarkFutureHDRColor(color));
     indicatorImmunosuppressantLabel.Reparent(indicatorCanvas);
     indicatorImmunosuppressantLabel.SetText(GetLocalizedTextByKey(blockedMessage));
-    
+
 
     // Frame
     let indicatorFrame: ref<inkImage> = new inkImage();

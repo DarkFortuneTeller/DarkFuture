@@ -121,9 +121,9 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
         //DFProfile();
         if ArrayContains(changedSettings, "addictionStage1WithdrawalDurationInGameTimeHoursV2") ||
-           ArrayContains(changedSettings, "addictionStage2WithdrawalDurationInGameTimeHoursV2") || 
-           ArrayContains(changedSettings, "addictionStage3WithdrawalDurationInGameTimeHoursV2") || 
-           ArrayContains(changedSettings, "addictionStage4WithdrawalDurationInGameTimeHoursV2") || 
+           ArrayContains(changedSettings, "addictionStage2WithdrawalDurationInGameTimeHoursV2") ||
+           ArrayContains(changedSettings, "addictionStage3WithdrawalDurationInGameTimeHoursV2") ||
+           ArrayContains(changedSettings, "addictionStage4WithdrawalDurationInGameTimeHoursV2") ||
            ArrayContains(changedSettings, "addictionCessationDurationInGameTimeHours") {
             this.narcoticAddictionWithdrawalDurationsInGameTimeSeconds = [
                 0.0,
@@ -134,7 +134,7 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
                 HoursToGameTimeSeconds(this.Settings.addictionCessationDurationInGameTimeHours)
             ];
             this.UpdateNarcoticWithdrawalEffectDisplayData();
-            
+
             if IsSystemEnabledAndRunning(this) {
                 let withdrawalLevel: Int32 = this.GetWithdrawalLevel();
                 let addictionStage: Int32 = this.GetAddictionStage();
@@ -144,9 +144,9 @@ public class DFNarcoticAddictionSystem extends DFAddictionSystemBase {
             }
         }
 
-        if ArrayContains(changedSettings, "addictionBackoffDurationStage1") || 
-            ArrayContains(changedSettings, "addictionBackoffDurationStage2") || 
-            ArrayContains(changedSettings, "addictionBackoffDurationStage3") || 
+        if ArrayContains(changedSettings, "addictionBackoffDurationStage1") ||
+            ArrayContains(changedSettings, "addictionBackoffDurationStage2") ||
+            ArrayContains(changedSettings, "addictionBackoffDurationStage3") ||
             ArrayContains(changedSettings, "addictionBackoffDurationStage4") {
 
                 this.narcoticAddictionBackoffDurationsInGameTimeSecondsByStage = [

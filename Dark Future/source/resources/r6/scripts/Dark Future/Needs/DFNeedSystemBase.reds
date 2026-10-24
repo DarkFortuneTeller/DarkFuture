@@ -411,7 +411,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     public persistent let needValueOvercharge: Float = 0.0;
     public persistent let currentDelayedNeedLoss: Float = 0.0;
     private persistent let queuedContextuallyDelayedNeedValueChange: array<DFQueuedNeedValueChange>;
-    
+
     private let MainSystem: ref<DFMainSystem>;
     private let InteractionSystem: ref<DFInteractionSystem>;
     public let GameStateService: ref<DFGameStateService>;
@@ -425,7 +425,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
     public let needStageThresholdDeficits: array<Float>;
     public let needStageStatusEffects: array<TweakDBID>;
-    
+
     public let updateDelayID: DelayID;
     public let contextuallyDelayedNeedValueChangeDelayID: DelayID;
     public let needStageChangeFXStartDelayID: DelayID;
@@ -450,7 +450,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     public const let extremelyCriticalNeedThreshold: Float = 5.0;
     public const let maxOvercharge: Float = 50.0;
     public const let sleepingReduceMetabolismMult: Float = 0.4;
-    
+
     public let needMax: Float = 100.0;
     public let lastNeedStage: Int32 = 0;
     public let lastValueForCriticalNeedCheck: Float = 100.0;
@@ -501,7 +501,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
         this.ReevaluateSystem();
         this.ForceNeedMaxValueUpdate();
     }
-    
+
     public func GetSystems() -> Void {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
@@ -589,7 +589,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
     public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
         //DFProfile();
-        if ArrayContains(changedSettings, "needNegativeEffectsRepeatFrequencyModerateInRealTimeSeconds") || 
+        if ArrayContains(changedSettings, "needNegativeEffectsRepeatFrequencyModerateInRealTimeSeconds") ||
            ArrayContains(changedSettings, "needNegativeEffectsRepeatFrequencySevereInRealTimeSeconds") {
             this.UpdateInsufficientNeedRepeatFXCallback(this.GetNeedStage());
         }
@@ -836,12 +836,12 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
             // Value Change
             newValue = ClampF(amount, 0.0, needMax);
-            
+
             if IsDefined(this as DFNerveSystem) && changeValueProps.isFromTimeskip {
                 this.BiocorruptionConditionSystem.UpdateBiocorruptionDataFromTimeskipSerializedWithNerveUpdate(changeValueProps.biocorruptionData);
                 this.BiocorruptionConditionSystem.RefreshEuphoria();
                 this.BiocorruptionConditionSystem.RefreshCrashStatusEffectAndUpdateLimit(true);
-                
+
                 if oldOvercharge > 0.0 && this.needValueOvercharge == 0.0 {
                     // If this would cause the player to experience Withdrawal symptoms, update that now.
                     this.AlcoholAddictionSystem.ReevaluateSystem();
@@ -862,7 +862,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
                 // We are increasing, this is a soft cap restricted change, and we are already at or above the soft cap. Clamp to only the max while retaining the current value.
                 newValue = ClampF(this.needValue, 0.0, needMax);
             }
-            
+
         } else {
             // We are not increasing, or we are increasing, but this is not a soft cap restricted change. Change the value clamped to the max.
 
@@ -874,7 +874,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
                     this.currentDelayedNeedLoss += delayedAmount;
                     amount -= delayedAmount;
                 }
-                    
+
                 // Next, take what we can from the Overcharge amount.
                 let lastOvercharge: Float = this.needValueOvercharge;
                 let remainderAmount: Float = amount + this.needValueOvercharge;
@@ -894,13 +894,13 @@ public abstract class DFNeedSystemBase extends DFSystem {
                 if oldOvercharge > 0.0 && this.needValueOvercharge == 0.0 {
                     this.HandleOverchargeDepleted();
                 }
-            
+
             } else {
                 // Increasing.
                 newValue = ClampF(this.needValue + amount, 0.0, needMax);
             }
         }
-            
+
         let change: Float = newValue - oldValue;
         this.needValue = newValue;
 
@@ -941,7 +941,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
         this.CheckForCriticalNeed();
         this.TryToShowTutorial();
-        
+
         this.lastNeedStage = stage;
 
         // TODOFUTURE: Removing this check crashes the game. Investigate.
@@ -1027,15 +1027,15 @@ public abstract class DFNeedSystemBase extends DFSystem {
         if DFRunGuard(this) { return; }
 
         DFLog(this, "TryToApplyContextuallyDelayedNeedValueChange");
-        
+
         let gs: GameState = this.GameStateService.GetGameState(this);
 
         if Equals(gs, GameState.Valid) {
             while ArraySize(this.queuedContextuallyDelayedNeedValueChange) > 0 {
                 let queuedChange: DFQueuedNeedValueChange = ArrayPop(this.queuedContextuallyDelayedNeedValueChange);
-                
+
                 let changeNeedValueProps: DFChangeNeedValueProps;
-                
+
                 let uiFlags: DFNeedChangeUIFlags;
                 uiFlags.forceMomentaryUIDisplay = queuedChange.forceMomentaryUIDisplay;
                 uiFlags.instantUIChange = false;
@@ -1051,7 +1051,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
                 changeNeedValueProps.skipSevereNeedMessage = queuedChange.skipSevereNeedMessage;
                 changeNeedValueProps.highestCrashStackCountOnTimeskip = queuedChange.highestCrashStackCountOnTimeskip;
                 changeNeedValueProps.biocorruptionData = queuedChange.biocorruptionData;
-                
+
                 this.ChangeNeedValue(queuedChange.value, changeNeedValueProps);
 
                 // For consumable bonuses, like Well Fed and Sated
@@ -1158,7 +1158,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 
         this.ChangeNeedValue(0.0, changeNeedValueProps);
 
-        
+
     }
 
     public final func ForceNeedMaxValueUpdateDelayed(opt skipFXForThisUpdate: Bool, opt forceDisplay: Bool) -> Void {
@@ -1229,7 +1229,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
         DFLog(this, "UpdateNeedFX");
 
         let currentStage: Int32 = this.GetNeedStage();
-        
+
         if NotEquals(currentStage, this.lastNeedStage) && (currentStage > this.lastNeedStage || currentStage == 0) {
             this.RegisterNeedStageChangeFXStartCallback(currentStage, suppressRecoveryNotification);
         }
@@ -1240,7 +1240,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     public final func UpdateInsufficientNeedRepeatFXCallback(stageToCheck: Int32) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-        
+
         DFLog(this, "UpdateInsufficientNeedRepeatFXCallback stageToCheck = " + ToString(stageToCheck));
 
         this.UnregisterInsufficientNeedRepeatFXCallback();
@@ -1296,7 +1296,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
                 this.QueuePlayerDeath();
             }
         }
-        
+
         this.PlayerStateService.UpdateCriticalNeedEffects();
 
         if this.GameStateService.IsValidGameState(this, true) {
@@ -1310,7 +1310,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
                 this.QueueCriticalNeedSFX();
                 this.QueueCriticalNeedWarningNotification();
             }
-            
+
             this.lastValueForCriticalNeedCheck = currentValue;
         }
     }
@@ -1368,7 +1368,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
     public func QueuePlayerDeath() -> Void {
         //DFProfile();
         // :(
-        
+
         this.inDeathState = true;
         this.PlayerStateService.PlayCriticalNeedEffects();
         this.PlayerStateService.StopOutOfBreathSFX();
@@ -1397,7 +1397,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
         //DFProfile();
         StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.HeartAttack");
         this.inDeathState = false;
-        
+
         // Restore a modest amount of the Basic Need.
         let changeNeedValueProps: DFChangeNeedValueProps;
         let uiFlags: DFNeedChangeUIFlags;
@@ -1421,7 +1421,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
         notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
         notificationEvent.m_title = notificationTitle;
         notificationEvent.m_overrideCurrentNotification = true;
-        
+
         GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
     }
 

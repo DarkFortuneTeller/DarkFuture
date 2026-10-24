@@ -81,7 +81,7 @@ protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
     let r: Bool = wrappedMethod(evt);
 
     let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-    if IsDefined(mountChild) && mountChild.IsPlayer() {     
+    if IsDefined(mountChild) && mountChild.IsPlayer() {
         this.HandleDarkFutureVehicleMountedSleepSystem();
     }
 
@@ -105,7 +105,7 @@ protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
         let DFVSS: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
         DFVSS.UnregisterVehicleSleepActionListener();
     }
-    
+
     return r;
 }
 
@@ -121,7 +121,7 @@ protected cb func OnVehicleFinishedMountingEvent(evt: ref<VehicleFinishedMountin
             DFVSS.TryToShowTutorial();
         }
     }
-    
+
     return r;
 }
 
@@ -153,11 +153,11 @@ protected final const func RemoveVehicleDriverInputHints(stateContext: ref<State
 }
 
 @wrapMethod(InputContextTransitionEvents)
-protected final const func ShowVehiclePassengerInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {    
+protected final const func ShowVehiclePassengerInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
     //DFProfile();
     //let VehicleSleepSystem: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
     this.DarkFutureEvaluateVehicleSleepInputHint(true, stateContext, scriptInterface, n"VehiclePassenger");
-  
+
     wrappedMethod(stateContext, scriptInterface);
 }
 
@@ -166,7 +166,7 @@ protected final const func RemoveVehiclePassengerInputHints(stateContext: ref<St
     //DFProfile();
     //let VehicleSleepSystem: ref<DFVehicleSleepSystem> = DFVehicleSleepSystem.Get();
     this.DarkFutureEvaluateVehicleSleepInputHint(false, stateContext, scriptInterface, n"VehiclePassenger");
-  
+
     wrappedMethod(stateContext, scriptInterface);
 }
 
@@ -245,7 +245,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
     private let RandomEncounterSystem: ref<DFRandomEncounterSystem>;
     private let GameStateService: ref<DFGameStateService>;
     private let NotificationService: ref<DFNotificationService>;
-    
+
     private let shouldRestoreRadioAfterSleep: Bool = false;
 
     public let sleepInVehicleEnginePowerChangeDelayID: DelayID;
@@ -314,9 +314,9 @@ public final class DFVehicleSleepSystem extends DFSystem {
         //DFProfile();
         this.sleepInVehicleActionListener = this.QuestsSystem.RegisterListener(n"df_fact_action_sleep_in_vehicle", this, n"OnSleepInVehicleActionFactChanged");
     }
-    
+
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
-    
+
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
         //DFProfile();
         let vehicleObj: wref<VehicleObject>;
@@ -327,7 +327,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
         }
         this.UpdateSettingsFacts();
     }
-    
+
     private func UnregisterListeners() -> Void {
         //DFProfile();
         this.QuestsSystem.UnregisterListener(n"df_fact_action_sleep_in_vehicle", this.sleepInVehicleActionListener);
@@ -447,7 +447,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
         let gameInstance: GameInstance = GetGameInstance();
         let tier: Int32 = this.player.GetPlayerStateMachineBlackboard().GetInt(GetAllBlackboardDefs().PlayerStateMachine.HighLevel);
         let psmBlackboard: ref<IBlackboard> = this.player.GetPlayerStateMachineBlackboard();
-        
+
         let variantData: Variant = psmBlackboard.GetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData);
         if IsDefined(variantData) {
             securityData = FromVariant<SecurityAreaData>(variantData);
@@ -455,7 +455,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
         psmVehicle = IntEnum<gamePSMVehicle>(psmBlackboard.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Vehicle));
 
-        blockSleepInVehicleInputHint = 
+        blockSleepInVehicleInputHint =
             /* Default Time Skip Conditions */
             this.player.IsInCombat() ||                                                                         // Combat
             StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") ||                      // Time Skip disabled
@@ -485,7 +485,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
     public final func CanPlayerSleepInVehicle(opt genericOnly: Bool) -> DFCanPlayerSleepInVehicleResult {
         //DFProfile();
         // Vehicle Sleeping specific variant of CanPlayerTimeSkip(), with stronger typing.
-        
+
         // If Dark Future is not running or this feature is disabled, bail out early.
         if !IsSystemEnabledAndRunning(this) { return DFCanPlayerSleepInVehicleResult.No_SystemDisabled; }
 
@@ -507,7 +507,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
         let vehicleSpeed: Float = VehicleComponent.GetOwnerVehicleSpeed(gameInstance, this.player);
         let tier: Int32 = this.player.GetPlayerStateMachineBlackboard().GetInt(GetAllBlackboardDefs().PlayerStateMachine.HighLevel);
         let psmBlackboard: ref<IBlackboard> = this.player.GetPlayerStateMachineBlackboard();
-        
+
         let variantData: Variant = psmBlackboard.GetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData);
         if IsDefined(variantData) {
             securityData = FromVariant<SecurityAreaData>(variantData);
@@ -515,7 +515,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 
         psmVehicle = IntEnum<gamePSMVehicle>(psmBlackboard.GetInt(GetAllBlackboardDefs().PlayerStateMachine.Vehicle));
 
-        blockSleepInVehicleGenericReason = 
+        blockSleepInVehicleGenericReason =
             /* Generic "Action Blocked" conditions */
             this.player.IsInCombat() ||                                                                         // Combat
             StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"NoTimeSkip") ||                      // Time Skip disabled
@@ -546,7 +546,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
         } else if !genericOnly && blockSleepInVehicleMovingReason {
             return DFCanPlayerSleepInVehicleResult.No_Moving;
         }
-        
+
         return DFCanPlayerSleepInVehicleResult.Yes;
     }
 
@@ -629,7 +629,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
             this.shouldRestoreRadioAfterSleep = false;
             DarkFutureSendRadioEvent(this.player, true, false, 0);
         }
-        
+
         this.GameStateService.SetSleepingInVehicle(false);
     }
 
@@ -691,7 +691,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
         UnregisterDFDelayCallback(this.DelaySystem, this.sleepInVehicleFinishDelayID);
     }
 
-    private final func IsPlayerInRoad() -> Bool {       
+    private final func IsPlayerInRoad() -> Bool {
         //DFProfile();
         return NotEquals(this.AutoDriveSystem.CheckCurrentLaneValidity(), gameAutodriveLaneValidityResult.NotOnRoad);
     }

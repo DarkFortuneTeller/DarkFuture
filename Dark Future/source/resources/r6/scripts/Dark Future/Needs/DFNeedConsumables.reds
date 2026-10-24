@@ -44,10 +44,10 @@ public final static func CanUse(const itemData: script_ref<InventoryItemData>, p
         bb = GameInstance.GetBlackboardSystem(GetGameInstance()).GetLocalInstanced(playerPuppet.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
         // TODO - Cannot use with Addiquit?
         let inOverdose: Bool = DFPlayerStateService.Get().GetInOverdose();
-        if inOverdose && (Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableAlcohol") || 
-                          Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableNicotine") || 
+        if inOverdose && (Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableAlcohol") ||
+                          Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableNicotine") ||
                           Deref(itemData).GameItemData.HasTag(n"DarkFutureManagedConsumableNarcotic")) {
-            
+
             DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseOverdose;
             canUse = false;
 
@@ -70,7 +70,7 @@ public final static func CanUse(const itemData: script_ref<InventoryItemData>, p
             if isFood && DFNerveSystem.Get().GetHasNausea() {
                 DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseNausea;
                 canUse = false;
-                
+
             } else {
                 canUse = true;
             }
@@ -98,10 +98,10 @@ public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: w
         bb = GameInstance.GetBlackboardSystem(GetGameInstance()).GetLocalInstanced(playerPuppet.GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine);
         // TODO - Cannot use with Addiquit?
         let inOverdose: Bool = DFPlayerStateService.Get().GetInOverdose();
-        if inOverdose && (itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableAlcohol") || 
-                          itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableNicotine") || 
+        if inOverdose && (itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableAlcohol") ||
+                          itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableNicotine") ||
                           itemData.m_realItemData.HasTag(n"DarkFutureManagedConsumableNarcotic")) {
-            
+
             DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseOverdose;
             canUse = false;
 
@@ -124,7 +124,7 @@ public final static func CanUse(itemData: wref<UIInventoryItem>, playerPuppet: w
             if isFood && DFNerveSystem.Get().GetHasNausea() {
                 DFNotificationService.Get().backpackController.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.CannotUseNausea;
                 canUse = false;
-                
+
             } else {
                 canUse = true;
             }
@@ -170,7 +170,7 @@ private final func ShowNotification(gameInstance: GameInstance, type: UIMenuNoti
     if NotEquals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.None) {
         if Equals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.CannotUseNausea) {
             this.DarkFutureShowCustomNotification(gameInstance, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseNausea"));
-        
+
         } else if Equals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.CannotUseOverdose) {
             this.DarkFutureShowCustomNotification(gameInstance, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseOverdose"));
         }
@@ -200,15 +200,15 @@ protected cb func OnUINotification(evt: ref<UIMenuNotificationEvent>) -> Bool {
     if Equals(evt.m_notificationType, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseNausea")) {
         useCustomNotification = true;
         userData.title = GetLocalizedTextByKey(n"DarkFutureNauseaNerveNoFoodUseNotification");
-    
+
     } else if Equals(evt.m_notificationType, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseMaxStacks")) {
         useCustomNotification = true;
         userData.title = GetLocalizedTextByKey(n"DarkFutureMaxStacksNoUseNotification");
-    
+
     } else if Equals(evt.m_notificationType, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseOverdose")) {
         useCustomNotification = true;
         userData.title = GetLocalizedTextByKey(n"DarkFutureOverdoseNoUseNotification");
-    
+
     } else {
         return wrappedMethod(evt);
     }
@@ -307,7 +307,7 @@ public func GetConsumableNeedsData(itemRecord: wref<Item_Record>) -> DFNeedsDatu
 
     consumableBasicNeedsData.nerve.ceiling = 100.0;
     consumableBasicNeedsData.nerve.floor = 0.0;
-    
+
     // Hydration
     if itemRecord.TagsContains(n"DarkFutureConsumableHydration") {
         if itemRecord.TagsContains(n"DarkFutureConsumableHydrationTier1") {

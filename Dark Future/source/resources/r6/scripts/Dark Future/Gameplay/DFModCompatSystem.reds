@@ -111,7 +111,7 @@ public final class DFModCompatSystem extends DFSystem {
             this.ToggleConsumableAnimationsOff();
         }
     }
-    
+
     public func GetSystems() -> Void {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
@@ -125,9 +125,9 @@ public final class DFModCompatSystem extends DFSystem {
         this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
         this.GameStateService = DFGameStateService.GetInstance(gameInstance);
     }
-    
+
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-    
+
     public func SetupData() -> Void {
         //DFProfile();
         this.IAEatFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_food");
@@ -138,7 +138,7 @@ public final class DFModCompatSystem extends DFSystem {
         this.IFVEatDrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_foodvendor");
         this.IBTDrinkFactLastValue = this.QuestsSystem.GetFact(n"dec_dark_bartender");
     }
-    
+
     private func RegisterListeners() -> Void {
         //DFProfile();
         // Idle Anywhere
@@ -163,8 +163,8 @@ public final class DFModCompatSystem extends DFSystem {
             this.ToggleConsumableAnimationsOff();
         }
     }
-    
-    private func UnregisterListeners() -> Void {  
+
+    private func UnregisterListeners() -> Void {
         //DFProfile();
         this.QuestsSystem.UnregisterListener(n"dec_dark_food", this.IAEatFactListener);
         this.IAEatFactListener = 0u;
@@ -215,7 +215,7 @@ public final class DFModCompatSystem extends DFSystem {
                 }
             }
         }
-        
+
         this.IAEatFactLastValue = value;
     }
 
@@ -237,7 +237,7 @@ public final class DFModCompatSystem extends DFSystem {
                 }
             }
         }
-        
+
         this.IADrinkFactLastValue = value;
     }
 
@@ -260,7 +260,7 @@ public final class DFModCompatSystem extends DFSystem {
                 }
             }
         }
-        
+
         this.IAAlcoholFactLastValue = value;
     }
 
@@ -297,7 +297,7 @@ public final class DFModCompatSystem extends DFSystem {
                 DFLog(this, "Ignoring request; game state not valid, or within the smoking prompt debounce window.");
             }
         }
-        
+
         this.IASmokeFactLastValue = value;
     }
 
@@ -343,7 +343,7 @@ public final class DFModCompatSystem extends DFSystem {
                 }
             }
         }
-        
+
         this.IFVEatDrinkFactLastValue = value;
     }
 
@@ -358,7 +358,7 @@ public final class DFModCompatSystem extends DFSystem {
                 this.MainSystem.DispatchItemConsumedEvent(consumableRecord, true, true);
             }
         }
-        
+
         this.IBTDrinkFactLastValue = value;
     }
 

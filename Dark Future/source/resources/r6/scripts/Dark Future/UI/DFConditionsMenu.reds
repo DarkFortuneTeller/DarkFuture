@@ -132,11 +132,11 @@ private final func IsAnyConditionSystemEnabled() -> Bool {
 protected cb func OnInitialize() -> Bool {
     //DFProfile();
     let r: Bool = wrappedMethod();
-    
+
     if this.IsAnyConditionSystemEnabled() {
         this.AddConditionsMenuItem();
     }
-    
+
     return r;
 }
 
@@ -397,7 +397,7 @@ public class ConditionBarLogicController extends inkVirtualCompoundItemControlle
             counter += 1;
             i += 1;
         };
-        
+
         while this.m_requestedConditions < limit {
             this.AsyncSpawnFromLocal(inkWidgetRef.Get(this.m_levelsContainer), n"ConditionLevel", this, n"OnConditionLevelSpawned");
             this.m_requestedConditions += 1;
@@ -450,7 +450,7 @@ public class ConditionBarLogicController extends inkVirtualCompoundItemControlle
                 return GetLocalizedTextByKey(n"DarkFutureConditionBiocorruptionDescNoHumanityLoss");
             }
         }
-        
+
         return "";
     }
 

@@ -87,7 +87,7 @@ public final static func CreateInputHint(context: GameInstance, isVisible: Bool)
 protected cb func OnInitialize() -> Bool {
     //DFProfile();
     let val: Bool = wrappedMethod();
-    
+
     if Equals(this.m_RootWidget.GetName(), n"songbird_audiocall") {       // Songbird Audio Call
         DFHUDSystem.Get().SetSongbirdAudiocallWidget(this.m_RootWidget);
     } else if Equals(this.m_RootWidget.GetName(), n"Root") {              // Songbird Holo Call
@@ -103,7 +103,7 @@ protected cb func OnInitialize() -> Bool {
 private final func StartCountdown() -> Void {
     //DFProfile();
     wrappedMethod();
-    
+
     DFHUDSystem.Get().SetRaceUIPositionCounterWidget(inkWidgetRef.Get(this.m_PositionCounter));
 }
 
@@ -121,7 +121,7 @@ protected cb func OnPhoneCall(value: Variant) -> Bool {
     if IsDefined(phoneWidget) {
         HUDSystem.UpdateNewHudPhoneWidgetPosition(phoneWidget);
     }
-    
+
     return val;
 }
 
@@ -136,7 +136,7 @@ protected cb func OnHoloAudioCallSpawned(widget: ref<inkWidget>, userData: ref<I
     if IsDefined(phoneWidget) {
         HUDSystem.UpdateNewHudPhoneWidgetPosition(phoneWidget);
     }
-    
+
     return val;
 }
 
@@ -432,7 +432,7 @@ public final func DarkFutureFadeOutCooldownList() -> Void {
     if IsDefined(this.DarkFutureListFadeInAnimProxy) {
         this.DarkFutureListFadeInAnimProxy.Stop();
     }
-    
+
     this.DarkFutureListFadeOutAnim = new inkAnimDef();
     let fadeOutInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
     fadeOutInterp.SetStartTransparency(inkWidgetRef.GetOpacity(this.m_cooldownContainer));
@@ -453,7 +453,7 @@ public final func DarkFutureFadeInCooldownList() -> Void {
     if IsDefined(this.DarkFutureListFadeInAnimProxy) {
         this.DarkFutureListFadeInAnimProxy.Stop();
     }
-    
+
     this.DarkFutureListFadeInAnim = new inkAnimDef();
     let fadeInInterp: ref<inkAnimTransparency> = new inkAnimTransparency();
     fadeInInterp.SetStartTransparency(inkWidgetRef.GetOpacity(this.m_cooldownContainer));
@@ -565,7 +565,7 @@ class DFHUDSystemEventListeners extends DFSystemEventListener {
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DisplayNeedsHUDUIEvent>(), this, n"OnDisplayNeedsHUDUIEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<UpdateConditionsHUDUIEvent>(), this, n"OnUpdateConditionsHUDUIEvent", true);
     }
-    
+
     private cb func OnUpdateNeedsHUDUIEvent(event: ref<UpdateNeedsHUDUIEvent>) {
         //DFProfile();
         this.GetSystemInstance().UpdateNeedsUI(event.GetData());
@@ -644,12 +644,12 @@ public final class DFHUDSystem extends DFSystem {
     private func RegisterListeners() -> Void {}
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
     private func UnregisterListeners() -> Void {}
-    
+
     public func UnregisterAllDelayCallbacks() -> Void {
         //DFProfile();
         this.UnregisterForPhoneIconCheck();
     }
-    
+
     public func OnTimeSkipStart() -> Void {}
     public func OnTimeSkipCancelled() -> Void {}
     public func OnTimeSkipBegin() -> Void {}
@@ -747,9 +747,9 @@ public final class DFHUDSystem extends DFSystem {
             this.UpdateHUDWidgetPositionAndScale();
         }
 
-        if ArrayContains(changedSettings, "updateHolocallVerticalPosition") || 
+        if ArrayContains(changedSettings, "updateHolocallVerticalPosition") ||
            ArrayContains(changedSettings, "holocallVerticalPositionOffset") ||
-           ArrayContains(changedSettings, "updateStatusEffectListVerticalPosition") || 
+           ArrayContains(changedSettings, "updateStatusEffectListVerticalPosition") ||
            ArrayContains(changedSettings, "statusEffectListVerticalPositionOffset") ||
            ArrayContains(changedSettings, "updateRaceUIVerticalPosition") ||
            ArrayContains(changedSettings, "raceUIVerticalPositionOffset") {
@@ -828,15 +828,15 @@ public final class DFHUDSystem extends DFSystem {
         if this.Settings.injuryConditionEnabled {
             ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.Injury, n"DarkFutureConditionInjuryShort", n"DarkFutureConditionInjury"));
         }
-        
+
         if this.Settings.humanityLossConditionEnabled {
             ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.HumanityLoss, n"DarkFutureConditionHumanityLossShort", n"DarkFutureConditionHumanityLoss"));
         }
-        
+
         if this.Settings.biocorruptionConditionEnabled && this.Settings.addictionEnabled {
             ArrayPush(conditionSegmentsData, DFHUDSegmentSetupDatum(DFHUDSegmentedIndicatorSegmentType.Biocorruption, n"DarkFutureConditionBiocorruptionShort", n"DarkFutureConditionBiocorruption"));
         }
-        
+
         if ArraySize(conditionSegmentsData) > 0 {
             let conditionsIconPath: ResRef = r"darkfuture\\condition_images\\condition_assets.inkatlas";
             let conditionsIconName: CName = n"ico_condition_outline";
@@ -947,7 +947,7 @@ public final class DFHUDSystem extends DFSystem {
 
         if NotEquals(indicator, null) {
             indicator.EvaluateSegmentedIndicatorGroupVisibility(true, uiToShow.ignoreSceneTier, this.healthBarController.m_moduleShown, this.staminaBarController.m_RootWidget.IsVisible());
-            
+
             if uiToShow.pulse {
                 indicator.SetSegmentPulse(uiToShow.targetSegment, 0.3);
             }
@@ -987,7 +987,7 @@ public final class DFHUDSystem extends DFSystem {
     public final func UpdateNeedsUI(update: DFNeedHUDUIUpdate) -> Void {
         //DFProfile();
         let bar: ref<DFNeedsHUDBar> = this.GetHUDBarFromType(update.bar);
-    
+
         this.UpdateBarLimit(bar, update.newLimitValue);
         this.UpdateBarOvercharge(bar, update.newOverchargeValue);
         this.UpdateBar(bar, update.newValue, update.forceMomentaryDisplay, update.instant, update.forceBright, update.momentaryDisplayIgnoresSceneTier, update.isSoftCapRestrictedChange, update.showLock);
@@ -1105,7 +1105,7 @@ public final class DFHUDSystem extends DFSystem {
     public final func UpdateSongbirdAudiocallWidgetPosition() -> Void {
         //DFProfile();
         if IsDefined(this.songbirdAudiocallWidget) &&
-           this.Settings.mainSystemEnabled && 
+           this.Settings.mainSystemEnabled &&
            this.Settings.showHUDUI &&
            this.Settings.updateHolocallVerticalPosition {
                 this.songbirdAudiocallWidget.SetMargin(inkMargin(0.0, this.Settings.holocallVerticalPositionOffset - 13.0, 0.0, 0.0));
@@ -1135,13 +1135,13 @@ public final class DFHUDSystem extends DFSystem {
 
             if IsDefined(incomingCallSlot) && IsDefined(holoAudioCallSlot) && IsDefined(holoAudioCallMarker) {
                 if this.Settings.mainSystemEnabled &&
-                this.Settings.showHUDUI && 
+                this.Settings.showHUDUI &&
                 this.Settings.updateHolocallVerticalPosition {
                     let newHoloCallVerticalOffset: Float = this.Settings.holocallVerticalPositionOffset;
                     incomingCallSlot.SetMargin(inkMargin(68.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
                     holoAudioCallSlot.SetMargin(inkMargin(80.0, 284.0 + newHoloCallVerticalOffset, 0.0, 0.0));
                     holoAudioCallMarker.SetMargin(inkMargin(-50.0, 300.0 + newHoloCallVerticalOffset, 0.0, 0.0));
-                    
+
                     // Double check the phone icon slot, which can be wrong on save/load.
                     this.RegisterForPhoneIconCheck(widget);
                 } else {
@@ -1178,13 +1178,13 @@ public final class DFHUDSystem extends DFSystem {
                         break;
                     }
                 }
-            
+
         }
     }
 
     public final func UpdateStatusEffectListWidgetPosition() -> Void {
         //DFProfile();
-        if IsDefined(this.statusEffectListWidget) && 
+        if IsDefined(this.statusEffectListWidget) &&
            this.Settings.mainSystemEnabled &&
            this.Settings.showHUDUI &&
            this.Settings.updateStatusEffectListVerticalPosition {
@@ -1288,7 +1288,7 @@ public final class DFHUDSystem extends DFSystem {
             // Update the title text based on the new effect type.
             if Equals(type, DFRadialMenuActiveEffectType.StatusEffects) {
                 (inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureShortTermEffectsTitle"));
-            
+
             } else if Equals(type, DFRadialMenuActiveEffectType.LongTermEffects) {
                 (inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureLongTermEffectsTitle"));
 
@@ -1317,7 +1317,7 @@ public final class DFHUDSystem extends DFSystem {
                 // Update the title text based on the new effect type.
                 if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.StatusEffects) {
                     (inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureShortTermEffectsTitle"));
-                
+
                 } else if Equals(this.cooldownController.DarkFutureActiveEffectType, DFRadialMenuActiveEffectType.LongTermEffects) {
                     (inkWidgetRef.Get(this.cooldownController.m_cooldownTitle) as inkText).SetText(GetLocalizedTextByKey(n"DarkFutureLongTermEffectsTitle"));
 

@@ -37,7 +37,7 @@ DarkFutureStatusEffect.SmokingMaxStacks_StatModifier:
   value: 5
   modifierType: Additive
   statType: BaseStats.MaxStacks
-  
+
 DarkFutureStatusEffect.SmokingMaxStacks:
   $type: gamedataStatModifierGroup_Record
   drawBasedOnStatType: False

@@ -177,7 +177,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
     public persistent let hasEverBeenAddicted: Bool = false;
     private let therapySetAddictionStateIndexFactListener: Uint32;
-    
+
     private let lastWithdrawalLevel: Int32 = 0;
 
     private let TransactionSystem: ref<TransactionSystem>;
@@ -280,7 +280,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         if this.GameStateService.IsValidGameState(this, true) {
             let addictionAmount: Float = this.GetAddictionAmount();
             let addictionStage: Int32 = this.GetAddictionStage();
-            
+
             this.ReduceWithdrawalDuration(gameTimeSecondsToReduce);
             this.ReduceBackoffDuration(gameTimeSecondsToReduce);
 
@@ -402,7 +402,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
         this.currentAddictionAmountRev2 += value;
         this.currentAddictionAmountRev2 = MaxF(this.currentAddictionAmountRev2, 0.0);
-        
+
         return this.currentAddictionAmountRev2;
     }
 
@@ -739,7 +739,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
                         notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
                         notificationEvent.m_title = GetLocalizedTextByKey(this.GetAddictionWithdrawalRemovedNotificationKey());
                         notificationEvent.m_overrideCurrentNotification = false;
-                        
+
                         GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
                     }
                 }
@@ -780,12 +780,12 @@ public abstract class DFAddictionSystemBase extends DFSystem {
         //DFProfile();
         if this.GetRemainingWithdrawalDurationInGameTimeSeconds() > 0.0 {
             let remainingDuration: Float = this.ModRemainingWithdrawalDurationInGameTimeSeconds(-gameTimeSecondsToReduce);
-            
+
             DFLog(this, "remainingWithdrawalDurationInGameTimeSecondsRev2 = " + ToString(remainingDuration));
 
             if remainingDuration == 0.0 {
                 this.AdvanceWithdrawal();
-            } 
+            }
         }
     }
 
@@ -805,7 +805,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     public final func TryToAdvanceAddiction(addictionAmountOnUse: Float, stackCount: Int32, type: DFManagedEffectType, opt fromQuest: Bool) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-        
+
         let oldAddictionAmount: Float = this.GetAddictionAmount();
         let oldAddictionStage: Int32 = this.GetAddictionStage();
 
@@ -849,7 +849,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
                             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
                             notificationEvent.m_title = GetLocalizedTextByKey(this.GetAddictionAdvanceNotificationKey());
                             notificationEvent.m_overrideCurrentNotification = false;
-                            
+
                             GameInstance.GetUISystem(GetGameInstance()).QueueEvent(notificationEvent);
                         }
 
@@ -888,7 +888,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
                 let durations: array<Float> = this.GetAddictionWithdrawalDurationsInGameTimeSeconds();
                 this.SetRemainingWithdrawalDurationInGameTimeSeconds(durations[withdrawalLevel]);
             }
-            
+
             // Notification SFX
             if !this.BiocorruptionConditionSystem.GetHasEuphoria() {
                 this.PlayWithdrawalAdvanceSFX();
@@ -946,9 +946,9 @@ public abstract class DFAddictionSystemBase extends DFSystem {
                 StatusEffectHelper.ApplyStatusEffect(this.player, baseID + indexToken + progressionToken);
             }
         }
-        
+
         if currentWithdrawalLevelRev2 == 0 &&
-            this.lastWithdrawalLevel > 0 && 
+            this.lastWithdrawalLevel > 0 &&
             this.PlayerStateService.GetManagedEffectTotalStacksByType(this.GetAddictionManagedEffectType()) == 0u &&
             this.GetRemainingWithdrawalDurationInGameTimeSeconds() == 0.0 &&
             this.GetRemainingBackoffDurationInGameTimeSeconds() == 0.0 {
