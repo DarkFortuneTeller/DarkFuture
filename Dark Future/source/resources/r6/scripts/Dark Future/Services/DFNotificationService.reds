@@ -309,7 +309,14 @@ public final class DFNotificationService extends DFSystem {
 	//
 	//	DFSystem Required Methods
 	//
-	public func DoPostResumeActions() -> Void {}
+	public func DoPostResumeActions() -> Void {
+		//DFProfile();
+		// Tutorials survive a suspend (their "shown" flag is already set), so resume displaying any that are queued.
+		if ArraySize(this.tutorialQueue) > 0 {
+			this.RegisterDisplayNextTutorialCallback(this.displayNextTutorialDelayInterval);
+		}
+	}
+
 	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 	public func SetupData() -> Void {}
 	private func RegisterListeners() -> Void {}
@@ -366,6 +373,7 @@ public final class DFNotificationService extends DFSystem {
 		this.UnregisterProcessOutOfCombatNotificationQueueCallback();
 		this.UnregisterProcessInCombatNotificationQueueCallback();
 		this.UnregisterDisplayNextMessageCallback();
+		this.UnregisterDisplayNextTutorialCallback();
 	}
 
 	//
@@ -863,5 +871,10 @@ public final class DFNotificationService extends DFSystem {
     private final func UnregisterDisplayNextMessageCallback() -> Void {
 		//DFProfile();
 		UnregisterDFDelayCallback(this.DelaySystem, this.displayNextMessageDelayID);
+	}
+
+	private final func UnregisterDisplayNextTutorialCallback() -> Void {
+		//DFProfile();
+		UnregisterDFDelayCallback(this.DelaySystem, this.displayNextTutorialDelayID);
 	}
 }

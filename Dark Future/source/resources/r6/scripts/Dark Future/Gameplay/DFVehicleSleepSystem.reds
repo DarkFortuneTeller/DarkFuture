@@ -333,7 +333,18 @@ public final class DFVehicleSleepSystem extends DFSystem {
         this.sleepInVehicleActionListener = 0u;
 	}
 
-	public func UnregisterAllDelayCallbacks() -> Void {}
+	public func UnregisterAllDelayCallbacks() -> Void {
+		//DFProfile();
+		// Cancelling a pending sleep sequence step would leave the player flagged as sleeping
+		// in a vehicle with the radio off, so finish the sequence immediately instead.
+		let sleepSequencePending: Bool = this.sleepInVehicleEnginePowerChangeDelayID != GetInvalidDelayID() || this.sleepInVehicleFinishDelayID != GetInvalidDelayID();
+		this.UnregisterSleepInVehicleEnginePowerChangeDelay();
+		this.UnregisterSleepInVehicleFinish();
+
+		if sleepSequencePending {
+			this.SleepInVehicleFinish();
+		}
+	}
 	public func OnTimeSkipStart() -> Void {}
 
 	public func OnTimeSkipCancelled() -> Void {
@@ -663,6 +674,19 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	private final func RegisterSleepInVehicleFinish() -> Void {
 		//DFProfile();
 		RegisterDFDelayCallback(this.DelaySystem, SleepInVehicleFinishDelay.Create(this), this.sleepInVehicleFinishDelayID, this.sleepInVehicleEnginePowerChangeFinishDelayInterval);
+	}
+
+	//
+	//	Deregistration
+	//
+	private final func UnregisterSleepInVehicleEnginePowerChangeDelay() -> Void {
+		//DFProfile();
+		UnregisterDFDelayCallback(this.DelaySystem, this.sleepInVehicleEnginePowerChangeDelayID);
+	}
+
+	private final func UnregisterSleepInVehicleFinish() -> Void {
+		//DFProfile();
+		UnregisterDFDelayCallback(this.DelaySystem, this.sleepInVehicleFinishDelayID);
 	}
 
 	private final func IsPlayerInRoad() -> Bool {		
