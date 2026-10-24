@@ -138,8 +138,6 @@ public final class DFNutritionSystem extends DFNeedSystemBase {
 			}
 
 			let change: Float = this.GetNutritionChange();
-			change = StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.JunkFood") ? change * 1.5 : change;
-			
 			this.ChangeNeedValue(change, props);
 		}
 	}

@@ -130,8 +130,6 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 			}
 
 			let change: Float = this.GetHydrationChange();
-			change = StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.Soda") ? change * 1.5 : change;
-			
 			this.ChangeNeedValue(change, props);
 		}
 	}
