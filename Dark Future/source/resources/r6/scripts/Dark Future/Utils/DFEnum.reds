@@ -1,3 +1,9 @@
+// -----------------------------------------------------------------------------
+// DFEnum
+// -----------------------------------------------------------------------------
+//
+// - Helpers that look up a base-game enum value by its CName.
+//
 
 public func DFEnum_gamedataProficiencyType(name: CName) -> gamedataProficiencyType {
     //DFProfile();
