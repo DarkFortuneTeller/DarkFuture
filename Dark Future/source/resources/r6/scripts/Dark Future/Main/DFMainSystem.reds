@@ -6,9 +6,6 @@
 // - Handles mod-wide system startup and shutdown.
 //
 
-// DONE: Reduce in-game time to first Energy penalty to 12 hours (was 16 hours)
-// DONE: Relax menu
-
 module DarkFuture.Main
 
 import DarkFuture.Logging.*
