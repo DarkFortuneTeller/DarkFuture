@@ -20,81 +20,81 @@ import DarkFuture.Utils.{
     DFGetPlayer
 }
 import DarkFuture.Settings.{
-	DFSettings,
-	SettingChangedEvent
+    DFSettings,
+    SettingChangedEvent
 }
 import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Main.DFTimeSkipData
 import DarkFuture.Main.{ 
-	DFNeedsDatum,
-	DFNeedChangeDatum,
+    DFNeedsDatum,
+    DFNeedChangeDatum,
     DFEnergyChangePreview,
     DFNerveChangePreview
 }
 import DarkFuture.Needs.{
-	DFHydrationSystem,
-	DFNutritionSystem,
-	DFEnergySystem,
-	DFNerveSystem
+    DFHydrationSystem,
+    DFNutritionSystem,
+    DFEnergySystem,
+    DFNerveSystem
 }
 import DarkFuture.Addictions.{
-	DFAlcoholAddictionSystem,
-	DFNicotineAddictionSystem,
-	DFNarcoticAddictionSystem
+    DFAlcoholAddictionSystem,
+    DFNicotineAddictionSystem,
+    DFNarcoticAddictionSystem
 }
 import DarkFuture.Services.{
-	DFGameStateService,
-	DFPlayerStateService
+    DFGameStateService,
+    DFPlayerStateService
 }
 import DarkFuture.UI.{
-	DFNeedsMenuBar,
-	DFNeedsMenuBarSetupData
+    DFNeedsMenuBar,
+    DFNeedsMenuBarSetupData
 }
 import DarkFuture.Conditions.{
     DFBiocorruptionConditionSystem
 }
 
 class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
-	private func GetSystemInstance() -> wref<DFRevisedBackpackUISystem> {
-		//DFProfile();
-		return DFRevisedBackpackUISystem.Get();
-	}
+    private func GetSystemInstance() -> wref<DFRevisedBackpackUISystem> {
+        //DFProfile();
+        return DFRevisedBackpackUISystem.Get();
+    }
 
     public cb func OnLoad() {
-		//DFProfile();
-		super.OnLoad();
+        //DFProfile();
+        super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventBackpackOpened>(), this, n"OnRevisedBackpackOpenedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventItemHoverOver>(), this, n"OnRevisedCustomEventItemHoverOverEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventBackpackOpened>(), this, n"OnRevisedBackpackOpenedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventItemHoverOver>(), this, n"OnRevisedCustomEventItemHoverOverEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventItemHoverOut>(), this, n"OnRevisedCustomEventItemHoverOutEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventCategorySelected>(), this, n"OnRevisedCustomEventCategorySelectedEvent", true);
     }
-	
-	private cb func OnRevisedBackpackOpenedEvent(event: ref<RevisedCustomEventBackpackOpened>) {
-		//DFProfile();
-		this.GetSystemInstance().OnRevisedBackpackOpened(event.opened);
-	}
+    
+    private cb func OnRevisedBackpackOpenedEvent(event: ref<RevisedCustomEventBackpackOpened>) {
+        //DFProfile();
+        this.GetSystemInstance().OnRevisedBackpackOpened(event.opened);
+    }
 
-	private cb func OnRevisedCustomEventItemHoverOverEvent(event: ref<RevisedCustomEventItemHoverOver>) {
-		//DFProfile();
-		this.GetSystemInstance().OnRevisedBackpackItemHoverOver(event.data);
-	}
+    private cb func OnRevisedCustomEventItemHoverOverEvent(event: ref<RevisedCustomEventItemHoverOver>) {
+        //DFProfile();
+        this.GetSystemInstance().OnRevisedBackpackItemHoverOver(event.data);
+    }
 
     private cb func OnRevisedCustomEventItemHoverOutEvent(event: ref<RevisedCustomEventItemHoverOut>) {
-		//DFProfile();
-		this.GetSystemInstance().OnRevisedBackpackItemHoverOut();
-	}
+        //DFProfile();
+        this.GetSystemInstance().OnRevisedBackpackItemHoverOut();
+    }
 
     private cb func OnRevisedCustomEventCategorySelectedEvent(event: ref<RevisedCustomEventCategorySelected>) {
-		//DFProfile();
-		this.GetSystemInstance().OnRevisedRevisedBackpackCategorySelectedEvent(event.categoryId);
-	}
+        //DFProfile();
+        this.GetSystemInstance().OnRevisedRevisedBackpackCategorySelectedEvent(event.categoryId);
+    }
 }
 
 public final class DFRevisedBackpackUISystem extends DFSystem {
-	private let widgetSlot: ref<inkCompoundWidget>;
-	private let virtualResolutionWatcher: ref<VirtualResolutionWatcher>;
+    private let widgetSlot: ref<inkCompoundWidget>;
+    private let virtualResolutionWatcher: ref<VirtualResolutionWatcher>;
     private let GameStateService: wref<DFGameStateService>;
     private let HydrationSystem: wref<DFHydrationSystem>;
     private let NutritionSystem: wref<DFNutritionSystem>;
@@ -116,16 +116,16 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     private let barClusterfadeOutAnim: ref<inkAnimDef>;
     private let startedInOvercharge: Bool;
 
-	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFRevisedBackpackUISystem> {
-		//DFProfile();
-		let instance: ref<DFRevisedBackpackUISystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRevisedBackpackUISystem>()) as DFRevisedBackpackUISystem;
-		return instance;
-	}
+    public final static func GetInstance(gameInstance: GameInstance) -> ref<DFRevisedBackpackUISystem> {
+        //DFProfile();
+        let instance: ref<DFRevisedBackpackUISystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRevisedBackpackUISystem>()) as DFRevisedBackpackUISystem;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFRevisedBackpackUISystem> {
-		//DFProfile();
-		return DFRevisedBackpackUISystem.GetInstance(GetGameInstance());
-	}
+    public final static func Get() -> ref<DFRevisedBackpackUISystem> {
+        //DFProfile();
+        return DFRevisedBackpackUISystem.GetInstance(GetGameInstance());
+    }
 
     //
     //  Revised Backpack Custom Event Handlers
@@ -209,11 +209,11 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
                         this.UpdateBarLimit(this.nutritionBar, nutritionMax);
                     }
 
-				    // Handle Addiction Withdrawal and Alcohol
+                    // Handle Addiction Withdrawal and Alcohol
                     let nerveMax: Float = this.NerveSystem.GetNeedMaxAfterItemUse(itemRecord);
                     let nerveValue: Float = this.NerveSystem.GetNeedValue();
                     let nervePrev: DFNerveChangePreview = this.NerveSystem.GetItemNerveChangePreviewAmount(itemRecord);
-				    let potentialNewValue: Float = nerveValue + nervePrev.change;
+                    let potentialNewValue: Float = nerveValue + nervePrev.change;
 
                     if nerveValue > potentialNewValue {
                         // Decreasing
@@ -284,24 +284,24 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
 
-	//
-	//  DFSystem Required Methods
-	//
-	private func SetupDebugLogging() -> Void {}
+    //
+    //  DFSystem Required Methods
+    //
+    private func SetupDebugLogging() -> Void {}
 
-	public final func GetSystemToggleSettingValue() -> Bool {
-		//DFProfile();
-		// This system does not have a system-specific toggle.
-		return true;
-	}
+    public final func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
+        // This system does not have a system-specific toggle.
+        return true;
+    }
     
-	private final func GetSystemToggleSettingString() -> String {
-		//DFProfile();
-		// This system does not have a system-specific toggle.
-		return "INVALID";
-	}
+    private final func GetSystemToggleSettingString() -> String {
+        //DFProfile();
+        // This system does not have a system-specific toggle.
+        return "INVALID";
+    }
 
-	public func GetSystems() -> Void {
+    public func GetSystems() -> Void {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         this.Settings = DFSettings.GetInstance(gameInstance);
@@ -317,47 +317,47 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
         this.BiocorruptionConditionSystem = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     }
 
-	private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-	public func SetupData() -> Void {}
-	private func RegisterListeners() -> Void {}
-	private func RegisterAllRequiredDelayCallbacks() -> Void {}
-	private func UnregisterListeners() -> Void {}
-	public func UnregisterAllDelayCallbacks() -> Void {}
-	public func OnTimeSkipStart() -> Void {}
-	public func OnTimeSkipCancelled() -> Void {}
+    private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
+    public func SetupData() -> Void {}
+    private func RegisterListeners() -> Void {}
+    private func RegisterAllRequiredDelayCallbacks() -> Void {}
+    private func UnregisterListeners() -> Void {}
+    public func UnregisterAllDelayCallbacks() -> Void {}
+    public func OnTimeSkipStart() -> Void {}
+    public func OnTimeSkipCancelled() -> Void {}
     public func OnTimeSkipBegin() -> Void {}
-	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
-	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
-	public func DoPostSuspendActions() -> Void {}
-	public func DoPostResumeActions() -> Void {}
-	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
+    public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
+    public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
+    public func DoPostSuspendActions() -> Void {}
+    public func DoPostResumeActions() -> Void {}
+    public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
-	private final func CreateFullScreenSlot(inkHUD: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
-		//DFProfile();
-		// Create a full-screen slot with dimensions 3840x2160, so that when it is rescaled by Codeware VirtualResolutionWatcher,
-		// all of its contents and relative positions are also resized.
+    private final func CreateFullScreenSlot(inkHUD: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
+        //DFProfile();
+        // Create a full-screen slot with dimensions 3840x2160, so that when it is rescaled by Codeware VirtualResolutionWatcher,
+        // all of its contents and relative positions are also resized.
 
-		let fullScreenSlot: ref<inkCompoundWidget> = new inkCanvas();
-		fullScreenSlot.SetName(n"RevisedBackpackNeedBarFullScreenSlot");
-		fullScreenSlot.SetSize(Vector2(3840.0, 2160.0));
-		fullScreenSlot.SetRenderTransformPivot(Vector2(0.0, 0.0));
-		fullScreenSlot.Reparent(inkHUD.GetWidgetByPathName(n"Root") as inkCompoundWidget);
+        let fullScreenSlot: ref<inkCompoundWidget> = new inkCanvas();
+        fullScreenSlot.SetName(n"RevisedBackpackNeedBarFullScreenSlot");
+        fullScreenSlot.SetSize(Vector2(3840.0, 2160.0));
+        fullScreenSlot.SetRenderTransformPivot(Vector2(0.0, 0.0));
+        fullScreenSlot.Reparent(inkHUD.GetWidgetByPathName(n"Root") as inkCompoundWidget);
 
-		return fullScreenSlot;
-	}
+        return fullScreenSlot;
+    }
 
-	private final func CreateWidgetSlot(parent: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
-		//DFProfile();
-		// Create the slot.
-		let widgetSlot: ref<inkCompoundWidget> = new inkCanvas();
-		widgetSlot.SetName(n"RevisedBackpackNeedBarWidgetSlot");
-		widgetSlot.SetFitToContent(true);
-		widgetSlot.Reparent(parent);
+    private final func CreateWidgetSlot(parent: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
+        //DFProfile();
+        // Create the slot.
+        let widgetSlot: ref<inkCompoundWidget> = new inkCanvas();
+        widgetSlot.SetName(n"RevisedBackpackNeedBarWidgetSlot");
+        widgetSlot.SetFitToContent(true);
+        widgetSlot.Reparent(parent);
 
-		return widgetSlot;
-	}
+        return widgetSlot;
+    }
 
-	private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void {
+    private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void {
         //DFProfile();
         this.barCluster = new inkVerticalPanel();
         this.barCluster.SetOpacity(0.0);
@@ -470,9 +470,9 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
             this.UpdateBarLimit(this.nerveBar, this.NerveSystem.GetNeedMax());
             let overcharge: Float = this.NerveSystem.GetOverchargeValue();
             if overcharge > 0.0 {
-			this.startedInOvercharge = true;
-		}
-		    this.UpdateNerveBarOvercharge(overcharge);
+            this.startedInOvercharge = true;
+        }
+            this.UpdateNerveBarOvercharge(overcharge);
         }
     }
 

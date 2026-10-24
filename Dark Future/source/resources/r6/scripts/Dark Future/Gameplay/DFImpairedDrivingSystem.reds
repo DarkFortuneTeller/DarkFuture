@@ -38,28 +38,28 @@ import DarkFuture.UI.DFHUDBarType
 
 @wrapMethod(VehicleObject)
 protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
-	//DFProfile();
-	let r: Bool = wrappedMethod(evt);
+    //DFProfile();
+    let r: Bool = wrappedMethod(evt);
 
-	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-	if IsDefined(mountChild) && mountChild.IsPlayer() {		
-	    DFImpairedDrivingSystem.Get().HandlePlayerMountedVehicle(this);
-	}
+    let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
+    if IsDefined(mountChild) && mountChild.IsPlayer() {     
+        DFImpairedDrivingSystem.Get().HandlePlayerMountedVehicle(this);
+    }
 
-	return r;
+    return r;
 }
 
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
-	//DFProfile();
-	let r: Bool = wrappedMethod(evt);
+    //DFProfile();
+    let r: Bool = wrappedMethod(evt);
 
-	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-	if IsDefined(mountChild) && mountChild.IsPlayer() {
-		DFImpairedDrivingSystem.Get().HandlePlayerUnmountedVehicle();
-	}
-	
-	return r;
+    let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
+    if IsDefined(mountChild) && mountChild.IsPlayer() {
+        DFImpairedDrivingSystem.Get().HandlePlayerUnmountedVehicle();
+    }
+    
+    return r;
 }
 
 @wrapMethod(AutoDriveSystem)
@@ -77,17 +77,17 @@ public enum DFImpairedDrivingMode {
 }
 
 public enum DFImpairedDrivingDebugFactID {
-	Invalid = 0,
-	StartUp = 1,
-	ImpairedDrivingActionReceived = 2,
-	ControlLossEnabled = 3,
-	ControlLossDisabled = 4
+    Invalid = 0,
+    StartUp = 1,
+    ImpairedDrivingActionReceived = 2,
+    ControlLossEnabled = 3,
+    ControlLossDisabled = 4
 }
 
 public enum DFImpairedDrivingVFXDebugFactID {
-	Invalid = 0,
-	StartUp = 1,
-	VFXSceneEnd = 2
+    Invalid = 0,
+    StartUp = 1,
+    VFXSceneEnd = 2
 }
 
 public enum DFImpairedDrivingAction {
@@ -106,108 +106,108 @@ public enum DFImpairedDrivingVFXCommand {
 }
 
 public class ControlLossInitialDelay extends DFDelayCallback {
-	public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
+    public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
 
-	public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>) -> ref<DFDelayCallback> {
-		//DFProfile();
-		let self: ref<ControlLossInitialDelay> = new ControlLossInitialDelay();
-		self.ImpairedDrivingSystem = ImpairedDrivingSystem;
-		return self;
-	}
+    public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>) -> ref<DFDelayCallback> {
+        //DFProfile();
+        let self: ref<ControlLossInitialDelay> = new ControlLossInitialDelay();
+        self.ImpairedDrivingSystem = ImpairedDrivingSystem;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.controlLossInitialDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.controlLossInitialDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.OnControlLossInitialDelayFinished();
-	}
+    public func Callback() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.OnControlLossInitialDelayFinished();
+    }
 }
 
 public class ControlLossPreStartDelay extends DFDelayCallback {
-	public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
+    public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
 
-	public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>) -> ref<DFDelayCallback> {
-		//DFProfile();
-		let self: ref<ControlLossPreStartDelay> = new ControlLossPreStartDelay();
-		self.ImpairedDrivingSystem = ImpairedDrivingSystem;
-		return self;
-	}
+    public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>) -> ref<DFDelayCallback> {
+        //DFProfile();
+        let self: ref<ControlLossPreStartDelay> = new ControlLossPreStartDelay();
+        self.ImpairedDrivingSystem = ImpairedDrivingSystem;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.controlLossPreStartDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.controlLossPreStartDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.OnControlLossPreStart();
-	}
+    public func Callback() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.OnControlLossPreStart();
+    }
 }
 
 public class ControlLossStartDelay extends DFDelayCallback {
-	public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
+    public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
     public let controlLossDuration: Float;
 
-	public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>, controlLossDuration: Float) -> ref<DFDelayCallback> {
-		//DFProfile();
-		let self: ref<ControlLossStartDelay> = new ControlLossStartDelay();
-		self.ImpairedDrivingSystem = ImpairedDrivingSystem;
+    public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>, controlLossDuration: Float) -> ref<DFDelayCallback> {
+        //DFProfile();
+        let self: ref<ControlLossStartDelay> = new ControlLossStartDelay();
+        self.ImpairedDrivingSystem = ImpairedDrivingSystem;
         self.controlLossDuration = controlLossDuration;
-		return self;
-	}
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.controlLossStartDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.controlLossStartDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.OnControlLossStart(this.controlLossDuration);
-	}
+    public func Callback() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.OnControlLossStart(this.controlLossDuration);
+    }
 }
 
 public class ControlLossFinishDelay extends DFDelayCallback {
-	public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
+    public let ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>;
 
-	public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>) -> ref<DFDelayCallback> {
-		//DFProfile();
-		let self: ref<ControlLossFinishDelay> = new ControlLossFinishDelay();
-		self.ImpairedDrivingSystem = ImpairedDrivingSystem;
-		return self;
-	}
+    public static func Create(ImpairedDrivingSystem: ref<DFImpairedDrivingSystem>) -> ref<DFDelayCallback> {
+        //DFProfile();
+        let self: ref<ControlLossFinishDelay> = new ControlLossFinishDelay();
+        self.ImpairedDrivingSystem = ImpairedDrivingSystem;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.controlLossFinishDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.controlLossFinishDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
-		this.ImpairedDrivingSystem.OnControlLossFinish();
-	}
+    public func Callback() -> Void {
+        //DFProfile();
+        this.ImpairedDrivingSystem.OnControlLossFinish();
+    }
 }
 
 class DFImpairedDrivingSystemEventListener extends DFSystemEventListener {
-	private func GetSystemInstance() -> wref<DFImpairedDrivingSystem> {
+    private func GetSystemInstance() -> wref<DFImpairedDrivingSystem> {
         //DFProfile();
-		return DFImpairedDrivingSystem.Get();
-	}
+        return DFImpairedDrivingSystem.Get();
+    }
 
     public cb func OnLoad() {
         //DFProfile();
         super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFNeedValueChangedEvent>(), this, n"OnNeedValueChangedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFNeedValueChangedEvent>(), this, n"OnNeedValueChangedEvent", true);
     }
 
-	private cb func OnNeedValueChangedEvent(event: ref<DFNeedValueChangedEvent>) {
+    private cb func OnNeedValueChangedEvent(event: ref<DFNeedValueChangedEvent>) {
         //DFProfile();
-		this.GetSystemInstance().OnNeedValueChanged(event.GetData());
-	}
+        this.GetSystemInstance().OnNeedValueChanged(event.GetData());
+    }
 }
 
 public final class DFImpairedDrivingSystem extends DFSystem {
@@ -247,14 +247,14 @@ public final class DFImpairedDrivingSystem extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFImpairedDrivingSystem> {
         //DFProfile();
-		let instance: ref<DFImpairedDrivingSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFImpairedDrivingSystem>()) as DFImpairedDrivingSystem;
-		return instance;
-	}
+        let instance: ref<DFImpairedDrivingSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFImpairedDrivingSystem>()) as DFImpairedDrivingSystem;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFImpairedDrivingSystem> {
+    public final static func Get() -> ref<DFImpairedDrivingSystem> {
         //DFProfile();
-		return DFImpairedDrivingSystem.GetInstance(GetGameInstance());
-	}
+        return DFImpairedDrivingSystem.GetInstance(GetGameInstance());
+    }
 
     //
     //  DFSystem Required Methods
@@ -397,7 +397,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
                 this.StopControlLossBehavior();
             }
         }
-	}
+    }
 
     public final func HandlePlayerUnmountedVehicle() -> Void {
         //DFProfile();
@@ -426,7 +426,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
 
         let gameInstance: GameInstance = GetGameInstance();
         let vehicleObj: wref<VehicleObject>;
-		VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
+        VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
 
         if IsDefined(vehicleObj) && !vehicleObj.IsQuest() && VehicleComponent.IsDriver(gameInstance, this.player) {
             let mode: DFImpairedDrivingMode = this.GetModeBasedOnCurrentScenario();
@@ -453,7 +453,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
         //DFProfile();
         let notification: DFNotification;
         notification.needsUI = DFBarUIDisplay(DFHUDBarType.Energy, true, false, false, false);
-		this.NotificationService.QueueNotification(notification);
+        this.NotificationService.QueueNotification(notification);
 
         this.QuestsSystem.SetFact(this.GetImpairedDrivingVFXCommandFact(), EnumInt<DFImpairedDrivingVFXCommand>(intensity));
     }
@@ -572,7 +572,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
         //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let vehicleObj: wref<VehicleObject>;
-		VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
+        VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
 
         if IsDefined(vehicleObj) && !vehicleObj.IsQuest() && VehicleComponent.IsDriver(gameInstance, this.player) {
             let rawSpeed: Float = vehicleObj.GetCurrentSpeed();
@@ -634,36 +634,36 @@ public final class DFImpairedDrivingSystem extends DFSystem {
 
     private final func UnregisterForControlLossInitialDelay() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.controlLossInitialDelayID);
+        UnregisterDFDelayCallback(this.DelaySystem, this.controlLossInitialDelayID);
     }
 
     private final func UnregisterForControlLossPreStart() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.controlLossPreStartDelayID);
+        UnregisterDFDelayCallback(this.DelaySystem, this.controlLossPreStartDelayID);
     }
 
     private final func UnregisterForControlLossStart() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.controlLossStartDelayID);
+        UnregisterDFDelayCallback(this.DelaySystem, this.controlLossStartDelayID);
     }
 
     private final func UnregisterForControlLossFinish() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.controlLossFinishDelayID);
+        UnregisterDFDelayCallback(this.DelaySystem, this.controlLossFinishDelayID);
     }
 
     //
-	//  Debug
-	//
-	private final func OnImpairedDrivingDebugFactSet(value: Int32) -> Void {
-		//DFProfile();
-		//DFLogNoSystem(DFSystemlessDebugEnabled(), this, "~~~~~~~~~ Fact: " + ToString(IntEnum<DFImpairedDrivingDebugFactID>(value)));
-	}
+    //  Debug
+    //
+    private final func OnImpairedDrivingDebugFactSet(value: Int32) -> Void {
+        //DFProfile();
+        //DFLogNoSystem(DFSystemlessDebugEnabled(), this, "~~~~~~~~~ Fact: " + ToString(IntEnum<DFImpairedDrivingDebugFactID>(value)));
+    }
 
     private final func OnImpairedDrivingVFXDebugFactSet(value: Int32) -> Void {
-		//DFProfile();
-		DFLogNoSystem(DFSystemlessDebugEnabled(), this, "~~~~~~~~~ Fact: Value: " + ToString(value) + ", ID: " + ToString(IntEnum<DFImpairedDrivingVFXDebugFactID>(value)));
-	}
+        //DFProfile();
+        DFLogNoSystem(DFSystemlessDebugEnabled(), this, "~~~~~~~~~ Fact: Value: " + ToString(value) + ", ID: " + ToString(IntEnum<DFImpairedDrivingVFXDebugFactID>(value)));
+    }
 
     //
     //  Tutorial

@@ -19,14 +19,14 @@ public final class DFStashCraftingSystem extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFStashCraftingSystem> {
         //DFProfile();
-		let instance: ref<DFStashCraftingSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFStashCraftingSystem>()) as DFStashCraftingSystem;
-		return instance;
-	}
+        let instance: ref<DFStashCraftingSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFStashCraftingSystem>()) as DFStashCraftingSystem;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFStashCraftingSystem> {
+    public final static func Get() -> ref<DFStashCraftingSystem> {
         //DFProfile();
-		return DFStashCraftingSystem.GetInstance(GetGameInstance());
-	}
+        return DFStashCraftingSystem.GetInstance(GetGameInstance());
+    }
 
     private func SetupDebugLogging() -> Void {
         //DFProfile();
@@ -63,11 +63,11 @@ public final class DFStashCraftingSystem extends DFSystem {
 }
 
 public class OpenCraft extends ActionBool {
-	public final func SetProperties() -> Void {
+    public final func SetProperties() -> Void {
         //DFProfile();
-    	this.actionName = n"OpenCraft";
-    	this.prop = DeviceActionPropertyFunctions.SetUpProperty_Bool(this.actionName, true, this.actionName, this.actionName);
-  	}
+        this.actionName = n"OpenCraft";
+        this.prop = DeviceActionPropertyFunctions.SetUpProperty_Bool(this.actionName, true, this.actionName, this.actionName);
+    }
 
     public final static func IsDefaultConditionMet(device: ref<ScriptableDeviceComponentPS>, const context: script_ref<GetActionsContext>) -> Bool {
         //DFProfile();
@@ -113,7 +113,7 @@ protected func GotoIdleState() -> Void {
 @wrapMethod(gameuiInGameMenuGameController)
 protected cb func OnInitialize() -> Bool {
     //DFProfile();
-	DFStashCraftingSystem.Get().SetInGameMenuGameController(this);
+    DFStashCraftingSystem.Get().SetInGameMenuGameController(this);
     return wrappedMethod();
 }
 
@@ -196,7 +196,7 @@ protected cb func OnOpenCraft(evt: ref<OpenCraft>) -> Bool {
 private final func TryOpenCraftingMenu() -> Void {
     //DFProfile();
     DFStashCraftingSystem.Get().craftingAllowed = true;
-	DFStashCraftingSystem.Get().inGameMenuGameController.TryOpenCraftingMenu(n"OpenCraftingMenu");
+    DFStashCraftingSystem.Get().inGameMenuGameController.TryOpenCraftingMenu(n"OpenCraftingMenu");
 }
 
 //  StashControllerPS - Add a Crafting Interaction Action.
@@ -228,9 +228,9 @@ private final func OnOpenCraft(evt: ref<OpenCraft>) -> EntityNotificationType {
 public func GetActions(out outActions: array<ref<DeviceAction>>, context: GetActionsContext) -> Bool {
     //DFProfile();
     if IsSystemEnabledAndRunning(DFStashCraftingSystem.Get()) {
-	    ArrayPush(outActions, this.ActionOpenCraft());
+        ArrayPush(outActions, this.ActionOpenCraft());
     }
-	return wrappedMethod(outActions, context);
+    return wrappedMethod(outActions, context);
 }
 
 //
@@ -297,5 +297,5 @@ protected cb func OnOpenCraft(evt: ref<OpenCraft>) -> Bool {
 private final func TryOpenCraftingMenu() -> Void {
     //DFProfile();
     DFStashCraftingSystem.Get().craftingAllowed = true;
-	DFStashCraftingSystem.Get().inGameMenuGameController.TryOpenCraftingMenu(n"OpenCraftingMenu");
+    DFStashCraftingSystem.Get().inGameMenuGameController.TryOpenCraftingMenu(n"OpenCraftingMenu");
 }

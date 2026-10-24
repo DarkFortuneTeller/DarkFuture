@@ -37,68 +37,68 @@ public struct DFNeedsHUDBarSetupData {
 }
 
 public class DFNeedsHUDBarGroupFadeOutDelayCallback extends DFDelayCallback {
-	public let DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>;
+    public let DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>;
     public let fromParent: Bool;
 
-	public static func Create(dfNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>, fromParent: Bool) -> ref<DFDelayCallback> {
+    public static func Create(dfNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>, fromParent: Bool) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self: ref<DFNeedsHUDBarGroupFadeOutDelayCallback> = new DFNeedsHUDBarGroupFadeOutDelayCallback();
-		self.DFNeedsHUDBarGroup = dfNeedsHUDBarGroup;
+        let self: ref<DFNeedsHUDBarGroupFadeOutDelayCallback> = new DFNeedsHUDBarGroupFadeOutDelayCallback();
+        self.DFNeedsHUDBarGroup = dfNeedsHUDBarGroup;
         self.fromParent = fromParent;
-		return self;
-	}
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		this.DFNeedsHUDBarGroup.m_fadeOutDelayID = GetInvalidDelayID();
-	}
+        this.DFNeedsHUDBarGroup.m_fadeOutDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		this.DFNeedsHUDBarGroup.OnFadeOutStart(this.fromParent);
-	}
+        this.DFNeedsHUDBarGroup.OnFadeOutStart(this.fromParent);
+    }
 }
 
 public class DFNeedsHUDBarPulseStopDelayCallback extends DFDelayCallback {
-	public let DFNeedsHUDBar: wref<DFNeedsHUDBar>;
+    public let DFNeedsHUDBar: wref<DFNeedsHUDBar>;
 
-	public static func Create(DFNeedsHUDBar: wref<DFNeedsHUDBar>) -> ref<DFDelayCallback> {
+    public static func Create(DFNeedsHUDBar: wref<DFNeedsHUDBar>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self: ref<DFNeedsHUDBarPulseStopDelayCallback> = new DFNeedsHUDBarPulseStopDelayCallback();
-		self.DFNeedsHUDBar = DFNeedsHUDBar;
-		return self;
-	}
+        let self: ref<DFNeedsHUDBarPulseStopDelayCallback> = new DFNeedsHUDBarPulseStopDelayCallback();
+        self.DFNeedsHUDBar = DFNeedsHUDBar;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		this.DFNeedsHUDBar.m_pulseStopDelayID = GetInvalidDelayID();
-	}
+        this.DFNeedsHUDBar.m_pulseStopDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		this.DFNeedsHUDBar.OnPulseStop();
-	}
+        this.DFNeedsHUDBar.OnPulseStop();
+    }
 }
 
 public class DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback extends DFDelayCallback {
-	public let DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>;
+    public let DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>;
 
-	public static func Create(DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>) -> ref<DFDelayCallback> {
+    public static func Create(DFNeedsHUDBarGroup: wref<DFNeedsHUDBarGroup>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self: ref<DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback> = new DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback();
-		self.DFNeedsHUDBarGroup = DFNeedsHUDBarGroup;
-		return self;
-	}
+        let self: ref<DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback> = new DFNeedsHUDBarGroupDisplayRecheckAfterForceBrightDelayCallback();
+        self.DFNeedsHUDBarGroup = DFNeedsHUDBarGroup;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		this.DFNeedsHUDBarGroup.m_displayRecheckAfterForceBrightDelayID = GetInvalidDelayID();
-	}
+        this.DFNeedsHUDBarGroup.m_displayRecheckAfterForceBrightDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		this.DFNeedsHUDBarGroup.OnDisplayRecheckAfterForceBright();
-	}
+        this.DFNeedsHUDBarGroup.OnDisplayRecheckAfterForceBright();
+    }
 }
 
 public class DFNeedsHUDBarGroup {

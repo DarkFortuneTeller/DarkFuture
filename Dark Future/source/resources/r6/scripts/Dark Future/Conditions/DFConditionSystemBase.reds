@@ -27,10 +27,10 @@ import DarkFuture.Gameplay.{
     DFInteractionSystem
 }
 import DarkFuture.Services.{
-	DFGameStateService,
+    DFGameStateService,
     DFNotificationService,
-	DFGameStateServiceSceneTierChangedEvent,
-	DFGameStateServiceFuryChangedEvent,
+    DFGameStateServiceSceneTierChangedEvent,
+    DFGameStateServiceFuryChangedEvent,
     DFGameStateServiceCyberspaceChangedEvent,
     DFTutorial,
     DFMessage,
@@ -61,12 +61,12 @@ public class UpdateConditionsHUDUIEvent extends CallbackSystemEvent {
     private let data: DFHUDSegmentedIndicatorUIUpdate;
 
     public func GetData() -> DFHUDSegmentedIndicatorUIUpdate {
-		//DFProfile();
+        //DFProfile();
         return this.data;
     }
 
     public static func Create(data: DFHUDSegmentedIndicatorUIUpdate) -> ref<UpdateConditionsHUDUIEvent> {
-		//DFProfile();
+        //DFProfile();
         let event: ref<UpdateConditionsHUDUIEvent> = new UpdateConditionsHUDUIEvent();
         event.data = data;
         return event;
@@ -74,43 +74,43 @@ public class UpdateConditionsHUDUIEvent extends CallbackSystemEvent {
 }
 
 public class ConditionRepeatFXDelayCallback extends DFDelayCallback {
-	public let ConditionSystemBase: ref<DFConditionSystemBase>;
+    public let ConditionSystemBase: ref<DFConditionSystemBase>;
 
-	public static func Create(conditionSystemBase: ref<DFConditionSystemBase>) -> ref<DFDelayCallback> {
+    public static func Create(conditionSystemBase: ref<DFConditionSystemBase>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self: ref<ConditionRepeatFXDelayCallback> = new ConditionRepeatFXDelayCallback();
-		self.ConditionSystemBase = conditionSystemBase;
-		return self;
-	}
+        let self: ref<ConditionRepeatFXDelayCallback> = new ConditionRepeatFXDelayCallback();
+        self.ConditionSystemBase = conditionSystemBase;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		this.ConditionSystemBase.conditionRepeatFXDelayID = GetInvalidDelayID();
-	}
+        this.ConditionSystemBase.conditionRepeatFXDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		this.ConditionSystemBase.OnConditionRepeatFX();
-	}
+        this.ConditionSystemBase.OnConditionRepeatFX();
+    }
 }
 
 public abstract class DFConditionSystemEventListener extends DFSystemEventListener {
-	//
-	// Required Overrides
-	//
-	private func GetSystemInstance() -> wref<DFConditionSystemBase> {
+    //
+    // Required Overrides
+    //
+    private func GetSystemInstance() -> wref<DFConditionSystemBase> {
         //DFProfile();
-		DFLogNoSystem(DFSystemlessDebugEnabled(), this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
-		return null;
-	}
+        DFLogNoSystem(DFSystemlessDebugEnabled(), this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+        return null;
+    }
 
-	public cb func OnLoad() {
+    public cb func OnLoad() {
         //DFProfile();
         super.OnLoad();
 
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceSceneTierChangedEvent>(), this, n"OnGameStateServiceSceneTierChangedEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceFuryChangedEvent>(), this, n"OnGameStateServiceFuryChangedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceSceneTierChangedEvent>(), this, n"OnGameStateServiceSceneTierChangedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceFuryChangedEvent>(), this, n"OnGameStateServiceFuryChangedEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFGameStateServiceCyberspaceChangedEvent>(), this, n"OnGameStateServiceCyberspaceChangedEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<HUDSystemUpdateUIRequestEvent>(), this, n"OnHUDSystemUpdateUIRequestEvent", true);
     }
@@ -120,15 +120,15 @@ public abstract class DFConditionSystemEventListener extends DFSystemEventListen
         this.GetSystemInstance().OnItemConsumed(event.GetItemRecord(), event.GetAnimateUI());
     }
 
-	private cb func OnGameStateServiceSceneTierChangedEvent(event: ref<DFGameStateServiceSceneTierChangedEvent>) {
+    private cb func OnGameStateServiceSceneTierChangedEvent(event: ref<DFGameStateServiceSceneTierChangedEvent>) {
         //DFProfile();
-		this.GetSystemInstance().OnSceneTierChanged(event.GetData());
-	}
+        this.GetSystemInstance().OnSceneTierChanged(event.GetData());
+    }
 
-	private cb func OnGameStateServiceFuryChangedEvent(event: ref<DFGameStateServiceFuryChangedEvent>) {
+    private cb func OnGameStateServiceFuryChangedEvent(event: ref<DFGameStateServiceFuryChangedEvent>) {
         //DFProfile();
-		this.GetSystemInstance().OnFuryStateChanged(event.GetData());
-	}
+        this.GetSystemInstance().OnFuryStateChanged(event.GetData());
+    }
 
     private cb func OnGameStateServiceCyberspaceChangedEvent(event: ref<DFGameStateServiceCyberspaceChangedEvent>) {
         //DFProfile();
@@ -136,9 +136,9 @@ public abstract class DFConditionSystemEventListener extends DFSystemEventListen
     }
 
     private cb func OnHUDSystemUpdateUIRequestEvent(event: ref<HUDSystemUpdateUIRequestEvent>) {
-		//DFProfile();
-		this.GetSystemInstance().UpdateConditionsHUDUI();
-	}
+        //DFProfile();
+        this.GetSystemInstance().UpdateConditionsHUDUI();
+    }
 }
 
 public abstract class DFConditionSystemBase extends DFSystem {
@@ -151,7 +151,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     public let conditionRepeatFXDelayID: DelayID;
 
     private let InteractionSystem: ref<DFInteractionSystem>;
-	public let GameStateService: ref<DFGameStateService>;
+    public let GameStateService: ref<DFGameStateService>;
     public let NotificationService: ref<DFNotificationService>;
 
     public let conditionStatusEffects: array<TweakDBID>;
@@ -179,9 +179,9 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     public func GetSystems() -> Void {
         //DFProfile();
-		let gameInstance: GameInstance = GetGameInstance();
+        let gameInstance: GameInstance = GetGameInstance();
         this.InteractionSystem = DFInteractionSystem.GetInstance(gameInstance);
-		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
+        this.GameStateService = DFGameStateService.GetInstance(gameInstance);
         this.NotificationService = DFNotificationService.GetInstance(gameInstance);
     }
 
@@ -209,13 +209,13 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     public final func OnPlayerDeath() -> Void {
         //DFProfile();
-		this.SuspendFX();
-		super.OnPlayerDeath();
-	}
+        this.SuspendFX();
+        super.OnPlayerDeath();
+    }
 
     //
-	//  Required Overrides
-	//
+    //  Required Overrides
+    //
     public func GetMaxConditionLevel() -> Uint32 {
         //DFProfile();
         this.LogMissingOverrideError("GetMaxConditionLevel");
@@ -236,15 +236,15 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     private func GetTutorialTitleKey() -> CName {
         //DFProfile();
-		this.LogMissingOverrideError("GetTutorialTitleKey");
-		return n"";
-	}
+        this.LogMissingOverrideError("GetTutorialTitleKey");
+        return n"";
+    }
 
-	private func GetTutorialMessageKey() -> CName {
+    private func GetTutorialMessageKey() -> CName {
         //DFProfile();
-		this.LogMissingOverrideError("GetTutorialMessageKey");
-		return n"";
-	}
+        this.LogMissingOverrideError("GetTutorialMessageKey");
+        return n"";
+    }
 
     private func GetConditionCureItemAmountRestored() -> Float {
         //DFProfile();
@@ -260,19 +260,19 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     private func QueueConditionMessage(level: Uint32) -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("QueueConditionMessage");
-	}
+        this.LogMissingOverrideError("QueueConditionMessage");
+    }
 
     private func GetConditionStatusEffectTag() -> CName {
         //DFProfile();
-		this.LogMissingOverrideError("GetConditionStatusEffectTag");
-		return n"";
-	}
+        this.LogMissingOverrideError("GetConditionStatusEffectTag");
+        return n"";
+    }
 
     private func DoSecondaryConditionCure() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("DoSecondaryConditionCure");
-	}
+        this.LogMissingOverrideError("DoSecondaryConditionCure");
+    }
 
     private func GetCuredNotificationMessageKey() -> CName {
         //DFProfile();
@@ -288,75 +288,75 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     private func ShouldRepeatFX() -> Bool {
         //DFProfile();
-		this.LogMissingOverrideError("ShouldRepeatFX");
+        this.LogMissingOverrideError("ShouldRepeatFX");
         return false;
-	}
+    }
 
     public func OnConditionRepeatFX() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("OnConditionRepeatFX");
+        this.LogMissingOverrideError("OnConditionRepeatFX");
         return;
-	}
+    }
 
     public func GetConditionProgressionNotificationType() -> CName {
         //DFProfile();
-		this.LogMissingOverrideError("GetConditionProgressionNotificationType");
+        this.LogMissingOverrideError("GetConditionProgressionNotificationType");
         return n"";
-	}
+    }
 
     public func GetConditionProgressionNotificationTitleKey() -> CName {
         //DFProfile();
-		this.LogMissingOverrideError("GetConditionProgressionNotificationTitleKey");
+        this.LogMissingOverrideError("GetConditionProgressionNotificationTitleKey");
         return n"";
-	}
+    }
 
     public func GetHUDSegmentedIndicatorSegmentType() -> DFHUDSegmentedIndicatorSegmentType {
         //DFProfile();
-		this.LogMissingOverrideError("GetHUDSegmentedIndicatorSegmentType");
+        this.LogMissingOverrideError("GetHUDSegmentedIndicatorSegmentType");
         return DFHUDSegmentedIndicatorSegmentType.None;
     }
     
-	//
-	//	RunGuard Protected Methods
-	//
+    //
+    //  RunGuard Protected Methods
+    //
     public func OnItemConsumed(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
         //DFProfile();
-		if DFRunGuard(this) { return; }
+        if DFRunGuard(this) { return; }
         if !this.GameStateService.IsValidGameState(this, true) { return; }
-		DFLog(this, "OnItemConsumed");
+        DFLog(this, "OnItemConsumed");
 
-		let itemTags: array<CName> = itemRecord.Tags();
-		if ArrayContains(itemTags, this.GetConditionCureItemTag()) {
+        let itemTags: array<CName> = itemRecord.Tags();
+        if ArrayContains(itemTags, this.GetConditionCureItemTag()) {
             this.RestoreCondition(this.GetConditionCureItemAmountRestored());
             
         } else if ArrayContains(itemTags, this.GetConditionSecondaryCureItemTag()) {
             this.DoSecondaryConditionCure();
         }
-	}
+    }
 
-	public func OnSceneTierChanged(value: GameplayTier) -> Void {
+    public func OnSceneTierChanged(value: GameplayTier) -> Void {
         //DFProfile();
-		if DFRunGuard(this, true) { return; }
-		DFLog(this, "OnSceneTierChanged value = " + ToString(value));
+        if DFRunGuard(this, true) { return; }
+        DFLog(this, "OnSceneTierChanged value = " + ToString(value));
 
         this.RefreshConditionStatusEffects();
-	}
+    }
 
-	public func OnFuryStateChanged(value: Bool) -> Void {
+    public func OnFuryStateChanged(value: Bool) -> Void {
         //DFProfile();
-		if DFRunGuard(this, true) { return; }
-		DFLog(this, "OnFuryStateChanged value = " + ToString(value));
+        if DFRunGuard(this, true) { return; }
+        DFLog(this, "OnFuryStateChanged value = " + ToString(value));
 
         this.RefreshConditionStatusEffects();
-	}
+    }
 
     public func OnCyberspaceChanged(value: Bool) -> Void {
         //DFProfile();
-		if DFRunGuard(this, true) { return; }
-		DFLog(this, "OnCyberspaceChanged value = " + ToString(value));
+        if DFRunGuard(this, true) { return; }
+        DFLog(this, "OnCyberspaceChanged value = " + ToString(value));
 
-		this.RefreshConditionStatusEffects();
-	}
+        this.RefreshConditionStatusEffects();
+    }
 
     //
     //  System Methods
@@ -426,10 +426,10 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
     public func RefreshConditionStatusEffects() -> Void {
         //DFProfile();
-		DFLog(this, "RefreshConditionStatusEffects -- Removing all Status Effects and re-applying");
+        DFLog(this, "RefreshConditionStatusEffects -- Removing all Status Effects and re-applying");
 
-		// Remove the status effects associated with this Condition.
-		StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetConditionStatusEffectTag());
+        // Remove the status effects associated with this Condition.
+        StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, this.GetConditionStatusEffectTag());
 
         // If the Condition is suppressed, exit.
         if this.GetIsConditionSuppressed() { return; }
@@ -438,7 +438,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
 
         if currentLevel > 0u && this.GameStateService.IsValidGameState(this) {
             DFLog(this, "        Applying status effect " + TDBID.ToStringDEBUG(this.conditionStatusEffects[Cast<Int32>(currentLevel - 1u)]));
-			StatusEffectHelper.ApplyStatusEffect(this.player, this.conditionStatusEffects[Cast<Int32>(currentLevel - 1u)]);
+            StatusEffectHelper.ApplyStatusEffect(this.player, this.conditionStatusEffects[Cast<Int32>(currentLevel - 1u)]);
         }
     }
 
@@ -541,40 +541,40 @@ public abstract class DFConditionSystemBase extends DFSystem {
     //
     public func SuspendFX() -> Void {
         //DFProfile();
-		this.UnregisterAllConditionFXCallbacks();
-	}
+        this.UnregisterAllConditionFXCallbacks();
+    }
 
     private final func GetRandomRepeatCallbackOffsetTime() -> Float {
         //DFProfile();
-		return RandRangeF(-20.0, 20.0);
-	}
+        return RandRangeF(-20.0, 20.0);
+    }
 
     public final func UpdateConditionRepeatFXCallback(shouldReregister: Bool) -> Void {
         //DFProfile();
-		if DFRunGuard(this) { return; }
-		DFLog(this, "shouldReregister = " + ToString(shouldReregister));
+        if DFRunGuard(this) { return; }
+        DFLog(this, "shouldReregister = " + ToString(shouldReregister));
 
-		this.UnregisterConditionRepeatFXCallback();
+        this.UnregisterConditionRepeatFXCallback();
 
-		if shouldReregister {
-			this.RegisterConditionFXRepeatCallback();
-		}
-	}
+        if shouldReregister {
+            this.RegisterConditionFXRepeatCallback();
+        }
+    }
 
     public final func RegisterConditionFXRepeatCallback() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, ConditionRepeatFXDelayCallback.Create(this), this.conditionRepeatFXDelayID, this.Settings.cyberpsychosisEffectsRepeatFrequencyInRealTimeSeconds + this.GetRandomRepeatCallbackOffsetTime());
-	}
+        RegisterDFDelayCallback(this.DelaySystem, ConditionRepeatFXDelayCallback.Create(this), this.conditionRepeatFXDelayID, this.Settings.cyberpsychosisEffectsRepeatFrequencyInRealTimeSeconds + this.GetRandomRepeatCallbackOffsetTime());
+    }
 
     public final func UnregisterAllConditionFXCallbacks() -> Void {
         //DFProfile();
-		this.UnregisterConditionRepeatFXCallback();
-	}
+        this.UnregisterConditionRepeatFXCallback();
+    }
 
     private final func UnregisterConditionRepeatFXCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.conditionRepeatFXDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.conditionRepeatFXDelayID);
+    }
 
     //  UI
     //
@@ -584,7 +584,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     }
 
     public final func DispatchUpdateConditionsHUDUIEvent(type: DFHUDSegmentedIndicatorSegmentType, active: Bool, pulse: Bool) -> Void {
-		//DFProfile();
+        //DFProfile();
         let data: DFHUDSegmentedIndicatorUIUpdate = DFHUDSegmentedIndicatorUIUpdate(type, active, pulse);
         GameInstance.GetCallbackSystem().DispatchEvent(UpdateConditionsHUDUIEvent.Create(data));
     }

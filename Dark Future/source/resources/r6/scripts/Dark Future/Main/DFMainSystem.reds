@@ -53,10 +53,10 @@ import DarkFuture.UI.{
 }
 
 public struct DFNeedChangeDatum {
-	public let value: Float;
+    public let value: Float;
     public let delayedValue: Float;
-	public let floor: Float;
-	public let ceiling: Float;
+    public let floor: Float;
+    public let ceiling: Float;
     public let showLock: Bool;
     public let overcharge: Float;
 }
@@ -73,10 +73,10 @@ public struct DFNerveChangePreview {
 }
 
 public struct DFNeedsDatum {
-  	public let hydration: DFNeedChangeDatum;
-  	public let nutrition: DFNeedChangeDatum;
-	public let energy: DFNeedChangeDatum;
-	public let nerve: DFNeedChangeDatum;
+    public let hydration: DFNeedChangeDatum;
+    public let nutrition: DFNeedChangeDatum;
+    public let energy: DFNeedChangeDatum;
+    public let nerve: DFNeedChangeDatum;
 }
 
 public struct DFAddictionUpdateDatum {
@@ -145,27 +145,27 @@ public enum DFAddictionProxyEffectType {
 @wrapMethod(RadialWheelController)
 protected cb func OnLateInit(evt: ref<LateInit>) -> Bool {
     //DFProfile();
-	let val: Bool = wrappedMethod(evt);
+    let val: Bool = wrappedMethod(evt);
 
-	// Now that we know that the Radial Wheel is done initializing, it's now safe to act on systems
+    // Now that we know that the Radial Wheel is done initializing, it's now safe to act on systems
     // that might apply status effects.
-	DFMainSystem.Get().OnRadialWheelLateInitDone();
+    DFMainSystem.Get().OnRadialWheelLateInitDone();
     
     let widgetSlot: ref<inkWidget> = inkWidgetRef.Get(this.statusEffects.slotAnchorRef);
-	DFHUDSystem.Get().SetRadialWheelStatusEffectListWidget(widgetSlot);
+    DFHUDSystem.Get().SetRadialWheelStatusEffectListWidget(widgetSlot);
 
-	return val;
+    return val;
 }
 
 @wrapMethod(DeathMenuGameController)
 protected cb func OnInitialize() -> Bool {
     //DFProfile();
-	let val: Bool = wrappedMethod();
-	
-	let DFMainSystem: ref<DFMainSystem> = DFMainSystem.Get();
-	DFMainSystem.DispatchPlayerDeathEvent();
+    let val: Bool = wrappedMethod();
+    
+    let DFMainSystem: ref<DFMainSystem> = DFMainSystem.Get();
+    DFMainSystem.DispatchPlayerDeathEvent();
 
-	return val;
+    return val;
 }
 
 @wrapMethod(PlayerDevelopmentData)
@@ -299,18 +299,18 @@ public class MainSystemLifecycleSuspendDoneEvent extends CallbackSystemEvent {
 class DFMainSystemEventListeners extends ScriptableService {
     private func GetSystemInstance() -> wref<DFMainSystem> {
         //DFProfile();
-		return DFMainSystem.Get();
-	}
+        return DFMainSystem.Get();
+    }
 
-	public cb func OnLoad() {
+    public cb func OnLoad() {
         //DFProfile();
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<SettingChangedEvent>(), this, n"OnSettingChangedEvent", true);
     }
 
     private cb func OnSettingChangedEvent(event: ref<SettingChangedEvent>) {
         //DFProfile();
-		this.GetSystemInstance().OnSettingChanged(event.GetData());
-	}
+        this.GetSystemInstance().OnSettingChanged(event.GetData());
+    }
 }
 
 public final class DFMainSystem extends ScriptableSystem {
@@ -333,14 +333,14 @@ public final class DFMainSystem extends ScriptableSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFMainSystem> {
         //DFProfile();
-		let instance: ref<DFMainSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFMainSystem>()) as DFMainSystem;
-		return instance;
-	}
+        let instance: ref<DFMainSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFMainSystem>()) as DFMainSystem;
+        return instance;
+    }
 
     public final static func Get() -> ref<DFMainSystem> {
         //DFProfile();
         return DFMainSystem.GetInstance(GetGameInstance());
-	}
+    }
 
     //
     //  Startup and Shutdown
@@ -353,7 +353,7 @@ public final class DFMainSystem extends ScriptableSystem {
 
     private final func PlayerAttachedCallback(playerPuppet: ref<GameObject>) -> Void {
         //DFProfile();
-		if IsDefined(playerPuppet) {
+        if IsDefined(playerPuppet) {
             DFLogNoSystem(this.debugEnabled, this, "PlayerAttachedCallback playerPuppet TweakDBID: " + TDBID.ToStringDEBUG((playerPuppet as PlayerPuppet).GetRecord().GetID()));
             this.player = playerPuppet as PlayerPuppet;
 
@@ -372,7 +372,7 @@ public final class DFMainSystem extends ScriptableSystem {
             this.StartAll();
             this.RefreshAlwaysOnEffects();
         }
-	}
+    }
 
     private final func StartAll() -> Void {
         //DFProfile();
@@ -614,7 +614,7 @@ public final class DFMainSystem extends ScriptableSystem {
                 StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacityHalf");
             }
 
-		} else {
+        } else {
             StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.DarkFutureAlwaysOnCarryCapacity");
         }
 
@@ -778,10 +778,10 @@ public final class DFMainSystem extends ScriptableSystem {
     private final func UpdateEnums() -> Void {
         //DFProfile();
         // Extend the base game gamedataProficiencyType enum.
-		let largestConst: Int64 = EnumGetMax(n"gamedataProficiencyType");
-		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureHumanityLoss", largestConst + Cast<Int64>(1));
-		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureInjury", largestConst + Cast<Int64>(2));
-		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureBiocorruption", largestConst + Cast<Int64>(3));
+        let largestConst: Int64 = EnumGetMax(n"gamedataProficiencyType");
+        Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureHumanityLoss", largestConst + Cast<Int64>(1));
+        Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureInjury", largestConst + Cast<Int64>(2));
+        Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureBiocorruption", largestConst + Cast<Int64>(3));
 
         // Extend the base game UIInventoryItemWeaponBarsType enum.
         largestConst = EnumGetMax(n"UIInventoryItemWeaponBarsType");
@@ -924,7 +924,7 @@ public final class DFMainSystem extends ScriptableSystem {
         }
 
         if !this.hasShownActivationMessage {
-			this.hasShownActivationMessage = true;
+            this.hasShownActivationMessage = true;
             this.ShowSystemMessage(
                 n"DarkFutureTutorialActivateTitle",
                 n"DarkFutureTutorialActivate",
@@ -934,41 +934,41 @@ public final class DFMainSystem extends ScriptableSystem {
 
             // Also ping the UI once on first start-up.
             let uiToShow: DFBarUIDisplay;
-			uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
+            uiToShow.bar = DFHUDBarType.Hydration; // To force all bars to display
 
             let oneTimeBarDisplay: DFNotification;
             oneTimeBarDisplay.allowPlaybackInCombat = false;
             oneTimeBarDisplay.needsUI = uiToShow;
 
             DFNotificationService.Get().QueueNotification(oneTimeBarDisplay);
-		}
-	}
+        }
+    }
 
     private final func TryToShowUpgradeMessage_20() -> Void {
         //DFProfile();
         if !this.hasShownUpgradeMessage_20 {
-			this.hasShownUpgradeMessage_20 = true;
-			this.ShowSystemMessage(
+            this.hasShownUpgradeMessage_20 = true;
+            this.ShowSystemMessage(
                 n"DarkFutureTutorialActivateUpdateTitle", 
                 n"DarkFutureTutorialActivate_V20",
                 t"",
                 r"darkfuture\\movies\\dark_future_update_2_0.bk2"
             );
-		}
-	}
+        }
+    }
 
     private final func TryToShowUpgradeMessage_30() -> Void {
         //DFProfile();
         if !this.hasShownUpgradeMessage_30 {
-			this.hasShownUpgradeMessage_30 = true;
-			this.ShowSystemMessage(
+            this.hasShownUpgradeMessage_30 = true;
+            this.ShowSystemMessage(
                 n"DarkFutureTutorialActivateUpdateTitle", 
                 n"DarkFutureTutorialActivate_V30",
                 t"",
                 r"darkfuture\\movies\\dark_future_update_3_0.bk2"
             );
-		}
-	}
+        }
+    }
 
     private final func ShowSystemMessage(titleKey: CName, messageKey: CName, opt image: TweakDBID, opt videoPath: ResRef) -> Void {
         //DFProfile();

@@ -12,265 +12,265 @@ import DarkFuture.Logging.*
 import DarkFuture.System.*
 import DarkFuture.Main.DFTimeSkipData
 import DarkFuture.Addictions.{
-	DFAlcoholAddictionSystem,
-	DFNicotineAddictionSystem
+    DFAlcoholAddictionSystem,
+    DFNicotineAddictionSystem
 }
 
 class DFCyberwareServiceEventListener extends DFSystemEventListener {
-	private func GetSystemInstance() -> wref<DFCyberwareService> {
-		//DFProfile();
-		return DFCyberwareService.Get();
-	}
+    private func GetSystemInstance() -> wref<DFCyberwareService> {
+        //DFProfile();
+        return DFCyberwareService.Get();
+    }
 }
 
 public final class DFCyberwareService extends DFSystem {
-	private let StatsSystem: ref<StatsSystem>;
-	private let TransactionSystem: ref<TransactionSystem>;
-	private let AlcoholAddictionSystem: ref<DFAlcoholAddictionSystem>;
-	private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
+    private let StatsSystem: ref<StatsSystem>;
+    private let TransactionSystem: ref<TransactionSystem>;
+    private let AlcoholAddictionSystem: ref<DFAlcoholAddictionSystem>;
+    private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
 
-	private let equipmentSystemPlayerData: ref<EquipmentSystemPlayerData>;
-	private let cyberwareEquipmentAreas: array<gamedataEquipmentArea>;
-	private let equippedCyberwareItemIDs: array<ItemID>;
+    private let equipmentSystemPlayerData: ref<EquipmentSystemPlayerData>;
+    private let cyberwareEquipmentAreas: array<gamedataEquipmentArea>;
+    private let equippedCyberwareItemIDs: array<ItemID>;
 
     private let cyberwareHasSecondHeart: Bool = false;
     private let cyberwareNicotineEffectDurationOverride: Float = 0.0;
-	private let cyberwareAlcoholEnergyLossBonus: Float = 0.0;
-	private let cyberwareNarcoticExcessStacksAllowedBonus: Int32 = 0;
-	private let cyberwareSecondHeartNerveRestoreAmount: Float = 10.0;
+    private let cyberwareAlcoholEnergyLossBonus: Float = 0.0;
+    private let cyberwareNarcoticExcessStacksAllowedBonus: Int32 = 0;
+    private let cyberwareSecondHeartNerveRestoreAmount: Float = 10.0;
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFCyberwareService> {
-		//DFProfile();
-		let instance: ref<DFCyberwareService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFCyberwareService>()) as DFCyberwareService;
-		return instance;
-	}
+        //DFProfile();
+        let instance: ref<DFCyberwareService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFCyberwareService>()) as DFCyberwareService;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFCyberwareService> {
-		//DFProfile();
-		return DFCyberwareService.GetInstance(GetGameInstance());
-	}
+    public final static func Get() -> ref<DFCyberwareService> {
+        //DFProfile();
+        return DFCyberwareService.GetInstance(GetGameInstance());
+    }
 
-	//
-	//	DFSystem Required Methods
-	//
-	private final func RegisterListeners() -> Void {}
-	private final func UnregisterListeners() -> Void {}
-	private final func RegisterAllRequiredDelayCallbacks() -> Void {}
-	public final func UnregisterAllDelayCallbacks() -> Void {}
-	public final func OnTimeSkipStart() -> Void {}
-	public final func OnTimeSkipCancelled() -> Void {}
-	public final func OnTimeSkipBegin() -> Void {}
-	public final func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
-	public final func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
-	private final func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
+    //
+    //  DFSystem Required Methods
+    //
+    private final func RegisterListeners() -> Void {}
+    private final func UnregisterListeners() -> Void {}
+    private final func RegisterAllRequiredDelayCallbacks() -> Void {}
+    public final func UnregisterAllDelayCallbacks() -> Void {}
+    public final func OnTimeSkipStart() -> Void {}
+    public final func OnTimeSkipCancelled() -> Void {}
+    public final func OnTimeSkipBegin() -> Void {}
+    public final func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {}
+    public final func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
+    private final func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 
-	public final func GetSystemToggleSettingValue() -> Bool {
-		//DFProfile();
-		// This system does not have a system-specific toggle.
-		return true;
-	}
+    public final func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
+        // This system does not have a system-specific toggle.
+        return true;
+    }
 
-	private final func GetSystemToggleSettingString() -> String {
-		//DFProfile();
-		// This system does not have a system-specific toggle.
-		return "INVALID";
-	}
+    private final func GetSystemToggleSettingString() -> String {
+        //DFProfile();
+        // This system does not have a system-specific toggle.
+        return "INVALID";
+    }
 
-	public final func DoPostSuspendActions() -> Void {
-		//DFProfile();
-		this.SetDefaultBonusState();
-	}
+    public final func DoPostSuspendActions() -> Void {
+        //DFProfile();
+        this.SetDefaultBonusState();
+    }
 
-	public final func DoPostResumeActions() -> Void {
-		//DFProfile();
-		this.UpdateEquippedCyberwareAndBonuses();
-	}
-	
-	private final func SetupDebugLogging() -> Void {
-		//DFProfile();
-		this.debugEnabled = false;
-	}
+    public final func DoPostResumeActions() -> Void {
+        //DFProfile();
+        this.UpdateEquippedCyberwareAndBonuses();
+    }
+    
+    private final func SetupDebugLogging() -> Void {
+        //DFProfile();
+        this.debugEnabled = false;
+    }
 
-	public final func GetSystems() -> Void {
-		//DFProfile();
-		let gameInstance: GameInstance = GetGameInstance();
-		this.StatsSystem = GameInstance.GetStatsSystem(gameInstance);
-		this.TransactionSystem = GameInstance.GetTransactionSystem(gameInstance);
-		this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
-		this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
-	}
+    public final func GetSystems() -> Void {
+        //DFProfile();
+        let gameInstance: GameInstance = GetGameInstance();
+        this.StatsSystem = GameInstance.GetStatsSystem(gameInstance);
+        this.TransactionSystem = GameInstance.GetTransactionSystem(gameInstance);
+        this.AlcoholAddictionSystem = DFAlcoholAddictionSystem.GetInstance(gameInstance);
+        this.NicotineAddictionSystem = DFNicotineAddictionSystem.GetInstance(gameInstance);
+    }
 
-	public final func SetupData() -> Void {
-		//DFProfile();
-		this.equipmentSystemPlayerData = EquipmentSystem.GetData(this.player);
-		this.cyberwareEquipmentAreas = this.equipmentSystemPlayerData.GetAllCyberwareEquipmentAreas();
-	}
+    public final func SetupData() -> Void {
+        //DFProfile();
+        this.equipmentSystemPlayerData = EquipmentSystem.GetData(this.player);
+        this.cyberwareEquipmentAreas = this.equipmentSystemPlayerData.GetAllCyberwareEquipmentAreas();
+    }
 
-	public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
-		//DFProfile();
-		this.UpdateEquippedCyberwareAndBonuses();
-	}
+    public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+        //DFProfile();
+        this.UpdateEquippedCyberwareAndBonuses();
+    }
 
-	//
-	//	System-Specific Methods
-	private final func SetDefaultBonusState() -> Void {
-		//DFProfile();
-		this.cyberwareHasSecondHeart = false;
-		this.cyberwareNicotineEffectDurationOverride = 0.0;
-		this.cyberwareAlcoholEnergyLossBonus = 0.0;
-		this.cyberwareNarcoticExcessStacksAllowedBonus = 0;
-		this.cyberwareSecondHeartNerveRestoreAmount = 10.0;
-	}
+    //
+    //  System-Specific Methods
+    private final func SetDefaultBonusState() -> Void {
+        //DFProfile();
+        this.cyberwareHasSecondHeart = false;
+        this.cyberwareNicotineEffectDurationOverride = 0.0;
+        this.cyberwareAlcoholEnergyLossBonus = 0.0;
+        this.cyberwareNarcoticExcessStacksAllowedBonus = 0;
+        this.cyberwareSecondHeartNerveRestoreAmount = 10.0;
+    }
 
     public final func UpdateEquippedCyberwareAndBonuses() -> Void {
-		//DFProfile();
-		this.UpdateEquippedCyberwareItemIDs(this.equippedCyberwareItemIDs);
-		this.UpdateCyberwareBonuses();
-	}
+        //DFProfile();
+        this.UpdateEquippedCyberwareItemIDs(this.equippedCyberwareItemIDs);
+        this.UpdateCyberwareBonuses();
+    }
 
     private final func UpdateEquippedCyberwareItemIDs(out itemIDs: array<ItemID>) -> Void {
-		//DFProfile();
-		ArrayClear(itemIDs);
-		
-		let i: Int32 = 0;
-		while i < ArraySize(this.cyberwareEquipmentAreas) {
-			let j: Int32 = 0;
-			while j < this.equipmentSystemPlayerData.GetNumberOfSlots(this.cyberwareEquipmentAreas[i]) {
-				let currentItemID: ItemID = this.player.GetEquippedItemIdInArea(this.cyberwareEquipmentAreas[i], j);
-				if ItemID.IsValid(currentItemID) && this.TransactionSystem.HasItem(this.player, currentItemID) {
-					ArrayPush(itemIDs, currentItemID);
-				}
-				j += 1;
-			}
-			i += 1;
-		}
-	}
+        //DFProfile();
+        ArrayClear(itemIDs);
+        
+        let i: Int32 = 0;
+        while i < ArraySize(this.cyberwareEquipmentAreas) {
+            let j: Int32 = 0;
+            while j < this.equipmentSystemPlayerData.GetNumberOfSlots(this.cyberwareEquipmentAreas[i]) {
+                let currentItemID: ItemID = this.player.GetEquippedItemIdInArea(this.cyberwareEquipmentAreas[i], j);
+                if ItemID.IsValid(currentItemID) && this.TransactionSystem.HasItem(this.player, currentItemID) {
+                    ArrayPush(itemIDs, currentItemID);
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+    }
 
     private final func UpdateCyberwareBonuses() -> Void {
-		//DFProfile();
-		// Reset data.
-		this.SetDefaultBonusState();
+        //DFProfile();
+        // Reset data.
+        this.SetDefaultBonusState();
 
-		let i: Int32 = 0;
-		while i < ArraySize(this.equippedCyberwareItemIDs) {
-			let itemID: ItemID = this.equippedCyberwareItemIDs[i];
-			let cyberwareType: CName = TweakDBInterface.GetCName(ItemID.GetTDBID(itemID) + t".cyberwareType", n"None");
-			if NotEquals(cyberwareType, n"None") {
-        		let quality: gamedataQuality = TweakDBInterface.GetItemRecord(ItemID.GetTDBID(itemID)).QualityHandle().Type();
-				
-				if Equals(cyberwareType, n"IronLungs") {
-					switch quality {
-						case gamedataQuality.Rare:
-							this.cyberwareNicotineEffectDurationOverride = 210.0;  // 30% bonus
-							break;
-						case gamedataQuality.RarePlus:
-							this.cyberwareNicotineEffectDurationOverride = 180.0;  // 40% bonus
-							break;
-						case gamedataQuality.Epic:
-							this.cyberwareNicotineEffectDurationOverride = 150.0;  // 50% bonus
-							break;
-						case gamedataQuality.EpicPlus:
-							this.cyberwareNicotineEffectDurationOverride = 120.0;  // 60% bonus
-							break;
-						case gamedataQuality.Legendary:
-							this.cyberwareNicotineEffectDurationOverride = 90.0;   // 70% bonus
-							break;
-						case gamedataQuality.LegendaryPlus:
-							this.cyberwareNicotineEffectDurationOverride = 60.0;   // 80% bonus
-							break;
-						case gamedataQuality.LegendaryPlusPlus:
-							this.cyberwareNicotineEffectDurationOverride = 30.0;   // 90% bonus
-							break;
-					}
+        let i: Int32 = 0;
+        while i < ArraySize(this.equippedCyberwareItemIDs) {
+            let itemID: ItemID = this.equippedCyberwareItemIDs[i];
+            let cyberwareType: CName = TweakDBInterface.GetCName(ItemID.GetTDBID(itemID) + t".cyberwareType", n"None");
+            if NotEquals(cyberwareType, n"None") {
+                let quality: gamedataQuality = TweakDBInterface.GetItemRecord(ItemID.GetTDBID(itemID)).QualityHandle().Type();
+                
+                if Equals(cyberwareType, n"IronLungs") {
+                    switch quality {
+                        case gamedataQuality.Rare:
+                            this.cyberwareNicotineEffectDurationOverride = 210.0;  // 30% bonus
+                            break;
+                        case gamedataQuality.RarePlus:
+                            this.cyberwareNicotineEffectDurationOverride = 180.0;  // 40% bonus
+                            break;
+                        case gamedataQuality.Epic:
+                            this.cyberwareNicotineEffectDurationOverride = 150.0;  // 50% bonus
+                            break;
+                        case gamedataQuality.EpicPlus:
+                            this.cyberwareNicotineEffectDurationOverride = 120.0;  // 60% bonus
+                            break;
+                        case gamedataQuality.Legendary:
+                            this.cyberwareNicotineEffectDurationOverride = 90.0;   // 70% bonus
+                            break;
+                        case gamedataQuality.LegendaryPlus:
+                            this.cyberwareNicotineEffectDurationOverride = 60.0;   // 80% bonus
+                            break;
+                        case gamedataQuality.LegendaryPlusPlus:
+                            this.cyberwareNicotineEffectDurationOverride = 30.0;   // 90% bonus
+                            break;
+                    }
 
-				} else if Equals(cyberwareType, n"EndorphinRegulator") {
-					switch quality {
-						case gamedataQuality.Epic:
-							this.cyberwareAlcoholEnergyLossBonus = 2.0; // 20% bonus
-							this.cyberwareNarcoticExcessStacksAllowedBonus = 1;
-							break;
-						case gamedataQuality.EpicPlus:
-							this.cyberwareAlcoholEnergyLossBonus = 3.0; // 30% bonus
-							this.cyberwareNarcoticExcessStacksAllowedBonus = 1;
-							break;
-						case gamedataQuality.Legendary:
-							this.cyberwareAlcoholEnergyLossBonus = 4.0; // 40% bonus
-							this.cyberwareNarcoticExcessStacksAllowedBonus = 2;
-							break;
-						case gamedataQuality.LegendaryPlus:
-							this.cyberwareAlcoholEnergyLossBonus = 5.0; // 50% bonus
-							this.cyberwareNarcoticExcessStacksAllowedBonus = 2;
-							break;
-						case gamedataQuality.LegendaryPlusPlus:
-							this.cyberwareAlcoholEnergyLossBonus = 6.0; // 60% bonus
-							this.cyberwareNarcoticExcessStacksAllowedBonus = 3;
-							break;
-					}
+                } else if Equals(cyberwareType, n"EndorphinRegulator") {
+                    switch quality {
+                        case gamedataQuality.Epic:
+                            this.cyberwareAlcoholEnergyLossBonus = 2.0; // 20% bonus
+                            this.cyberwareNarcoticExcessStacksAllowedBonus = 1;
+                            break;
+                        case gamedataQuality.EpicPlus:
+                            this.cyberwareAlcoholEnergyLossBonus = 3.0; // 30% bonus
+                            this.cyberwareNarcoticExcessStacksAllowedBonus = 1;
+                            break;
+                        case gamedataQuality.Legendary:
+                            this.cyberwareAlcoholEnergyLossBonus = 4.0; // 40% bonus
+                            this.cyberwareNarcoticExcessStacksAllowedBonus = 2;
+                            break;
+                        case gamedataQuality.LegendaryPlus:
+                            this.cyberwareAlcoholEnergyLossBonus = 5.0; // 50% bonus
+                            this.cyberwareNarcoticExcessStacksAllowedBonus = 2;
+                            break;
+                        case gamedataQuality.LegendaryPlusPlus:
+                            this.cyberwareAlcoholEnergyLossBonus = 6.0; // 60% bonus
+                            this.cyberwareNarcoticExcessStacksAllowedBonus = 3;
+                            break;
+                    }
 
-				} else if Equals(cyberwareType, n"SecondHeart") {
-					this.cyberwareHasSecondHeart = true;
-				}
-			}
+                } else if Equals(cyberwareType, n"SecondHeart") {
+                    this.cyberwareHasSecondHeart = true;
+                }
+            }
 
-			i += 1;
-		}
+            i += 1;
+        }
 
-		DFLog(this, "UpdateCyberwareBonuses Result:");
-		DFLog(this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
-		DFLog(this, "    cyberwareAlcoholEnergyLossBonus = " + ToString(this.cyberwareAlcoholEnergyLossBonus));
-		DFLog(this, "    cyberwareNarcoticExcessStacksAllowedBonus = " + ToString(this.cyberwareNarcoticExcessStacksAllowedBonus));
-		DFLog(this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
-	}
+        DFLog(this, "UpdateCyberwareBonuses Result:");
+        DFLog(this, "    cyberwareHasSecondHeart = " + ToString(this.cyberwareHasSecondHeart));
+        DFLog(this, "    cyberwareAlcoholEnergyLossBonus = " + ToString(this.cyberwareAlcoholEnergyLossBonus));
+        DFLog(this, "    cyberwareNarcoticExcessStacksAllowedBonus = " + ToString(this.cyberwareNarcoticExcessStacksAllowedBonus));
+        DFLog(this, "    cyberwareNicotineEffectDurationOverride = " + ToString(this.cyberwareNicotineEffectDurationOverride));
+    }
 
     public final func GetHasSecondHeart() -> Bool {
-		//DFProfile();
+        //DFProfile();
         return this.cyberwareHasSecondHeart;
     }
 
     public final func GetNicotineEffectDurationOverride() -> Float {
-		//DFProfile();
+        //DFProfile();
         return this.cyberwareNicotineEffectDurationOverride;
     }
 
-	public final func GetAlcoholEnergyLossBonus() -> Float {
-		//DFProfile();
+    public final func GetAlcoholEnergyLossBonus() -> Float {
+        //DFProfile();
         return this.cyberwareAlcoholEnergyLossBonus;
     }
-	
+    
     public final func GetNarcoticExcessStacksAllowedBonus() -> Int32 {
-		//DFProfile();
+        //DFProfile();
         return this.cyberwareNarcoticExcessStacksAllowedBonus;
     }
 
     public final func GetSecondHeartNerveRestoreAmount() -> Float {
-		//DFProfile();
+        //DFProfile();
         return this.cyberwareSecondHeartNerveRestoreAmount;
-	}
+    }
 
-	public final func GetPointsOfCyberwareCapacityAllocated() -> Float {
-		//DFProfile();
-		return this.StatsSystem.GetStatValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatType.HumanityAllocated);
-	}
+    public final func GetPointsOfCyberwareCapacityAllocated() -> Float {
+        //DFProfile();
+        return this.StatsSystem.GetStatValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatType.HumanityAllocated);
+    }
 
-	public final func GetPointsOfCyberwareCapacityExceeded() -> Float {
-		//DFProfile();
-		return this.StatsSystem.GetStatValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatType.HumanityOverallocated);
-	}
+    public final func GetPointsOfCyberwareCapacityExceeded() -> Float {
+        //DFProfile();
+        return this.StatsSystem.GetStatValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatType.HumanityOverallocated);
+    }
 }
 
 //
-//	Base Game Methods
+//  Base Game Methods
 //
 
-//	RipperDocGameController - Update equipped Cyberware bonuses after leaving the Ripperdoc vendor screen.
+//  RipperDocGameController - Update equipped Cyberware bonuses after leaving the Ripperdoc vendor screen.
 //
 @wrapMethod(RipperDocGameController)
 protected cb func OnBeforeLeaveScenario(userData: ref<IScriptable>) -> Bool {
-	//DFProfile();
-	let value: Bool = wrappedMethod(userData);
+    //DFProfile();
+    let value: Bool = wrappedMethod(userData);
 
-	let CyberwareSystem: ref<DFCyberwareService> = DFCyberwareService.Get();
-	CyberwareSystem.UpdateEquippedCyberwareAndBonuses();
+    let CyberwareSystem: ref<DFCyberwareService> = DFCyberwareService.Get();
+    CyberwareSystem.UpdateEquippedCyberwareAndBonuses();
 
-	return value;
+    return value;
 }

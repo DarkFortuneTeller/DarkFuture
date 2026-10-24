@@ -11,17 +11,17 @@
 // DFDelayCallback implementation example:
 /*
 public class MyCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		return new MyCallback();
-	}
+    public static func Create() -> ref<DFDelayCallback> {
+        return new MyCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
-		MySystem.Get().InvalidateMyDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        MySystem.Get().InvalidateMyDelayID();
+    }
 
-	public func Callback() -> Void {
-		MySystem.Get().OnMyCallback();
-	}
+    public func Callback() -> Void {
+        MySystem.Get().OnMyCallback();
+    }
 }
 */
 

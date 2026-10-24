@@ -87,38 +87,38 @@ public let m_DarkFutureRelaxActionInputListener: ref<DarkFutureRelaxActionInputL
 //
 @wrapMethod(PlayerPuppet)
 protected cb func OnDetach() -> Bool {
-	//DFProfile();
+    //DFProfile();
     let r: Bool = wrappedMethod();
 
     this.UnregisterInputListener(this.m_DarkFutureRelaxActionInputListener);
     this.m_DarkFutureRelaxActionInputListener = null;
 
-	return r;
+    return r;
 }
 
 // InputContextTransitionEvents - Add the Relax Action prompt
 //
 @addMethod(InputContextTransitionEvents)
 private final func DarkFutureEvaluateRelaxActionInputHint(show: Bool, stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>, source: CName) -> Void {
-	//DFProfile();
+    //DFProfile();
     let settings: ref<DFSettings> = DFSettings.Get();
-	if show && settings.relaxActionHotkeyEnabled && settings.relaxActionShowInputHint {
+    if show && settings.relaxActionHotkeyEnabled && settings.relaxActionShowInputHint {
         let inputString: String;
         // Relax
         inputString = GetLocalizedTextByKey(n"DarkFutureRelaxActionPrompt");
         
-		this.ShowInputHint(scriptInterface, n"DFRelaxAction", source, inputString, inkInputHintHoldIndicationType.Hold, true, 127);
-	} else {
-		this.RemoveInputHint(scriptInterface, n"DFRelaxAction", source);
-	}
+        this.ShowInputHint(scriptInterface, n"DFRelaxAction", source, inputString, inkInputHintHoldIndicationType.Hold, true, 127);
+    } else {
+        this.RemoveInputHint(scriptInterface, n"DFRelaxAction", source);
+    }
 }
 
 // InputContextTransitionEvents - Show the input hint when showing the generic exploration hints.
 //
 @wrapMethod(InputContextTransitionEvents)
 protected final const func ShowGenericExplorationInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-	//DFProfile();
-	wrappedMethod(stateContext, scriptInterface);
+    //DFProfile();
+    wrappedMethod(stateContext, scriptInterface);
 
     this.DarkFutureEvaluateRelaxActionInputHint(true, stateContext, scriptInterface, n"Locomotion");
 }
@@ -127,8 +127,8 @@ protected final const func ShowGenericExplorationInputHints(stateContext: ref<St
 //
 @wrapMethod(InputContextTransitionEvents)
 protected final const func RemoveGenericExplorationInputHints(stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
-	//DFProfile();
-	wrappedMethod(stateContext, scriptInterface);
+    //DFProfile();
+    wrappedMethod(stateContext, scriptInterface);
 
     this.DarkFutureEvaluateRelaxActionInputHint(false, stateContext, scriptInterface, n"Locomotion");
 }
@@ -136,12 +136,12 @@ protected final const func RemoveGenericExplorationInputHints(stateContext: ref<
 // Input Listener
 //
 public class DarkFutureRelaxActionInputListener {
-	protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
-		if Equals(ListenerAction.GetName(action), n"DFRelaxAction") && Equals(ListenerAction.GetType(action), gameinputActionType.BUTTON_HOLD_COMPLETE) {
-			//DFProfile();
-			DFRelaxActionSystem.Get().HandleRelaxAction();
-		}
-	}
+    protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
+        if Equals(ListenerAction.GetName(action), n"DFRelaxAction") && Equals(ListenerAction.GetType(action), gameinputActionType.BUTTON_HOLD_COMPLETE) {
+            //DFProfile();
+            DFRelaxActionSystem.Get().HandleRelaxAction();
+        }
+    }
 }
 
 //
@@ -394,29 +394,29 @@ private final func GetRelaxActionItemUseChoiceTypeFromEnumName(name: CName) -> D
 }
 
 /*public class RaycastTestDelay extends DFDelayCallback {
-	public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
+    public let DFVehicleSleepSystem: wref<DFVehicleSleepSystem>;
 
-	public static func Create() -> ref<DFDelayCallback> {
-		//DFProfile();
-		return new RaycastTestDelay();
-	}
+    public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+        return new RaycastTestDelay();
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		DFRelaxActionSystem.Get().raycastTestDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        DFRelaxActionSystem.Get().raycastTestDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
+    public func Callback() -> Void {
+        //DFProfile();
         DFRelaxActionSystem.Get().RaycastTest();
-	}
+    }
 }*/
 
 class DFRelaxActionSystemEventListener extends DFSystemEventListener {
-	private func GetSystemInstance() -> wref<DFRelaxActionSystem> {
+    private func GetSystemInstance() -> wref<DFRelaxActionSystem> {
         //DFProfile();
-		return DFRelaxActionSystem.Get();
-	}
+        return DFRelaxActionSystem.Get();
+    }
 }
 
 public final class DFRelaxActionSystem extends DFSystem {
@@ -449,14 +449,14 @@ public final class DFRelaxActionSystem extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFRelaxActionSystem> {
         //DFProfile();
-		let instance: ref<DFRelaxActionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRelaxActionSystem>()) as DFRelaxActionSystem;
-		return instance;
-	}
+        let instance: ref<DFRelaxActionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRelaxActionSystem>()) as DFRelaxActionSystem;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFRelaxActionSystem> {
+    public final static func Get() -> ref<DFRelaxActionSystem> {
         //DFProfile();
-		return DFRelaxActionSystem.GetInstance(GetGameInstance());
-	}
+        return DFRelaxActionSystem.GetInstance(GetGameInstance());
+    }
 
     //
     //  DFSystem Required Methods
@@ -501,9 +501,9 @@ public final class DFRelaxActionSystem extends DFSystem {
     public func SetupData() -> Void {}
 
     /*private final func RegisterRaycastTest() -> Void {
-		//DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, RaycastTestDelay.Create(), this.raycastTestDelayID, 2.0);
-	}*/
+        //DFProfile();
+        RegisterDFDelayCallback(this.DelaySystem, RaycastTestDelay.Create(), this.raycastTestDelayID, 2.0);
+    }*/
 
     /*
     public final func RaycastTest() -> Void {
@@ -1235,16 +1235,16 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     public final func RegisterRelaxActionListener() -> Void {
-		//DFProfile();
+        //DFProfile();
         this.player.m_DarkFutureRelaxActionInputListener = new DarkFutureRelaxActionInputListener();
-    	this.player.RegisterInputListener(this.player.m_DarkFutureRelaxActionInputListener);
-	}
+        this.player.RegisterInputListener(this.player.m_DarkFutureRelaxActionInputListener);
+    }
 
-	public final func UnregisterRelaxActionListener() -> Void {
-		//DFProfile();
-		this.player.UnregisterInputListener(this, n"DFRelaxAction");
-		this.player.m_DarkFutureRelaxActionInputListener = null;
-	}
+    public final func UnregisterRelaxActionListener() -> Void {
+        //DFProfile();
+        this.player.UnregisterInputListener(this, n"DFRelaxAction");
+        this.player.m_DarkFutureRelaxActionInputListener = null;
+    }
 
     public final func DecrementAnimPlaybackCountRemaining() -> Void {
         //DFProfile();
@@ -1333,18 +1333,18 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     //
-	//  Lizzie's BDs Detection
-	//
+    //  Lizzie's BDs Detection
+    //
 
-	@if(ModuleExists("LizziesBDs.Main"))
-	private final func IsLizziesBDsInstalled() -> Bool {
-		//DFProfile();
-		return true;
-	}
+    @if(ModuleExists("LizziesBDs.Main"))
+    private final func IsLizziesBDsInstalled() -> Bool {
+        //DFProfile();
+        return true;
+    }
 
-	@if(!ModuleExists("LizziesBDs.Main"))
-	private final func IsLizziesBDsInstalled() -> Bool {
-		//DFProfile();
-		return false;
-	}
+    @if(!ModuleExists("LizziesBDs.Main"))
+    private final func IsLizziesBDsInstalled() -> Bool {
+        //DFProfile();
+        return false;
+    }
 }

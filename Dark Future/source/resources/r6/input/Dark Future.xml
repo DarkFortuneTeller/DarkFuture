@@ -1,62 +1,62 @@
 <?xml version="1.0"?>
 <bindings>
 
-	<!-- Base game Input Contexts -->
-	<context name="VehicleDriveBase" append="true" >
+    <!-- Base game Input Contexts -->
+    <context name="VehicleDriveBase" append="true" >
         <action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
     </context>
 
-	<context name="VehicleOnlyForward" append="true" >
-		<action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
-		<action name="HoldAutodrive" map="Vehicle_Autodrive" />
-		<action name="EnterCombatMode" map="SwitchItem_Button" />
-	</context>
+    <context name="VehicleOnlyForward" append="true" >
+        <action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
+        <action name="HoldAutodrive" map="Vehicle_Autodrive" />
+        <action name="EnterCombatMode" map="SwitchItem_Button" />
+    </context>
 
-	<context name="VehiclePassenger" append="true" >
-		<action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
-	</context>
+    <context name="VehiclePassenger" append="true" >
+        <action name="DFVehicleSleepAction" map="DFVehicleSleepMapping" />
+    </context>
 
-	<context name="InteractionActions" append="true" >
+    <context name="InteractionActions" append="true" >
         <action name="DFAnimatedConsumableManualChoiceAction" map="DFAnimatedConsumableManualChoiceMapping" />
     </context>
 
-	<context name="UI_DPad_Wheel" append="true" >
-		<action name="DFPrevActiveEffectType" map="DFPrevActiveEffectTypeMapping" />
-		<action name="DFNextActiveEffectType" map="DFNextActiveEffectTypeMapping" />
-	</context>
+    <context name="UI_DPad_Wheel" append="true" >
+        <action name="DFPrevActiveEffectType" map="DFPrevActiveEffectTypeMapping" />
+        <action name="DFNextActiveEffectType" map="DFNextActiveEffectTypeMapping" />
+    </context>
 
-	<context name="Exploration" append="true" >
-		<action name="DFRelaxAction" map="DFRelaxActionMapping" />
-	</context>
+    <context name="Exploration" append="true" >
+        <action name="DFRelaxAction" map="DFRelaxActionMapping" />
+    </context>
 
-	<!-- Mappings -->
-	<mapping name="DFVehicleSleepMapping" type="Button" >
-		<button id="IK_LShift" overridableUI="DFVehicleSleepButtonMain" />
-		<button id="IK_Pad_DigitRight" overridableUI="DFVehicleSleepButtonAlt" />
-	</mapping>
+    <!-- Mappings -->
+    <mapping name="DFVehicleSleepMapping" type="Button" >
+        <button id="IK_LShift" overridableUI="DFVehicleSleepButtonMain" />
+        <button id="IK_Pad_DigitRight" overridableUI="DFVehicleSleepButtonAlt" />
+    </mapping>
 
-	<mapping name="DFAnimatedConsumableManualChoiceMapping" type="Button" >
-		<button id="IK_R" overridableUI="consumableAnimationLootActionKeyKBM" />
-		<button id="IK_Pad_B_CIRCLE" overridableUI="consumableAnimationLootActionKeyControllerV2" />
-	</mapping>
+    <mapping name="DFAnimatedConsumableManualChoiceMapping" type="Button" >
+        <button id="IK_R" overridableUI="consumableAnimationLootActionKeyKBM" />
+        <button id="IK_Pad_B_CIRCLE" overridableUI="consumableAnimationLootActionKeyControllerV2" />
+    </mapping>
 
-	<mapping name="DFPrevActiveEffectTypeMapping" type="Button" >
-		<button id="IK_A" />
-		<button id="IK_Pad_LeftShoulder" />
-	</mapping>
+    <mapping name="DFPrevActiveEffectTypeMapping" type="Button" >
+        <button id="IK_A" />
+        <button id="IK_Pad_LeftShoulder" />
+    </mapping>
 
-	<mapping name="DFNextActiveEffectTypeMapping" type="Button" >
-		<button id="IK_D" />
-		<button id="IK_Pad_RightShoulder" />
-	</mapping>
+    <mapping name="DFNextActiveEffectTypeMapping" type="Button" >
+        <button id="IK_D" />
+        <button id="IK_Pad_RightShoulder" />
+    </mapping>
 
-	<mapping name="DFRelaxActionMapping" type="Button" >
-		<button id="IK_LControl" overridableUI="relaxActionKeyKBM" />
-		<button id="IK_Pad_LeftThumb" overridableUI="relaxActionKeyController" />
-	</mapping>
+    <mapping name="DFRelaxActionMapping" type="Button" >
+        <button id="IK_LControl" overridableUI="relaxActionKeyKBM" />
+        <button id="IK_Pad_LeftThumb" overridableUI="relaxActionKeyController" />
+    </mapping>
 
-	<!-- Hold Actions -->
+    <!-- Hold Actions -->
     <hold action="DFVehicleSleepAction" timeout="1.0" />
-	<hold action="DFAnimatedConsumableManualChoiceAction" timeout="0.3" />
-	<hold action="DFRelaxAction" timeout="0.6" />
+    <hold action="DFAnimatedConsumableManualChoiceAction" timeout="0.3" />
+    <hold action="DFRelaxAction" timeout="0.6" />
 </bindings>

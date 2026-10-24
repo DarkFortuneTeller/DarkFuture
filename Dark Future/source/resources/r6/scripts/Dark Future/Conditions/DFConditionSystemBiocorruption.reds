@@ -116,49 +116,49 @@ public enum DFQueuedCrashType {
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Bool {
-	//DFProfile();
-	let biocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
-	let effectTags: array<CName> = evt.staticData.GameplayTags();
+    //DFProfile();
+    let biocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
+    let effectTags: array<CName> = evt.staticData.GameplayTags();
 
-	if IsSystemEnabledAndRunning(biocorruptionCondition) {
-		if ArrayContains(effectTags, n"DarkFutureHangoverTreatment") {
-			biocorruptionCondition.RefreshCrashStatusEffectAndUpdateLimit();
-		}
-	}
+    if IsSystemEnabledAndRunning(biocorruptionCondition) {
+        if ArrayContains(effectTags, n"DarkFutureHangoverTreatment") {
+            biocorruptionCondition.RefreshCrashStatusEffectAndUpdateLimit();
+        }
+    }
     
-	return wrappedMethod(evt);
+    return wrappedMethod(evt);
 }
 
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
     //DFProfile();
-	let biocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
-	let effectTags: array<CName> = evt.staticData.GameplayTags();
+    let biocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
+    let effectTags: array<CName> = evt.staticData.GameplayTags();
 
-	if IsSystemEnabledAndRunning(biocorruptionCondition) {
-		if ArrayContains(effectTags, n"DarkFutureHangoverTreatment") {
-			biocorruptionCondition.RefreshCrashStatusEffectAndUpdateLimit();
-		}
-	}
+    if IsSystemEnabledAndRunning(biocorruptionCondition) {
+        if ArrayContains(effectTags, n"DarkFutureHangoverTreatment") {
+            biocorruptionCondition.RefreshCrashStatusEffectAndUpdateLimit();
+        }
+    }
     
-	return wrappedMethod(evt);
+    return wrappedMethod(evt);
 }
 
 public class BiocorruptionDurationUpdateDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new BiocorruptionDurationUpdateDelayCallback();
-	}
+        return new BiocorruptionDurationUpdateDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFBiocorruptionConditionSystem.Get().biocorruptionDurationUpdateDelayID = GetInvalidDelayID();
-	}
+        DFBiocorruptionConditionSystem.Get().biocorruptionDurationUpdateDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFBiocorruptionConditionSystem.Get().OnBiocorruptionDurationUpdate(DFBiocorruptionConditionSystem.Get().GetBiocorruptionDurationUpdateIntervalInGameTimeSeconds());
-	}
+        DFBiocorruptionConditionSystem.Get().OnBiocorruptionDurationUpdate(DFBiocorruptionConditionSystem.Get().GetBiocorruptionDurationUpdateIntervalInGameTimeSeconds());
+    }
 }
 
 public class BiocorruptionApplyDelayedNeedLossEvent extends CallbackSystemEvent {
@@ -173,10 +173,10 @@ public class BiocorruptionApplyDelayedNeedLossEvent extends CallbackSystemEvent 
 }
 
 class DFBiocorruptionConditionSystemEventListener extends DFConditionSystemEventListener {
-	private func GetSystemInstance() -> wref<DFBiocorruptionConditionSystem> {
+    private func GetSystemInstance() -> wref<DFBiocorruptionConditionSystem> {
         //DFProfile();
-		return DFBiocorruptionConditionSystem.Get();
-	}
+        return DFBiocorruptionConditionSystem.Get();
+    }
 
     public cb func OnLoad() {
         //DFProfile();
@@ -188,8 +188,8 @@ class DFBiocorruptionConditionSystemEventListener extends DFConditionSystemEvent
 
     private cb func OnAddictionValueChangedEvent(event: ref<DFAddictionValueChangedEvent>) {
         //DFProfile();
-		this.GetSystemInstance().OnAddictionValueChanged(event.GetData());
-	}
+        this.GetSystemInstance().OnAddictionValueChanged(event.GetData());
+    }
 
     private cb func OnPlayerStateServiceAddictionTreatmentEffectAppliedOrRemovedEvent(event: ref<PlayerStateServiceAddictionTreatmentEffectAppliedOrRemovedEvent>) {
         //DFProfile();
@@ -225,8 +225,8 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     private let NicotineAddictionSystem: ref<DFNicotineAddictionSystem>;
     private let NarcoticAddictionSystem: ref<DFNarcoticAddictionSystem>;
 
-	public let requiredBuildupForEuphoriaPerBiocorruptionLevel: array<Uint32>;
-	private let euphoriaPerBiocorruptionLevel: array<Float>;
+    public let requiredBuildupForEuphoriaPerBiocorruptionLevel: array<Uint32>;
+    private let euphoriaPerBiocorruptionLevel: array<Float>;
     public let crashStacksAfterEuphoriaPerBiocorruptionLevel: array<Uint32>;
     public let durationUntilRestlessPerBiocorruptionLevelInGameTimeSeconds: array<Float>;
 
@@ -236,14 +236,14 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFBiocorruptionConditionSystem> {
         //DFProfile();
-		let instance: ref<DFBiocorruptionConditionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFBiocorruptionConditionSystem>()) as DFBiocorruptionConditionSystem;
-		return instance;
-	}
+        let instance: ref<DFBiocorruptionConditionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFBiocorruptionConditionSystem>()) as DFBiocorruptionConditionSystem;
+        return instance;
+    }
 
     public final static func Get() -> ref<DFBiocorruptionConditionSystem> {
         //DFProfile();
         return DFBiocorruptionConditionSystem.GetInstance(GetGameInstance());
-	}
+    }
 
     //
     //  DFSystem Required Methods
@@ -315,7 +315,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         this.factListenerOnShowCrashTutorialActionFactSet = 0u;
     }
 
-	public func SetupData() -> Void {
+    public func SetupData() -> Void {
         //DFProfile();
         if Equals(this.player.GetResolvedGenderName(), n"Female") {
             this.conditionStatusEffects = [
@@ -334,12 +334,12 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         }
 
         this.euphoriaPerBiocorruptionLevel = [
-			0.0,
-			20.0,
-			30.0,
-			40.0,
-			50.0
-		];
+            0.0,
+            20.0,
+            30.0,
+            40.0,
+            50.0
+        ];
 
         this.crashStacksAfterEuphoriaPerBiocorruptionLevel = [
             0u,
@@ -349,13 +349,13 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             10u
         ];
 
-		this.requiredBuildupForEuphoriaPerBiocorruptionLevel = [
-			99u,
-			5u,
-			7u,
-			9u,
-			11u
-		];
+        this.requiredBuildupForEuphoriaPerBiocorruptionLevel = [
+            99u,
+            5u,
+            7u,
+            9u,
+            11u
+        ];
 
         this.durationUntilRestlessPerBiocorruptionLevelInGameTimeSeconds = [
             0.0,
@@ -381,9 +381,9 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     public func DoPostSuspendActions() -> Void {
-		//DFProfile();
-		super.DoPostSuspendActions();
-		this.RemoveEuphoriaIfApplied();
+        //DFProfile();
+        super.DoPostSuspendActions();
+        this.RemoveEuphoriaIfApplied();
         this.remainingCrashStackDurationInGameTimeSeconds = 0.0;
         this.lastKnownCrashStackCount = 0u;
         this.RefreshCrashStatusEffectAndUpdateLimit();
@@ -393,36 +393,36 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         this.PlayerStateService.SwitchManagedEffectModeOfType(DFManagedEffectMode.Timed, DFManagedEffectType.Narcotic);
 
         this.UpdateUIDescriptions();
-	}
+    }
 
-	public func DoPostResumeActions() -> Void {
-		//DFProfile();
-		super.DoPostResumeActions();
+    public func DoPostResumeActions() -> Void {
+        //DFProfile();
+        super.DoPostResumeActions();
         // We need to "catch up" on Condition progress based on current Addiction amount.
         let evt: DFAddictionValueChangedEventDatum;
         this.OnAddictionValueChanged(evt);
 
         this.RegisterBiocorruptionDurationUpdateCallback();
-		this.RefreshEuphoria();
+        this.RefreshEuphoria();
         this.RefreshCrashStatusEffectAndUpdateLimit();
         this.RefreshRestlessStatusEffect();
         this.UpdateUIDescriptions();
-	}
+    }
 
     public func OnTimeSkipStart() -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipStart");
+        DFLog(this, "OnTimeSkipStart");
 
-		this.UnregisterBiocorruptionDurationUpdateCallback();
+        this.UnregisterBiocorruptionDurationUpdateCallback();
     }
 
     public func OnTimeSkipCancelled() -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipCancelled");
+        DFLog(this, "OnTimeSkipCancelled");
 
-		this.RegisterBiocorruptionDurationUpdateCallback();
+        this.RegisterBiocorruptionDurationUpdateCallback();
     }
 
     public func OnTimeSkipBegin() -> Void {}
@@ -432,11 +432,11 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         super.OnTimeSkipFinished(data);
 
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipFinished");
+        DFLog(this, "OnTimeSkipFinished");
 
         this.RegisterBiocorruptionDurationUpdateCallback();
 
-		/*if this.GameStateService.IsValidGameState(this, true) {
+        /*if this.GameStateService.IsValidGameState(this, true) {
             if NotEquals(data.timeSkipType, DFTimeSkipType.Blackout) {
                 this.OnBiocorruptionDurationUpdateFromTimeskip(data.targetBiocorruptionValues);
             }
@@ -463,18 +463,18 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
     private final func DoSecondaryConditionCure() -> Void {
         //DFProfile();
-		return;
-	}
+        return;
+    }
 
     private final func GetTutorialTitleKey() -> CName {
         //DFProfile();
-		return n"DarkFutureTutorialBiocorruptionTitle";
-	}
+        return n"DarkFutureTutorialBiocorruptionTitle";
+    }
 
-	private final func GetTutorialMessageKey() -> CName {
+    private final func GetTutorialMessageKey() -> CName {
         //DFProfile();
-		return n"DarkFutureTutorialBiocorruption";
-	}
+        return n"DarkFutureTutorialBiocorruption";
+    }
 
     private final func GetConditionCureItemAmountRestored() -> Float {
         //DFProfile();
@@ -542,30 +542,30 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
     private final func GetConditionStatusEffectTag() -> CName {
         //DFProfile();
-		return n"DarkFutureConditionBiocorruption";
-	}
+        return n"DarkFutureConditionBiocorruption";
+    }
 
     private final func ShouldRepeatFX() -> Bool {
         //DFProfile();
-		// Not used.
+        // Not used.
         return false;
-	}
+    }
 
     public final func OnConditionRepeatFX() -> Void {
         //DFProfile();
-		// Not used.
+        // Not used.
         return;
-	}
+    }
 
     public final func GetConditionProgressionNotificationType() -> CName {
         //DFProfile();
-		return n"DarkFutureBiocorruption";
-	}
+        return n"DarkFutureBiocorruption";
+    }
 
     public final func GetConditionProgressionNotificationTitleKey() -> CName {
         //DFProfile();
-		return n"DarkFutureConditionBiocorruption";
-	}
+        return n"DarkFutureConditionBiocorruption";
+    }
 
     public final func GetHUDSegmentedIndicatorSegmentType() -> DFHUDSegmentedIndicatorSegmentType {
         //DFProfile();
@@ -622,7 +622,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
     // Addiction Progress Accumulator Event
     //
-	public final func OnAddictionValueChanged(evt: DFAddictionValueChangedEventDatum) -> Void {
+    public final func OnAddictionValueChanged(evt: DFAddictionValueChangedEventDatum) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
 
@@ -749,7 +749,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
             this.RefreshConditionStatusEffects();
         }
-	}
+    }
 
     public final func OnAddictionTreatmentEffectAppliedOrRemoved() -> Void {
         //DFProfile();
@@ -799,15 +799,15 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     public final func GetIsCrashed() -> Bool {
         //DFProfile();
         // We are Crashed when we have stacks of the Crash status and we don't have Euphoria.
-		return this.lastKnownCrashStackCount > 0u && this.NerveSystem.GetOverchargeValue() == 0.0;
-	}
+        return this.lastKnownCrashStackCount > 0u && this.NerveSystem.GetOverchargeValue() == 0.0;
+    }
 
     public final func RefreshEuphoria() -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
 
-		let biocorruptionLevel: Uint32 = this.GetConditionLevel();
-		let biocorruptionLevelInt: Int32 = Cast<Int32>(biocorruptionLevel);
+        let biocorruptionLevel: Uint32 = this.GetConditionLevel();
+        let biocorruptionLevelInt: Int32 = Cast<Int32>(biocorruptionLevel);
         let totalBuildUpStackCount: Uint32 = this.PlayerStateService.GetAllManagedEffectEuphoriaActiveStacks();
         let stacksRequiredForEuphoria: Uint32 = this.requiredBuildupForEuphoriaPerBiocorruptionLevel[biocorruptionLevelInt];
 
@@ -815,15 +815,15 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         // EUPHORIA INTERRUPTS
         //
         // If the Addiction Treatment effect is applied, clear any Euphoria and don't continue.
-		if this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds() > 0.0 {
-			DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: REMOVING: Addiction Treatment applied");
-			this.RemoveEuphoriaIfApplied();
-			return;
-		}
+        if this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds() > 0.0 {
+            DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: REMOVING: Addiction Treatment applied");
+            this.RemoveEuphoriaIfApplied();
+            return;
+        }
 
-		// If suffering from Crash and we should not apply Euphoria to clear it,
+        // If suffering from Crash and we should not apply Euphoria to clear it,
         // clear any Euphoria and don't continue.
-		if this.GetIsCrashed() && (totalBuildUpStackCount < stacksRequiredForEuphoria) {
+        if this.GetIsCrashed() && (totalBuildUpStackCount < stacksRequiredForEuphoria) {
             // Is there a contextually delayed Nerve change from Timeskip? If so, don't change anything,
             // this update will apply the precomputed Crash changes and clear Euphoria.
             for change in this.NerveSystem.GetQueuedContextuallyDelayedNeedValueChanges() {
@@ -834,30 +834,30 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             }
             
             DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: REMOVING: Suffering from Crash");
-			this.RemoveEuphoriaIfApplied();
-			return;
-		}
+            this.RemoveEuphoriaIfApplied();
+            return;
+        }
 
         //
         // ALREADY EUPHORIC
         //
-		// If already overcharged, don't continue.
-		if this.GetHasEuphoria() {
-			DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: RETURNING: Already overcharged!");
-			// Make sure the player has the Euphoria status.
-			if !StatusEffectSystem.ObjectHasStatusEffect(this.player, this.GetEuphoriaEffectID()) {
-				DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Adding Euphoria status.");
-				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureEuphoria");
-				StatusEffectHelper.ApplyStatusEffect(this.player, this.GetEuphoriaEffectID());
-			}
-			return;
-		} else {
-			// If we have the Euphoria status, we should not; remove it.
-			if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureEuphoria") {
-				DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Removing Euphoria status.");
-				StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureEuphoria");
-			}
-		}
+        // If already overcharged, don't continue.
+        if this.GetHasEuphoria() {
+            DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: RETURNING: Already overcharged!");
+            // Make sure the player has the Euphoria status.
+            if !StatusEffectSystem.ObjectHasStatusEffect(this.player, this.GetEuphoriaEffectID()) {
+                DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Adding Euphoria status.");
+                StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureEuphoria");
+                StatusEffectHelper.ApplyStatusEffect(this.player, this.GetEuphoriaEffectID());
+            }
+            return;
+        } else {
+            // If we have the Euphoria status, we should not; remove it.
+            if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureEuphoria") {
+                DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Removing Euphoria status.");
+                StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureEuphoria");
+            }
+        }
 
         //
         // Euphoria or Crash Eval Valid: Not Interrupted or Already Euphoric
@@ -943,14 +943,14 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             }
         }
 
-		DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria stack count: " + ToString(totalBuildUpStackCount));
-		DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria overcharge value: " + ToString(this.NerveSystem.needValueOvercharge));
-	}
+        DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria stack count: " + ToString(totalBuildUpStackCount));
+        DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria overcharge value: " + ToString(this.NerveSystem.needValueOvercharge));
+    }
 
-	public final func RemoveEuphoriaIfApplied() -> Void {
-		//DFProfile();
-		// Remove any overcharge and notify the UI.
-		if this.GetHasEuphoria() {
+    public final func RemoveEuphoriaIfApplied() -> Void {
+        //DFProfile();
+        // Remove any overcharge and notify the UI.
+        if this.GetHasEuphoria() {
             DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Clearing Nerve overcharge.");
             let nerveToRemove: Float = this.NerveSystem.needValueOvercharge + 0.1;
             let changeProps: DFChangeNeedValueProps;
@@ -959,19 +959,19 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
             uiFlags.momentaryDisplayIgnoresSceneTier = true;
             changeProps.uiFlags = uiFlags;
             this.NerveSystem.ChangeNeedValue(-nerveToRemove, changeProps);
-		}
+        }
 
-		if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureEuphoria") {
-			DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Removing Euphoria status.");
-			StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureEuphoria");
-		}
-	}
+        if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureEuphoria") {
+            DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Removing Euphoria status.");
+            StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureEuphoria");
+        }
+    }
 
-	public final func EuphoriaBlockedReason() -> DFEuphoriaBlockedReason {
-		//DFProfile();
-		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
-			return DFEuphoriaBlockedReason.AddictionTreatment;
-		
+    public final func EuphoriaBlockedReason() -> DFEuphoriaBlockedReason {
+        //DFProfile();
+        if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
+            return DFEuphoriaBlockedReason.AddictionTreatment;
+        
         } else if this.HumanityLossSystem.GetLastKnownCyberpsychosisStackCount() > 0u {
             return DFEuphoriaBlockedReason.Cyberpsychosis;
         
@@ -983,8 +983,8 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         }
 
 
-		return DFEuphoriaBlockedReason.None;
-	}
+        return DFEuphoriaBlockedReason.None;
+    }
 
     private final func GetEuphoriaEffectID() -> TweakDBID {
         //DFProfile();
@@ -997,7 +997,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         } else if !this.Settings.humanityLossConditionEnabled && !this.Settings.humanityLossCyberpsychosisEnabled {
             return t"DarkFutureStatusEffect.Euphoria_NoHumanityLoss";
         }
-	}
+    }
 
     private final func GetRestlessEffectID() -> TweakDBID {
         //DFProfile();
@@ -1062,8 +1062,8 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
         let props: DFChangeNeedValueProps;
         props.delayPercent = 1.0;
         if NotEquals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) {
-			props.skipSevereNeedMessage = true;
-		}
+            props.skipSevereNeedMessage = true;
+        }
         
         this.EnergySystem.ChangeNeedValue(energyPenalty, props);
         this.HydrationSystem.ForceNeedMaxValueUpdate();
@@ -1222,12 +1222,12 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     private final func RegisterBiocorruptionDurationUpdateCallback() -> Void {
         //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, BiocorruptionDurationUpdateDelayCallback.Create(), this.biocorruptionDurationUpdateDelayID, this.biocorruptionDurationUpdateIntervalInGameTimeSeconds / this.Settings.timescale);
-	}
+    }
 
-	private final func UnregisterBiocorruptionDurationUpdateCallback() -> Void {
+    private final func UnregisterBiocorruptionDurationUpdateCallback() -> Void {
         //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.biocorruptionDurationUpdateDelayID);
-	}
+    }
 
     public final func OnBiocorruptionDurationUpdate(gameTimeSecondsToReduce: Float) -> Void {
         //DFProfile();

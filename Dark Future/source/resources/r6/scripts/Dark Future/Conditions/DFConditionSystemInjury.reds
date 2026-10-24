@@ -34,10 +34,10 @@ import DarkFuture.UI.{
 
 
 class DFInjuryConditionSystemEventListener extends DFConditionSystemEventListener {
-	private func GetSystemInstance() -> wref<DFInjuryConditionSystem> {
+    private func GetSystemInstance() -> wref<DFInjuryConditionSystem> {
         //DFProfile();
-		return DFInjuryConditionSystem.Get();
-	}
+        return DFInjuryConditionSystem.Get();
+    }
 
     public cb func OnLoad() {
         //DFProfile();
@@ -59,14 +59,14 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFInjuryConditionSystem> {
         //DFProfile();
-		let instance: ref<DFInjuryConditionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFInjuryConditionSystem>()) as DFInjuryConditionSystem;
-		return instance;
-	}
+        let instance: ref<DFInjuryConditionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFInjuryConditionSystem>()) as DFInjuryConditionSystem;
+        return instance;
+    }
 
     public final static func Get() -> ref<DFInjuryConditionSystem> {
         //DFProfile();
         return DFInjuryConditionSystem.GetInstance(GetGameInstance());
-	}
+    }
 
     //
     //  DFSystem Required Methods
@@ -92,23 +92,23 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
         //DFProfile();
         super.GetSystems();
         
-		this.StatsSystem = GameInstance.GetStatsSystem(GetGameInstance());
+        this.StatsSystem = GameInstance.GetStatsSystem(GetGameInstance());
     }
 
-	public func SetupData() -> Void {
+    public func SetupData() -> Void {
         //DFProfile();
-		this.conditionStatusEffects = [
-			t"DarkFutureStatusEffect.Injury01",
-			t"DarkFutureStatusEffect.Injury02",
-			t"DarkFutureStatusEffect.Injury03",
-			t"DarkFutureStatusEffect.Injury04"
-		];
+        this.conditionStatusEffects = [
+            t"DarkFutureStatusEffect.Injury01",
+            t"DarkFutureStatusEffect.Injury02",
+            t"DarkFutureStatusEffect.Injury03",
+            t"DarkFutureStatusEffect.Injury04"
+        ];
     }
 
     //
     //  Required Overrides
     //
-	public final func OnDamageReceivedEvent(evt: ref<gameDamageReceivedEvent>) -> Void {
+    public final func OnDamageReceivedEvent(evt: ref<gameDamageReceivedEvent>) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
 
@@ -120,7 +120,7 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
 
             this.AccumulateHealthLoss(healthLostPct);
         }
-	}
+    }
 
     public final func GetMaxConditionLevel() -> Uint32 {
         //DFProfile();
@@ -139,18 +139,18 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
 
     private final func DoSecondaryConditionCure() -> Void {
         //DFProfile();
-		return;
-	}
+        return;
+    }
 
     private final func GetTutorialTitleKey() -> CName {
         //DFProfile();
-		return n"DarkFutureTutorialInjuryTitle";
-	}
+        return n"DarkFutureTutorialInjuryTitle";
+    }
 
-	private final func GetTutorialMessageKey() -> CName {
+    private final func GetTutorialMessageKey() -> CName {
         //DFProfile();
-		return n"DarkFutureTutorialInjury";
-	}
+        return n"DarkFutureTutorialInjury";
+    }
 
     private final func GetConditionCureItemAmountRestored() -> Float {
         //DFProfile();
@@ -213,30 +213,30 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
 
     private final func GetConditionStatusEffectTag() -> CName {
         //DFProfile();
-		return n"DarkFutureConditionInjury";
-	}
+        return n"DarkFutureConditionInjury";
+    }
 
     private final func ShouldRepeatFX() -> Bool {
         //DFProfile();
-		// Not used.
+        // Not used.
         return false;
-	}
+    }
 
     public final func OnConditionRepeatFX() -> Void {
         //DFProfile();
-		// Not used.
+        // Not used.
         return;
-	}
+    }
 
     public final func GetConditionProgressionNotificationType() -> CName {
         //DFProfile();
-		return n"DarkFutureInjury";
-	}
+        return n"DarkFutureInjury";
+    }
 
     public final func GetConditionProgressionNotificationTitleKey() -> CName {
         //DFProfile();
-		return n"DarkFutureConditionInjury";
-	}
+        return n"DarkFutureConditionInjury";
+    }
 
     public final func GetHUDSegmentedIndicatorSegmentType() -> DFHUDSegmentedIndicatorSegmentType {
         //DFProfile();

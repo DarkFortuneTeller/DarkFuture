@@ -213,12 +213,12 @@ public final func SummonActiveVehicle(force: Bool) -> Void {
 @wrapMethod(TakeOverControlSystem)
 public final static func CreateInputHint(context: GameInstance, isVisible: Bool) -> Void {
     //DFProfile();
-	wrappedMethod(context, isVisible);
+    wrappedMethod(context, isVisible);
 
-	let VehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
-	if IsSystemEnabledAndRunning(VehicleSummonSystem) {
-		VehicleSummonSystem.OnTakeControlOfCameraUpdate(isVisible);
-	}
+    let VehicleSummonSystem: ref<DFVehicleSummonSystem> = DFVehicleSummonSystem.Get();
+    if IsSystemEnabledAndRunning(VehicleSummonSystem) {
+        VehicleSummonSystem.OnTakeControlOfCameraUpdate(isVisible);
+    }
 }
 
 // HotkeysWidgetController
@@ -315,45 +315,45 @@ protected func ResolveState() -> Void {
 // Registration
 //
 public class VehicleSummonCooldownDelayCallback extends DFDelayCallback {
-	public let DFVehicleSummonSystem: wref<DFVehicleSummonSystem>;
+    public let DFVehicleSummonSystem: wref<DFVehicleSummonSystem>;
 
-	public static func Create(DFVehicleSummonSystem: wref<DFVehicleSummonSystem>) -> ref<DFDelayCallback> {
+    public static func Create(DFVehicleSummonSystem: wref<DFVehicleSummonSystem>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self: ref<VehicleSummonCooldownDelayCallback> = new VehicleSummonCooldownDelayCallback();
-		self.DFVehicleSummonSystem = DFVehicleSummonSystem;
-		return self;
-	}
+        let self: ref<VehicleSummonCooldownDelayCallback> = new VehicleSummonCooldownDelayCallback();
+        self.DFVehicleSummonSystem = DFVehicleSummonSystem;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		this.DFVehicleSummonSystem.summonCreditCooldownDelayID = GetInvalidDelayID();
-	}
+        this.DFVehicleSummonSystem.summonCreditCooldownDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		this.DFVehicleSummonSystem.OnSummonCooldownCallback();
-	}
+        this.DFVehicleSummonSystem.OnSummonCooldownCallback();
+    }
 }
 
 public class VehicleSummonCreditChangeDelayCallback extends DFDelayCallback {
-	public let DFVehicleSummonSystem: wref<DFVehicleSummonSystem>;
+    public let DFVehicleSummonSystem: wref<DFVehicleSummonSystem>;
 
-	public static func Create(DFVehicleSummonSystem: wref<DFVehicleSummonSystem>) -> ref<DFDelayCallback> {
+    public static func Create(DFVehicleSummonSystem: wref<DFVehicleSummonSystem>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self: ref<VehicleSummonCreditChangeDelayCallback> = new VehicleSummonCreditChangeDelayCallback();
-		self.DFVehicleSummonSystem = DFVehicleSummonSystem;
-		return self;
-	}
+        let self: ref<VehicleSummonCreditChangeDelayCallback> = new VehicleSummonCreditChangeDelayCallback();
+        self.DFVehicleSummonSystem = DFVehicleSummonSystem;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		this.DFVehicleSummonSystem.creditChangeDebounceDelayID = GetInvalidDelayID();
-	}
+        this.DFVehicleSummonSystem.creditChangeDebounceDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		this.DFVehicleSummonSystem.OnVehicleSummonCreditChangeDelayCallback();
-	}
+        this.DFVehicleSummonSystem.OnVehicleSummonCreditChangeDelayCallback();
+    }
 }
 
 //
@@ -362,8 +362,8 @@ public class VehicleSummonCreditChangeDelayCallback extends DFDelayCallback {
 class DFVehicleSummonSystemEventListener extends DFSystemEventListener {
     private func GetSystemInstance() -> wref<DFVehicleSummonSystem> {
         //DFProfile();
-		return DFVehicleSummonSystem.Get();
-	}
+        return DFVehicleSummonSystem.Get();
+    }
 }
 
 public final class DFVehicleSummonSystem extends DFSystem {
@@ -392,14 +392,14 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFVehicleSummonSystem> {
         //DFProfile();
-		let instance: ref<DFVehicleSummonSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFVehicleSummonSystem>()) as DFVehicleSummonSystem;
-		return instance;
-	}
+        let instance: ref<DFVehicleSummonSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFVehicleSummonSystem>()) as DFVehicleSummonSystem;
+        return instance;
+    }
 
     public final static func Get() -> ref<DFVehicleSummonSystem> {
         //DFProfile();
         return DFVehicleSummonSystem.GetInstance(GetGameInstance());
-	}
+    }
 
     //
     //  Required Overrides
@@ -414,8 +414,8 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
     private func SetupDebugLogging() -> Void {
         //DFProfile();
-		this.debugEnabled = false;
-	}
+        this.debugEnabled = false;
+    }
 
     public func SetupData() -> Void {
         //DFProfile();
@@ -428,7 +428,7 @@ public final class DFVehicleSummonSystem extends DFSystem {
         this.summonCreditCooldownDurationGameTimeSeconds = HoursToGameTimeSeconds(this.Settings.hoursPerSummonCredit);
     }
 
-    public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {	
+    public final func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void { 
         //DFProfile();
         this.UpdateWidgetVisibility();
     }
@@ -507,10 +507,10 @@ public final class DFVehicleSummonSystem extends DFSystem {
     //
     public final func OnTakeControlOfCameraUpdate(hasControl: Bool) -> Void {
         //DFProfile();
-		// Player took or released control of a camera, turret, or the Sniper's Nest.
-		this.UIBlockedDueToCameraControl = hasControl;
-		this.UpdateWidgetVisibility();
-	}
+        // Player took or released control of a camera, turret, or the Sniper's Nest.
+        this.UIBlockedDueToCameraControl = hasControl;
+        this.UpdateWidgetVisibility();
+    }
 
     public final func UpdateWidgetVisibility() -> Void {
         //DFProfile();
@@ -601,12 +601,12 @@ public final class DFVehicleSummonSystem extends DFSystem {
         // Play a composite sound effect and blink the HUD.
 
         let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
-		evt.soundName = n"ui_grenade_recharged";
-		this.player.QueueEvent(evt);
+        evt.soundName = n"ui_grenade_recharged";
+        this.player.QueueEvent(evt);
         
         evt = new SoundPlayEvent();
-		evt.soundName = n"ui_jingle_vehicle_arrive";
-		this.player.QueueEvent(evt);
+        evt.soundName = n"ui_jingle_vehicle_arrive";
+        this.player.QueueEvent(evt);
 
         let dpadAction: ref<DPADActionPerformed>;
         dpadAction = new DPADActionPerformed();
@@ -665,19 +665,19 @@ public final class DFVehicleSummonSystem extends DFSystem {
 
     public final func OnTimeSkipStart() -> Void {
         //DFProfile();
-		if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipStart");
+        if DFRunGuard(this) { return; }
+        DFLog(this, "OnTimeSkipStart");
 
-		this.UnregisterForSummonCooldown();
-	}
+        this.UnregisterForSummonCooldown();
+    }
 
-	public final func OnTimeSkipCancelled() -> Void {
+    public final func OnTimeSkipCancelled() -> Void {
         //DFProfile();
-		if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipStart");
+        if DFRunGuard(this) { return; }
+        DFLog(this, "OnTimeSkipStart");
 
-		this.RegisterForSummonCooldown();
-	}
+        this.RegisterForSummonCooldown();
+    }
 
     public func OnTimeSkipBegin() -> Void {}
 

@@ -140,7 +140,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
     let humanityLossCondition: ref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
 
     if IsSystemEnabledAndRunning(nerveSystem) && IsSystemEnabledAndRunning(humanityLossCondition) {
-		let effectID: TweakDBID = evt.staticData.GetID();
+        let effectID: TweakDBID = evt.staticData.GetID();
         if Equals(effectID, t"DarkFutureStatusEffect.CyberpsychosisApplicationDone") {
             
             let cyberpsychosisStackCountApplied: Uint32 = StatusEffectHelper.GetStatusEffectByID(this, t"DarkFutureStatusEffect.Cyberpsychosis").GetStackCount();
@@ -203,128 +203,128 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
 }
 
 public class HumanityLossDurationUpdateDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new HumanityLossDurationUpdateDelayCallback();
-	}
+        return new HumanityLossDurationUpdateDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFHumanityLossConditionSystem.Get().humanityLossDurationUpdateDelayID = GetInvalidDelayID();
-	}
+        DFHumanityLossConditionSystem.Get().humanityLossDurationUpdateDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFHumanityLossConditionSystem.Get().OnHumanityLossDurationUpdate(DFHumanityLossConditionSystem.Get().GetHumanityLossDurationUpdateIntervalInGameTimeSeconds());
-	}
+        DFHumanityLossConditionSystem.Get().OnHumanityLossDurationUpdate(DFHumanityLossConditionSystem.Get().GetHumanityLossDurationUpdateIntervalInGameTimeSeconds());
+    }
 }
 
 public class RelicMalfunctionHumanityLossDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new RelicMalfunctionHumanityLossDelayCallback();
-	}
+        return new RelicMalfunctionHumanityLossDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFHumanityLossConditionSystem.Get().relicMalfunctionHumanityLossDelayID = GetInvalidDelayID();
-	}
+        DFHumanityLossConditionSystem.Get().relicMalfunctionHumanityLossDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFHumanityLossConditionSystem.Get().OnRelicMalfunction();
-	}
+        DFHumanityLossConditionSystem.Get().OnRelicMalfunction();
+    }
 }
 
 public class RadioTrackRecheckHumanityLossDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new RadioTrackRecheckHumanityLossDelayCallback();
-	}
+        return new RadioTrackRecheckHumanityLossDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFHumanityLossConditionSystem.Get().radioTrackRecheckDelayID = GetInvalidDelayID();
-	}
+        DFHumanityLossConditionSystem.Get().radioTrackRecheckDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		//DFHumanityLossConditionSystem.Get().OnRadioTrackRecheck();
-	}
+        //DFHumanityLossConditionSystem.Get().OnRadioTrackRecheck();
+    }
 }
 
 public class DelayedUnsetRadioRestrictionOverride extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new DelayedUnsetRadioRestrictionOverride();
-	}
+        return new DelayedUnsetRadioRestrictionOverride();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFHumanityLossConditionSystem.Get().delayedUnsetRadioRestrictionOverrideDelayID = GetInvalidDelayID();
-	}
+        DFHumanityLossConditionSystem.Get().delayedUnsetRadioRestrictionOverrideDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFHumanityLossConditionSystem.Get().OnDelayedUnsetRadioRestrictionOverride();
-	}
+        DFHumanityLossConditionSystem.Get().OnDelayedUnsetRadioRestrictionOverride();
+    }
 }
 
 public class CyberpsychosisFXStopDelayCallback extends DFDelayCallback {
-	public let HumanityLossSystem: ref<DFHumanityLossConditionSystem>;
+    public let HumanityLossSystem: ref<DFHumanityLossConditionSystem>;
 
-	public static func Create(humanityLossSystem: ref<DFHumanityLossConditionSystem>) -> ref<DFDelayCallback> {
+    public static func Create(humanityLossSystem: ref<DFHumanityLossConditionSystem>) -> ref<DFDelayCallback> {
         //DFProfile();
-		let self: ref<CyberpsychosisFXStopDelayCallback> = new CyberpsychosisFXStopDelayCallback();
-		self.HumanityLossSystem = humanityLossSystem;
-		return self;
-	}
+        let self: ref<CyberpsychosisFXStopDelayCallback> = new CyberpsychosisFXStopDelayCallback();
+        self.HumanityLossSystem = humanityLossSystem;
+        return self;
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		this.HumanityLossSystem.cyberpsychosisFXStopDelayID = GetInvalidDelayID();
-	}
+        this.HumanityLossSystem.cyberpsychosisFXStopDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		this.HumanityLossSystem.OnCyberpsychosisFXStop();
-	}
+        this.HumanityLossSystem.OnCyberpsychosisFXStop();
+    }
 }
 
 public final class DFCyberpsychosisVFXStopCallback extends DFNotificationCallback {
     let delay: Float;
 
-	public static func Create(delay: Float) -> ref<DFCyberpsychosisVFXStopCallback> {
+    public static func Create(delay: Float) -> ref<DFCyberpsychosisVFXStopCallback> {
         //DFProfile();
         let self: ref<DFCyberpsychosisVFXStopCallback> = new DFCyberpsychosisVFXStopCallback();
         self.delay = delay;
         return self;
-	}
+    }
 
-	public final func Callback() -> Void {
+    public final func Callback() -> Void {
         //DFProfile();
-		let HumanityLossSystem: wref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
-		RegisterDFDelayCallback(HumanityLossSystem.DelaySystem, CyberpsychosisFXStopDelayCallback.Create(HumanityLossSystem), HumanityLossSystem.cyberpsychosisFXStopDelayID, this.delay);
-	}
+        let HumanityLossSystem: wref<DFHumanityLossConditionSystem> = DFHumanityLossConditionSystem.Get();
+        RegisterDFDelayCallback(HumanityLossSystem.DelaySystem, CyberpsychosisFXStopDelayCallback.Create(HumanityLossSystem), HumanityLossSystem.cyberpsychosisFXStopDelayID, this.delay);
+    }
 }
 
 class DFHumanityLossConditionSystemEventListener extends DFConditionSystemEventListener {
-	private func GetSystemInstance() -> wref<DFHumanityLossConditionSystem> {
+    private func GetSystemInstance() -> wref<DFHumanityLossConditionSystem> {
         //DFProfile();
-		return DFHumanityLossConditionSystem.Get();
-	}
+        return DFHumanityLossConditionSystem.Get();
+    }
 
     public cb func OnLoad() {
         //DFProfile();
         super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFNeedValueChangedEvent>(), this, n"OnNeedValueChangedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<DFNeedValueChangedEvent>(), this, n"OnNeedValueChangedEvent", true);
     }
 
-	private cb func OnNeedValueChangedEvent(event: ref<DFNeedValueChangedEvent>) {
+    private cb func OnNeedValueChangedEvent(event: ref<DFNeedValueChangedEvent>) {
         //DFProfile();
-		this.GetSystemInstance().OnNeedValueChanged(event.GetData());
-	}
+        this.GetSystemInstance().OnNeedValueChanged(event.GetData());
+    }
 }
 
 public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
@@ -406,14 +406,14 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFHumanityLossConditionSystem> {
         //DFProfile();
-		let instance: ref<DFHumanityLossConditionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFHumanityLossConditionSystem>()) as DFHumanityLossConditionSystem;
-		return instance;
-	}
+        let instance: ref<DFHumanityLossConditionSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFHumanityLossConditionSystem>()) as DFHumanityLossConditionSystem;
+        return instance;
+    }
 
     public final static func Get() -> ref<DFHumanityLossConditionSystem> {
         //DFProfile();
         return DFHumanityLossConditionSystem.GetInstance(GetGameInstance());
-	}
+    }
 
     //
     //  DFSystem Required Methods
@@ -436,8 +436,8 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         }
 
         if ArrayContains(changedSettings, "cyberpsychosisEffectsRepeatFrequencyInRealTimeSeconds") {
-			this.UpdateConditionRepeatFXCallback(this.ShouldRepeatFX());
-		}
+            this.UpdateConditionRepeatFXCallback(this.ShouldRepeatFX());
+        }
 
         if ArrayContains(changedSettings, "cyberpsychosisSFXEnabled") {
             this.UpdateSettingsFacts();
@@ -493,15 +493,15 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         this.BiocorruptionCondition = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
     }
 
-	public func SetupData() -> Void {
+    public func SetupData() -> Void {
         //DFProfile();
         this.conditionNerveSoftCaps = [100.0, 80.0, 60.0, 40.0, 20.0];
-		this.conditionStatusEffects = [
-			t"DarkFutureStatusEffect.HumanityLoss01",
-			t"DarkFutureStatusEffect.HumanityLoss02",
-			t"DarkFutureStatusEffect.HumanityLoss03",
-			t"DarkFutureStatusEffect.HumanityLoss04"
-		];
+        this.conditionStatusEffects = [
+            t"DarkFutureStatusEffect.HumanityLoss01",
+            t"DarkFutureStatusEffect.HumanityLoss02",
+            t"DarkFutureStatusEffect.HumanityLoss03",
+            t"DarkFutureStatusEffect.HumanityLoss04"
+        ];
         this.conditionCyberpsychosisStacksPerLevel = [0u, 25u, 50u, 75u];
         this.UpdateEdgerunnerPerkDescription();
         this.UpdateHumanityLossStatusDescriptions();
@@ -510,18 +510,18 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public func OnTimeSkipStart() -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipStart");
+        DFLog(this, "OnTimeSkipStart");
 
-		this.UnregisterHumanityLossDurationUpdateCallback();
+        this.UnregisterHumanityLossDurationUpdateCallback();
         //this.UnregisterForRadioTrackRecheck();
     }
 
     public func OnTimeSkipCancelled() -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipCancelled");
+        DFLog(this, "OnTimeSkipCancelled");
 
-		this.RegisterHumanityLossDurationUpdateCallback();
+        this.RegisterHumanityLossDurationUpdateCallback();
         this.UpdateConditionRepeatFXCallback(this.ShouldRepeatFX());
 
         /*if Equals(this.currentRadioState, DFHumanityLossRadioState.On) {
@@ -534,9 +534,9 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipFinished");
+        DFLog(this, "OnTimeSkipFinished");
 
-		this.RegisterHumanityLossDurationUpdateCallback();
+        this.RegisterHumanityLossDurationUpdateCallback();
         this.UpdateConditionRepeatFXCallback(this.ShouldRepeatFX());
 
         /*if Equals(this.currentRadioState, DFHumanityLossRadioState.On) {
@@ -611,7 +611,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         this.warningMessageListener = this.UINotificationsBlackboard.RegisterListenerVariant(this.UINotificationsBlackboardDef.WarningMessage, this, n"OnWarningMessage");
     }
 
-	private func UnregisterListeners() -> Void {
+    private func UnregisterListeners() -> Void {
         //DFProfile();
         UnregisterAllDFFactListeners(this.QuestsSystem, this.factListenerRegistry);
 
@@ -626,7 +626,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
     // Nerve Loss Accumulator Event
     //
-	public final func OnNeedValueChanged(evt: DFNeedValueChangedEventDatum) -> Void {
+    public final func OnNeedValueChanged(evt: DFNeedValueChangedEventDatum) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
 
@@ -638,7 +638,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
           evt.fromDanger {
             this.AccumulateNerveLoss(evt.change);
         }
-	}
+    }
 
     public final func GetMaxConditionLevel() -> Uint32 {
         //DFProfile();
@@ -664,17 +664,17 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
             // Wrap-up effects.
             this.TryToPlayCyberpsychosisEffectsExitFromImmunosuppressant();
         }
-	}
+    }
 
     private final func GetTutorialTitleKey() -> CName {
         //DFProfile();
-		return n"DarkFutureTutorialHumanityLossTitle";
-	}
+        return n"DarkFutureTutorialHumanityLossTitle";
+    }
 
-	private final func GetTutorialMessageKey() -> CName {
+    private final func GetTutorialMessageKey() -> CName {
         //DFProfile();
-		return n"DarkFutureTutorialHumanityLoss";
-	}
+        return n"DarkFutureTutorialHumanityLoss";
+    }
 
     private final func GetConditionCureItemAmountRestored() -> Float {
         //DFProfile();
@@ -746,35 +746,35 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
     private final func GetConditionStatusEffectTag() -> CName {
         //DFProfile();
-		return n"DarkFutureConditionHumanityLoss";
-	}
+        return n"DarkFutureConditionHumanityLoss";
+    }
 
     private final func ShouldRepeatFX() -> Bool {
         //DFProfile();
-		return this.GetCyberpsychosisStacksApplied() > 0u;
-	}
+        return this.GetCyberpsychosisStacksApplied() > 0u;
+    }
 
     public final func OnConditionRepeatFX() -> Void {
         //DFProfile();
-		// Used for Cyberpsychosis.
+        // Used for Cyberpsychosis.
         let shouldPlay: Bool = this.ShouldRepeatFX();
 
         if shouldPlay && !this.player.IsInCombat() {
             this.TryToPlayCyberpsychosisEffectsRepeatFX();
         }
 
-		this.UpdateConditionRepeatFXCallback(shouldPlay);
-	}
+        this.UpdateConditionRepeatFXCallback(shouldPlay);
+    }
 
     public final func GetConditionProgressionNotificationType() -> CName {
         //DFProfile();
-		return n"DarkFutureHumanityLoss";
-	}
+        return n"DarkFutureHumanityLoss";
+    }
 
     public final func GetConditionProgressionNotificationTitleKey() -> CName {
         //DFProfile();
-		return n"DarkFutureConditionHumanityLoss";
-	}
+        return n"DarkFutureConditionHumanityLoss";
+    }
 
     public final func GetHUDSegmentedIndicatorSegmentType() -> DFHUDSegmentedIndicatorSegmentType {
         //DFProfile();
@@ -792,19 +792,19 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
         super.OnItemConsumed(itemRecord, animateUI);
 
         let itemTags: array<CName> = itemRecord.Tags();
-		if ArrayContains(itemTags, n"DarkFutureConsumableEndotrisineDrug") {
+        if ArrayContains(itemTags, n"DarkFutureConsumableEndotrisineDrug") {
             this.OnEndotrisineDrugConsumed();
         }
-	}
+    }
 
     public final func OnEndotrisineDrugConsumed() -> Void {
         //DFProfile();
-		// Set the duration.
-		this.remainingEndotrisineEffectDurationInGameTimeSeconds = HoursToGameTimeSeconds(this.endotrisineEffectDurationInGameHours);
+        // Set the duration.
+        this.remainingEndotrisineEffectDurationInGameTimeSeconds = HoursToGameTimeSeconds(this.endotrisineEffectDurationInGameHours);
 
-		// Refresh player-facing status effects.
-		this.RefreshEndotrisineStatusEffect();
-	}
+        // Refresh player-facing status effects.
+        this.RefreshEndotrisineStatusEffect();
+    }
 
     public final func OnActivePlayerVehicleSpeedValueChanged(speedValueInMph: Int32, lastSpeedValueInMph: Int32) -> Void {
         //DFProfile();
@@ -894,7 +894,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
     private func RefreshEndotrisineStatusEffect() -> Void {
         //DFProfile();
-		DFLog(this, "RefreshEndotrisineStatusEffect");
+        DFLog(this, "RefreshEndotrisineStatusEffect");
         let shouldApply: Bool = false;
 
         if this.GameStateService.IsValidGameState(this, true) {
@@ -921,9 +921,9 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
     private final func UpdateSettingsFacts() -> Void {
         //DFProfile();
-		let factValue: Int32 = this.Settings.cyberpsychosisSFXEnabled ? 1 : 0;
-		this.QuestsSystem.SetFact(n"df_fact_setting_cyberpsychosis_sfx_enabled", factValue);
-	}
+        let factValue: Int32 = this.Settings.cyberpsychosisSFXEnabled ? 1 : 0;
+        this.QuestsSystem.SetFact(n"df_fact_setting_cyberpsychosis_sfx_enabled", factValue);
+    }
 
     private final func UpdateEdgerunnerPerkDescription() -> Void {
         //DFProfile();
@@ -1013,7 +1013,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 
     public final func OnDangerStateChanged(dangerState: DFPlayerDangerState) -> Void {
         //DFProfile();
-		if DFRunGuard(this, true) { return; }
+        if DFRunGuard(this, true) { return; }
         if !this.GameStateService.IsValidGameState(this) { return; }
 
         if this.Settings.humanityLossCyberpsychosisEnabled {
@@ -1365,7 +1365,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     //
     //  Callback Handlers
     //
-	public final func OnCyberpsychosisFXStop() {
+    public final func OnCyberpsychosisFXStop() {
         //DFProfile();
         GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"blackout_organic");
         GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"perk_edgerunner");
@@ -1379,12 +1379,12 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     private final func RegisterHumanityLossDurationUpdateCallback() -> Void {
         //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, HumanityLossDurationUpdateDelayCallback.Create(), this.humanityLossDurationUpdateDelayID, this.humanityLossDurationUpdateIntervalInGameTimeSeconds / this.Settings.timescale);
-	}
+    }
 
-	private final func UnregisterHumanityLossDurationUpdateCallback() -> Void {
+    private final func UnregisterHumanityLossDurationUpdateCallback() -> Void {
         //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.humanityLossDurationUpdateDelayID);
-	}
+    }
 
     // See: DFBaseGameUIOverrides
     public final func RegisterForRelicMalfunctionHumanityLoss() -> Void {
@@ -1395,7 +1395,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     private final func UnregisterForRelicMalfunctionHumanityLoss() -> Void {
         //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.relicMalfunctionHumanityLossDelayID);
-	}
+    }
 
     private final func RegisterForRadioTrackRecheck(opt firstIteration: Bool) -> Void {
         //DFProfile();
@@ -1611,28 +1611,28 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     private final func CheckShouldShowStreetKidLifePathHumanityLossRestoreChoice() -> Void {
         //DFProfile();
         let playerControlledObject: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerControlledGameObject();
-		let lifePath: gamedataLifePath = PlayerDevelopmentSystem.GetInstance(playerControlledObject).GetLifePath(playerControlledObject);
+        let lifePath: gamedataLifePath = PlayerDevelopmentSystem.GetInstance(playerControlledObject).GetLifePath(playerControlledObject);
 
-		// Street Kid
-		if Equals(lifePath, gamedataLifePath.StreetKid) {
+        // Street Kid
+        if Equals(lifePath, gamedataLifePath.StreetKid) {
             this.TryToDisplayHumanityLossRestorationChoice(DFHumanityLossRestorationActivityType.LifePathStreetKid);
-		}
+        }
     }
 
-	public final func CheckShouldShowNomadLifePathHumanityLossRestoreChoice() -> Void {
-		//DFProfile();
-		let playerControlledObject: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerControlledGameObject();
-		let lifePath: gamedataLifePath = PlayerDevelopmentSystem.GetInstance(playerControlledObject).GetLifePath(playerControlledObject);
+    public final func CheckShouldShowNomadLifePathHumanityLossRestoreChoice() -> Void {
+        //DFProfile();
+        let playerControlledObject: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerControlledGameObject();
+        let lifePath: gamedataLifePath = PlayerDevelopmentSystem.GetInstance(playerControlledObject).GetLifePath(playerControlledObject);
 
-		// Nomad
-		if Equals(lifePath, gamedataLifePath.Nomad) {
-			// Badlands
-			let thisDistrict: String = this.player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord().ParentDistrict().EnumName();
-			if Equals(thisDistrict, "Badlands") || Equals(thisDistrict, "NorthBadlands") || Equals(thisDistrict, "SouthBadlands") {
-				this.TryToDisplayHumanityLossRestorationChoice(DFHumanityLossRestorationActivityType.LifePathNomad);
-			}
-		}
-	}
+        // Nomad
+        if Equals(lifePath, gamedataLifePath.Nomad) {
+            // Badlands
+            let thisDistrict: String = this.player.GetPreventionSystem().GetCurrentDistrict().GetDistrictRecord().ParentDistrict().EnumName();
+            if Equals(thisDistrict, "Badlands") || Equals(thisDistrict, "NorthBadlands") || Equals(thisDistrict, "SouthBadlands") {
+                this.TryToDisplayHumanityLossRestorationChoice(DFHumanityLossRestorationActivityType.LifePathNomad);
+            }
+        }
+    }
 
     public final func CheckShouldShowCorpoFreshStartLifePathHumanityLossRestoreChoice(opt fromDistrictChange: Bool) -> Void {
         //DFProfile();

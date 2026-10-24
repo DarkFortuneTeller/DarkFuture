@@ -30,7 +30,7 @@ import DarkFuture.Main.{
 }
 import DarkFuture.Services.{
     GameState,
-	DFGameStateService,
+    DFGameStateService,
     DFNotificationService
 }
 import DarkFuture.Addictions.{
@@ -279,49 +279,49 @@ public final func DarkFutureForceBikeDismount(player: ref<PlayerPuppet>) -> Void
 //
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
-	//DFProfile();
-	let r: Bool = wrappedMethod(evt);
+    //DFProfile();
+    let r: Bool = wrappedMethod(evt);
 
-	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-	if IsSystemEnabledAndRunning(DFAnimationService.Get()) && IsDefined(mountChild) && mountChild.IsPlayer() {
-		DFAnimationService.Get().CheckIfPlayerShouldBlackOut();
-	}
-	
-	return r;
+    let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
+    if IsSystemEnabledAndRunning(DFAnimationService.Get()) && IsDefined(mountChild) && mountChild.IsPlayer() {
+        DFAnimationService.Get().CheckIfPlayerShouldBlackOut();
+    }
+    
+    return r;
 }
 
 public class BlackoutForceBikeDismountRecheckAnimValidityDelayCallback extends DFDelayCallback {
     public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
         return new BlackoutForceBikeDismountRecheckAnimValidityDelayCallback();
-	}
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFAnimationService.Get().blackoutForceBikeDismountRecheckAnimValidityDelayID = GetInvalidDelayID();
-	}
+        DFAnimationService.Get().blackoutForceBikeDismountRecheckAnimValidityDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFAnimationService.Get().OnBlackoutForceBikeDismountCheckAnimValidity();
-	}
+        DFAnimationService.Get().OnBlackoutForceBikeDismountCheckAnimValidity();
+    }
 }
 
 public class ContextuallyDelayedBlackoutAnimationDelayCallback extends DFDelayCallback {
     public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
         return new ContextuallyDelayedBlackoutAnimationDelayCallback();
-	}
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFAnimationService.Get().contextuallyDelayedBlackoutAnimationDelayID = GetInvalidDelayID();
-	}
+        DFAnimationService.Get().contextuallyDelayedBlackoutAnimationDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFAnimationService.Get().TryToQueueBlackoutAnimation();
-	}
+        DFAnimationService.Get().TryToQueueBlackoutAnimation();
+    }
 }
 
 public class ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback extends DFDelayCallback {
@@ -331,20 +331,20 @@ public class ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback extend
     public static func Create(addictionData: DFAddictionDatum, timeSkipType: DFTimeSkipType) -> ref<DFDelayCallback> {
         //DFProfile();
         let self: ref<ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback> = new ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback();
-		self.addictionData = addictionData;
+        self.addictionData = addictionData;
         self.timeSkipType = timeSkipType;
         return self;
-	}
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFAnimationService.Get().contextuallyDelayedAddictionWithdrawalAnimationDelayID = GetInvalidDelayID();
-	}
+        DFAnimationService.Get().contextuallyDelayedAddictionWithdrawalAnimationDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFAnimationService.Get().TryToQueueAddictionWithdrawalAnimation(this.addictionData, this.timeSkipType);
-	}
+        DFAnimationService.Get().TryToQueueAddictionWithdrawalAnimation(this.addictionData, this.timeSkipType);
+    }
 }
 
 public class ContextuallyDelayedCrashAnimationDelayCallback extends DFDelayCallback {
@@ -355,17 +355,17 @@ public class ContextuallyDelayedCrashAnimationDelayCallback extends DFDelayCallb
         let self: ref<ContextuallyDelayedCrashAnimationDelayCallback> = new ContextuallyDelayedCrashAnimationDelayCallback();
         self.mode = mode;
         return self;
-	}
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFAnimationService.Get().contextuallyDelayedCrashAnimationDelayID = GetInvalidDelayID();
-	}
+        DFAnimationService.Get().contextuallyDelayedCrashAnimationDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFAnimationService.Get().TryToQueueCrashAnimation(this.mode);
-	}
+        DFAnimationService.Get().TryToQueueCrashAnimation(this.mode);
+    }
 }
 
 private enum DFAnimQuestPhaseGraphDebugMessageID {
@@ -741,67 +741,67 @@ private struct DFFutureAllowedWithdrawalAnims {
 }
 
 public class ProcessAnimQueueDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		//DFProfile();
-		return new ProcessAnimQueueDelayCallback();
-	}
+    public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+        return new ProcessAnimQueueDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		DFAnimationService.Get().processAnimQueueDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        DFAnimationService.Get().processAnimQueueDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
-		DFAnimationService.Get().OnProcessAnimQueue();
-	}
+    public func Callback() -> Void {
+        //DFProfile();
+        DFAnimationService.Get().OnProcessAnimQueue();
+    }
 }
 
 public class ProcessFallbackFXQueueDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		//DFProfile();
-		return new ProcessFallbackFXQueueDelayCallback();
-	}
+    public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+        return new ProcessFallbackFXQueueDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		DFAnimationService.Get().processFallbackFXQueueDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        DFAnimationService.Get().processFallbackFXQueueDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
-		DFAnimationService.Get().OnProcessFallbackFX();
-	}
+    public func Callback() -> Void {
+        //DFProfile();
+        DFAnimationService.Get().OnProcessFallbackFX();
+    }
 }
 
 public class UnsetRadioRestrictionOverrideDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
-		//DFProfile();
-		return new UnsetRadioRestrictionOverrideDelayCallback();
-	}
+    public static func Create() -> ref<DFDelayCallback> {
+        //DFProfile();
+        return new UnsetRadioRestrictionOverrideDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
-		//DFProfile();
-		DFAnimationService.Get().unsetRadioRestrictionOverrideDelayID = GetInvalidDelayID();
-	}
+    public func InvalidateDelayID() -> Void {
+        //DFProfile();
+        DFAnimationService.Get().unsetRadioRestrictionOverrideDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
-		//DFProfile();
-		DFAnimationService.Get().OnUnsetRadioRestrictionOverride();
-	}
+    public func Callback() -> Void {
+        //DFProfile();
+        DFAnimationService.Get().OnUnsetRadioRestrictionOverride();
+    }
 }
 
 class DFAnimationSystemEventListener extends DFSystemEventListener {
-	private func GetSystemInstance() -> wref<DFAnimationService> {
-		//DFProfile();
-		return DFAnimationService.Get();
-	}
+    private func GetSystemInstance() -> wref<DFAnimationService> {
+        //DFProfile();
+        return DFAnimationService.Get();
+    }
 
     public cb func OnLoad() {
         //DFProfile();
         super.OnLoad();
 
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
     }
 
     private cb func OnMainSystemItemConsumedEvent(event: ref<MainSystemItemConsumedEvent>) {
@@ -871,14 +871,14 @@ public final class DFAnimationService extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFAnimationService> {
         //DFProfile();
-		let instance: ref<DFAnimationService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFAnimationService>()) as DFAnimationService;
-		return instance;
-	}
+        let instance: ref<DFAnimationService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFAnimationService>()) as DFAnimationService;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFAnimationService> {
+    public final static func Get() -> ref<DFAnimationService> {
         //DFProfile();
-		return DFAnimationService.GetInstance(GetGameInstance());
-	}
+        return DFAnimationService.GetInstance(GetGameInstance());
+    }
 
     private func SetupDebugLogging() -> Void {
         //DFProfile();
@@ -888,13 +888,13 @@ public final class DFAnimationService extends DFSystem {
     public func GetSystemToggleSettingValue() -> Bool {
         //DFProfile();
         // This system does not have a system-specific toggle.
-		return true;
+        return true;
     }
 
     private func GetSystemToggleSettingString() -> String {
         //DFProfile();
         // This system does not have a system-specific toggle.
-		return "INVALID";
+        return "INVALID";
     }
 
     public func DoPostSuspendActions() -> Void {
@@ -914,7 +914,7 @@ public final class DFAnimationService extends DFSystem {
         let gameInstance: GameInstance = GetGameInstance();
         this.QuestsSystem = gameInstance.GetQuestsSystem();
         this.AutoDriveSystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<AutoDriveSystem>()) as AutoDriveSystem;
-		this.GameStateService = DFGameStateService.GetInstance(gameInstance);
+        this.GameStateService = DFGameStateService.GetInstance(gameInstance);
         this.PlayerStateService = DFPlayerStateService.GetInstance(gameInstance);
         this.NotificationService = DFNotificationService.GetInstance(gameInstance);
         this.EnergySystem = DFEnergySystem.GetInstance(gameInstance);
@@ -1035,8 +1035,8 @@ public final class DFAnimationService extends DFSystem {
     }
 
     //
-	//	Consumable Animations
-	//
+    //  Consumable Animations
+    //
     public func OnItemConsumed(itemRecord: wref<Item_Record>, noAnimation: Bool) -> Void {
         //DFProfile();
         DFLog(this, "OnItemConsumed");
@@ -1187,7 +1187,7 @@ public final class DFAnimationService extends DFSystem {
             this.QueueAnimation(anim);
             
         }
-	}
+    }
 
     public func GetAnimFromItemTDBIDIfPlaybackValid(itemTDBID: TweakDBID) -> DFAnimDatum {
         //DFProfile();
@@ -1236,7 +1236,7 @@ public final class DFAnimationService extends DFSystem {
         //DFProfile();
         if DFRunGuard(this) { return; }
 
-		DFLog(this, "-----------");
+        DFLog(this, "-----------");
         DFLog(this, "-----------");
         DFLog(this, "TryToStartBlackoutAnimation");
         DFLog(this, "-----------");
@@ -1256,9 +1256,9 @@ public final class DFAnimationService extends DFSystem {
             DFLog(this, "    Ignoring request, a blackout animation is currently playing!");
             return;
         }
-		
-		let gs: GameState = this.GameStateService.GetGameState(this);
-		if Equals(gs, GameState.Valid) {
+        
+        let gs: GameState = this.GameStateService.GetGameState(this);
+        if Equals(gs, GameState.Valid) {
             DFLog(this, "    Game State is Valid, continuing.");
         } else if Equals(gs, GameState.TemporarilyInvalid) {
             DFLog(this, "    Game State is Temporarily Invalid, checking again.");
@@ -1275,7 +1275,7 @@ public final class DFAnimationService extends DFSystem {
         let gameInstance: GameInstance = GetGameInstance();
 
         let vehicleObj: wref<VehicleObject>;
-		VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
+        VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
         let vc: wref<VehicleComponent> = vehicleObj.GetVehicleComponent();
 
         if !this.IsPlayerInAllowedStateForBlackoutAnimation() {
@@ -1311,7 +1311,7 @@ public final class DFAnimationService extends DFSystem {
             }
         }
 
-		if IsDefined(vehicleObj) && IsDefined(vc) {
+        if IsDefined(vehicleObj) && IsDefined(vc) {
             if vehicleObj.IsQuest() {
                 DFLog(this, "    In a quest vehicle, checking again.");
                 this.RegisterContextuallyDelayedBlackoutAnimation();
@@ -1672,7 +1672,7 @@ public final class DFAnimationService extends DFSystem {
         //DFProfile();
         if DFRunGuard(this) { return; }
 
-		DFLog(this, "-----------");
+        DFLog(this, "-----------");
         DFLog(this, "-----------");
         DFLog(this, "TryToStartCrashAnimation");
         DFLog(this, "-----------");
@@ -1687,9 +1687,9 @@ public final class DFAnimationService extends DFSystem {
             DFLog(this, "    Ignoring request, a crash animation is currently playing!");
             return;
         }
-		
-		let gs: GameState = this.GameStateService.GetGameState(this);
-		if Equals(gs, GameState.Valid) {
+        
+        let gs: GameState = this.GameStateService.GetGameState(this);
+        if Equals(gs, GameState.Valid) {
             DFLog(this, "    Game State is Valid, continuing.");
         } else if Equals(gs, GameState.TemporarilyInvalid) {
             DFLog(this, "    Game State is Temporarily Invalid, checking again.");
@@ -1792,14 +1792,14 @@ public final class DFAnimationService extends DFSystem {
         //DFProfile();
         if DFRunGuard(this) { return; }
         
-		DFLog(this, "-----------");
+        DFLog(this, "-----------");
         DFLog(this, "-----------");
         DFLog(this, "TryToQueueAddictionWithdrawalAnimation");
         DFLog(this, "-----------");
         DFLog(this, "-----------");
-		
-		let gs: GameState = this.GameStateService.GetGameState(this);
-		if Equals(gs, GameState.Valid) {
+        
+        let gs: GameState = this.GameStateService.GetGameState(this);
+        if Equals(gs, GameState.Valid) {
             DFLog(this, "    Game State is Valid, continuing.");
 
         } else if Equals(gs, GameState.TemporarilyInvalid) {
@@ -2345,80 +2345,80 @@ public final class DFAnimationService extends DFSystem {
     }
 
     //
-	//  Registration
-	//
+    //  Registration
+    //
     private final func RegisterProcessAnimQueueCallback(debounce: Bool) -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, ProcessAnimQueueDelayCallback.Create(), this.processAnimQueueDelayID, debounce ? this.processAnimQueueDelayIntervalSlow : this.processAnimQueueDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, ProcessAnimQueueDelayCallback.Create(), this.processAnimQueueDelayID, debounce ? this.processAnimQueueDelayIntervalSlow : this.processAnimQueueDelayInterval);
+    }
 
     private final func RegisterProcessFallbackFXQueueCallback() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, ProcessFallbackFXQueueDelayCallback.Create(), this.processFallbackFXQueueDelayID, this.processFallbackFXQueueDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, ProcessFallbackFXQueueDelayCallback.Create(), this.processFallbackFXQueueDelayID, this.processFallbackFXQueueDelayInterval);
+    }
 
     public final func RegisterUnsetRadioRestrictionOverrideCallback() -> Void {
-		//DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, UnsetRadioRestrictionOverrideDelayCallback.Create(), this.unsetRadioRestrictionOverrideDelayID, this.unsetRadioRestrictionOverrideDelayInterval);
-	}
+        //DFProfile();
+        RegisterDFDelayCallback(this.DelaySystem, UnsetRadioRestrictionOverrideDelayCallback.Create(), this.unsetRadioRestrictionOverrideDelayID, this.unsetRadioRestrictionOverrideDelayInterval);
+    }
 
     private final func RegisterContextuallyDelayedBlackoutAnimation() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedBlackoutAnimationDelayCallback.Create(), this.contextuallyDelayedBlackoutAnimationDelayID, this.contextuallyDelayedBlackoutAnimationDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedBlackoutAnimationDelayCallback.Create(), this.contextuallyDelayedBlackoutAnimationDelayID, this.contextuallyDelayedBlackoutAnimationDelayInterval);
+    }
 
     public final func RegisterBlackoutForceBikeDismountCheckAnimValidity() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, BlackoutForceBikeDismountRecheckAnimValidityDelayCallback.Create(), this.blackoutForceBikeDismountRecheckAnimValidityDelayID, this.blackoutForceBikeDismountRecheckAnimValidityDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, BlackoutForceBikeDismountRecheckAnimValidityDelayCallback.Create(), this.blackoutForceBikeDismountRecheckAnimValidityDelayID, this.blackoutForceBikeDismountRecheckAnimValidityDelayInterval);
+    }
 
     public final func RegisterContextuallyDelayedAddictionWithdrawalAnimation(addictionData: DFAddictionDatum, timeSkipType: DFTimeSkipType) -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback.Create(addictionData, timeSkipType), this.contextuallyDelayedAddictionWithdrawalAnimationDelayID, this.contextuallyDelayedAddictionWithdrawalAnimationDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedAddictionWithdrawalAnimationDelayCallback.Create(addictionData, timeSkipType), this.contextuallyDelayedAddictionWithdrawalAnimationDelayID, this.contextuallyDelayedAddictionWithdrawalAnimationDelayInterval);
+    }
 
     public final func RegisterContextuallyDelayedCrashAnimation(mode: DFCrashAnimMode) -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedCrashAnimationDelayCallback.Create(mode), this.contextuallyDelayedCrashAnimationDelayID, this.contextuallyDelayedCrashAnimationDelayInterval);
+        RegisterDFDelayCallback(this.DelaySystem, ContextuallyDelayedCrashAnimationDelayCallback.Create(mode), this.contextuallyDelayedCrashAnimationDelayID, this.contextuallyDelayedCrashAnimationDelayInterval);
     }
 
     //
-	//	Deregistration
-	//
-	private final func UnregisterProcessAnimQueueCallback() -> Void {
+    //  Deregistration
+    //
+    private final func UnregisterProcessAnimQueueCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.processAnimQueueDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.processAnimQueueDelayID);
+    }
 
     private final func UnregisterProcessFallbackFXQueueCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.processFallbackFXQueueDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.processFallbackFXQueueDelayID);
+    }
 
     private final func UnregisterUnsetRadioRestrictionOverrideCallback() -> Void {
-		//DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.unsetRadioRestrictionOverrideDelayID);
-	}
+        //DFProfile();
+        UnregisterDFDelayCallback(this.DelaySystem, this.unsetRadioRestrictionOverrideDelayID);
+    }
 
     private final func UnregisterContextuallyDelayedBlackoutAnimation() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedBlackoutAnimationDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedBlackoutAnimationDelayID);
+    }
 
     private final func UnregisterBlackoutForceBikeDismountRecheckAnimValidity() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.blackoutForceBikeDismountRecheckAnimValidityDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.blackoutForceBikeDismountRecheckAnimValidityDelayID);
+    }
 
     private final func UnregisterContextuallyDelayedAddictionWithdrawalAnimation() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedAddictionWithdrawalAnimationDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedAddictionWithdrawalAnimationDelayID);
+    }
 
     private final func UnregisterContextuallyDelayedCrashAnimation() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedCrashAnimationDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.contextuallyDelayedCrashAnimationDelayID);
+    }
 
     public final func IsPlayerInAllowedStateForAnyAnimation(opt ignoreVehicle: Bool, opt vehicleExitBlocked: Bool, opt ignoreGroundCheck: Bool) -> Bool {
         //DFProfile();
@@ -2618,7 +2618,7 @@ public final class DFAnimationService extends DFSystem {
             isPlayerPursuedByNCPD {
                 // Show message
                 let UISystem: ref<UISystem> = GameInstance.GetUISystem(GetGameInstance());
-		        let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
+                let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
                 notificationEvent.m_notificationType = UIInGameNotificationType.ActionRestriction;
                 UISystem.QueueEvent(notificationEvent);
 
@@ -2797,8 +2797,8 @@ public final class DFAnimationService extends DFSystem {
     }
 
     //
-	//	Animation Toggles and Cooldown Stack
-	//
+    //  Animation Toggles and Cooldown Stack
+    //
     private final func IsAnimationSubTypeEnabled(type: DFConsumableAnimSubType) -> Bool {
         //DFProfile();
         if Equals(type, DFConsumableAnimSubType.Invalid) {
@@ -3137,8 +3137,8 @@ public final class DFAnimationService extends DFSystem {
 
     public final func OnProcessAnimQueue() -> Void {
         //DFProfile();
-		this.ProcessAnimQueue(this.queuedAnims);
-	}
+        this.ProcessAnimQueue(this.queuedAnims);
+    }
 
     public final func OnAnimFinishedPlaying() -> Void {
         //DFProfile();

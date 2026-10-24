@@ -180,7 +180,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         barLabel.SetName(n"barLabel");
         barLabel.SetMargin(inkMargin(2.0, 0.0, 0.0, 3.0));
         barLabel.SetFontFamily("base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily");
-	    barLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
+        barLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
         barLabel.SetLetterCase(textLetterCase.UpperCase);
         barLabel.SetFontSize(36);
         barLabel.SetText(this.m_setupData.barLabel);
@@ -193,7 +193,7 @@ public class DFNeedsMenuBar extends inkCanvas {
         valueLabel.SetName(n"valueLabel");
         valueLabel.SetAnchor(inkEAnchor.BottomRight);
         valueLabel.SetFontFamily("base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily");
-	    valueLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
+        valueLabel.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.PanelRed));
         valueLabel.SetLetterCase(textLetterCase.UpperCase);
         valueLabel.SetFontSize(36);
         valueLabel.SetText("100");

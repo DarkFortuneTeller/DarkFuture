@@ -20,14 +20,14 @@ public class DFResourceUtils extends ScriptableService {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFResourceUtils> {
         //DFProfile();
-		let instance: ref<DFResourceUtils> = GameInstance.GetScriptableServiceContainer().GetService(NameOf<DFResourceUtils>()) as DFResourceUtils;
-		return instance;
-	}
+        let instance: ref<DFResourceUtils> = GameInstance.GetScriptableServiceContainer().GetService(NameOf<DFResourceUtils>()) as DFResourceUtils;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFResourceUtils> {
+    public final static func Get() -> ref<DFResourceUtils> {
         //DFProfile();
-		return DFResourceUtils.GetInstance(GetGameInstance());
-	}
+        return DFResourceUtils.GetInstance(GetGameInstance());
+    }
 
     private cb func OnLoad() {
         //DFProfile();

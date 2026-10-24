@@ -38,36 +38,36 @@ public func IsSystemEnabledAndRunning(system: ref<DFSystem>) -> Bool {
 }
 
 public abstract class DFSystemEventListener extends ScriptableService {
-	//
-	// Required Overrides
-	//
-	private func GetSystemInstance() -> wref<DFSystem> {
+    //
+    // Required Overrides
+    //
+    private func GetSystemInstance() -> wref<DFSystem> {
         //DFProfile();
-		DFLogNoSystem(DFSystemlessDebugEnabled(), this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
-		return null;
-	}
+        DFLogNoSystem(DFSystemlessDebugEnabled(), this, "MISSING REQUIRED METHOD OVERRIDE FOR GetSystemInstance()", DFLogLevel.Error);
+        return null;
+    }
 
-	public cb func OnLoad() {
+    public cb func OnLoad() {
         //DFProfile();
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemPlayerDeathEvent>(), this, n"OnMainSystemPlayerDeathEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipStartEvent>(), this, n"OnMainSystemTimeSkipStartEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipCancelledEvent>(), this, n"OnMainSystemTimeSkipCancelledEvent", true);
-		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipBeginEvent>(), this, n"OnMainSystemTimeSkipBeginEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemPlayerDeathEvent>(), this, n"OnMainSystemPlayerDeathEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipStartEvent>(), this, n"OnMainSystemTimeSkipStartEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipCancelledEvent>(), this, n"OnMainSystemTimeSkipCancelledEvent", true);
+        GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipBeginEvent>(), this, n"OnMainSystemTimeSkipBeginEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemTimeSkipFinishedEvent>(), this, n"OnMainSystemTimeSkipFinishedEvent", true);
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<SettingChangedEvent>(), this, n"OnSettingChangedEvent", true);
     }
 
-	private cb func OnMainSystemPlayerDeathEvent(event: ref<MainSystemPlayerDeathEvent>) {
+    private cb func OnMainSystemPlayerDeathEvent(event: ref<MainSystemPlayerDeathEvent>) {
         //DFProfile();
         this.GetSystemInstance().OnPlayerDeath();
     }
 
-	private cb func OnMainSystemTimeSkipStartEvent(event: ref<MainSystemTimeSkipStartEvent>) {
+    private cb func OnMainSystemTimeSkipStartEvent(event: ref<MainSystemTimeSkipStartEvent>) {
         //DFProfile();
         this.GetSystemInstance().OnTimeSkipStart();
     }
 
-	private cb func OnMainSystemTimeSkipCancelledEvent(event: ref<MainSystemTimeSkipCancelledEvent>) {
+    private cb func OnMainSystemTimeSkipCancelledEvent(event: ref<MainSystemTimeSkipCancelledEvent>) {
         //DFProfile();
         this.GetSystemInstance().OnTimeSkipCancelled();
     }
@@ -77,14 +77,14 @@ public abstract class DFSystemEventListener extends ScriptableService {
         this.GetSystemInstance().OnTimeSkipBegin();
     }
 
-	private cb func OnMainSystemTimeSkipFinishedEvent(event: ref<MainSystemTimeSkipFinishedEvent>) {
+    private cb func OnMainSystemTimeSkipFinishedEvent(event: ref<MainSystemTimeSkipFinishedEvent>) {
         //DFProfile();
         this.GetSystemInstance().OnTimeSkipFinished(event.GetData());
     }
 
     private cb func OnSettingChangedEvent(event: ref<SettingChangedEvent>) {
         //DFProfile();
-		this.GetSystemInstance().OnSettingChanged(event.GetData());
+        this.GetSystemInstance().OnSettingChanged(event.GetData());
     }
 }
 
@@ -98,7 +98,7 @@ public abstract class DFSystem extends ScriptableSystem {
     public func Init(attachedPlayer: ref<PlayerPuppet>) -> Void {
         //DFProfile();
         this.player = attachedPlayer;
-		this.DoInitActions(attachedPlayer);
+        this.DoInitActions(attachedPlayer);
         this.InitSpecific(attachedPlayer);
         
         // Now that all data has been set correctly, if this system should be
@@ -111,13 +111,13 @@ public abstract class DFSystem extends ScriptableSystem {
     private func DoInitActions(attachedPlayer: ref<PlayerPuppet>) -> Void {
         //DFProfile();
         this.SetupDebugLogging();
-		DFLog(this, "Init");
+        DFLog(this, "Init");
 
         this.GetRequiredSystems();
-		this.GetSystems();
-		this.GetBlackboards(attachedPlayer);
+        this.GetSystems();
+        this.GetBlackboards(attachedPlayer);
         this.SetupData();
-		this.RegisterListeners();
+        this.RegisterListeners();
         this.RegisterAllRequiredDelayCallbacks();
 
         this.state = DFSystemState.Running;
@@ -157,7 +157,7 @@ public abstract class DFSystem extends ScriptableSystem {
     public func OnPlayerDeath() -> Void {
         //DFProfile();
         this.Stop();
-	}
+    }
 
     private func GetRequiredSystems() -> Void {
         //DFProfile();
@@ -214,8 +214,8 @@ public abstract class DFSystem extends ScriptableSystem {
 
     private func SetupDebugLogging() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("SetupDebugLogging");
-	}
+        this.LogMissingOverrideError("SetupDebugLogging");
+    }
 
     public func GetSystems() -> Void {
         //DFProfile();
@@ -234,13 +234,13 @@ public abstract class DFSystem extends ScriptableSystem {
 
     private func RegisterListeners() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("RegisterListeners");
-	}
+        this.LogMissingOverrideError("RegisterListeners");
+    }
 
     private func UnregisterListeners() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("UnregisterListeners");
-	}
+        this.LogMissingOverrideError("UnregisterListeners");
+    }
 
     private func RegisterAllRequiredDelayCallbacks() -> Void {
         //DFProfile();
@@ -254,23 +254,23 @@ public abstract class DFSystem extends ScriptableSystem {
 
     public func OnTimeSkipStart() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("OnTimeSkipStart");
-	}
+        this.LogMissingOverrideError("OnTimeSkipStart");
+    }
 
-	public func OnTimeSkipCancelled() -> Void {
+    public func OnTimeSkipCancelled() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("OnTimeSkipCancelled");
-	}
+        this.LogMissingOverrideError("OnTimeSkipCancelled");
+    }
 
     public func OnTimeSkipBegin() -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("OnTimeSkipBegin");
-	}
+        this.LogMissingOverrideError("OnTimeSkipBegin");
+    }
 
-	public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
+    public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
         //DFProfile();
-		this.LogMissingOverrideError("OnTimeSkipFinished");
-	}
+        this.LogMissingOverrideError("OnTimeSkipFinished");
+    }
 
     public func OnSettingChangedSpecific(changedSettings: array<String>) {
         //DFProfile();
@@ -278,17 +278,17 @@ public abstract class DFSystem extends ScriptableSystem {
     }
 
     //
-	//	Logging
-	//
+    //  Logging
+    //
     public final func IsDebugEnabled() -> Bool {
         //DFProfile();
         return this.debugEnabled;
     }
 
-	public final func LogMissingOverrideError(funcName: String) -> Void {
+    public final func LogMissingOverrideError(funcName: String) -> Void {
         //DFProfile();
-		DFLog(this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
-	}
+        DFLog(this, "MISSING REQUIRED METHOD OVERRIDE FOR " + funcName + "()", DFLogLevel.Error);
+    }
 }
 
 /* Required Override Template

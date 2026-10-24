@@ -21,7 +21,7 @@ import DarkFuture.Settings.DFSettings
 
 public enum DFConditionType {
     Invalid = 0,
-	HumanityLoss = 1,
+    HumanityLoss = 1,
     Injury = 2,
     Biocorruption = 3
 }
@@ -142,14 +142,14 @@ protected cb func OnInitialize() -> Bool {
 
 @if(ModuleExists("StealthRunner"))
 public func DFIsStealthRunnerInstalled() -> Bool {
-	//DFProfile();
-	return true;
+    //DFProfile();
+    return true;
 }
 
 @if(!ModuleExists("StealthRunner"))
 public func DFIsStealthRunnerInstalled() -> Bool {
-	//DFProfile();
-	return false;
+    //DFProfile();
+    return false;
 }
 
 @addMethod(MenuHubLogicController)

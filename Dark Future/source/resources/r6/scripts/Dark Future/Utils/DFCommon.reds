@@ -86,7 +86,7 @@ public func DFRunGuard(system: ref<DFSystem>, opt suppressLog: Bool) -> Bool {
     //  Typically, these are functions that change state on the player or system,
     //  or retrieve data that relies on system state in order to be valid.
     //
-    //	Intended use:
+    //  Intended use:
     //  private func MyFunc() -> Void {
     //      if DFRunGuard(this) { return; }
     //      ...

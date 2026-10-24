@@ -45,7 +45,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
         }
     }
 
-	return wrappedMethod(evt);
+    return wrappedMethod(evt);
 }
 
 @wrapMethod(PlayerPuppet)
@@ -66,7 +66,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
         }
     }
 
-	return wrappedMethod(evt);
+    return wrappedMethod(evt);
 }
 
 public class DFGameStateServiceFuryChangedEvent extends CallbackSystemEvent {
@@ -121,24 +121,24 @@ public class DFGameStateServiceSleepCinematicExitDelayCallback extends DFDelayCa
     public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
         return new DFGameStateServiceSleepCinematicExitDelayCallback();
-	}
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFGameStateService.Get().sleepCinematicExitDelayID = GetInvalidDelayID();
-	}
+        DFGameStateService.Get().sleepCinematicExitDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFGameStateService.Get().SetInSleepCinematic(false);
-	}
+        DFGameStateService.Get().SetInSleepCinematic(false);
+    }
 }
 
 class DFGameStateServiceEventListener extends DFSystemEventListener {
-	private func GetSystemInstance() -> wref<DFGameStateService> {
+    private func GetSystemInstance() -> wref<DFGameStateService> {
         //DFProfile();
-		return DFGameStateService.Get();
-	}
+        return DFGameStateService.Get();
+    }
 }
 
 public final class DFGameStateService extends DFSystem {
@@ -181,14 +181,14 @@ public final class DFGameStateService extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFGameStateService> {
         //DFProfile();
-		let instance: ref<DFGameStateService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFGameStateService>()) as DFGameStateService;
-		return instance;
-	}
+        let instance: ref<DFGameStateService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFGameStateService>()) as DFGameStateService;
+        return instance;
+    }
 
     public final static func Get() -> ref<DFGameStateService> {
         //DFProfile();
         return DFGameStateService.GetInstance(GetGameInstance());
-	}
+    }
 
     //
     //  DFSystem Required Methods
@@ -301,15 +301,15 @@ public final class DFGameStateService extends DFSystem {
 
     public final func GetSystemToggleSettingValue() -> Bool {
         //DFProfile();
-		// This system does not have a system-specific toggle.
-		return true;
-	}
+        // This system does not have a system-specific toggle.
+        return true;
+    }
 
-	private final func GetSystemToggleSettingString() -> String {
+    private final func GetSystemToggleSettingString() -> String {
         //DFProfile();
-		// This system does not have a system-specific toggle.
-		return "INVALID";
-	}
+        // This system does not have a system-specific toggle.
+        return "INVALID";
+    }
 
     //
     //  System-Specific Methods
@@ -329,9 +329,9 @@ public final class DFGameStateService extends DFSystem {
     }
 
     public final func GetSleepingInVehicle() -> Bool {
-		//DFProfile();
-		return this.isSleepingInVehicle;
-	}
+        //DFProfile();
+        return this.isSleepingInVehicle;
+    }
 
     protected cb func OnSceneTierChange(value: Int32) -> Void {
         //DFProfile();
@@ -490,8 +490,8 @@ public final class DFGameStateService extends DFSystem {
     }
 
     //
-	//	Wannabe Edgerunner
-	//
+    //  Wannabe Edgerunner
+    //
     public final func IsWannabeEdgerunnerPsychosisEffect(id: TweakDBID) -> Bool {
         //DFProfile();
         if this.Settings.compatibilityWannabeEdgerunner {

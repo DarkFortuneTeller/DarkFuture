@@ -34,10 +34,10 @@ import ConsumableAnimations.Settings.{
 }
 
 class DFModCompatSystemEventListener extends DFSystemEventListener {
-	private func GetSystemInstance() -> wref<DFModCompatSystem> {
+    private func GetSystemInstance() -> wref<DFModCompatSystem> {
         //DFProfile();
-		return DFModCompatSystem.Get();
-	}
+        return DFModCompatSystem.Get();
+    }
 }
 
 public final class DFModCompatSystem extends DFSystem {
@@ -69,14 +69,14 @@ public final class DFModCompatSystem extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFModCompatSystem> {
         //DFProfile();
-		let instance: ref<DFModCompatSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFModCompatSystem>()) as DFModCompatSystem;
-		return instance;
-	}
+        let instance: ref<DFModCompatSystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFModCompatSystem>()) as DFModCompatSystem;
+        return instance;
+    }
 
-	public final static func Get() -> ref<DFModCompatSystem> {
+    public final static func Get() -> ref<DFModCompatSystem> {
         //DFProfile();
-		return DFModCompatSystem.GetInstance(GetGameInstance());
-	}
+        return DFModCompatSystem.GetInstance(GetGameInstance());
+    }
 
     // DFSystem Required Methods
     private func SetupDebugLogging() -> Void {
@@ -87,12 +87,12 @@ public final class DFModCompatSystem extends DFSystem {
     public func GetSystemToggleSettingValue() -> Bool {
         //DFProfile();
         // This system does not have a system-specific toggle.
-		return true;
+        return true;
     }
 
-	private final func GetSystemToggleSettingString() -> String {
+    private final func GetSystemToggleSettingString() -> String {
         //DFProfile();
-		// This system does not have a system-specific toggle.
+        // This system does not have a system-specific toggle.
         return "INVALID";
     }
 

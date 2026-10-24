@@ -169,21 +169,21 @@ public class PlayerStateServiceOnDamageReceivedEvent extends CallbackSystemEvent
 }
 
 public class PlayerStateEffectsDurationUpdateDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new PlayerStateEffectsDurationUpdateDelayCallback();
-	}
+        return new PlayerStateEffectsDurationUpdateDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().playerStateEffectsDurationUpdateDelayID = GetInvalidDelayID();
-	}
+        DFPlayerStateService.Get().playerStateEffectsDurationUpdateDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
         let pss: ref<DFPlayerStateService> = DFPlayerStateService.Get();
-		pss.OnPlayerStateEffectsDurationUpdate(pss.GetPlayerStateEffectsDurationUpdateIntervalInGameTimeSeconds());
-	}
+        pss.OnPlayerStateEffectsDurationUpdate(pss.GetPlayerStateEffectsDurationUpdateIntervalInGameTimeSeconds());
+    }
 }
 
 public class PlayerStateServiceAddictionTreatmentDurationUpdateDoneEvent extends CallbackSystemEvent {
@@ -272,102 +272,102 @@ public class PlayerStateServiceAddictionTreatmentEffectAppliedOrRemovedEvent ext
 }
 
 public class OutOfBreathStopCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new OutOfBreathStopCallback();
-	}
+        return new OutOfBreathStopCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().outOfBreathStopDelayID = GetInvalidDelayID();
-	}
+        DFPlayerStateService.Get().outOfBreathStopDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().OnOutOfBreathStopCallback();
-	}
+        DFPlayerStateService.Get().OnOutOfBreathStopCallback();
+    }
 }
 
 public class OutOfBreathRecheckSprintingCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new OutOfBreathRecheckSprintingCallback();
-	}
+        return new OutOfBreathRecheckSprintingCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().outOfBreathRecheckSprintingDelayID = GetInvalidDelayID();
-	}
+        DFPlayerStateService.Get().outOfBreathRecheckSprintingDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().OnOutOfBreathRecheckSprintingCallback();
-	}
+        DFPlayerStateService.Get().OnOutOfBreathRecheckSprintingCallback();
+    }
 }
 
 public class OutOfBreathRecheckDefaultCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new OutOfBreathRecheckDefaultCallback();
-	}
+        return new OutOfBreathRecheckDefaultCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().outOfBreathRecheckDefaultDelayID = GetInvalidDelayID();
-	}
+        DFPlayerStateService.Get().outOfBreathRecheckDefaultDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().OnOutOfBreathRecheckDefaultCallback();
-	}
+        DFPlayerStateService.Get().OnOutOfBreathRecheckDefaultCallback();
+    }
 }
 
 public class ManagedEffectReconciliationDebounceDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new ManagedEffectReconciliationDebounceDelayCallback();
-	}
+        return new ManagedEffectReconciliationDebounceDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().managedEffectReconciliationDebounceDelayID = GetInvalidDelayID();
-	}
+        DFPlayerStateService.Get().managedEffectReconciliationDebounceDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().OnManagedEffectReconciliationDebounceCallback();
-	}
+        DFPlayerStateService.Get().OnManagedEffectReconciliationDebounceCallback();
+    }
 }
 
 public class ManagedEffectVFXRecheckDelayCallback extends DFDelayCallback {
-	public static func Create() -> ref<DFDelayCallback> {
+    public static func Create() -> ref<DFDelayCallback> {
         //DFProfile();
-		return new ManagedEffectVFXRecheckDelayCallback();
-	}
+        return new ManagedEffectVFXRecheckDelayCallback();
+    }
 
-	public func InvalidateDelayID() -> Void {
+    public func InvalidateDelayID() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().managedEffectVFXRecheckDelayID = GetInvalidDelayID();
-	}
+        DFPlayerStateService.Get().managedEffectVFXRecheckDelayID = GetInvalidDelayID();
+    }
 
-	public func Callback() -> Void {
+    public func Callback() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().OnManagedEffectVFXRecheckCallback();
-	}
+        DFPlayerStateService.Get().OnManagedEffectVFXRecheckCallback();
+    }
 }
 
 public final class DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificationCallback extends DFNotificationCallback {
-	public static func Create() -> ref<DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificationCallback> {
+    public static func Create() -> ref<DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificationCallback> {
         //DFProfile();
-		let self: ref<DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificationCallback> = new DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificationCallback();
+        let self: ref<DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificationCallback> = new DFPlayerStateServiceOutOfBreathEffectsFromHydrationNotificationCallback();
 
-		return self;
-	}
+        return self;
+    }
 
-	public final func Callback() -> Void {
+    public final func Callback() -> Void {
         //DFProfile();
-		DFPlayerStateService.Get().TryToPlayOutOfBreathEffectsFromHydrationNotification();
-	}
+        DFPlayerStateService.Get().TryToPlayOutOfBreathEffectsFromHydrationNotification();
+    }
 }
 
 @wrapMethod(PlayerPuppet)
@@ -406,7 +406,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
         playerStateService.UpdateStaminaCosts();
 
         // Update the effect duration based on installed cyberware.
-		nicotineAddictionSystem.UpdateActiveNicotineDebuffEffectDuration(effectID);
+        nicotineAddictionSystem.UpdateActiveNicotineDebuffEffectDuration(effectID);
     }
 
     if ArrayContains(effectTags, n"DarkFutureLegacyBlackLaceEffect") {
@@ -414,7 +414,7 @@ protected cb func OnStatusEffectApplied(evt: ref<ApplyStatusEffectEvent>) -> Boo
         StatusEffectHelper.RemoveStatusEffectsWithTag(this, n"DarkFutureLegacyBlackLaceEffect");
     }
 
-	return wrappedMethod(evt);
+    return wrappedMethod(evt);
 }
 
 @wrapMethod(PlayerPuppet)
@@ -429,7 +429,7 @@ protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
         playerStateService.UpdateStaminaCosts();
     }
 
-	return wrappedMethod(evt);
+    return wrappedMethod(evt);
 }
 
 //
@@ -482,27 +482,27 @@ protected final func DarkFutureSendPSMBoolParameter(id: CName, value: Bool, aspe
 //
 @wrapMethod(PlayerPuppet)
 protected cb func OnStatusEffectRemoved(evt: ref<RemoveStatusEffect>) -> Bool {
-	//DFProfile();
-	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
+    //DFProfile();
+    let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 
-	if IsSystemEnabledAndRunning(PlayerStateService) {
-		if evt.staticData.GameplayTagsContains(n"DarkFutureManagedEffect") {
-			PlayerStateService.OnManagedEffectRemoved(evt);
-		}
-	}
-	
-	return wrappedMethod(evt);
+    if IsSystemEnabledAndRunning(PlayerStateService) {
+        if evt.staticData.GameplayTagsContains(n"DarkFutureManagedEffect") {
+            PlayerStateService.OnManagedEffectRemoved(evt);
+        }
+    }
+    
+    return wrappedMethod(evt);
 }
 
 class DFPlayerStateServiceEventListeners extends DFSystemEventListener {
     private func GetSystemInstance() -> wref<DFPlayerStateService> {
         //DFProfile();
-		return DFPlayerStateService.Get();
-	}
+        return DFPlayerStateService.Get();
+    }
 
     public cb func OnLoad() {
         //DFProfile();
-		super.OnLoad();
+        super.OnLoad();
 
         GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
     }
@@ -516,8 +516,8 @@ class DFPlayerStateServiceEventListeners extends DFSystemEventListener {
 public final class DFPlayerStateService extends DFSystem {
     private persistent let remainingAddictionTreatmentEffectDurationInGameTimeSeconds: Float = 0.0;
     public persistent let hasShownAddictionTutorial: Bool = false;
-	public persistent let hasShownBasicNeedsTutorial: Bool = false;
-	public persistent let hasShownNerveTutorial: Bool = false;
+    public persistent let hasShownBasicNeedsTutorial: Bool = false;
+    public persistent let hasShownNerveTutorial: Bool = false;
     private persistent let playerInOverdose: Bool = false;
     private persistent let managedEffectsState: array<DFManagedEffect>;
 
@@ -566,12 +566,12 @@ public final class DFPlayerStateService extends DFSystem {
     private let playerStateEffectsDurationUpdateIntervalInGameTimeSeconds: Float = 300.0;
 
     // Low Hydration Stamina Costs
-	private let playerHydrationPenalty02StaminaCostSprinting: Float = 0.035;
-	private let playerHydrationPenalty02StaminaCostJumping: Float = 2.0;
-	private let playerHydrationPenalty03StaminaCostSprinting: Float = 0.05;
-	private let playerHydrationPenalty03StaminaCostJumping: Float = 4.0;
-	private let playerHydrationPenalty04StaminaCostSprinting: Float = 0.075;
-	private let playerHydrationPenalty04StaminaCostJumping: Float = 6.0;
+    private let playerHydrationPenalty02StaminaCostSprinting: Float = 0.035;
+    private let playerHydrationPenalty02StaminaCostJumping: Float = 2.0;
+    private let playerHydrationPenalty03StaminaCostSprinting: Float = 0.05;
+    private let playerHydrationPenalty03StaminaCostJumping: Float = 4.0;
+    private let playerHydrationPenalty04StaminaCostSprinting: Float = 0.075;
+    private let playerHydrationPenalty04StaminaCostJumping: Float = 6.0;
 
     // Smoking Stamina Costs
     private let playerSmokingPenaltyStaminaCostSprinting: Float = 0.035;
@@ -582,14 +582,14 @@ public final class DFPlayerStateService extends DFSystem {
     public let outOfBreathEffectQueued: Bool = false;
 
     public let outOfBreathRecheckSprintingDelayID: DelayID;
-	public let outOfBreathRecheckDefaultDelayID: DelayID;
-	public let outOfBreathStopDelayID: DelayID;
+    public let outOfBreathRecheckDefaultDelayID: DelayID;
+    public let outOfBreathStopDelayID: DelayID;
     public let managedEffectReconciliationDebounceDelayID: DelayID;
     public let managedEffectVFXRecheckDelayID: DelayID;
 
     private let outOfBreathRecheckSprintingDelayInterval: Float = 5.0;
-	private let outOfBreathRecheckDefaultDelayInterval: Float = 0.35;
-	private let outOfBreathStopDelayInterval: Float = 2.6;
+    private let outOfBreathRecheckDefaultDelayInterval: Float = 0.35;
+    private let outOfBreathStopDelayInterval: Float = 2.6;
     private let managedEffectReconciliationDebounceDelayInterval: Float = 0.25;
     private let managedEffectVFXRecheckDelayInterval_High_NormalTimed: Float = 25.0;
     private let managedEffectVFXRecheckDelayInterval_High_NormalLasting: Float = 25.0;
@@ -616,14 +616,14 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final static func GetInstance(gameInstance: GameInstance) -> ref<DFPlayerStateService> {
         //DFProfile();
-		let instance: ref<DFPlayerStateService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFPlayerStateService>()) as DFPlayerStateService;
-		return instance;
-	}
+        let instance: ref<DFPlayerStateService> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFPlayerStateService>()) as DFPlayerStateService;
+        return instance;
+    }
 
     public final static func Get() -> ref<DFPlayerStateService> {
         //DFProfile();
         return DFPlayerStateService.GetInstance(GetGameInstance());
-	}
+    }
 
     //
     //  DFSystem Required Methods
@@ -958,7 +958,7 @@ public final class DFPlayerStateService extends DFSystem {
     private func UnregisterListeners() -> Void {
         //DFProfile();
         this.PSMBlackboard.UnregisterListenerInt(this.BlackboardDefs.PlayerStateMachine.Locomotion, this.locomotionListener);
-		this.locomotionListener = null;
+        this.locomotionListener = null;
 
         if IsDefined(this.lastActivePlayerVehicle) {
             this.UnregisterForVehicleSpeedChange(this.lastActivePlayerVehicle);
@@ -972,15 +972,15 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final func GetSystemToggleSettingValue() -> Bool {
         //DFProfile();
-		// This system does not have a system-specific toggle.
-		return true;
-	}
+        // This system does not have a system-specific toggle.
+        return true;
+    }
 
-	private final func GetSystemToggleSettingString() -> String {
+    private final func GetSystemToggleSettingString() -> String {
         //DFProfile();
-		// This system does not have a system-specific toggle.
-		return "INVALID";
-	}
+        // This system does not have a system-specific toggle.
+        return "INVALID";
+    }
 
     public func DoPostResumeActions() -> Void {
         //DFProfile();
@@ -998,10 +998,10 @@ public final class DFPlayerStateService extends DFSystem {
 
         this.playerInDanger = false;
         this.outOfBreathEffectQueued = false;
-		this.lastLocomotionState = 0;
+        this.lastLocomotionState = 0;
         this.UpdateFastTravelState();
         this.ClearStaminaCosts();
-		this.StopOutOfBreathEffects();
+        this.StopOutOfBreathEffects();
         this.StopCriticalNeedEffects(true);
         this.StopManagedEffectVFX();
     }
@@ -1048,9 +1048,9 @@ public final class DFPlayerStateService extends DFSystem {
     public func UnregisterAllDelayCallbacks() -> Void {
         //DFProfile();
         this.UnregisterPlayerStateEffectsDurationUpdateCallback();
-		this.UnregisterOutOfBreathRecheckDefaultCallback();
-		this.UnregisterOutOfBreathRecheckSprintCallback();
-		this.UnregisterOutOfBreathStopCallback();
+        this.UnregisterOutOfBreathRecheckDefaultCallback();
+        this.UnregisterOutOfBreathRecheckSprintCallback();
+        this.UnregisterOutOfBreathStopCallback();
         this.UnregisterManagedEffectReconciliationDebounceDelayCallback();
         this.UnregisterManagedEffectVFXRecheckDelayCallback();
     }
@@ -1058,17 +1058,17 @@ public final class DFPlayerStateService extends DFSystem {
     public func OnTimeSkipStart() -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipStart");
+        DFLog(this, "OnTimeSkipStart");
 
-		this.UnregisterPlayerStateEffectsDurationUpdateCallback();
+        this.UnregisterPlayerStateEffectsDurationUpdateCallback();
     }
 
     public func OnTimeSkipCancelled() -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipCancelled");
+        DFLog(this, "OnTimeSkipCancelled");
 
-		this.RegisterPlayerStateEffectsDurationUpdateCallback();
+        this.RegisterPlayerStateEffectsDurationUpdateCallback();
     }
 
     public func OnTimeSkipBegin() -> Void {}
@@ -1076,10 +1076,10 @@ public final class DFPlayerStateService extends DFSystem {
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
         //DFProfile();
         if DFRunGuard(this) { return; }
-		DFLog(this, "OnTimeSkipFinished");
+        DFLog(this, "OnTimeSkipFinished");
 
         this.ClearAllManagedEffects(true);
-		this.RegisterPlayerStateEffectsDurationUpdateCallback();
+        this.RegisterPlayerStateEffectsDurationUpdateCallback();
 
         if this.GameStateService.IsValidGameState(this, true) {
             this.OnPlayerStateEffectsDurationUpdateFromTimeSkip(data.targetAddictionValues, data.timeSkipType);
@@ -1111,29 +1111,29 @@ public final class DFPlayerStateService extends DFSystem {
     //
     protected cb func OnLocomotionStateChanged(value: Int32) -> Void {
         //DFProfile();
-		if DFRunGuard(this) { return; }
-		
-		if this.GameStateService.IsValidGameState(this) {
-			// 0 = Default, 2 = Sprinting, 7 = Dashing
+        if DFRunGuard(this) { return; }
+        
+        if this.GameStateService.IsValidGameState(this) {
+            // 0 = Default, 2 = Sprinting, 7 = Dashing
 
-			this.lastLocomotionState = value;
+            this.lastLocomotionState = value;
 
-			// Out of breath effect
-			if this.outOfBreathEffectQueued {
-				if value == 0 {
-					this.RegisterOutOfBreathRecheckDefaultCallback();
-				}
-			} else {
-				if value == 2 {
-					// Debounce VFX playback after starting to Sprint - require continuous sprinting before feeling exhausted
-					this.RegisterOutOfBreathRecheckSprintCallback();
-				} else if value == 7 {
-					// Immediate playback after Dash
-					this.outOfBreathEffectQueued = true;
-				}
-			}
-		}
-	}
+            // Out of breath effect
+            if this.outOfBreathEffectQueued {
+                if value == 0 {
+                    this.RegisterOutOfBreathRecheckDefaultCallback();
+                }
+            } else {
+                if value == 2 {
+                    // Debounce VFX playback after starting to Sprint - require continuous sprinting before feeling exhausted
+                    this.RegisterOutOfBreathRecheckSprintCallback();
+                } else if value == 7 {
+                    // Immediate playback after Dash
+                    this.outOfBreathEffectQueued = true;
+                }
+            }
+        }
+    }
 
     private final func UpdateFastTravelState() -> Void {
         //DFProfile();
@@ -1164,7 +1164,7 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final func GetPlayerDangerState() -> DFPlayerDangerState {
         //DFProfile();
-		let dangerState: DFPlayerDangerState;
+        let dangerState: DFPlayerDangerState;
         if this.GameStateService.IsValidGameState(this, true) {
             dangerState.InCombat = this.player.IsInCombat();
             
@@ -1177,12 +1177,12 @@ public final class DFPlayerStateService extends DFSystem {
         }
 
         return dangerState;
-	}
+    }
 
     public final func GetInDangerFromState(dangerState: DFPlayerDangerState) -> Bool {
         //DFProfile();
-		return dangerState.InCombat || dangerState.BeingRevealed;
-	}
+        return dangerState.InCombat || dangerState.BeingRevealed;
+    }
 
     public final func GetInDanger() -> Bool {
         //DFProfile();
@@ -1192,13 +1192,13 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final func UpdateStaminaCosts() {
         //DFProfile();
-		DFLog(this, "UpdateStaminaCosts");
+        DFLog(this, "UpdateStaminaCosts");
 
         let totalSprintCost: Float = 0.0;
         let totalJumpCost: Float = 0.0;
 
         if !this.GameStateService.IsValidGameState(this) {
-			this.ClearStaminaCosts();
+            this.ClearStaminaCosts();
         }
 
         if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmokingDebuff") {
@@ -1206,12 +1206,12 @@ public final class DFPlayerStateService extends DFSystem {
             totalJumpCost += this.playerSmokingPenaltyStaminaCostJumping;
         }
 
-		let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
+        let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
         let hasStaminaBooster: Bool = StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureStaminaBooster");
         
-		DFLog(this, "    hydrationStage = " + ToString(hydrationStage));
+        DFLog(this, "    hydrationStage = " + ToString(hydrationStage));
 
-		if !hasStaminaBooster {
+        if !hasStaminaBooster {
             if hydrationStage == 2 {
                 totalSprintCost += this.playerHydrationPenalty02StaminaCostSprinting;
                 totalJumpCost += this.playerHydrationPenalty02StaminaCostJumping;
@@ -1232,17 +1232,17 @@ public final class DFPlayerStateService extends DFSystem {
         if FromVariant<Float>(TweakDBInterface.GetFlat(t"player.staminaCosts.jump")) != totalJumpCost {
             TweakDBManager.SetFlat(t"player.staminaCosts.jump", totalJumpCost);
         }
-	}
+    }
 
-	private final func ClearStaminaCosts() -> Void {
+    private final func ClearStaminaCosts() -> Void {
         //DFProfile();
-		if FromVariant<Float>(TweakDBInterface.GetFlat(t"player.staminaCosts.sprint")) != 0.0 {
-			TweakDBManager.SetFlat(t"player.staminaCosts.sprint", 0.0);
-		}
-		if FromVariant<Float>(TweakDBInterface.GetFlat(t"player.staminaCosts.jump")) != 0.0 {
-			TweakDBManager.SetFlat(t"player.staminaCosts.jump", 0.0);
-		}
-	}
+        if FromVariant<Float>(TweakDBInterface.GetFlat(t"player.staminaCosts.sprint")) != 0.0 {
+            TweakDBManager.SetFlat(t"player.staminaCosts.sprint", 0.0);
+        }
+        if FromVariant<Float>(TweakDBInterface.GetFlat(t"player.staminaCosts.jump")) != 0.0 {
+            TweakDBManager.SetFlat(t"player.staminaCosts.jump", 0.0);
+        }
+    }
 
     public final func HasIncompatibleVFXApplied() -> Bool {
         //DFProfile();
@@ -1270,127 +1270,127 @@ public final class DFPlayerStateService extends DFSystem {
     //
     private final func TryToPlayOutOfBreathEffectsFromSprinting() -> Void {
         //DFProfile();
-		if this.GameStateService.IsValidGameState(this) {
-			// Allow Nerve breathing FX to win over Out Of Breath FX.
-			if this.NerveSystem.currentNerveBreathingFXStage != 0 {
-				return;
-			}
-			
-			let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
+        if this.GameStateService.IsValidGameState(this) {
+            // Allow Nerve breathing FX to win over Out Of Breath FX.
+            if this.NerveSystem.currentNerveBreathingFXStage != 0 {
+                return;
+            }
+            
+            let hydrationStage: Int32 = this.HydrationSystem.GetNeedStage();
             if hydrationStage >= 3 {
                 this.StartOutOfBreathBreathingEffects(DFOutOfBreathReason.SprintingDashingWithLowHydration);
                 this.RegisterOutOfBreathStopCallback();
             } else if StatusEffectSystem.ObjectHasStatusEffectWithTag(this.player, n"DarkFutureSmoking") {
-				this.StartOutOfBreathBreathingEffects(DFOutOfBreathReason.SprintingDashingAfterSmoking);
-				this.RegisterOutOfBreathStopCallback();
-			}
-		}
-	}
+                this.StartOutOfBreathBreathingEffects(DFOutOfBreathReason.SprintingDashingAfterSmoking);
+                this.RegisterOutOfBreathStopCallback();
+            }
+        }
+    }
 
     public final func TryToPlayOutOfBreathEffectsFromHydrationNotification() -> Void {
         //DFProfile();
-		if this.GameStateService.IsValidGameState(this) {
-			// Allow Nerve breathing FX to win over Out Of Breath FX.
-			if this.NerveSystem.currentNerveBreathingFXStage != 0 {
-				return;
-			}
+        if this.GameStateService.IsValidGameState(this) {
+            // Allow Nerve breathing FX to win over Out Of Breath FX.
+            if this.NerveSystem.currentNerveBreathingFXStage != 0 {
+                return;
+            }
 
             this.StartOutOfBreathBreathingEffects(DFOutOfBreathReason.LowHydrationNotification);
             this.RegisterOutOfBreathStopCallback();
-		}
+        }
     }
 
     private final func StartOutOfBreathBreathingEffects(reason: DFOutOfBreathReason) -> Void {
         //DFProfile();
-		DFLog(this, "StartOutOfBreathBreathingEffects reason = " + ToString(reason));
+        DFLog(this, "StartOutOfBreathBreathingEffects reason = " + ToString(reason));
 
-		if !this.playingOutOfBreathFX {
-			this.playingOutOfBreathFX = true;
+        if !this.playingOutOfBreathFX {
+            this.playingOutOfBreathFX = true;
 
             // Play the camera wobble from low Hydration notifications, and after sprinting or dashing with low Hydration.
-			if (this.Settings.hydrationNeedVFXEnabled && Equals(reason, DFOutOfBreathReason.LowHydrationNotification)) || 
+            if (this.Settings.hydrationNeedVFXEnabled && Equals(reason, DFOutOfBreathReason.LowHydrationNotification)) || 
                (this.Settings.outOfBreathCameraEffectEnabled && Equals(reason, DFOutOfBreathReason.SprintingDashingWithLowHydration)) {
-				StatusEffectHelper.ApplyStatusEffect(this.player, t"BaseStatusEffect.BreathingHeavy");
-			}
+                StatusEffectHelper.ApplyStatusEffect(this.player, t"BaseStatusEffect.BreathingHeavy");
+            }
 
             // Play the sound effects if sprinting or dashing with low Hydration or after smoking.
-			if Equals(reason, DFOutOfBreathReason.SprintingDashingWithLowHydration) ||
+            if Equals(reason, DFOutOfBreathReason.SprintingDashingWithLowHydration) ||
                Equals(reason, DFOutOfBreathReason.SprintingDashingAfterSmoking) {
-				if this.Settings.outOfBreathEffectEnabled {
-					let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
-					evt.soundName = n"ono_v_breath_fast";
-					this.player.QueueEvent(evt);
-				}
-			}
-		}
-	}
+                if this.Settings.outOfBreathEffectEnabled {
+                    let evt: ref<SoundPlayEvent> = new SoundPlayEvent();
+                    evt.soundName = n"ono_v_breath_fast";
+                    this.player.QueueEvent(evt);
+                }
+            }
+        }
+    }
 
-	private final func StopOutOfBreathEffects() -> Void {
+    private final func StopOutOfBreathEffects() -> Void {
         //DFProfile();
-		DFLog(this, "StopOutOfBreathEffects");
-		
-		StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.BreathingHeavy");
-		this.playingOutOfBreathFX = false;
-	}
+        DFLog(this, "StopOutOfBreathEffects");
+        
+        StatusEffectHelper.RemoveStatusEffect(this.player, t"BaseStatusEffect.BreathingHeavy");
+        this.playingOutOfBreathFX = false;
+    }
 
-	public final func StopOutOfBreathSFXIfBreathingFXPlaying() -> Void {
+    public final func StopOutOfBreathSFXIfBreathingFXPlaying() -> Void {
         //DFProfile();
-		if this.playingOutOfBreathFX {
-			this.StopOutOfBreathSFX();
-		}
-	}
+        if this.playingOutOfBreathFX {
+            this.StopOutOfBreathSFX();
+        }
+    }
 
-	public final func StopOutOfBreathSFX() -> Void {
+    public final func StopOutOfBreathSFX() -> Void {
         //DFProfile();
-		DFLog(this, "StopOutOfBreathSFX");
+        DFLog(this, "StopOutOfBreathSFX");
 
-		// Only used when other breathing SFX need to stop this early, otherwise stops on its own
-		let evt: ref<SoundStopEvent> = new SoundStopEvent();
-		evt.soundName = n"ono_v_breath_fast";
-		this.player.QueueEvent(evt);
-	}
+        // Only used when other breathing SFX need to stop this early, otherwise stops on its own
+        let evt: ref<SoundStopEvent> = new SoundStopEvent();
+        evt.soundName = n"ono_v_breath_fast";
+        this.player.QueueEvent(evt);
+    }
 
     public final func OnOutOfBreathRecheckSprintingCallback() -> Void {
         //DFProfile();
-		if this.lastLocomotionState == 2 { // Still sprinting!
-			DFLog(this, "OnOutOfBreathRecheckSprintingCallback -- Still sprinting! Queuing breathing effect.");
-			this.outOfBreathEffectQueued = true;
-		}
-	}
+        if this.lastLocomotionState == 2 { // Still sprinting!
+            DFLog(this, "OnOutOfBreathRecheckSprintingCallback -- Still sprinting! Queuing breathing effect.");
+            this.outOfBreathEffectQueued = true;
+        }
+    }
 
-	public final func OnOutOfBreathRecheckDefaultCallback() -> Void {
+    public final func OnOutOfBreathRecheckDefaultCallback() -> Void {
         //DFProfile();
-		if this.lastLocomotionState == 0 { // Still default!
-			DFLog(this, "OnOutOfBreathRecheckDefaultCallback -- Still default! Try to play breathing effect.");
-			this.outOfBreathEffectQueued = false;
-			this.TryToPlayOutOfBreathEffectsFromSprinting();
-		}
-	}
+        if this.lastLocomotionState == 0 { // Still default!
+            DFLog(this, "OnOutOfBreathRecheckDefaultCallback -- Still default! Try to play breathing effect.");
+            this.outOfBreathEffectQueued = false;
+            this.TryToPlayOutOfBreathEffectsFromSprinting();
+        }
+    }
 
-	public final func OnOutOfBreathStopCallback() -> Void {
+    public final func OnOutOfBreathStopCallback() -> Void {
         //DFProfile();
-		this.StopOutOfBreathEffects();
-	}
+        this.StopOutOfBreathEffects();
+    }
 
     private final func RegisterOutOfBreathStopCallback() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, OutOfBreathStopCallback.Create(), this.outOfBreathStopDelayID, this.outOfBreathStopDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, OutOfBreathStopCallback.Create(), this.outOfBreathStopDelayID, this.outOfBreathStopDelayInterval);
+    }
 
     private final func RegisterOutOfBreathRecheckSprintCallback() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, OutOfBreathRecheckSprintingCallback.Create(), this.outOfBreathRecheckSprintingDelayID, this.outOfBreathRecheckSprintingDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, OutOfBreathRecheckSprintingCallback.Create(), this.outOfBreathRecheckSprintingDelayID, this.outOfBreathRecheckSprintingDelayInterval);
+    }
 
-	private final func RegisterOutOfBreathRecheckDefaultCallback() -> Void {
+    private final func RegisterOutOfBreathRecheckDefaultCallback() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, OutOfBreathRecheckDefaultCallback.Create(), this.outOfBreathRecheckDefaultDelayID, this.outOfBreathRecheckDefaultDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, OutOfBreathRecheckDefaultCallback.Create(), this.outOfBreathRecheckDefaultDelayID, this.outOfBreathRecheckDefaultDelayInterval);
+    }
 
     private final func RegisterManagedEffectReconciliationDebounceDelayCallback() -> Void {
         //DFProfile();
-		RegisterDFDelayCallback(this.DelaySystem, ManagedEffectReconciliationDebounceDelayCallback.Create(), this.managedEffectReconciliationDebounceDelayID, this.managedEffectReconciliationDebounceDelayInterval);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, ManagedEffectReconciliationDebounceDelayCallback.Create(), this.managedEffectReconciliationDebounceDelayID, this.managedEffectReconciliationDebounceDelayInterval);
+    }
 
     private final func RegisterManagedEffectVFXRecheckDelayCallback(useLastingDuration: Bool) -> Void {
         //DFProfile();
@@ -1417,33 +1417,33 @@ public final class DFPlayerStateService extends DFSystem {
         }
         DFLog(this, "    Registering for an interval of " + ToString(interval) + "sec");
 
-		RegisterDFDelayCallback(this.DelaySystem, ManagedEffectVFXRecheckDelayCallback.Create(), this.managedEffectVFXRecheckDelayID, interval, true);
-	}
+        RegisterDFDelayCallback(this.DelaySystem, ManagedEffectVFXRecheckDelayCallback.Create(), this.managedEffectVFXRecheckDelayID, interval, true);
+    }
 
     private final func UnregisterOutOfBreathStopCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.outOfBreathStopDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.outOfBreathStopDelayID);
+    }
 
     private final func UnregisterOutOfBreathRecheckDefaultCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.outOfBreathRecheckDefaultDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.outOfBreathRecheckDefaultDelayID);
+    }
 
     private final func UnregisterOutOfBreathRecheckSprintCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.outOfBreathRecheckSprintingDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.outOfBreathRecheckSprintingDelayID);
+    }
 
     private final func UnregisterManagedEffectReconciliationDebounceDelayCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.managedEffectReconciliationDebounceDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.managedEffectReconciliationDebounceDelayID);
+    }
 
     private final func UnregisterManagedEffectVFXRecheckDelayCallback() -> Void {
         //DFProfile();
-		UnregisterDFDelayCallback(this.DelaySystem, this.managedEffectVFXRecheckDelayID);
-	}
+        UnregisterDFDelayCallback(this.DelaySystem, this.managedEffectVFXRecheckDelayID);
+    }
 
     //
     //  Player State Effects
@@ -1451,12 +1451,12 @@ public final class DFPlayerStateService extends DFSystem {
     private final func RegisterPlayerStateEffectsDurationUpdateCallback() -> Void {
         //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, PlayerStateEffectsDurationUpdateDelayCallback.Create(), this.playerStateEffectsDurationUpdateDelayID, this.playerStateEffectsDurationUpdateIntervalInGameTimeSeconds / this.Settings.timescale);
-	}
+    }
 
-	private final func UnregisterPlayerStateEffectsDurationUpdateCallback() -> Void {
+    private final func UnregisterPlayerStateEffectsDurationUpdateCallback() -> Void {
         //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.playerStateEffectsDurationUpdateDelayID);
-	}
+    }
 
     public final func OnPlayerStateEffectsDurationUpdate(gameTimeSecondsToReduce: Float) -> Void {
         //DFProfile();
@@ -1524,16 +1524,16 @@ public final class DFPlayerStateService extends DFSystem {
 
     public final func OnAddictionTreatmentDrugConsumed() -> Void {
         //DFProfile();
-		// Set the duration.
-		this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds = HoursToGameTimeSeconds(this.addictionTreatmentEffectDurationInGameHours);
+        // Set the duration.
+        this.remainingAddictionTreatmentEffectDurationInGameTimeSeconds = HoursToGameTimeSeconds(this.addictionTreatmentEffectDurationInGameHours);
 
-		// Refresh player-facing status effects.
+        // Refresh player-facing status effects.
         this.RefreshAddictionTreatmentEffect();
-		this.DispatchAddictionTreatmentEffectAppliedOrRemovedEvent();
+        this.DispatchAddictionTreatmentEffectAppliedOrRemovedEvent();
 
         // Update the Nerve limit.
         this.NerveSystem.ForceNeedMaxValueUpdate();
-	}
+    }
 
     private final func DispatchAddictionTreatmentDurationUpdateDoneEvent(gameTimeSecondsToReduce: Float) -> Void {
         //DFProfile();
@@ -1611,34 +1611,34 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func PlayCriticalNeedEffects() -> Void {
-		//DFProfile();
-		if !this.playingCriticalNeedFX {
-			this.playingCriticalNeedFX = true;
-			this.AudioSystem.NotifyGameTone(n"InLowHealth");
-			this.PlayCriticalNeedVFX();
-		}
-	}
+        //DFProfile();
+        if !this.playingCriticalNeedFX {
+            this.playingCriticalNeedFX = true;
+            this.AudioSystem.NotifyGameTone(n"InLowHealth");
+            this.PlayCriticalNeedVFX();
+        }
+    }
 
-	public final func StopCriticalNeedEffects(opt force: Bool) -> Void {
-		//DFProfile();
-		if this.playingCriticalNeedFX || force {
-			this.playingCriticalNeedFX = false;
-			this.AudioSystem.NotifyGameTone(n"InNormalHealth");
-			this.StopCriticalNeedVFX();
-		}
-	}
+    public final func StopCriticalNeedEffects(opt force: Bool) -> Void {
+        //DFProfile();
+        if this.playingCriticalNeedFX || force {
+            this.playingCriticalNeedFX = false;
+            this.AudioSystem.NotifyGameTone(n"InNormalHealth");
+            this.StopCriticalNeedVFX();
+        }
+    }
 
     private final func PlayCriticalNeedVFX() -> Void {
-		//DFProfile();
-		if this.Settings.criticalNeedVFXEnabled {
-			GameObjectEffectHelper.StartEffectEvent(this.player, n"cool_perk_focused_state_fullscreen", false, null, false);
-		}
-	}
+        //DFProfile();
+        if this.Settings.criticalNeedVFXEnabled {
+            GameObjectEffectHelper.StartEffectEvent(this.player, n"cool_perk_focused_state_fullscreen", false, null, false);
+        }
+    }
 
-	private final func StopCriticalNeedVFX() -> Void {
-		//DFProfile();
-		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"cool_perk_focused_state_fullscreen");
-	}
+    private final func StopCriticalNeedVFX() -> Void {
+        //DFProfile();
+        GameObjectEffectHelper.BreakEffectLoopEvent(this.player, n"cool_perk_focused_state_fullscreen");
+    }
 
     //
     // Vehicle Speed
@@ -1733,18 +1733,18 @@ public final class DFPlayerStateService extends DFSystem {
 
     public func OnItemConsumed(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
         //DFProfile();
-		if DFRunGuard(this) { return; }
+        if DFRunGuard(this) { return; }
         if !this.GameStateService.IsValidGameState(this, true) { return; }
-		DFLog(this, "OnItemConsumed");
+        DFLog(this, "OnItemConsumed");
 
-		let itemTags: array<CName> = itemRecord.Tags();
-		if ArrayContains(itemTags, n"DarkFutureConsumableAddictionTreatmentDrug") {
+        let itemTags: array<CName> = itemRecord.Tags();
+        if ArrayContains(itemTags, n"DarkFutureConsumableAddictionTreatmentDrug") {
             this.OnAddictionTreatmentDrugConsumed();
         
         } else if ArrayContains(itemTags, n"DarkFutureManagedConsumable") {
             this.HandleManagedConsumable(itemRecord, animateUI);
         }
-	}
+    }
 
     public final func GetItemManagedEffectStateIndex(itemRecord: ref<Item_Record>) -> Int32 {
         //DFProfile();
@@ -2222,10 +2222,10 @@ public final class DFPlayerStateService extends DFSystem {
         //DFProfile();
         if DFRunGuard(this) { return; }
         if this.isReconcilingStatusEffects { return; }
-		if this.EnergySystem.isSkippingTime { return; }
+        if this.EnergySystem.isSkippingTime { return; }
 
         let realStatusEffect: ref<StatusEffect_Record> = evt.staticData;
-		let realStatusID: TweakDBID = realStatusEffect.GetID();
+        let realStatusID: TweakDBID = realStatusEffect.GetID();
 
         this.OnManagedEffectRemovedImpl(realStatusID);
     }
@@ -2279,25 +2279,25 @@ public final class DFPlayerStateService extends DFSystem {
             while j < delta {
                 let energyToChange: Float = ArrayPop(this.managedEffectsState[stateIdx].activeEffectEnergyChanges);
 
-				let changeNeedValueProps: DFChangeNeedValueProps;
+                let changeNeedValueProps: DFChangeNeedValueProps;
 
-				let uiFlags: DFNeedChangeUIFlags;
-				uiFlags.forceMomentaryUIDisplay = true;
-				uiFlags.instantUIChange = false;
-				uiFlags.forceBright = true;
+                let uiFlags: DFNeedChangeUIFlags;
+                uiFlags.forceMomentaryUIDisplay = true;
+                uiFlags.instantUIChange = false;
+                uiFlags.forceBright = true;
 
-				changeNeedValueProps.uiFlags = uiFlags;
+                changeNeedValueProps.uiFlags = uiFlags;
 
-				if this.BiocorruptionConditionSystem.GetHasEuphoria() && energyToChange > 0.0 {
-					// If under Euphoria, instead of removing the amount, add it to the delayed need loss pool.
-					// TODO - Make sure timeskip also does this
+                if this.BiocorruptionConditionSystem.GetHasEuphoria() && energyToChange > 0.0 {
+                    // If under Euphoria, instead of removing the amount, add it to the delayed need loss pool.
+                    // TODO - Make sure timeskip also does this
                     // TODO - Euphoria should be utilizing Lasting effects, verify
-					this.EnergySystem.currentDelayedNeedLoss -= energyToChange;
+                    this.EnergySystem.currentDelayedNeedLoss -= energyToChange;
                     DFLog(this, "Adding " + ToString(energyToChange) + " Energy change to the delayed need loss pool.");
-				} else {
+                } else {
                     DFLog(this, "Changing Energy by: " + ToString(-energyToChange));
-					this.EnergySystem.ChangeNeedValue(-energyToChange, changeNeedValueProps);
-				}
+                    this.EnergySystem.ChangeNeedValue(-energyToChange, changeNeedValueProps);
+                }
                 j += 1;
             }
 
@@ -2315,10 +2315,10 @@ public final class DFPlayerStateService extends DFSystem {
         this.PrintManagedEffectsState();
         this.DispatchAddictionManagedEffectRemoved(type);
         this.UpdateManagedEffectVFX(true);
-	}
+    }
 
     public final func ClearAllManagedEffects(opt fromTimeskip: Bool) -> Void {
-		//DFProfile();
+        //DFProfile();
         let energyToChange: Float;
         let i: Int32 = 0;
         while i < ArraySize(this.managedEffectsState) {
@@ -2357,7 +2357,7 @@ public final class DFPlayerStateService extends DFSystem {
 
         this.ReconcileManagedStatusEffects();
         this.UpdateManagedEffectVFX(true);
-	}
+    }
 
     public final func ClearManagedEffectOfTypeAndReturnEnergyToChange(type: DFManagedEffectType) -> Float {
         //DFProfile();
@@ -2651,12 +2651,12 @@ public final class DFPlayerStateService extends DFSystem {
 
                 } else if alcoholActiveStackCount <= 2u {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.alcoholMotionBlurEffect, false, null, true);
-					GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 2.00);
+                    GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 2.00);
 
                 } else {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.alcoholMotionBlurEffect, false, null, true);
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.alcoholWaveEffect);
-					GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 3.00);
+                    GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 3.00);
                 }
 
                 if narcoticActiveStackCount == 0u {
@@ -2665,10 +2665,10 @@ public final class DFPlayerStateService extends DFSystem {
 
                 } else if narcoticActiveStackCount <= 2u {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.narcoticsBloomLowColorEffect, false, null, true);
-					GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 2.00);
+                    GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 2.00);
                 } else {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.narcoticsBloomHighColorEffect, false, null, true);
-					GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 3.00);
+                    GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 3.00);
                 }
 
                 if narcoticActiveStackCount >= 3u || alcoholActiveStackCount >= 3u {
@@ -2690,10 +2690,10 @@ public final class DFPlayerStateService extends DFSystem {
 
                 } else if alcoholActiveStackCount <= 2u {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.alcoholMotionBlurEffect, false, null, true);
-					GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 1.00);
+                    GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 1.00);
                 } else {
                     GameObjectEffectHelper.StartEffectEvent(this.player, this.alcoholMotionBlurEffect, false, null, true);
-					GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 2.00);
+                    GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 2.00);
                 }
 
                 if narcoticActiveStackCount == 0u {
@@ -2729,12 +2729,12 @@ public final class DFPlayerStateService extends DFSystem {
         //DFProfile();
         this.UnregisterManagedEffectVFXRecheckDelayCallback();
         GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.alcoholMotionBlurEffect);
-		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.alcoholWaveEffect);
-		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.narcoticsBloomLowColorEffect);
+        GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.alcoholWaveEffect);
+        GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.narcoticsBloomLowColorEffect);
         GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.narcoticsBloomHighColorEffect);
         GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.chomaticAbberationLowEffect);
         GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.chromaticAbberationHighEffect);
-		GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 0.00);
+        GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drunk_level", 0.00);
         GameObject.SetAudioParameter(this.player, n"vfx_fullscreen_drugged_level", 0.00);
     }
 
@@ -2758,21 +2758,21 @@ public final class DFPlayerStateService extends DFSystem {
         //DFProfile();
 
         // Invalid Configuration Checks
-		if this.DFIsWannabeEdgerunnerInstalled() && this.Settings.humanityLossCyberpsychosisEnabled {
-			this.ShowWannabeEdgerunnerWarning();
-		}
+        if this.DFIsWannabeEdgerunnerInstalled() && this.Settings.humanityLossCyberpsychosisEnabled {
+            this.ShowWannabeEdgerunnerWarning();
+        }
     }
 
     public final func ShowWannabeEdgerunnerWarning() -> Void {
-		//DFProfile();
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
-		let warning: DFTutorial;
-		warning.title = GetLocalizedTextByKey(n"DarkFutureWarningWannabeEdgerunnerTitle");
-		warning.message = GetLocalizedTextByKey(n"DarkFutureWarningWannabeEdgerunner");
-		warning.iconID = t"";
-		this.NotificationService.QueueTutorial(warning);
-	}
+        let warning: DFTutorial;
+        warning.title = GetLocalizedTextByKey(n"DarkFutureWarningWannabeEdgerunnerTitle");
+        warning.message = GetLocalizedTextByKey(n"DarkFutureWarningWannabeEdgerunner");
+        warning.iconID = t"";
+        this.NotificationService.QueueTutorial(warning);
+    }
 
     public final func SetAddictionTreatmentEffectDuration(newDurationInGameTimeHours: Int32) -> Void {
         //DFProfile();
@@ -2793,7 +2793,7 @@ public final class DFPlayerStateService extends DFSystem {
 }
 
 //
-//	Base Game Methods
+//  Base Game Methods
 //
 
 //  PlayerPuppet - Let the Nerve System and Bar know when Combat state changes. (Counts as being "In Danger".)
@@ -2802,11 +2802,11 @@ public final class DFPlayerStateService extends DFSystem {
 @wrapMethod(PlayerPuppet)
 protected cb func OnCombatStateChanged(newState: Int32) -> Bool {
     //DFProfile();
-	let result: Bool = wrappedMethod(newState);
+    let result: Bool = wrappedMethod(newState);
 
     this.DFReportDangerStateChanged();
 
-	return result;
+    return result;
 }
 
 @addMethod(PlayerPuppet)
@@ -2815,7 +2815,7 @@ public final func DFReportDangerStateChanged() -> Void {
     let gameInstance: GameInstance = GetGameInstance();
     
     let dangerState: DFPlayerDangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
-	DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
+    DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
     DFHumanityLossConditionSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
 }
 
@@ -2825,9 +2825,9 @@ public final func DFReportDangerStateChanged() -> Void {
 @wrapMethod(HUDProgressBarController)
 public final func UpdateProgressBarActive(active: Bool) -> Void {
     //DFProfile();
-	wrappedMethod(active);
+    wrappedMethod(active);
 
-	this.DFReportDangerStateChanged();
+    this.DFReportDangerStateChanged();
 }
 
 @addMethod(HUDProgressBarController)
@@ -2836,7 +2836,7 @@ public final func DFReportDangerStateChanged() -> Void {
     let gameInstance: GameInstance = GetGameInstance();
     
     let dangerState: DFPlayerDangerState = DFPlayerStateService.GetInstance(gameInstance).GetPlayerDangerState();
-	DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
+    DFNerveSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
     DFHumanityLossConditionSystem.GetInstance(gameInstance).OnDangerStateChanged(dangerState);
 }
 
@@ -2846,12 +2846,12 @@ public final func DFReportDangerStateChanged() -> Void {
 @wrapMethod(GameObject)
 protected final func ProcessDamageReceived(evt: ref<gameDamageReceivedEvent>) -> Void {
     //DFProfile();
-	wrappedMethod(evt);
+    wrappedMethod(evt);
 
-	// If the target was the player, ignoring Pressure Wave attacks (i.e. fall damage)
-	if evt.hitEvent.target.IsPlayer() && NotEquals(evt.hitEvent.attackData.GetAttackType(), gamedataAttackType.PressureWave) && NotEquals(evt.hitEvent.attackData.GetAttackType(), gamedataAttackType.Invalid) {
-		GameInstance.GetCallbackSystem().DispatchEvent(PlayerStateServiceOnDamageReceivedEvent.Create(evt));
-	}
+    // If the target was the player, ignoring Pressure Wave attacks (i.e. fall damage)
+    if evt.hitEvent.target.IsPlayer() && NotEquals(evt.hitEvent.attackData.GetAttackType(), gamedataAttackType.PressureWave) && NotEquals(evt.hitEvent.attackData.GetAttackType(), gamedataAttackType.Invalid) {
+        GameInstance.GetCallbackSystem().DispatchEvent(PlayerStateServiceOnDamageReceivedEvent.Create(evt));
+    }
 }
 
 //
@@ -2977,28 +2977,28 @@ protected final func ActionOpenWorldMap() -> ref<OpenWorldMapDeviceAction> {
 //
 @wrapMethod(VehicleObject)
 protected cb func OnMountingEvent(evt: ref<MountingEvent>) -> Bool {
-	//DFProfile();
-	let r: Bool = wrappedMethod(evt);
+    //DFProfile();
+    let r: Bool = wrappedMethod(evt);
 
-	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-	if IsDefined(mountChild) && mountChild.IsPlayer() && VehicleComponent.IsDriverSlot(evt.request.lowLevelMountingInfo.slotId.id) {		
-		DFPlayerStateService.Get().TryToRegisterForVehicleSpeedChange(this);
-	}
+    let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
+    if IsDefined(mountChild) && mountChild.IsPlayer() && VehicleComponent.IsDriverSlot(evt.request.lowLevelMountingInfo.slotId.id) {        
+        DFPlayerStateService.Get().TryToRegisterForVehicleSpeedChange(this);
+    }
 
-	return r;
+    return r;
 }
 
 // VehicleObject - Unregister for vehicle speed changes on unmount.
 //
 @wrapMethod(VehicleObject)
 protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
-	//DFProfile();
-	let r: Bool = wrappedMethod(evt);
+    //DFProfile();
+    let r: Bool = wrappedMethod(evt);
 
-	let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
-	if IsDefined(mountChild) && mountChild.IsPlayer() {
-		DFPlayerStateService.Get().UnregisterForVehicleSpeedChange(this);
-	}
-	
-	return r;
+    let mountChild: ref<GameObject> = GameInstance.FindEntityByID(this.GetGame(), evt.request.lowLevelMountingInfo.childId) as GameObject;
+    if IsDefined(mountChild) && mountChild.IsPlayer() {
+        DFPlayerStateService.Get().UnregisterForVehicleSpeedChange(this);
+    }
+    
+    return r;
 }
