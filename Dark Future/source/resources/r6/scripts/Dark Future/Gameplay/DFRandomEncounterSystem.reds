@@ -116,6 +116,7 @@ public final class DFRandomEncounterSystem extends DFSystem {
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {}
     
     private func UnregisterListeners() -> Void {
+        //DFProfile();
         this.DynamicEntitySystem.UnregisterListener(n"DarkFuture.SpawnedNPC", this, n"OnPuppetUpdate");
     }
     

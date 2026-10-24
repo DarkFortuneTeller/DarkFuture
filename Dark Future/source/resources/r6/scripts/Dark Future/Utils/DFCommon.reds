@@ -64,16 +64,19 @@ public func IsCoinFlipSuccessful() -> Bool {
 }
 
 public func RandRangeInclusive(min: Int32, max: Int32) -> Int32 {
+    //DFProfile();
     // RandRange secretly omits generating the max value.
     return RandRange(min, max + 1);
 }
 
 public func RandRangeInclusive(min: Uint32, max: Uint32) -> Uint32 {
+    //DFProfile();
     // RandRange secretly omits generating the max value.
     return Cast<Uint32>(RandRange(Cast<Int32>(min), Cast<Int32>(max + 1u)));
 }
 
 public func DFGetPlayer() -> ref<PlayerPuppet> {
+    //DFProfile();
     return DFMainSystem.Get().player;
 }
 

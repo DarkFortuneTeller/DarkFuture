@@ -498,6 +498,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     }
 
     public final func QueueConditionProgressionNotification(lastValue: Int32, increasing: Bool, opt actualDelta: Int32) {
+        //DFProfile();
         if !this.Settings.conditionMessagesEnabled { return; }
         
         let notification: DFProgressionNotification;
@@ -578,6 +579,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     //  UI
     //
     public final func UpdateConditionsHUDUI(opt pulse: Bool) -> Void {
+        //DFProfile();
         this.DispatchUpdateConditionsHUDUIEvent(this.GetHUDSegmentedIndicatorSegmentType(), this.currentConditionLevel > 0u, pulse);
     }
 
@@ -590,15 +592,18 @@ public abstract class DFConditionSystemBase extends DFSystem {
     // Suppression
     //
     public final func GetIsConditionSuppressed() -> Bool {
+        //DFProfile();
         return ArraySize(this.conditionSuppressionLayers) > 0;
     }
 
     public final func SetSuppression(reason: CName) -> Void {
+        //DFProfile();
         ArrayPush(this.conditionSuppressionLayers, DFConditionSuppressionLayer(reason));
         this.RefreshConditionStatusEffects();
     }
 
     public final func UnsetSuppression(reason: CName) -> Void {
+        //DFProfile();
         let i: Int32 = ArraySize(this.conditionSuppressionLayers) - 1;
         while i >= 0 {
             if Equals(this.conditionSuppressionLayers[i].reason, reason) {
@@ -610,6 +615,7 @@ public abstract class DFConditionSystemBase extends DFSystem {
     }
 
     public final func ClearSuppression() -> Void {
+        //DFProfile();
         ArrayClear(this.conditionSuppressionLayers);
         this.RefreshConditionStatusEffects();
     }

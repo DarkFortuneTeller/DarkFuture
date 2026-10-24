@@ -324,6 +324,7 @@ public class DFNicotineAddictionSystem extends DFAddictionSystemBase {
 	}
 
 	private final func GetAddictionType() -> DFAddictionType {
+		//DFProfile();
 		return DFAddictionType.Nicotine;
     }
 

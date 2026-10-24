@@ -64,6 +64,7 @@ protected cb func OnUnmountingEvent(evt: ref<UnmountingEvent>) -> Bool {
 
 @wrapMethod(AutoDriveSystem)
 private final func OnAutodriveToggled(enabled: Bool, isDelamain: Bool) -> Void {
+    //DFProfile();
     wrappedMethod(enabled, isDelamain);
 
     DFImpairedDrivingSystem.Get().HandleAutoDriveToggled(enabled);
@@ -259,26 +260,32 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     //  DFSystem Required Methods
     //
     private func SetupDebugLogging() -> Void {
+        //DFProfile();
         this.debugEnabled = false;
     }
 
     public func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
         return this.Settings.impairedDrivingEnabled;
     }
 
     private func GetSystemToggleSettingString() -> String {
+        //DFProfile();
         return "impairedDrivingEnabled";
     }
 
     public func DoPostSuspendActions() -> Void {
+        //DFProfile();
         this.StopControlLossBehavior();
     }
 
     public func DoPostResumeActions() -> Void {
+        //DFProfile();
         this.TryToStartControlLossBehavior();
     }
     
     public func GetSystems() -> Void {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
 
         this.AutoDriveSystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<AutoDriveSystem>()) as AutoDriveSystem;
@@ -301,6 +308,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
 
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+        //DFProfile();
         this.StopControlLossBehavior();
         this.TryToStartControlLossBehavior();
     }
@@ -315,6 +323,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
     
     public func UnregisterAllDelayCallbacks() -> Void {
+        //DFProfile();
         this.UnregisterForControlLossInitialDelay();
         this.UnregisterForControlLossPreStart();
         this.UnregisterForControlLossStart();
@@ -331,18 +340,22 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     //  System-Specific Methods
     //
     private final func GetImpairedDrivingActionFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_impaired_driving";
     }
 
     private final func GetImpairedDrivingVFXCommandFact() -> CName {
+        //DFProfile();
         return n"df_fact_impaired_driving_vfx_command";
     }
 
     private final func GetImpairedDrivingDebugFact() -> CName {
+        //DFProfile();
         return n"df_fact_debug_impaired_driving";
     }
 
     private final func GetImpairedDrivingDebugVFXFact() -> CName {
+        //DFProfile();
         return n"df_fact_debug_impaired_driving_vfx";
     }
 
@@ -355,6 +368,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     //  Impaired Driving Handlers (Also see: InitSpecific())
     //
     public final func HandlePlayerMountedVehicle(vehObj: ref<VehicleObject>) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         this.TryToStartControlLossBehavior();
@@ -362,6 +376,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     public final func HandleAutoDriveToggled(enabled: Bool) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         if enabled {
@@ -372,6 +387,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     public final func OnNeedValueChanged(evt: DFNeedValueChangedEventDatum) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         if Equals(evt.needType, DFNeedType.Energy) {
@@ -384,6 +400,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
 	}
 
     public final func HandlePlayerUnmountedVehicle() -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         this.StopControlLossBehavior();
@@ -393,6 +410,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     //
 
     private final func TryToStartControlLossBehavior() -> Void {
+        //DFProfile();
         if DFRunGuard(this) { 
             DFLog(this, "Failed to start: RunGuard");
             return;
@@ -425,12 +443,14 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     private final func ApplyControlLoss() -> Void {
+        //DFProfile();
         DFLog(this, "~~~~~~~~~   APPLY CONTROL LOSS");
         this.controlLossHappeningNow = true;
         this.QuestsSystem.SetFact(this.GetImpairedDrivingActionFact(), EnumInt(DFImpairedDrivingAction.EnableControlLoss));
     }
 
     private final func ApplyControlLossVFX(intensity: DFImpairedDrivingVFXCommand) -> Void {
+        //DFProfile();
         let notification: DFNotification;
         notification.needsUI = DFBarUIDisplay(DFHUDBarType.Energy, true, false, false, false);
 		this.NotificationService.QueueNotification(notification);
@@ -439,6 +459,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     private final func RestoreControl() -> Void {
+        //DFProfile();
         DFLog(this, "~~~~~~~~~   RESTORE CONTROL");
         this.controlLossHappeningNow = false;
         this.QuestsSystem.SetFact(this.GetImpairedDrivingActionFact(), EnumInt(DFImpairedDrivingAction.DisableControlLoss));
@@ -467,6 +488,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     public final func OnControlLossInitialDelayFinished() -> Void {
+        //DFProfile();
         this.OnControlLossPreStart();
     }
 
@@ -515,6 +537,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     public final func OnControlLossStart(controlLossDuration: Float) -> Void {
+        //DFProfile();
         if this.GetIsPlayerVehicleSpeedOverThreshold() {
             this.ApplyControlLoss();
         }
@@ -546,6 +569,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     private final func GetIsPlayerVehicleSpeedOverThreshold() -> Bool {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let vehicleObj: wref<VehicleObject>;
 		VehicleComponent.GetVehicle(gameInstance, this.player, vehicleObj);
@@ -568,6 +592,7 @@ public final class DFImpairedDrivingSystem extends DFSystem {
     }
 
     private final func GetModeBasedOnCurrentScenario() -> DFImpairedDrivingMode {
+        //DFProfile();
         if this.player.IsInCombat() {
             return DFImpairedDrivingMode.Off;
         }
@@ -631,10 +656,12 @@ public final class DFImpairedDrivingSystem extends DFSystem {
 	//  Debug
 	//
 	private final func OnImpairedDrivingDebugFactSet(value: Int32) -> Void {
+		//DFProfile();
 		//DFLogNoSystem(DFSystemlessDebugEnabled(), this, "~~~~~~~~~ Fact: " + ToString(IntEnum<DFImpairedDrivingDebugFactID>(value)));
 	}
 
     private final func OnImpairedDrivingVFXDebugFactSet(value: Int32) -> Void {
+		//DFProfile();
 		DFLogNoSystem(DFSystemlessDebugEnabled(), this, "~~~~~~~~~ Fact: Value: " + ToString(value) + ", ID: " + ToString(IntEnum<DFImpairedDrivingVFXDebugFactID>(value)));
 	}
 

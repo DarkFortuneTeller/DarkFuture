@@ -145,6 +145,7 @@ public let DarkFutureCustomBackpackNotificationOverride: DFBackpackNotificationT
 
 @wrapMethod(BackpackMainGameController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	let r: Bool = wrappedMethod();
 
 	DFNotificationService.Get().backpackController = this;
@@ -154,6 +155,7 @@ protected cb func OnInitialize() -> Bool {
 
 @wrapMethod(BackpackMainGameController)
 protected cb func OnUninitialize() -> Bool {
+	//DFProfile();
 	let r: Bool = wrappedMethod();
 
 	DFNotificationService.Get().backpackController = null;
@@ -164,6 +166,7 @@ protected cb func OnUninitialize() -> Bool {
 // TODO - Same for Revised Backpack
 @wrapMethod(BackpackMainGameController)
 private final func ShowNotification(gameInstance: GameInstance, type: UIMenuNotificationType) -> Void {
+	//DFProfile();
 	if NotEquals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.None) {
 		if Equals(this.DarkFutureCustomBackpackNotificationOverride, DFBackpackNotificationType.CannotUseNausea) {
 			this.DarkFutureShowCustomNotification(gameInstance, DFEnum_UIMenuNotificationType(n"DarkFutureCannotUseNausea"));
@@ -178,6 +181,7 @@ private final func ShowNotification(gameInstance: GameInstance, type: UIMenuNoti
 
 @addMethod(BackpackMainGameController)
 private final func DarkFutureShowCustomNotification(gameInstance: GameInstance, type: UIMenuNotificationType) -> Void {
+	//DFProfile();
 	// Clear the override.
 	this.DarkFutureCustomBackpackNotificationOverride = DFBackpackNotificationType.None;
 
@@ -189,6 +193,7 @@ private final func DarkFutureShowCustomNotification(gameInstance: GameInstance, 
 
 @wrapMethod(UIMenuNotificationQueue)
 protected cb func OnUINotification(evt: ref<UIMenuNotificationEvent>) -> Bool {
+	//DFProfile();
 	let useCustomNotification: Bool = false;
 	let notificationData: gameuiGenericNotificationData;
 	let userData: ref<UIMenuNotificationViewData> = new UIMenuNotificationViewData();

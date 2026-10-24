@@ -636,6 +636,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public func SetupData() -> Void {
+        //DFProfile();
         //
         // Item Definitions
         //
@@ -1254,10 +1255,12 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetInOverdose() -> Bool {
+        //DFProfile();
         return this.playerInOverdose;
     }
 
     public final func SetOverdoseState(inOverdose: Bool) -> Void {
+        //DFProfile();
         this.playerInOverdose = inOverdose;
         this.UpdateCriticalNeedEffects();
     }
@@ -1568,6 +1571,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func HasEuphoria() -> Bool {
+        //DFProfile();
         return this.NerveSystem.GetOverchargeValue() > 0.0;
     }
 
@@ -1576,6 +1580,7 @@ public final class DFPlayerStateService extends DFSystem {
     //
     private let updateCriticalNeedEffectsLock: RWLock;
     public final func UpdateCriticalNeedEffects() -> Void {
+        //DFProfile();
         RWLock.Acquire(this.updateCriticalNeedEffectsLock);
         if this.GameStateService.IsValidGameState(this, true) {
             let shouldPlayCriticalFX: Bool = false;
@@ -1639,6 +1644,7 @@ public final class DFPlayerStateService extends DFSystem {
     // Vehicle Speed
     //
     public final func TryToRegisterForVehicleSpeedChange(veh: ref<VehicleObject>) -> Void {
+        //DFProfile();
         this.lastActivePlayerVehicle = veh;
 
         if this.GameStateService.IsValidGameState(this) && IsSystemEnabledAndRunning(this) && !veh.IsQuest() {
@@ -1647,6 +1653,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func RegisterForVehicleSpeedChange() -> Void {
+        //DFProfile();
         if IsDefined(this.lastActivePlayerVehicle) {
             let vehicleBlackboard: ref<IBlackboard> = this.lastActivePlayerVehicle.GetBlackboard();
             if IsDefined(vehicleBlackboard) {
@@ -1656,6 +1663,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
     
     public final func UnregisterForVehicleSpeedChange(veh: ref<VehicleObject>) -> Void {
+        //DFProfile();
         let vehicleBlackboard: ref<IBlackboard> = veh.GetBlackboard();
         if IsDefined(vehicleBlackboard) {
             vehicleBlackboard.UnregisterListenerFloat(GetAllBlackboardDefs().Vehicle.SpeedValue, this.activePlayerVehicleSpeedListener);
@@ -1684,14 +1692,17 @@ public final class DFPlayerStateService extends DFSystem {
     // Managed Effects
     //
     public final func GetManagedEffectsState() -> array<DFManagedEffect> {
+        //DFProfile();
         return this.managedEffectsState;
     }
 
     public final func GetManagedEffectsStateAtIndex(idx: Int32) -> DFManagedEffect {
+        //DFProfile();
         return this.managedEffectsState[idx];
     }
 
     public final func GetManagedEffectByType(type: DFManagedEffectType) -> DFManagedEffect {
+        //DFProfile();
         for managedEffect in this.managedEffectsState {
             if Equals(type, managedEffect.type) {
                 return managedEffect;
@@ -1701,6 +1712,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectDefinitionByType(type: DFManagedEffectType) -> DFManagedEffectDefinition {
+        //DFProfile();
         for def in this.managedEffectDefinitions {
             if Equals(type, def.type) {
                 return def;
@@ -1710,6 +1722,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func HandleAddictionProxyEffectApplied(type: DFAddictionProxyEffectType, id: TweakDBID, stackCount: Uint32) {
+        //DFProfile();
         // Handle this as if an item of that type had been consumed.
         StatusEffectHelper.RemoveStatusEffect(this.player, id, stackCount);
 
@@ -1734,6 +1747,7 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
     public final func GetItemManagedEffectStateIndex(itemRecord: ref<Item_Record>) -> Int32 {
+        //DFProfile();
         let itemTags: array<CName> = itemRecord.Tags();
         
         let i: Int32 = 0;
@@ -1750,6 +1764,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetItemManagedEffectDefinition(itemRecord: ref<Item_Record>) -> DFManagedEffectItemDefinition {
+        //DFProfile();
         let itemTags: array<CName> = itemRecord.Tags();
 
         let i: Int32 = 0;
@@ -1766,6 +1781,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func ManagedConsumablePipeline(itemRecord: ref<Item_Record>, opt overrideWithMaxStackApplication: Bool) -> DFManagedEffectPipelineResult {
+        //DFProfile();
         let pipelineResult: DFManagedEffectPipelineResult;
 
         // Find this item's managed effect in state.
@@ -1871,6 +1887,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func HandleManagedConsumable(itemRecord: ref<Item_Record>, animateUI: Bool, opt suppressExcessStackEffect: Bool, opt overridePipeline: DFManagedEffectPipelineResult) -> Void {
+        //DFProfile();
         let pipelineResult: DFManagedEffectPipelineResult;
 
         if !IsDefined(itemRecord) { return; }
@@ -1926,6 +1943,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func PrintManagedEffectsState() -> Void {
+        //DFProfile();
         DFLog(this, "===========================================================");
         DFLog(this, "New Managed Effects State");
         DFLog(this, "===========================================================");
@@ -1940,6 +1958,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func ApplyManagedEffectStacks(type: DFManagedEffectType, itemDef: DFManagedEffectItemDefinition, stateIdx: Int32, stacksToApply: Int32, animateUI: Bool) -> Void {
+        //DFProfile();
         let j: Int32 = 0;
         while j < stacksToApply {
             let energyToChange: Float = itemDef.energyChangeWhileActive;
@@ -1982,6 +2001,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func TriggerExcessStackEffect(excessStackDef: DFManagedEffectExcessStackDef, addictionSystem: ref<DFAddictionSystemBase>) -> Void {
+        //DFProfile();
         if Equals(excessStackDef.excessStackItemActionType, DFManagedEffectExcessStackItemActionType.None) {
             let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
             notificationEvent.m_notificationType = UIInGameNotificationType.GenericNotification;
@@ -2004,6 +2024,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func TriggerAlcoholExcessStackEffect() -> Void {
+        //DFProfile();
         // Hydration and Nutrition loss, vomiting.
         this.AnimationService.TryToQueueCrashAnimation(DFCrashAnimMode.ForceVomit);
 
@@ -2021,6 +2042,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func TriggerNarcoticExcessStackEffect() -> Void {
+        //DFProfile();
         // Overdose.
         if this.GameStateService.IsInAnyMenu() {
             let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
@@ -2035,6 +2057,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func ReconcileManagedStatusEffects() -> Void {
+        //DFProfile();
         // Ensures that the State and the actual applied Status Effects match.
         // Also performs the swap between Timed and Lasting effects.
         if this.isReconcilingStatusEffects { 
@@ -2150,6 +2173,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func SwitchManagedEffectModeOfType(mode: DFManagedEffectMode, type: DFManagedEffectType, opt skipStatusEffectReconcile: Bool) -> Void {
+        //DFProfile();
         let i: Int32 = 0;
         while i < ArraySize(this.managedEffectsState) {
             if Equals(type, this.managedEffectsState[i].type) {
@@ -2165,6 +2189,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetAddictionSystemFromManagedEffectType(type: DFManagedEffectType) -> ref<DFAddictionSystemBase> {
+        //DFProfile();
         if Equals(type, DFManagedEffectType.Alcohol) {
             return this.AlcoholAddictionSystem;
 
@@ -2180,6 +2205,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func SetManagedEffectToleranceCountToMaxByType(type: DFManagedEffectType) -> Void {
+        //DFProfile();
         let i: Int32 = 0;
         while i < ArraySize(this.managedEffectsState) {
             if Equals(type, this.managedEffectsState[i].type) {
@@ -2193,6 +2219,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func OnManagedEffectRemoved(evt: ref<RemoveStatusEffect>) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
         if this.isReconcilingStatusEffects { return; }
 		if this.EnergySystem.isSkippingTime { return; }
@@ -2204,6 +2231,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func OnManagedEffectRemovedImpl(statusEffectID: TweakDBID) {
+        //DFProfile();
         let stateIdx: Int32 = -1;
         let wasActiveEffect: Bool = false;
         let type: DFManagedEffectType;
@@ -2332,6 +2360,7 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
     public final func ClearManagedEffectOfTypeAndReturnEnergyToChange(type: DFManagedEffectType) -> Float {
+        //DFProfile();
         let energyToChange: Float;
         let i: Int32 = 0;
         while i < ArraySize(this.managedEffectsState) {
@@ -2361,6 +2390,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectTotalStacksByType(type: DFManagedEffectType) -> Uint32 {
+        //DFProfile();
         for managedEffect in this.managedEffectsState {
             if Equals(type, managedEffect.type) {
                 return Cast<Uint32>(ArraySize(managedEffect.activeEffectEnergyChanges)) + Cast<Uint32>(managedEffect.toleranceEffectCount);
@@ -2370,6 +2400,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectActiveStacksByType(type: DFManagedEffectType) -> Uint32 {
+        //DFProfile();
         for managedEffect in this.managedEffectsState {
             if Equals(type, managedEffect.type) {
                 return Cast<Uint32>(ArraySize(managedEffect.activeEffectEnergyChanges));
@@ -2379,6 +2410,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetAllManagedEffectEuphoriaActiveStacks() -> Uint32 {
+        //DFProfile();
         let stacks: Uint32;
         
         for managedEffect in this.managedEffectsState {
@@ -2392,6 +2424,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectToleranceStacksByType(type: DFManagedEffectType) -> Uint32 {
+        //DFProfile();
         for managedEffect in this.managedEffectsState {
             if Equals(type, managedEffect.type) {
                 return Cast<Uint32>(managedEffect.toleranceEffectCount);
@@ -2401,6 +2434,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectItemDefinitionByTag(itemRecordTag: CName) -> DFManagedEffectItemDefinition {
+        //DFProfile();
         for def in this.managedEffectItemDefinitions {
             if Equals(def.itemRecordTag, itemRecordTag) {
                 return def;
@@ -2410,6 +2444,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectMaxStacksByType(type: DFManagedEffectType) -> Uint32 {
+        //DFProfile();
         for managedEffect in this.managedEffectsState {
             if Equals(type, managedEffect.type) {
                 let addictionSystem: ref<DFAddictionSystemBase> = this.GetAddictionSystemFromManagedEffectType(type);
@@ -2427,6 +2462,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectToleranceStacksAtThisAddictionStageByType(type: DFManagedEffectType) -> Uint32 {
+        //DFProfile();
         for managedEffect in this.managedEffectsState {
             if Equals(type, managedEffect.type) {
                 let managedEffectDef: DFManagedEffectDefinition = this.GetManagedEffectDefinitionByType(managedEffect.type);
@@ -2437,6 +2473,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func GetManagedEffectActiveStacksAtThisAddictionStageByType(type: DFManagedEffectType) -> Uint32 {
+        //DFProfile();
         for managedEffect in this.managedEffectsState {
             if Equals(type, managedEffect.type) {
                 let managedEffectDef: DFManagedEffectDefinition = this.GetManagedEffectDefinitionByType(managedEffect.type);
@@ -2455,6 +2492,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func OnManagedEffectReconciliationDebounceCallback() -> Void {
+        //DFProfile();
         this.isReconcilingStatusEffects = false;
 
         if this.repeatStatusEffectReconciliationOnComplete {
@@ -2464,10 +2502,12 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     public final func OnManagedEffectVFXRecheckCallback() -> Void {
+        //DFProfile();
         this.UpdateManagedEffectVFX();
     }
 
     public final func UpdateManagedEffectVFX(opt fromStateChange: Bool) -> Void {
+        //DFProfile();
         DFLog(this, "UpdateManagedEffectVFX fromStateChange: " + ToString(fromStateChange));
         let shouldConsumableEffectBeActive: Bool = false;
         let isAnyEffectLasting: Bool = false;
@@ -2686,6 +2726,7 @@ public final class DFPlayerStateService extends DFSystem {
     }
 
     private final func StopManagedEffectVFX() -> Void {
+        //DFProfile();
         this.UnregisterManagedEffectVFXRecheckDelayCallback();
         GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.alcoholMotionBlurEffect);
 		GameObjectEffectHelper.BreakEffectLoopEvent(this.player, this.alcoholWaveEffect);
@@ -2703,11 +2744,13 @@ public final class DFPlayerStateService extends DFSystem {
     // Wannabe Edgerunner Compatibility
     @if(ModuleExists("Edgerunning.System"))
     private func DFIsWannabeEdgerunnerInstalled() -> Bool {
+        //DFProfile();
         return true;
     }
 
     @if(!ModuleExists("Edgerunning.System"))
     private func DFIsWannabeEdgerunnerInstalled() -> Bool {
+        //DFProfile();
         return false;
     }
 
@@ -2732,6 +2775,7 @@ public final class DFPlayerStateService extends DFSystem {
 	}
 
     public final func SetAddictionTreatmentEffectDuration(newDurationInGameTimeHours: Int32) -> Void {
+        //DFProfile();
         // Set the default duration for this consumable.
         this.addictionTreatmentEffectDurationInGameHours = newDurationInGameTimeHours;
 
@@ -2889,6 +2933,7 @@ public func SetData(const data: script_ref<WorldMapTooltipData>, menu: ref<World
 //
 @wrapMethod(BaseWorldMapMappinController)
 private final func PlayHideShowAnim() -> Void {
+    //DFProfile();
     let Settings: ref<DFSettings> = DFSettings.Get();
 
     if Settings.mainSystemEnabled && Equals(this.m_mappin.GetVariant(), gamedataMappinVariant.FastTravelVariant) && this.isFastTravelEnabled && Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.DisabledAllowMetro) {
@@ -2904,6 +2949,7 @@ private final func PlayHideShowAnim() -> Void {
 //
 @wrapMethod(DataTermControllerPS)
 public func GetActions(out actions: [ref<DeviceAction>], context: GetActionsContext) -> Bool {
+    //DFProfile();
     let r: Bool = wrappedMethod(actions, context);
 
     // Clean up any null entries returned by ActionOpenWorldMap().
@@ -2916,6 +2962,7 @@ public func GetActions(out actions: [ref<DeviceAction>], context: GetActionsCont
 //
 @wrapMethod(DataTermControllerPS)
 protected final func ActionOpenWorldMap() -> ref<OpenWorldMapDeviceAction> {
+    //DFProfile();
     let Settings: ref<DFSettings> = DFSettings.Get();
     if Settings.mainSystemEnabled && 
     (Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.DisabledAllowMetro) || Equals(Settings.fastTravelSettingV2, DFFastTravelSetting.Disabled)) && 

@@ -172,6 +172,7 @@ protected final const func RemoveVehiclePassengerInputHints(stateContext: ref<St
 
 @replaceMethod(VehicleEventsTransition)
 protected final func HandleCameraInput(const stateContext: ref<StateContext>, scriptInterface: ref<StateGameScriptInterface>) -> Void {
+	//DFProfile();
 	// Dark Future 2.0 - Optimize this function (called every frame) to always have new input behavior regardless of system state.
 	if scriptInterface.IsActionJustTapped(n"ToggleVehCamera") && !this.IsVehicleCameraChangeBlocked(scriptInterface) {
 		this.RequestToggleVehicleCamera(scriptInterface);
@@ -415,6 +416,7 @@ public final class DFVehicleSleepSystem extends DFSystem {
 	}
 
 	private final func IsAnyPhoneStateActive() -> Bool {
+		//DFProfile();
 		let lastPhoneCallInformation: PhoneCallInformation;
 		let blackboardSystem: ref<BlackboardSystem> = GameInstance.GetBlackboardSystem(GetGameInstance());
 		let infoVariant: Variant = blackboardSystem.Get(GetAllBlackboardDefs().UI_ComDevice).GetVariant(GetAllBlackboardDefs().UI_ComDevice.PhoneCallInformation);

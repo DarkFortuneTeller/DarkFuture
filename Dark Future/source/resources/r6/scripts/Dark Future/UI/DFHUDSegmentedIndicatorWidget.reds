@@ -49,6 +49,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
     public let m_displayingOverStamina: Bool = false;
 
     public final func Init(attachedPlayer: ref<PlayerPuppet>, alwaysVisibleInDanger: Bool, visibleInDangerAtCriticalThreshold: Bool, opt alwaysVisibleDuringEuphoria: Bool) -> Void {
+        //DFProfile();
         this.debugEnabled = false;
         super.Init(attachedPlayer, alwaysVisibleInDanger, visibleInDangerAtCriticalThreshold, alwaysVisibleDuringEuphoria);
     }
@@ -265,6 +266,7 @@ public class DFHUDSegmentedIndicatorGroup extends DFNeedsHUDBarGroup {
     }
 
     public final func SetAllFadeOut(opt instant: Bool) -> Void {
+        //DFProfile();
         super.SetAllFadeOut(instant);
 
         this.m_displayingOverStamina = false;
@@ -516,6 +518,7 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
     }
 
     public final func SetSegmentActive(type: DFHUDSegmentedIndicatorSegmentType, active: Bool) -> Void {
+        //DFProfile();
         let i: Int32 = 0;
         let typeFound: Bool = false;
 
@@ -541,6 +544,7 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
     }
 
     public final func GetCurrentSegmentValue() -> array<Bool> {
+        //DFProfile();
         let currentSegmentValue: array<Bool>;
         
         for segment in this.m_segments {
@@ -572,6 +576,7 @@ public class DFHUDSegmentedIndicator extends DFNeedsHUDBar {
     }
 
     public final func PulseInjurySegmentIfInjured() -> Void {
+        //DFProfile();
         for segment in this.m_segments {
             if Equals(segment.type, DFHUDSegmentedIndicatorSegmentType.Injury) && Equals(segment.active, true) {
                 this.SetSegmentPulse(DFHUDSegmentedIndicatorSegmentType.Injury, 0.5);

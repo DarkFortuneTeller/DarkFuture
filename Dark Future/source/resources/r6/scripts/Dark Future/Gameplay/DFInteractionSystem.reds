@@ -93,6 +93,7 @@ protected cb func OnTakeControl(ri: EntityResolveComponentsInterface) -> Bool {
 //
 @wrapMethod(InvisibleSceneStash)
 protected cb func OnQuestDressPlayer(evt: ref<DressPlayer>) -> Bool {
+	//DFProfile();
 	let r: Bool = wrappedMethod(evt);
 
 	DFInteractionSystem.Get().CheckHotscene();
@@ -1754,11 +1755,13 @@ public final class DFInteractionSystem extends DFSystem {
 	// Smoke Choice Debounce Callback
 	//
 	public final func OnSmokePromptDebounceCallback() -> Void {
+		//DFProfile();
 		this.isWithinSmokePromptDebounceWindow = false;
 		DFLog(this, "============= Smoking prompt debounce window END");
 	}
 
 	public final func IsWithinSmokePromptDebounceWindow() -> Bool {
+		//DFProfile();
 		return this.isWithinSmokePromptDebounceWindow;
 	}
 
@@ -1808,6 +1811,7 @@ public final class DFInteractionSystem extends DFSystem {
 
 @wrapMethod(DialogHubLogicController)
 private final func UpdateDialogHubData() -> Void {
+	//DFProfile();
 	let i: Int32 = 0;
 	while i < ArraySize(this.m_data.choices) {
 		let currentItem: ref<DialogChoiceLogicController> = this.m_itemControllers[i];
@@ -1829,6 +1833,7 @@ public let m_humanityLossHolder: ref<inkFlex>;
 
 @wrapMethod(DialogChoiceLogicController)
 private final func HideAllCaptionParts() -> Void {
+	//DFProfile();
 	wrappedMethod();
 	if IsDefined(this.m_humanityLossHolder) {
 		let parent: ref<inkHorizontalPanel> = this.m_TextFlex.GetParentWidget() as inkHorizontalPanel;
@@ -1839,6 +1844,7 @@ private final func HideAllCaptionParts() -> Void {
 
 @wrapMethod(DialogChoiceLogicController)
 public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoiceCaptionPart>]>) -> Void {
+	//DFProfile();
 	wrappedMethod(argList);
 
 	let gameInstance: GameInstance = GetGameInstance();
@@ -1930,6 +1936,7 @@ public final class DFHumanityLossRestoreChoiceCaptionPart extends InteractionCho
 
 @addMethod(DialogChoiceLogicController)
 private final func PrependHumanityLossRestoreIconWidget(currController: ref<CaptionImageIconsLogicController>, currentSecondaryController: ref<CaptionImageIconsLogicController>) -> Void {
+	//DFProfile();
 	let parent: ref<inkHorizontalPanel> = this.m_TextFlex.GetParentWidget() as inkHorizontalPanel;
 	let hubVert: ref<inkVerticalPanel> = parent.GetParentWidget().GetParentWidget().GetParentWidget().GetParentWidget() as inkVerticalPanel;
 

@@ -247,10 +247,12 @@ public class DFInjuryConditionSystem extends DFConditionSystemBase {
     //  System-Specific Functions
     //
     public final func GetCurrentPlayerArmorExact() -> Float {
+        //DFProfile();
         return this.StatsSystem.GetStatValue(Cast<StatsObjectID>(this.player.GetEntityID()), gamedataStatType.Armor);
     }
 
     public final func GetArmorInjuryMult() -> Float {
+        //DFProfile();
         return this.GetCurrentPlayerArmorExact() * this.armorInjuryMult;
     }
 

@@ -154,6 +154,7 @@ public class DarkFutureRelaxActionInputListener {
 //
 @wrapMethod(InteractionsHubGameController)
 protected cb func OnInitialize() -> Bool {
+    //DFProfile();
     let r: Bool = wrappedMethod();
 
     DFRelaxActionSystem.Get().interactionsHubGameController = this;
@@ -165,6 +166,7 @@ protected cb func OnInitialize() -> Bool {
 //
 @addMethod(InteractionsHubGameController)
 public final func DarkFutureDisplayCustomTooltip(data: ref<ATooltipData>) -> Void {
+    //DFProfile();
     if IsDefined(this.m_TooltipsManager) {
         let dataList: array<ref<ATooltipData>>;
         ArrayPush(dataList, data);
@@ -177,6 +179,7 @@ public final func DarkFutureDisplayCustomTooltip(data: ref<ATooltipData>) -> Voi
 //
 @addMethod(InteractionsHubGameController)
 public final func DarkFutureHideCustomTooltip() -> Void {
+    //DFProfile();
     if IsDefined(this.m_TooltipsManager) {
         this.m_TooltipsManager.HideTooltips();
         this.m_TooltipsManager.PlayHidingAnimation();
@@ -188,6 +191,7 @@ public final func DarkFutureHideCustomTooltip() -> Void {
 //
 @wrapMethod(DialogHubLogicController)
 private final func UpdateDialogHubData() -> Void {
+    //DFProfile();
     wrappedMethod();
     this.DarkFutureUpdateRelaxActionItemUseTooltip();
 }
@@ -196,6 +200,7 @@ private final func UpdateDialogHubData() -> Void {
 //
 @wrapMethod(dialogWidgetGameController)
 private final func AdjustHubsCount(count: Int32) -> Void {
+    //DFProfile();
     wrappedMethod(count);
 
     if count > 1 {
@@ -207,6 +212,7 @@ private final func AdjustHubsCount(count: Int32) -> Void {
 //
 @addMethod(DialogHubLogicController)
 protected func DarkFutureUpdateRelaxActionItemUseTooltip() -> Void {
+    //DFProfile();
     let shouldShowTooltip: Bool = false;
     let tooltipType: DFRelaxActionItemUseItemType;
     let i: Int32 = 0;
@@ -237,6 +243,7 @@ private let DarkFutureIsDisplayingRelaxActionItemUseTooltip: Bool = false;
 //
 @wrapMethod(DialogHubLogicController)
 public final func FadeOutItems(fadeOutTime: Float) -> Void {
+    //DFProfile();
     wrappedMethod(fadeOutTime);
 
     if this.DarkFutureIsDisplayingRelaxActionItemUseTooltip {
@@ -257,6 +264,7 @@ public let DarkFutureRelaxActionItemUseChoiceItemType: DFRelaxActionItemUseItemT
 //
 @wrapMethod(DialogChoiceLogicController)
 public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoiceCaptionPart>]>) -> Void {
+    //DFProfile();
     wrappedMethod(argList);
 
     let currType: gamedataChoiceCaptionPartType;
@@ -275,6 +283,7 @@ public final func SetCaptionParts(const argList: script_ref<[ref<InteractionChoi
 
 @addMethod(DialogChoiceLogicController)
 private final func GetRelaxActionItemUseChoiceTypeFromEnumName(name: CName) -> DFRelaxActionItemUseItemType {
+    //DFProfile();
     switch name {
         case n"DarkFutureRelaxActionItemUseSpecialFood":
             return DFRelaxActionItemUseItemType.FoodSpecial;
@@ -453,26 +462,32 @@ public final class DFRelaxActionSystem extends DFSystem {
     //  DFSystem Required Methods
     //
     private func SetupDebugLogging() -> Void {
+        //DFProfile();
         this.debugEnabled = false;
     }
 
     public func GetSystemToggleSettingValue() -> Bool {
+        //DFProfile();
         return this.Settings.relaxActionHotkeyEnabled;
     }
 
     private func GetSystemToggleSettingString() -> String {
+        //DFProfile();
         return "relaxActionHotkeyEnabled";
     }
 
     public func DoPostSuspendActions() -> Void {
+        //DFProfile();
         this.UnregisterRelaxActionListener();
     }
 
     public func DoPostResumeActions() -> Void {
+        //DFProfile();
         this.RegisterRelaxActionListener();
     }
 
     public func GetSystems() -> Void {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         this.UIInventorySystem = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<UIInventoryScriptableSystem>()) as UIInventoryScriptableSystem;
         this.QuestsSystem = GameInstance.GetQuestsSystem(gameInstance);
@@ -518,6 +533,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     */
     
     private func RegisterListeners() -> Void {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         this.factListenerRelaxActionModeChangedID = GameInstance.GetQuestsSystem(gameInstance).RegisterListener(this.GetRelaxActionModeFact(), this, n"OnRelaxActionModeFactSet");
         this.factListenerEvaluateInventoryID = GameInstance.GetQuestsSystem(gameInstance).RegisterListener(this.GetEvaluateInventoryFact(), this, n"OnEvaluateInventoryFactSet");
@@ -533,10 +549,12 @@ public final class DFRelaxActionSystem extends DFSystem {
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
 
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+        //DFProfile();
         this.RegisterRelaxActionListener();
     }
 
     private func UnregisterListeners() -> Void {
+        //DFProfile();
         GameInstance.GetQuestsSystem(GetGameInstance()).UnregisterListener(this.GetRelaxActionModeFact(), this.factListenerRelaxActionModeChangedID);
         this.factListenerRelaxActionModeChangedID = 0u;
 
@@ -576,6 +594,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     // Public API
     //
     public final func ForceStopRelaxActionMode() -> Void {
+        //DFProfile();
         // Call when an interrupting event should gracefully shut down the Relax Action scene and choice prompts.
         this.QuestsSystem.SetFact(this.GetForceShutdownActionFact(), 1);
     }
@@ -584,248 +603,309 @@ public final class DFRelaxActionSystem extends DFSystem {
     // System-Specific Methods
     //
     private final func GetRelaxActionModeFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_mode";
     }
 
     private final func GetCanStandingMeditateFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_can_standing_meditate";
     }
 
     private final func GetCanKneelingMeditateFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_can_kneeling_meditate";
     }
 
     private final func GetCanDanceFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_can_dance";
     }
 
     private final func GetCanSitGroundFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_can_sit_ground";
     }
 
     private final func GetCanSitSurfaceFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_can_sit_surface";
     }
 
     private final func GetCanLieGroundFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_can_lie_ground";
     }
 
     private final func GetCanPlayBraindanceFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_can_play_braindance";
     }
 
     private final func GetHasMealFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_meal";
     }
 
     private final func GetHasSnackFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_snack";
     }
 
     private final func GetHasJunkFoodFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_junkfood";
     }
 
     private final func GetHasSpecialFoodFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_specialfood";
     }
 
     private final func GetHasSpecialDrinkFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_specialdrink";
     }
 
     private final func GetHasWaterFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_water";
     }
 
     private final func GetHasTeaDecafFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_tea_decaf";
     }
 
     private final func GetHasCoffeeFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_coffee";
     }
 
     private final func GetHasEnergyDrinkFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_energydrink";
     }
 
     private final func GetHasSodaFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_soda";
     }
 
     private final func GetHasCigaretteFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_cigarette";
     }
 
     private final func GetHasSpecialAlcoholFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_specialalcohol";
     }
 
     private final func GetHasLiquorFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_liquor";
     }
 
     private final func GetHasWineFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_wine";
     }
 
     private final func GetHasCocktailFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_cocktail";
     }
 
     private final func GetHasBeerFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_beer";
     }
 
     private final func GetHasMrWhiteyFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_mrwhitey";
     }
 
     private final func GetHasBlackLaceFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_blacklace";
     }
 
     private final func GetHasGlitterFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_glitter";
     }
 
     private final func GetHasVanitolFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_vanitol";
     }
 
     private final func Compatibility_GetHasJuiceFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_compatibility_has_juice";
     }
 
     private final func GetHasOlDonkeyFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_oldonkey";
     }
 
     private final func GetHasAssKickFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_asskick";
     }
 
     private final func GetHasJellytricityFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_jellytricity";
     }
 
     private final func GetHasRAMNugsFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_ramnugs";
     }
 
     private final func GetHasCapacityBoosterFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_capacitybooster";
     }
 
     private final func GetHasStaminaBoosterFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_staminabooster";
     }
 
     private final func GetHasMemoryBoosterFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_memorybooster";
     }
 
     private final func GetHasTraumaKitFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_traumakit";
     }
 
     private final func GetHasEmergencyCardioregulatorFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_emergencycardioregulator";
     }
 
     private final func GetHasImmunosuppressantFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_immunosuppressant";
     }
 
     private final func GetHasExcelafinFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_excelafin";
     }
 
     private final func GetHasAddiquitFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_addiquit";
     }
 
     private final func GetHasEndotrisineFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_endotrisine";
     }
 
     private final func GetEvaluateInventoryFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_evaluate_inventory";
     }
 
     private final func GetConsumeItemFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_consume";
     }
 
     private final func GetSetForceLastPlaybackActionFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_set_force_last_playback";
     }
 
     private final func GetClearPlaybackCountActionFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_clear_playback_count";
     }
 
     private final func GetForceShutdownActionFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_relax_action_force_shutdown";
     }
 
     private final func GetHasAnyFoodFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_food";
     }
 
     private final func GetHasAnyDrinkFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_drink";
     }
 
     private final func GetHasAnyViceFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_vice";
     }
 
     private final func GetHasAnyAlcoholFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_alcohol";
     }
 
     private final func GetHasAnyNarcoticFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_narcotic";
     }
 
     private final func GetHasAnyBoosterFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_booster";
     }
 
     private final func GetHasAnyMedicationFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_medication";
     }
 
     private final func GetHasAnyItemFact() -> CName {
+        //DFProfile();
         return n"df_fact_immersive_item_has_any_item";
     }
 
     private final func GetDisplayNoItemMessageActionFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_display_no_item_message";
     }
 
     private final func GetDanceStartFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_dance_start";
     }
 
     private final func GetPlayBraindanceFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_braindance_start";
     }
 
     private final func GetRelaxActionEvaluateOptionsFact() -> CName {
+        //DFProfile();
         return n"df_fact_relax_action_evaluate_options";
     }
 
     public final func HandleRelaxAction() -> Void {
+        //DFProfile();
         if this.Settings.relaxActionHotkeyEnabled {
             this.TryToStartRelaxActionMode();
         }
     }
 
     private final func OnRelaxActionModeFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value == 0 {
             this.AnimationService.RegisterUnsetRadioRestrictionOverrideCallback();
             this.danceAllowedSetThisSession = false;
@@ -836,6 +916,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func EvaluateInventory() -> Void {
+        //DFProfile();
         DFLog(this, "[~][~][~][~][~][~][~][~][~] Evaluating inventory!");
 
         this.InvalidateAllItemFlagFacts();
@@ -896,6 +977,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnEvaluateInventoryFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value > 0 {
             this.EvaluateInventory();
 
@@ -905,6 +987,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func SetCachedItemData(type: DFRelaxActionItemUseItemType, tag: CName, hasItemTypeFact: CName, hasItemTypeCategoryFact: CName, opt hasItemTypeSubcategoryFact: CName) -> DFRelaxActionItemUseCachedItem {
+        //DFProfile();
         let outList: array<wref<gameItemData>>;
         let cachedItem: DFRelaxActionItemUseCachedItem;
         this.TransactionSystem.GetItemListByTag(this.player, tag, outList);
@@ -925,6 +1008,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnConsumeItemFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value > 0 {
             let typeToConsume: DFRelaxActionItemUseItemType = IntEnum<DFRelaxActionItemUseItemType>(value);
             if NotEquals(typeToConsume, DFRelaxActionItemUseItemType.Invalid) {
@@ -937,6 +1021,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnSetForceLastPlaybackActionFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value > 0 {
             this.animPlaybackCountRemaining = 1;
             this.QuestsSystem.SetFact(this.AnimationService.GetAnimPlaybackCountRemainingFact(), 1);
@@ -947,6 +1032,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnClearPlaybackCountActionFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value > 0 {
             this.animPlaybackCountRemaining = 0;
             this.QuestsSystem.SetFact(this.AnimationService.GetAnimPlaybackCountRemainingFact(), 0);
@@ -957,6 +1043,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnDisplayNoItemMessageActionFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value > 0 {
             let notificationTitle: String = GetLocalizedTextByKey(n"RelaxActionNoItemMessage");
             let notificationEvent: ref<UIInGameNotificationEvent> = new UIInGameNotificationEvent();
@@ -971,6 +1058,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     public final func OnShowRelaxActionItemUseTooltip(type: DFRelaxActionItemUseItemType) -> Void {
+        //DFProfile();
         if NotEquals(type, DFRelaxActionItemUseItemType.Invalid) {
             let tooltipData: ref<IdentifiedWrappedTooltipData> = this.GetTooltipDataFromCachedItemType(type);
             if IsDefined(this.interactionsHubGameController) && IsDefined(tooltipData) {
@@ -980,12 +1068,14 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     public final func OnHideRelaxActionItemUseTooltip() -> Void {
+        //DFProfile();
         if IsDefined(this.interactionsHubGameController) {
             this.interactionsHubGameController.DarkFutureHideCustomTooltip();
         }
     }
 
     private final func GetTooltipDataFromCachedItemType(type: DFRelaxActionItemUseItemType) -> ref<IdentifiedWrappedTooltipData> {
+        //DFProfile();
         let identifiedTooltipData: ref<IdentifiedWrappedTooltipData>;
         let item: wref<UIInventoryItem>;
         let uiInventoryItemTooltip: ref<UIInventoryItemTooltipWrapper>;
@@ -1009,6 +1099,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func GetCachedItemTDBIDFromType(type: DFRelaxActionItemUseItemType) -> TweakDBID {
+        //DFProfile();
         for item in this.cachedSelectedItems {
             if Equals(item.type, type) {
                 return item.tdbid;
@@ -1017,6 +1108,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func SetUpDataAndQueueAnimForItem(itemTDBID: TweakDBID) {
+        //DFProfile();
         let anim: DFAnimDatum = this.AnimationService.GetAnimFromItemTDBIDIfPlaybackValid(itemTDBID);
         
         if NotEquals(anim.type, DFAnimType.Invalid) {
@@ -1037,6 +1129,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     public final func OnConsumeAnimFinished() -> Void {
+        //DFProfile();
         // If there are no more repeats remaining, consume the item and apply its effects.
         DFLog(this, "[~][~][~][~][~][~][~][~][~] Attempting to consume item!");
 
@@ -1078,6 +1171,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnDanceFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value == 1 {
             let pocketRadio: ref<PocketRadio> = this.player.GetPocketRadio();
             if !pocketRadio.IsActive() {
@@ -1100,6 +1194,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnPlayBraindanceFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value == 1 {
             ItemActionsHelper.ConsumeItem(this.player, ItemID.FromTDBID(t"Items.braindances_LizziesBDs"), true);
             this.QuestsSystem.SetFact(this.GetPlayBraindanceFact(), 0);
@@ -1107,6 +1202,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func OnRelaxActionEvaluateOptionsFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value == 1 {
             // Dance
             if this.BiocorruptionCondition.GetHasEuphoria() && !this.player.m_pocketRadio.IsRestricted() && !this.danceAllowedSetThisSession {
@@ -1134,6 +1230,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     public final func GetAnimPlaybackCountRemaining() -> Int32 {
+        //DFProfile();
         return this.animPlaybackCountRemaining;
     }
 
@@ -1150,15 +1247,18 @@ public final class DFRelaxActionSystem extends DFSystem {
 	}
 
     public final func DecrementAnimPlaybackCountRemaining() -> Void {
+        //DFProfile();
         this.animPlaybackCountRemaining -= 1;
         this.QuestsSystem.SetFact(this.AnimationService.GetAnimPlaybackCountRemainingFact(), this.animPlaybackCountRemaining);
     }
 
     public final func GetInRelaxActionMode() -> Bool {
+        //DFProfile();
         return this.QuestsSystem.GetFact(this.GetRelaxActionModeFact()) > 0;
     }
 
     private final func TryToStartRelaxActionMode() -> Void {
+        //DFProfile();
         DFLog(this, "[~][~][~][~][~][~][~][~][~][~]");
         DFLog(this, "[~][~][~][~][~][~][~][~][~][~]");
         DFLog(this, "[~][~][~][~][~][~][~][~][~][~] Starting Relax Action Mode!");
@@ -1171,6 +1271,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     }
 
     private final func InvalidateAllItemFlagFacts() -> Void {
+        //DFProfile();
         this.QuestsSystem.SetFact(this.GetHasAnyItemFact(), 0);
 
         this.QuestsSystem.SetFact(this.GetHasAnyFoodFact(), 0);
@@ -1227,6 +1328,7 @@ public final class DFRelaxActionSystem extends DFSystem {
     // World Interactions
     //
     public final func ShowDumDumBlackLaceInhalerTooltip() -> Void {
+        //DFProfile();
         this.OnShowRelaxActionItemUseTooltip(DFRelaxActionItemUseItemType.NarcoticBlackLace);
     }
 

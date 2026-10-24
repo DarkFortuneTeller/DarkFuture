@@ -196,6 +196,7 @@ public final class DFGameStateService extends DFSystem {
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
 
     public func UnregisterAllDelayCallbacks() -> Void {
+        //DFProfile();
         this.UnregisterDelayedSleepCinematicExit();
     }
     
@@ -479,10 +480,12 @@ public final class DFGameStateService extends DFSystem {
     //  Registration
     //
     public final func RegisterDelayedSleepCinematicExit() -> Void {
+        //DFProfile();
         RegisterDFDelayCallback(this.DelaySystem, DFGameStateServiceSleepCinematicExitDelayCallback.Create(), this.sleepCinematicExitDelayID, this.sleepCinematicExitDelayInterval);
     }
 
     public final func UnregisterDelayedSleepCinematicExit() -> Void {
+        //DFProfile();
         UnregisterDFDelayCallback(this.DelaySystem, this.sleepCinematicExitDelayID);
     }
 

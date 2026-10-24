@@ -580,6 +580,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     private func RegisterListeners() -> Void {
+        //DFProfile();
         this.setTherapyCyberpsychosisEnabledActionFactListener = CreateDFActionFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"df_fact_action_set_therapy_cyberpsychosis_enabled", n"OnSetTherapyCyberpsychosisEnabledActionFactChanged");
         this.showHumanityLossTutorialActionFactListener = CreateDFActionFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"df_fact_action_show_humanity_loss_tutorial", n"OnTherapyShowHumanityLossTutorialActionFactChanged");
         this.humanityLossRestoreChoiceActivatedActionFactListener = CreateDFActionFactListener(this.QuestsSystem, this, this.factListenerRegistry, n"df_fact_humanityloss_restore_choice_activated", n"OnHumanityLossRestoreChoiceActivatedFactChanged");
@@ -611,6 +612,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
 	private func UnregisterListeners() -> Void {
+        //DFProfile();
         UnregisterAllDFFactListeners(this.QuestsSystem, this.factListenerRegistry);
 
         if IsDefined(this.UINotificationsBlackboard) {
@@ -805,6 +807,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 	}
 
     public final func OnActivePlayerVehicleSpeedValueChanged(speedValueInMph: Int32, lastSpeedValueInMph: Int32) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         if lastSpeedValueInMph < this.playerVehicleSpeedHumanityLossRestoreThreshold && speedValueInMph >= this.playerVehicleSpeedHumanityLossRestoreThreshold {
@@ -875,12 +878,14 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }*/
 
     public final func OnDelayedUnsetRadioRestrictionOverride() -> Void {
+        //DFProfile();
         DFLog(this, "!!!!!!@@@@@@@     Unsetting radio restriction override.");
         this.player.m_pocketRadio.DFSetRestrictionOverride(false);
     }
 
     // Overrides base implementation
     public final func CheckTutorial() -> Void {
+        //DFProfile();
         // Start the therapy text questphase instead of displaying a tutorial immediately.
         if this.QuestsSystem.GetFact(n"df_fact_start_therapy_text") == 0 {
             this.QuestsSystem.SetFact(n"df_fact_start_therapy_text", 1);
@@ -910,6 +915,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     private final func CheckHumanityLossTutorial() -> Void {
+        //DFProfile();
         super.CheckTutorial();
     }
 
@@ -1262,6 +1268,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     private final func HandleIncreaseHumanityLossDirect(amount: Float) -> Void {
+        //DFProfile();
         if this.GetConditionLevel() <= this.GetMaxConditionLevel() {
             DFLog(this, "&&&&&&&&&& HandleIncreaseHumanityLossDirect: amount: " + ToString(amount));
             this.accumulatedPercentTowardNextLevel += amount;
@@ -1323,6 +1330,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     public final func GetTotalCyberwareCapacityHumanityLossMult() -> Float {
+        //DFProfile();
         return this.CyberwareService.GetPointsOfCyberwareCapacityAllocated() * this.cyberwareCapacityHumanityLossMult;
     }
 
@@ -1420,6 +1428,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     public final func IsEndotrisineActive() -> Bool {
+        //DFProfile();
         return this.remainingEndotrisineEffectDurationInGameTimeSeconds > 0.0;
     }
 
@@ -1489,10 +1498,12 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     //  Humanity Loss Cost and Restoration
     //
     private final func GetShowTimedHumanityLossRestoreChoiceFactAction() -> CName {
+        //DFProfile();
         return n"df_fact_action_show_timed_humanityloss_restore_choice";
     }
 
     public final func IncreaseHumanityLoss(costType: DFHumanityLossCostType) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         if Equals(costType, DFHumanityLossCostType.RepeatableRelicMalfunction) {
@@ -1510,6 +1521,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     public final func RestoreHumanityLoss(restoreType: DFHumanityLossRestorationType) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         let bonusMult: Float = 0.0;
@@ -1543,6 +1555,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     public final func CanRestoreHumanityLossFromActivity(activity: DFHumanityLossRestorationActivityType) -> Bool {
+        //DFProfile();
         let today: Int32 = GetGameInstance().GetGameTime().Days();
         if Equals(activity, DFHumanityLossRestorationActivityType.LifePathCorpoFreshStart) || Equals(activity, DFHumanityLossRestorationActivityType.LifePathNomad) || Equals(activity, DFHumanityLossRestorationActivityType.LifePathStreetKid) {
             return today > this.lastDayRestored_LifePath;
@@ -1568,6 +1581,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     public final func TryToDisplayHumanityLossRestorationChoice(type: DFHumanityLossRestorationActivityType) -> Void {
+        //DFProfile();
         if Equals(type, DFHumanityLossRestorationActivityType.LifePathStreetKid) && this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.LifePathStreetKid) {
             this.lastHumanityLossRestorationChoiceType = EnumInt(DFHumanityLossRestoreChoiceType.StreetKid);
             this.QuestsSystem.SetFact(this.GetShowTimedHumanityLossRestoreChoiceFactAction(), EnumInt(DFHumanityLossRestoreChoiceType.StreetKid));
@@ -1595,6 +1609,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     private final func CheckShouldShowStreetKidLifePathHumanityLossRestoreChoice() -> Void {
+        //DFProfile();
         let playerControlledObject: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerControlledGameObject();
 		let lifePath: gamedataLifePath = PlayerDevelopmentSystem.GetInstance(playerControlledObject).GetLifePath(playerControlledObject);
 
@@ -1605,6 +1620,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
 	public final func CheckShouldShowNomadLifePathHumanityLossRestoreChoice() -> Void {
+		//DFProfile();
 		let playerControlledObject: ref<GameObject> = GameInstance.GetPlayerSystem(GetGameInstance()).GetLocalPlayerControlledGameObject();
 		let lifePath: gamedataLifePath = PlayerDevelopmentSystem.GetInstance(playerControlledObject).GetLifePath(playerControlledObject);
 
@@ -1619,6 +1635,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
 	}
 
     public final func CheckShouldShowCorpoFreshStartLifePathHumanityLossRestoreChoice(opt fromDistrictChange: Bool) -> Void {
+        //DFProfile();
         let FreshStartLifePathRecord: ref<LifePath_Record> = TweakDBInterface.GetLifePathRecord(t"LifePaths.NewStart");
         let FreshStartLifePathType: gamedataLifePath;
         if IsDefined(FreshStartLifePathRecord) {
@@ -1690,6 +1707,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     public final func TryToRestoreHumanityLossFromConfessionBooth() -> Void {
+        //DFProfile();
         if this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.ConfessionBooth) {
             if this.Settings.humanityLossRegenerationSFXEnabled {
                 this.QuestsSystem.SetFact(n"df_fact_play_voice_line", EnumInt(DFGeneralVoiceLine.HumanityLossRestoreConfessionBooth));
@@ -1700,6 +1718,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     public final func TryToRestoreHumanityLossFromTarotReading() -> Void {
+        //DFProfile();
         if this.CanRestoreHumanityLossFromActivity(DFHumanityLossRestorationActivityType.TarotReading) {
             this.RestoreHumanityLoss(DFHumanityLossRestorationType.RepeatablePivotal);
             this.lastDayRestored_TarotReading = GetGameInstance().GetGameTime().Days();
@@ -1836,6 +1855,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     private final func OnUnsetRadioRestrictionOverrideFactChanged(value: Int32) -> Void {
+        //DFProfile();
         if DFFactListenerCanRun(value, this.factListenerRegistry, this.onceOnlyDFFactListenersFired) {
             this.RegisterForDelayedUnsetRadioRestrictionOverride();
             this.QuestsSystem.SetFact(this.unsetRadioRestrictionOverrideActionFactListener.fact, 0);
@@ -1843,6 +1863,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     private final func OnSpeedVoicelineGetInBadlandsFactChanged(value: Int32) -> Void {
+        //DFProfile();
         if DFFactListenerCanRun(value, this.factListenerRegistry, this.onceOnlyDFFactListenersFired) {
             if IsPlayerInBadlands(this.player) {
                 this.QuestsSystem.SetFact(n"df_fact_speed_voiceline_is_in_badlands", 1);
@@ -1883,6 +1904,7 @@ public class DFHumanityLossConditionSystem extends DFConditionSystemBase {
     }
 
     private final func OnMistyTarotReadingFactChanged(value: Int32) -> Void {
+        //DFProfile();
         let vtd: DFFactListenerValueTransitionData;
         vtd.valueFrom = this.lastMistyCardsOnTableFactValue;
         vtd.expectedValueFrom = 1;
@@ -2028,6 +2050,7 @@ private final func CalculateCrimeScoreForNPC(request: ref<PreventionDamageReques
 //
 @wrapMethod(AutoDriveSystem)
 private final func OnAutodriveToggled(enabled: Bool, isDelamain: Bool) -> Void {
+    //DFProfile();
     wrappedMethod(enabled, isDelamain);
 
     if !enabled || isDelamain {
@@ -2038,6 +2061,7 @@ private final func OnAutodriveToggled(enabled: Bool, isDelamain: Bool) -> Void {
 
 @wrapMethod(PreventionSystem)
 private final func OnDistrictAreaEntered(request: ref<DistrictEnteredEvent>) -> Void {
+    //DFProfile();
     wrappedMethod(request);
     DFHumanityLossConditionSystem.Get().CheckShouldShowCorpoFreshStartLifePathHumanityLossRestoreChoice(true);
 }
@@ -2046,6 +2070,7 @@ private final func OnDistrictAreaEntered(request: ref<DistrictEnteredEvent>) -> 
 //
 @wrapMethod(ConfessionalInkGameController)
 protected cb func OnVideoFinished(target: wref<inkVideo>) -> Bool {
+    //DFProfile();
     if this.m_isConfessing {
         DFHumanityLossConditionSystem.Get().OnConfessionBothUsed();
     }

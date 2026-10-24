@@ -439,6 +439,7 @@ public class DFSettings extends ScriptableSystem {
 	}
 
 	private final func ApplyHangoverCureFoodDescriptions() -> Void {
+		//DFProfile();
 		let foodList: array<String> = [
 			"Items.GoodQualityFood10",
 			"Items.GoodQualityFood11",
@@ -495,6 +496,7 @@ public class DFSettings extends ScriptableSystem {
 	}
 
 	private final func ApplyHangoverCureDrinkDescriptions() -> Void {
+		//DFProfile();
 		let drinkList: array<String> = [
 			"Items.LowQualityDrink1",
 			"Items.LowQualityDrink11",

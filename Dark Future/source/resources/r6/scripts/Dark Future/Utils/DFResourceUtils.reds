@@ -189,6 +189,7 @@ public class DFResourceUtils extends ScriptableService {
     }
 
     private final func BuildSceneOptionIconMap() -> Void {
+        //DFProfile();
         this.sceneOptionIconMaps = [
             DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Sleep_BaseGame"),
             DFSceneOptionIconMap(0ul, t"ChoiceCaptionParts.DarkFutureInteraction_Sleep_KressStreet"),

@@ -382,6 +382,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+		//DFProfile();
 		super.InitSpecific(attachedPlayer);
 
 		// Biocorruption - If not running, remove Euphoria.
@@ -414,11 +415,13 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func HandleOverchargeDepleted() -> Void {
+		//DFProfile();
 		this.BiocorruptionConditionSystem.ApplyCrashAfterEuphoria();
 	}
 
 	// TODO - THIS ISN'T CALLED!!!!! <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	public final func OnStacksOfEnergyManagementEffectAppliedFromItem(itemRecord: wref<Item_Record>, animateUI: Bool, stacksApplied: Uint32) -> Void {
+		//DFProfile();
 		// Dark Future 3.0 - All consumables that restore Nerve are now stack-restricted and follow the same underlying
 		// logic as Energy Management effects. As the Energy System now manages whether or not these stacks should apply,
 		// the Energy System passes this data to the Nerve System to restore Nerve. (Less clean than I would like, but for now
@@ -493,6 +496,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	public final func GetItemNerveChangePreviewAmount(itemRecord: wref<Item_Record>) -> DFNerveChangePreview {
+		//DFProfile();
 		let r: DFNerveChangePreview;
 		let pipelineResult: DFManagedEffectPipelineResult = this.PlayerStateService.ManagedConsumablePipeline(itemRecord);
 		if pipelineResult.managedEffectStateIndex == -1 || Equals(pipelineResult.managedEffectItemDef.itemRecordTag, n"") { return r; }
@@ -734,10 +738,12 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func GetNeedDeathSettingValue() -> Bool {
+		//DFProfile();
 		return this.Settings.nerveLossIsFatal;
 	}
 
 	private final func GetNeedSoftCapValue() -> Float {
+		//DFProfile();
 		return this.HumanityLossConditionSystem.GetCurrentNerveSoftCapFromHumanityLoss();
 	}
 
@@ -1147,6 +1153,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	public final func QueuePlayerDeath() -> Void {
+		//DFProfile();
 		// :(
 
 		this.TryToTransitionNerveBreathingEffects();
@@ -1154,6 +1161,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	public final func OnPostPlayerDeathCallback() -> Void {
+		//DFProfile();
 		this.TryToTransitionNerveBreathingEffects();
 		this.StopOverdoseSFX();
 		super.OnPostPlayerDeathCallback();
@@ -1320,6 +1328,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	//	Overdose
 	//
 	public final func SetOverdoseBehavior(inOverdose: Bool, opt flatlineStacks: Uint32) -> Void {
+		//DFProfile();
 		let wasInOverdose: Bool = this.PlayerStateService.GetInOverdose();
 		let transitionedStates: Bool = false;
 
@@ -1363,6 +1372,7 @@ public final class DFNerveSystem extends DFNeedSystemBase {
 	}
 
 	private final func StopOverdoseSFX() -> Void {
+		//DFProfile();
 		// Stop the heartbeat SFX.
 		let evt: ref<SoundStopEvent> = new SoundStopEvent();
         evt.soundName = n"q101_sc_03_heart_loop";

@@ -52,6 +52,7 @@ public struct DFStatsBarData {
 //
 @addMethod(UIInventoryItem)
 public final func IsDarkFutureItemWithShownBars() -> Bool {
+	//DFProfile();
 	let realItemData: ref<gameItemData> = this.GetRealItemData();
 	return realItemData.HasTag(n"DarkFutureItemTooltipShowBars");
 }
@@ -60,6 +61,7 @@ public final func IsDarkFutureItemWithShownBars() -> Bool {
 //
 @wrapMethod(UIInventoryItem)
 public final func IsUsingBars() -> Bool {
+	//DFProfile();
 	if this.IsDarkFutureItemWithShownBars() {
 		return true;
 	} else {
@@ -71,6 +73,7 @@ public final func IsUsingBars() -> Bool {
 //
 @wrapMethod(UIInventoryItemStatsManager)
 public final func GetWeaponBars(opt force: Bool) -> wref<UIInventoryItemWeaponBars> {
+	//DFProfile();
 	let gameItemDataStrong: ref<gameItemData> = this.m_gameItemData;
 	if gameItemDataStrong.HasTag(n"DarkFutureItemTooltipShowBars") {
 		return wrappedMethod(true);
@@ -91,6 +94,7 @@ public let DarkFutureLastItemManagedEffectApplicableStackCountMax: Int32 = 0;
 //
 @wrapMethod(ItemTooltipCyberwareWeaponModule)
 public final func NEW_Update(data: wref<UIInventoryItem>, comparisonData: wref<UIInventoryItemComparisonManager>) -> Void {
+	//DFProfile();
 	let def: DFManagedEffectItemDefinition = DFPlayerStateService.Get().GetItemManagedEffectDefinition(data.m_realItemRecord);
 	let managedItem: Bool = false;
 	let stacksFromItem: Int32;
@@ -135,6 +139,7 @@ public final func NEW_Update(data: wref<UIInventoryItem>, comparisonData: wref<U
 //  Method that creates Alcohol item stat bars.
 //
 public func DarkFutureMakeAlcohol(statsManager: ref<UIInventoryItemStatsManager>, itemData: ref<gameItemData>, itemType: gamedataItemType) -> ref<UIInventoryItemWeaponBars> {
+	//DFProfile();
 	let BiocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	let instance: ref<UIInventoryItemWeaponBars> = new UIInventoryItemWeaponBars();
@@ -157,6 +162,7 @@ public func DarkFutureMakeAlcohol(statsManager: ref<UIInventoryItemStatsManager>
 //  Method that creates Nicotine item stat bars.
 //
 public func DarkFutureMakeNicotine(statsManager: ref<UIInventoryItemStatsManager>, itemData: ref<gameItemData>, itemType: gamedataItemType) -> ref<UIInventoryItemWeaponBars> {
+	//DFProfile();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	let instance: ref<UIInventoryItemWeaponBars> = new UIInventoryItemWeaponBars();
     instance.m_type = DFEnum_UIInventoryItemWeaponBarsType(n"DarkFutureNicotine");
@@ -173,6 +179,7 @@ public func DarkFutureMakeNicotine(statsManager: ref<UIInventoryItemStatsManager
 //  Method that creates Caffeine item stat bars.
 //
 public func DarkFutureMakeCaffeine(statsManager: ref<UIInventoryItemStatsManager>, itemData: ref<gameItemData>, itemType: gamedataItemType) -> ref<UIInventoryItemWeaponBars> {
+	//DFProfile();
 	let instance: ref<UIInventoryItemWeaponBars> = new UIInventoryItemWeaponBars();
     instance.m_type = DFEnum_UIInventoryItemWeaponBarsType(n"DarkFutureCaffeinated");
     instance.m_itemType = itemType;
@@ -185,6 +192,7 @@ public func DarkFutureMakeCaffeine(statsManager: ref<UIInventoryItemStatsManager
 //  Method that creates Narcotic item stat bars.
 //
 public func DarkFutureMakeNarcotic(statsManager: ref<UIInventoryItemStatsManager>, itemData: ref<gameItemData>, itemType: gamedataItemType) -> ref<UIInventoryItemWeaponBars> {
+	//DFProfile();
 	let BiocorruptionCondition: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	let instance: ref<UIInventoryItemWeaponBars> = new UIInventoryItemWeaponBars();
@@ -208,6 +216,7 @@ public func DarkFutureMakeNarcotic(statsManager: ref<UIInventoryItemStatsManager
 //
 @wrapMethod(UIInventoryItemWeaponBars)
 public final static func Make(statsManager: ref<UIInventoryItemStatsManager>, itemData: ref<gameItemData>, itemType: gamedataItemType, type: UIInventoryItemWeaponBarsType) -> ref<UIInventoryItemWeaponBars> {
+	//DFProfile();
 	if itemData.HasTag(n"DarkFutureItemTooltipShowBars") {
 
         if itemData.HasTag(n"DarkFutureItemTooltipShowBarsAlcohol") {
@@ -232,6 +241,7 @@ public final static func Make(statsManager: ref<UIInventoryItemStatsManager>, it
 //
 @wrapMethod(UIInventoryItemWeaponBars)
 public final static func GetDisplayedStats(barsType: UIInventoryItemWeaponBarsType) -> [WeaponBarType] {
+	//DFProfile();
 	let result: array<WeaponBarType>;
 	let BiocorruptionCondition: ref<DFBiocorruptionConditionSystem>;
 
@@ -270,6 +280,7 @@ public final static func GetDisplayedStats(barsType: UIInventoryItemWeaponBarsTy
 //
 @wrapMethod(NewItemTooltipStatBarController)
 private final func BarTypeToName(barType: WeaponBarType) -> String {
+	//DFProfile();
 	if Equals(barType, DFEnum_WeaponBarType(n"DarkFutureAlcoholStacks")) {
 		return GetLocalizedTextByKey(n"DarkFutureAlcoholActiveEffectName");
 
@@ -298,6 +309,7 @@ private final func BarTypeToName(barType: WeaponBarType) -> String {
 
 @addMethod(NewItemTooltipStatBarController)
 public final func DarkFutureSetActiveStackStatBarValues(bar: wref<UIInventoryItemWeaponBar>, effectType: DFManagedEffectType) -> Void {
+	//DFProfile();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 
 	bar.Value = Cast<Float>(PlayerStateService.GetManagedEffectActiveStacksByType(effectType));
@@ -306,6 +318,7 @@ public final func DarkFutureSetActiveStackStatBarValues(bar: wref<UIInventoryIte
 
 @addMethod(NewItemTooltipStatBarController)
 public final func DarkFutureSetToleranceStackStatBarValues(bar: wref<UIInventoryItemWeaponBar>, effectType: DFManagedEffectType) -> Void {
+	//DFProfile();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	
 	let toleranceStacksAtThisStage: Int32 = Cast<Int32>(PlayerStateService.GetManagedEffectToleranceStacksAtThisAddictionStageByType(effectType));
@@ -315,6 +328,7 @@ public final func DarkFutureSetToleranceStackStatBarValues(bar: wref<UIInventory
 
 @addMethod(NewItemTooltipStatBarController)
 public final func DarkFutureSetEuphoriaBuildUpStackStatBarValues(bar: wref<UIInventoryItemWeaponBar>) -> Void {
+	//DFProfile();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
 
@@ -327,6 +341,7 @@ public final func DarkFutureSetEuphoriaBuildUpStackStatBarValues(bar: wref<UIInv
 
 @addMethod(NewItemTooltipStatBarController)
 public final func DarkFutureSetEuphoriaBuildUpStackStatBarText(bar: wref<UIInventoryItemWeaponBar>) -> Void {
+	//DFProfile();
 	let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.Get();
 
 	if IsSystemEnabledAndRunning(BiocorruptionConditionSystem) {
@@ -367,6 +382,7 @@ public let DarkFutureIconPanel: ref<inkHorizontalPanel>;
 
 @addMethod(NewItemTooltipStatBarController)
 public final func DarkFutureSetUpCustomIconOverlay(type: DFManagedEffectType) -> Void {
+	//DFProfile();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	let activeStacks: Uint32 = PlayerStateService.GetManagedEffectActiveStacksAtThisAddictionStageByType(type);
 	let toleranceStacks: Uint32 = PlayerStateService.GetManagedEffectToleranceStacksAtThisAddictionStageByType(type);
@@ -452,6 +468,7 @@ public final func DarkFutureSetUpCustomIconOverlay(type: DFManagedEffectType) ->
 
 @addMethod(NewItemTooltipStatBarController)
 public final func DarkFutureSetUpCustomSeparatorOverlayByType(type: DFManagedEffectType) -> Void {
+	//DFProfile();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	let activeStacks: Uint32 = PlayerStateService.GetManagedEffectActiveStacksAtThisAddictionStageByType(type);
 	let toleranceStacks: Uint32 = PlayerStateService.GetManagedEffectToleranceStacksAtThisAddictionStageByType(type);
@@ -461,6 +478,7 @@ public final func DarkFutureSetUpCustomSeparatorOverlayByType(type: DFManagedEff
 
 @addMethod(NewItemTooltipStatBarController)
 public final func DarkFutureSetUpCustomSeparatorOverlay(activeStacks: Uint32, toleranceStacks: Uint32) -> Void {
+	//DFProfile();
 	let pipWidth: Float = ((1.0 / Cast<Float>(activeStacks + toleranceStacks)) * 654.0) - 5.0;
 	
 	let parentCanvas: ref<inkCanvas> = inkWidgetRef.Get(this.m_background).GetParentWidget() as inkCanvas;
@@ -555,6 +573,7 @@ public final func DarkFutureSetUpCustomSeparatorOverlay(activeStacks: Uint32, to
 //
 @wrapMethod(NewItemTooltipStatBarController)
 public final func Setup(itemType: gamedataItemType, bar: wref<UIInventoryItemWeaponBar>, comparedBar: wref<UIInventoryItemWeaponBar>) -> Void {
+	//DFProfile();
 	if IsDefined(this.DarkFuturePipPanel) {
 		(this.DarkFuturePipPanel.GetParentWidget() as inkCanvas).RemoveChildByName(n"DarkFuturePipPanel");
 	}
@@ -602,6 +621,7 @@ public final func Setup(itemType: gamedataItemType, bar: wref<UIInventoryItemWea
 
 @addMethod(NewItemTooltipStatBarController)
 private final func DarkFutureGetAnimateBarActiveStackPercentages(type: DFManagedEffectType) -> DFStatsBarData {
+	//DFProfile();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.Get();
 	let percentage: Float = 0.0;
 	let comparedPercentage: Float = 0.0;
@@ -656,6 +676,7 @@ private final func DarkFutureGetAnimateBarActiveStackPercentages(type: DFManaged
 
 @addMethod(NewItemTooltipStatBarController)
 private final func DarkFutureGetAnimateBarEuphoriaStackPercentages(type: DFManagedEffectType) -> DFStatsBarData {
+	//DFProfile();
 	let gameInstance: GameInstance = GetGameInstance();
 	let PlayerStateService: ref<DFPlayerStateService> = DFPlayerStateService.GetInstance(gameInstance);
 	let BiocorruptionConditionSystem: ref<DFBiocorruptionConditionSystem> = DFBiocorruptionConditionSystem.GetInstance(gameInstance);
@@ -706,6 +727,7 @@ private final func DarkFutureGetAnimateBarEuphoriaStackPercentages(type: DFManag
 //
 @wrapMethod(NewItemTooltipStatBarController)
 private final func AnimateBars(barType: WeaponBarType, percentage: Float, comparedPercentage: Float, isBetter: Bool) -> Void {
+	//DFProfile();
 	let statsBarData: DFStatsBarData;
 	let useStatsBarData: Bool = false;
 	let isEuphoria: Bool = false;

@@ -97,6 +97,7 @@ public final class DFModCompatSystem extends DFSystem {
     }
 
     public func DoPostSuspendActions() -> Void {
+        //DFProfile();
         // Consumable Animations - Ensure that it is enabled, if installed.
         if this.IsConsumableAnimationsInstalled() {
             this.ToggleConsumableAnimationsOn();
@@ -104,6 +105,7 @@ public final class DFModCompatSystem extends DFSystem {
     }
 
     public func DoPostResumeActions() -> Void {
+        //DFProfile();
         // Consumable Animations - Ensure that it is disabled if Dark Future is installed.
         if this.IsConsumableAnimationsInstalled() {
             this.ToggleConsumableAnimationsOff();
@@ -155,6 +157,7 @@ public final class DFModCompatSystem extends DFSystem {
     private func RegisterAllRequiredDelayCallbacks() -> Void {}
 
     public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+        //DFProfile();
         // Consumable Animations - Ensure that it is disabled if Dark Future is installed.
         if this.IsConsumableAnimationsInstalled() {
             this.ToggleConsumableAnimationsOff();
@@ -361,16 +364,19 @@ public final class DFModCompatSystem extends DFSystem {
 
     @if(ModuleExists("ConsumableAnimations.Main"))
     private func IsConsumableAnimationsInstalled() -> Bool {
+        //DFProfile();
         return true;
     }
 
     @if(!ModuleExists("ConsumableAnimations.Main"))
     private func IsConsumableAnimationsInstalled() -> Bool {
+        //DFProfile();
         return false;
     }
 
     @if(ModuleExists("ConsumableAnimations.Settings"))
     private func ToggleConsumableAnimationsOff() -> Void {
+        //DFProfile();
         let caSettings: ref<CASettings> = CASettings.GetInstance(GetGameInstance());
         caSettings.mainSystemEnabled = false;
         caSettings.OnModSettingsChange();
@@ -378,11 +384,13 @@ public final class DFModCompatSystem extends DFSystem {
 
     @if(!ModuleExists("ConsumableAnimations.Settings"))
     private func ToggleConsumableAnimationsOff() -> Void {
+        //DFProfile();
         // Do nothing
     }
 
     @if(ModuleExists("ConsumableAnimations.Settings"))
     private func ToggleConsumableAnimationsOn() -> Void {
+        //DFProfile();
         let caSettings: ref<CASettings> = CASettings.GetInstance(GetGameInstance());
         caSettings.mainSystemEnabled = true;
         caSettings.OnModSettingsChange();
@@ -390,6 +398,7 @@ public final class DFModCompatSystem extends DFSystem {
 
     @if(!ModuleExists("ConsumableAnimations.Settings"))
     private func ToggleConsumableAnimationsOn() -> Void {
+        //DFProfile();
         // Do nothing
     }
 }

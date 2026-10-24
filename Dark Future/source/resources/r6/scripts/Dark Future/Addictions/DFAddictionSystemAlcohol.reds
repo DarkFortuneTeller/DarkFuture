@@ -307,6 +307,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 	}
 
 	private final func GetAddictionType() -> DFAddictionType {
+		//DFProfile();
 		return DFAddictionType.Alcohol;
     }
 
@@ -351,6 +352,7 @@ public class DFAlcoholAddictionSystem extends DFAddictionSystemBase {
 
 @wrapMethod(PlayerPuppet)
 private final func ProcessTieredDrunkEffect(evt: ref<StatusEffectEvent>) -> Void {
+	//DFProfile();
 	if DFSettings.Get().mainSystemEnabled {
 		return;
 	} else {

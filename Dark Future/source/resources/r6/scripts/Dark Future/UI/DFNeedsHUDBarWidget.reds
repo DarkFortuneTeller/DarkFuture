@@ -965,6 +965,7 @@ public class DFNeedsHUDBar extends inkCanvas {
     }
 
     public final func UpdateOverchargeAppearance() {
+        //DFProfile();
         if this.m_overchargeValue > 0.0 {
             this.m_icon.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActiveMagenta));
             this.m_border.SetTintColor(GetDarkFutureHDRColor(DFHDRColor.ActiveMagenta));

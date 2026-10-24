@@ -214,6 +214,7 @@ protected cb func OnUpdate(timeDelta: Float) -> Bool {
 // TimeskipGameController - Dispatch Time Skip Begin event.
 @wrapMethod(TimeskipGameController)
 private final func Apply() -> Void {
+	//DFProfile();
 	this.MainSystem.DispatchTimeSkipBeginEvent();
 	wrappedMethod();
 }

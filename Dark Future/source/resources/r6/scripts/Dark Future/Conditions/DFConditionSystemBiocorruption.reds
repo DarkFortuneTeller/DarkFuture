@@ -249,6 +249,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     //  DFSystem Required Methods
     //
     public final func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {
+        //DFProfile();
         if ArrayContains(changedSettings, "addictionEnabled") {
             if !this.Settings.addictionEnabled && this.GetSystemToggleSettingValue() {
                 this.Suspend();
@@ -296,14 +297,14 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     private func RegisterListeners() -> Void {
-        // DFProfile();
+        //DFProfile();
         this.FactListenerShowBiocorruptionTutorial = GameInstance.GetQuestsSystem(GetGameInstance()).RegisterListener(this.GetShowBiocorruptionTutorialActionFact(), this, n"OnDinoTextShowBiocorruptionTutorialActionFactChanged");
         this.factListenerOnCrashEvent = GameInstance.GetQuestsSystem(GetGameInstance()).RegisterListener(this.GetOnCrashEventFact(), this, n"OnCrashEventFactSet");
         this.factListenerOnShowCrashTutorialActionFactSet = GameInstance.GetQuestsSystem(GetGameInstance()).RegisterListener(this.GetShowCrashTutorialActionFact(), this, n"OnDinoTextShowBiocorruptionCrashTutorialActionFactChanged");
     }
     
     private func UnregisterListeners() -> Void {
-        // DFProfile();
+        //DFProfile();
         GameInstance.GetQuestsSystem(GetGameInstance()).UnregisterListener(this.GetShowBiocorruptionTutorialActionFact(), this.FactListenerShowBiocorruptionTutorial);
         this.FactListenerShowBiocorruptionTutorial = 0u;
         
@@ -427,6 +428,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     public func OnTimeSkipBegin() -> Void {}
 
     public func OnTimeSkipFinished(data: DFTimeSkipData) -> Void {
+        //DFProfile();
         super.OnTimeSkipFinished(data);
 
         if DFRunGuard(this) { return; }
@@ -576,6 +578,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 
     // Overrides base implementation
     public final func CheckTutorial() -> Void {
+        //DFProfile();
         // Start the text message chain with Dino instead of displaying a tutorial immediately.
         if this.QuestsSystem.GetFact(n"df_fact_start_biocorruption_dino_text") == 0 {
             this.QuestsSystem.SetFact(n"df_fact_start_biocorruption_dino_text", 1);
@@ -583,6 +586,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     private final func CheckBiocorruptionTutorial() -> Void {
+        //DFProfile();
         super.CheckTutorial();
     }
 
@@ -748,6 +752,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 	}
 
     public final func OnAddictionTreatmentEffectAppliedOrRemoved() -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         if this.PlayerStateService.GetRemainingAddictionTreatmentDurationInGameTimeSeconds() > 0.0 {
@@ -760,12 +765,14 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     public final func HandleWithdrawalLevelChange() -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         this.RefreshEuphoria();
     }
 
     public final func GetCalculatedBiocorruptionLevelInProvidedState(alcoholStage: Int32, nicotineStage: Int32, narcoticStage: Int32, alcoholAmountAsPercentage: Float, nicotineAmountAsPercentage: Float, narcoticAmountAsPercentage: Float) -> Uint32 {
+        //DFProfile();
         let conditionProgressFromStages: Float = (Cast<Float>(nicotineStage) * this.conditionProgressPerNicotineAddictionStage) + (Cast<Float>(alcoholStage) * this.conditionProgressPerAlcoholAddictionStage) + (Cast<Float>(narcoticStage) * this.conditionProgressPerNarcoticAddictionStage);
         DFLog(this, "GetCalculatedBiocorruptionLevelInProvidedState - conditionProgressFromStages: " + ToString(conditionProgressFromStages));
 
@@ -783,17 +790,20 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     public final func GetHasEuphoria() -> Bool {
+        //DFProfile();
         let overcharge: Float = this.NerveSystem.GetOverchargeValue();
         DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Overcharge Value = " + ToString(overcharge));
         return overcharge > 0.0;
     }
 
     public final func GetIsCrashed() -> Bool {
+        //DFProfile();
         // We are Crashed when we have stacks of the Crash status and we don't have Euphoria.
 		return this.lastKnownCrashStackCount > 0u && this.NerveSystem.GetOverchargeValue() == 0.0;
 	}
 
     public final func RefreshEuphoria() -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
 		let biocorruptionLevel: Uint32 = this.GetConditionLevel();
@@ -938,6 +948,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 	}
 
 	public final func RemoveEuphoriaIfApplied() -> Void {
+		//DFProfile();
 		// Remove any overcharge and notify the UI.
 		if this.GetHasEuphoria() {
             DFLog(this, "~%~%~%~%~%~%~%~%~ Euphoria: Clearing Nerve overcharge.");
@@ -957,6 +968,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 	}
 
 	public final func EuphoriaBlockedReason() -> DFEuphoriaBlockedReason {
+		//DFProfile();
 		if StatusEffectSystem.ObjectHasStatusEffect(this.player, t"DarkFutureStatusEffect.AddictionTreatment") {
 			return DFEuphoriaBlockedReason.AddictionTreatment;
 		
@@ -975,6 +987,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 	}
 
     private final func GetEuphoriaEffectID() -> TweakDBID {
+        //DFProfile();
         if this.Settings.humanityLossConditionEnabled && this.Settings.humanityLossCyberpsychosisEnabled {
             return t"DarkFutureStatusEffect.Euphoria";
 
@@ -987,30 +1000,37 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
 	}
 
     private final func GetRestlessEffectID() -> TweakDBID {
+        //DFProfile();
         return t"DarkFutureStatusEffect.Restless";
     }
 
     public final func GetRemainingCrashStackDurationInGameTimeSeconds() -> Float {
+        //DFProfile();
         return this.remainingCrashStackDurationInGameTimeSeconds;
     }
 
     public final func GetRemainingTimeUntilRestlessInGameTimeSeconds() -> Float {
+        //DFProfile();
         return this.remainingDurationUntilRestlessInGameTimeSeconds;
     }
 
     public final func GetLastKnownCrashStackCount() -> Uint32 {
+        //DFProfile();
         return this.lastKnownCrashStackCount;
     }
 
     public final func GetMaxCrashStackCount() -> Uint32 {
+        //DFProfile();
         return this.maxCrashStackCount;
     }
 
     public final func ApplyCrashAfterEuphoria() -> Void {
+        //DFProfile();
         this.ApplyCrash(this.crashStacksAfterEuphoriaPerBiocorruptionLevel[Cast<Int32>(this.GetConditionLevel())]);
     }
 
     public final func ApplyCrash(stackCount: Uint32, opt fromQuest: Bool) -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
 
         // The Energy loss process will determine if a Blackout or Crash animation will play.
@@ -1070,6 +1090,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     public final func ApplyCrashFromTimeskip() -> Void {
+        //DFProfile();
         // This is a stripped-down version of ApplyCrash for use with TimeSkip, as the TimeSkip process
         // invokes each system to already set specific values.
 
@@ -1085,6 +1106,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     public final func RefreshCrashStatusEffectAndUpdateLimit(opt noWait: Bool, opt forceDisplayBars: Bool) -> Void {
+        //DFProfile();
         StatusEffectHelper.RemoveStatusEffect(this.player, t"DarkFutureStatusEffect.Crash", this.maxCrashStackCount);
         if this.GetHasEuphoria() {
             this.HydrationSystem.ForceNeedMaxValueUpdate();
@@ -1109,6 +1131,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     public final func GetCrashSuppressionStackCount(opt itemRecordForPreview: ref<Item_Record>) -> Int32 {
+        //DFProfile();
         let drugSuppressionValue: Int32 = 4;
         let foodSuppressionValue: Int32 = 2;
         let drinkSuppressionValue: Int32 = 2;
@@ -1140,6 +1163,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     private final func RefreshRestlessStatusEffect() -> Void {
+        //DFProfile();
         // TODO - Compare to addiction treatment function as sanity check
         StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureRestless");
 
@@ -1149,26 +1173,32 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     public final func GetCrashQueued() -> DFQueuedCrashType {
+        //DFProfile();
         return this.queuedCrashType;
     }
 
     public final func SetCrashQueued(type: DFQueuedCrashType) -> Void {
+        //DFProfile();
         this.queuedCrashType = type;
     }
 
     private final func GetOnCrashEventFact() -> CName {
+        //DFProfile();
         return n"df_fact_on_crash_event";
     }
 
     private final func GetShowBiocorruptionTutorialActionFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_show_biocorruption_tutorial";
     }
 
     private final func GetShowCrashTutorialActionFact() -> CName {
+        //DFProfile();
         return n"df_fact_action_show_biocorruptioncrash_tutorial";
     }
 
     private final func OnCrashEventFactSet(value: Int32) -> Void {
+        //DFProfile();
         if value == 1 {
             // We had a headache, or puked!
             this.SetCrashQueued(DFQueuedCrashType.None);
@@ -1258,6 +1288,7 @@ public class DFBiocorruptionConditionSystem extends DFConditionSystemBase {
     }
 
     private final func UpdateUIDescriptions() -> Void {
+        //DFProfile();
         let emptyIntArray: array<Int32>;
 
         if IsSystemEnabledAndRunning(this) {

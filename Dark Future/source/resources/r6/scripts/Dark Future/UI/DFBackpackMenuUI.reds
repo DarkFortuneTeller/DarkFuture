@@ -131,6 +131,7 @@ protected cb func OnInitialize() -> Bool {
 
 @addMethod(BackpackMainGameController)
 private final func GetStackLimitedNerveToRestore(needsData: DFNeedsDatum, stackingEffect: TweakDBID, maxStacks: Uint32, stacksToTryToApply: Uint32) -> Float {
+	//DFProfile();
 	let amountToRestore: Float = 0.0;
 	let appliedEffect: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(this.m_player, stackingEffect);
 	let appliedEffectStackCount: Uint32 = IsDefined(appliedEffect) ? appliedEffect.GetStackCount() : 0u;

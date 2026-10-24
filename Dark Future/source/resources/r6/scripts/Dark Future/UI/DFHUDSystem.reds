@@ -145,6 +145,7 @@ private let DarkFutureHUDSystem: ref<DFHUDSystem>;
 
 @wrapMethod(healthbarWidgetGameController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	wrappedMethod();
 	this.DarkFutureHUDSystem = DFHUDSystem.Get();
 	this.DarkFutureHUDSystem.SetHealthBarWidget(this);
@@ -152,12 +153,14 @@ protected cb func OnInitialize() -> Bool {
 
 @wrapMethod(healthbarWidgetGameController)
 protected cb func OnUninitialize() -> Bool {
+	//DFProfile();
 	wrappedMethod();
 	this.DarkFutureHUDSystem = null;
 }
 
 @wrapMethod(healthbarWidgetGameController)
 protected cb func OnUpdateHealthBarVisibility() -> Bool {
+    //DFProfile();
     let r: Bool = wrappedMethod();
 
     if IsDefined(this.DarkFutureHUDSystem) {
@@ -172,6 +175,7 @@ private let DarkFutureHUDSystem: ref<DFHUDSystem>;
 
 @wrapMethod(StaminabarWidgetGameController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	wrappedMethod();
 	this.DarkFutureHUDSystem = DFHUDSystem.Get();
 	this.DarkFutureHUDSystem.SetStaminaBarWidget(this);
@@ -179,12 +183,14 @@ protected cb func OnInitialize() -> Bool {
 
 @wrapMethod(StaminabarWidgetGameController)
 protected cb func OnUninitialize() -> Bool {
+	//DFProfile();
 	wrappedMethod();
 	this.DarkFutureHUDSystem = null;
 }
 
 @wrapMethod(StaminabarWidgetGameController)
 public final func EvaluateStaminaBarVisibility() -> Void {
+	//DFProfile();
 	wrappedMethod();
 
 	if IsDefined(this.DarkFutureHUDSystem) {
@@ -194,6 +200,7 @@ public final func EvaluateStaminaBarVisibility() -> Void {
 
 @wrapMethod(PlayerPuppet)
 private final func OnStatusEffectUsedHealingItemOrCyberwareApplied() -> Void {
+	//DFProfile();
 	wrappedMethod();
 
 	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
@@ -212,6 +219,7 @@ private let DFNextActiveEffectType: InputHintData;
 
 @wrapMethod(RadialWheelController)
 private final func CacheAllInputHintData() -> Void {
+	//DFProfile();
 	wrappedMethod();
 
 	let source: CName = n"RadialWheel";
@@ -231,6 +239,7 @@ private final func CacheAllInputHintData() -> Void {
 
 @wrapMethod(RadialWheelController)
 private final func UpdateInputHints() -> Void {
+	//DFProfile();
 	wrappedMethod();
 	this.AddInputHint(this.DFNextActiveEffectType, true);
 	this.AddInputHint(this.DFPrevActiveEffectType, true);
@@ -238,6 +247,7 @@ private final func UpdateInputHints() -> Void {
 
 @wrapMethod(RadialWheelController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	let r: Bool = wrappedMethod();
 
 	let playerControlledObject: ref<GameObject>;
@@ -253,6 +263,7 @@ protected cb func OnInitialize() -> Bool {
 
 @wrapMethod(RadialWheelController)
 protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
+	//DFProfile();
 	let aName: CName = ListenerAction.GetName(action);
 	let aType: gameinputActionType = ListenerAction.GetType(action);
 	if !this.isActive {
@@ -272,12 +283,14 @@ protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsu
 
 @wrapMethod(RadialWheelController)
 protected cb func OnOpenWheelRequest(evt: ref<QuickSlotButtonHoldStartEvent>) -> Bool {
+	//DFProfile();
 	DFHUDSystem.Get().SetRadialMenuActiveEffectType(DFRadialMenuActiveEffectType.StatusEffects, true);
 	return wrappedMethod(evt);
 }
 
 @wrapMethod(inkCooldownGameController)
 protected cb func OnInitialize() -> Bool {
+	//DFProfile();
 	let r: Bool = wrappedMethod();
 
 	let HUDSystem: ref<DFHUDSystem> = DFHUDSystem.Get();
@@ -412,6 +425,7 @@ private let DarkFutureListFadeOutAnim: ref<inkAnimDef>;
 
 @addMethod(inkCooldownGameController)
 public final func DarkFutureFadeOutCooldownList() -> Void {
+	//DFProfile();
 	if IsDefined(this.DarkFutureListFadeOutAnimProxy) {
         this.DarkFutureListFadeOutAnimProxy.Stop();
     }
@@ -432,6 +446,7 @@ public final func DarkFutureFadeOutCooldownList() -> Void {
 
 @addMethod(inkCooldownGameController)
 public final func DarkFutureFadeInCooldownList() -> Void {
+	//DFProfile();
 	if IsDefined(this.DarkFutureListFadeOutAnimProxy) {
         this.DarkFutureListFadeOutAnimProxy.Stop();
     }
@@ -631,6 +646,7 @@ public final class DFHUDSystem extends DFSystem {
 	private func UnregisterListeners() -> Void {}
 	
 	public func UnregisterAllDelayCallbacks() -> Void {
+		//DFProfile();
 		this.UnregisterForPhoneIconCheck();
 	}
 	
@@ -799,6 +815,7 @@ public final class DFHUDSystem extends DFSystem {
 
 	// TODO - We don't need to rebuild all of the widgets, only Conditions.
 	public final func RebuildWidgets() -> Void {
+		//DFProfile();
 		this.CreateWidgets(this.DarkFutureWidgetSlot, this.player);
 		// TODO - Force re-appearance
 	}
@@ -943,6 +960,7 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func RefreshHUDConditionsUIVisibilityFromHealthBar(healthBarVisible: Bool) {
+		//DFProfile();
 		if DFRunGuard(this) { return; }
 
 		if IsDefined(this.staminaBarController) {
@@ -951,6 +969,7 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func RefreshHUDConditionsUIVisibilityFromStaminaBar(staminaBarVisible: Bool) {
+		//DFProfile();
 		if DFRunGuard(this) { return; }
 
 		if IsDefined(this.healthBarController) {
@@ -959,6 +978,7 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func RefreshHUDConditionsUIVisibilityFromNerve() {
+		//DFProfile();
 		if IsDefined(this.staminaBarController) && IsDefined(this.healthBarController) {
 			this.conditionsIndicator.EvaluateSegmentedIndicatorGroupVisibility(false, false, this.healthBarController.m_moduleShown, this.staminaBarController.m_RootWidget.IsVisible());
 		}
@@ -1204,22 +1224,27 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func SetHealthBarWidget(healthBar: ref<healthbarWidgetGameController>) -> Void {
+		//DFProfile();
 		this.healthBarController = healthBar;
 	}
 
 	public final func SetStaminaBarWidget(staminaBar: ref<StaminabarWidgetGameController>) -> Void {
+		//DFProfile();
 		this.staminaBarController = staminaBar;
 	}
 
 	public final func IsNerveLockVisible() -> Bool {
+		//DFProfile();
 		return this.nerveBar.m_lockShown;
 	}
 
 	public final func SetCooldownController(cooldownController: ref<inkCooldownGameController>) -> Void {
+		//DFProfile();
 		this.cooldownController = cooldownController;
 	}
 
 	public final func CycleRadialMenuActiveEffectType(opt reverse: Bool) -> Void {
+		//DFProfile();
 		if IsDefined(this.cooldownController) {
 			// Set the active effect type.
 
@@ -1246,6 +1271,7 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func SetRadialMenuActiveEffectType(type: DFRadialMenuActiveEffectType, opt silent: Bool) {
+		//DFProfile();
 		if IsDefined(this.cooldownController) {
 			this.cooldownController.DarkFutureOpening = true;
 
@@ -1257,6 +1283,7 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func ForceRadialMenuActiveEffectTitle(type: DFRadialMenuActiveEffectType) -> Void {
+		//DFProfile();
 		if IsDefined(this.cooldownController) {
 			// Update the title text based on the new effect type.
 			if Equals(type, DFRadialMenuActiveEffectType.StatusEffects) {
@@ -1283,6 +1310,7 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	private final func UpdateRadialMenuActiveEffects(opt silent: Bool) -> Void {
+		//DFProfile();
 		if IsDefined(this.cooldownController) {
 
 			if !this.cooldownController.DarkFutureOpening {
@@ -1325,10 +1353,12 @@ public final class DFHUDSystem extends DFSystem {
 	}
 
 	public final func SetCooldownContentTabs(tabs: script_ref<array<DFRadialMenuActiveEffectTab>>) -> Void {
+		//DFProfile();
 		this.cooldownContentTabs = Deref(tabs);
 	}
 
 	public cb func OnCooldownFadeOutComplete(proxy: ref<inkAnimProxy>) -> Void {
+		//DFProfile();
 		if IsDefined(this.cooldownController) {
 			let v: Variant;
 			this.cooldownController.OnEffectUpdate(v);

@@ -141,6 +141,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	public final func GetSystems() -> Void {
+		//DFProfile();
 		super.GetSystems();
 
 		let gameInstance: GameInstance = GetGameInstance();
@@ -155,6 +156,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	private final func UnregisterListeners() -> Void {}
 
 	public func InitSpecific(attachedPlayer: ref<PlayerPuppet>) -> Void {
+		//DFProfile();
 		super.InitSpecific(attachedPlayer);
 		this.TryToSetupBlackoutWithCrash(true, 0u);
 	}
@@ -209,6 +211,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func OnItemConsumedActual(itemRecord: wref<Item_Record>, animateUI: Bool) -> Void {
+		//DFProfile();
 		// Drug Penalties
 		let consumableNeedsData: DFNeedsDatum = GetConsumableNeedsData(itemRecord);
 
@@ -322,14 +325,17 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func GetNeedDeathSettingValue() -> Bool {
+		//DFProfile();
 		return false;
 	}
 
 	private final func GetNeedSoftCapValue() -> Float {
+		//DFProfile();
 		return 100.0;
 	}
 
 	public final func ApplyDelayedNeedLoss(data: DFBiocorruptionDelayedNeedLossDatum) -> Void {
+		//DFProfile();
 		// Sets isFinalChangeInEuphoriaDepletion to True to signal that it's allowed to
         // trigger a Crash animation if a Blackout never played (prevents race condition between
         // Nerve and Energy updates).
@@ -386,6 +392,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	//	RunGuard Protected Methods
 	//
 	public final func ChangeNeedValue(amount: Float, opt changeValueProps: DFChangeNeedValueProps) -> Void {
+		//DFProfile();
 		super.ChangeNeedValue(amount, changeValueProps);
 		// TODO: >>>>>>>>>>>> Ask the Biocorruption Condition, or whoever has the time skip info, for the latest data here regarding crash stacks.
 
@@ -402,6 +409,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func TryToSetupBlackoutWithCrash(crashAllowed: Bool, crashStackCountFromTimeskip: Uint32) -> Void {
+		//DFProfile();
 		let currentNeedValue: Float = this.GetNeedValue();
 
 		// TODO - If Energy is restored while a blackout is pending, cancel the pending blackout and animation registration
@@ -780,6 +788,7 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	private final func GetEnergySleepingRecoveryAmountAtIteration(currentEnergy: Float) -> Float {
+		//DFProfile();
 		// Regain points non-linearly.
 
 		let totalPointRecoveryInRange: Float;
@@ -809,10 +818,12 @@ public final class DFEnergySystem extends DFNeedSystemBase {
 	}
 
 	public final func GetRestlessEnergyRecoveryLimit() -> Float {
+		//DFProfile();
 		return this.restlessEnergyRecoveryLimit;
     }
 
 	public final func RemoveCrashDurationByHours(hours: Int32) -> Void {
+		//DFProfile();
 		// TODO
 		/*
 		let stacksToClear: Uint32 = Cast<Uint32>(hours * 2);

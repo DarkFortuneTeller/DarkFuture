@@ -83,10 +83,12 @@ public class DFAddictionCurrentDayUpdateEvent extends Event {
     private let AddictionSystem: ref<DFAddictionSystemBase>;
 
     public func GetData() -> ref<DFAddictionSystemBase> {
+        //DFProfile();
         return this.AddictionSystem;
     }
 
     public static func Create(addictionSystem: ref<DFAddictionSystemBase>) -> ref<DFAddictionCurrentDayUpdateEvent> {
+        //DFProfile();
         let self: ref<DFAddictionCurrentDayUpdateEvent> = new DFAddictionCurrentDayUpdateEvent();
         self.AddictionSystem = addictionSystem;
         return self;
@@ -95,6 +97,7 @@ public class DFAddictionCurrentDayUpdateEvent extends Event {
 
 @addMethod(PlayerPuppet)
 private cb func OnDarkFutureAddictionCurrentDayUpdate(evt: ref<DFAddictionCurrentDayUpdateEvent>) -> Bool {
+    //DFProfile();
     evt.GetData().OnDayUpdate();
 }
 
@@ -195,6 +198,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     private func GetBlackboards(attachedPlayer: ref<PlayerPuppet>) -> Void {}
 
     private func RegisterListeners() -> Void {
+        //DFProfile();
         this.therapySetAddictionStateIndexFactListener = this.QuestsSystem.RegisterListener(this.GetSetTherapyAddictionStateIndexFactAction(), this, n"OnSetTherapyAddictionStateIndexFactChanged");
 
         // Update at midnight each day.
@@ -205,6 +209,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     }
 
 	private func UnregisterListeners() -> Void {
+        //DFProfile();
         this.QuestsSystem.UnregisterListener(this.GetSetTherapyAddictionStateIndexFactAction(), this.therapySetAddictionStateIndexFactListener);
         this.therapySetAddictionStateIndexFactListener = 0u;
 
@@ -298,6 +303,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 	}
 
     public func OnDayUpdate() -> Void {
+        //DFProfile();
         if DFRunGuard(this) { return; }
         DFLog(this, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ OnDayUpdate ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
@@ -368,6 +374,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     }
 
     public func GetAddictionAmountAsPercentageToNextStage() -> Float {
+        //DFProfile();
         if DFRunGuard(this) { return 0.0; }
 
         let addictionStageAdvanceAmounts: array<Float> = this.GetAddictionStageAdvanceAmounts();
@@ -375,6 +382,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     }
 
     public func GetAddictionAmountAsPercentageToNextStageInProvidedState(amount: Float, stage: Int32) -> Float {
+        //DFProfile();
         if DFRunGuard(this) { return 0.0; }
 
         let addictionStageAdvanceAmounts: array<Float> = this.GetAddictionStageAdvanceAmounts();
@@ -761,7 +769,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
 
     // TODO - Do we need to reregister?
     private final func ReduceAddictionFromTime() -> Void {
-        //DFProfile();		
+        //DFProfile();
 		let addictionAmountLoss: Float = this.GetAddictionAmountLossPerDay();
         this.ModAddictionAmount(-addictionAmountLoss);
         this.DispatchAddictionValueChangedEvent(DFAddictionEventType.UpdateFromTime, -addictionAmountLoss, this.currentAddictionAmountRev2, 0, this.GetAddictionStage());
@@ -1049,6 +1057,7 @@ public abstract class DFAddictionSystemBase extends DFSystem {
     //  Therapy Texts
     //
     private final func OnSetTherapyAddictionStateIndexFactChanged(value: Int32) -> Void {
+        //DFProfile();
         if Equals(value, 1) {
             this.SetTherapyAddictionStateIndexForMessage();
             this.QuestsSystem.SetFact(this.GetSetTherapyAddictionStateIndexFactAction(), 0);

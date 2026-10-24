@@ -57,10 +57,12 @@ import DarkFuture.Conditions.{
 
 class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
 	private func GetSystemInstance() -> wref<DFRevisedBackpackUISystem> {
+		//DFProfile();
 		return DFRevisedBackpackUISystem.Get();
 	}
 
     public cb func OnLoad() {
+		//DFProfile();
 		super.OnLoad();
 
 		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<RevisedCustomEventBackpackOpened>(), this, n"OnRevisedBackpackOpenedEvent", true);
@@ -70,18 +72,22 @@ class DFRevisedBackpackUISystemEventListeners extends DFSystemEventListener {
     }
 	
 	private cb func OnRevisedBackpackOpenedEvent(event: ref<RevisedCustomEventBackpackOpened>) {
+		//DFProfile();
 		this.GetSystemInstance().OnRevisedBackpackOpened(event.opened);
 	}
 
 	private cb func OnRevisedCustomEventItemHoverOverEvent(event: ref<RevisedCustomEventItemHoverOver>) {
+		//DFProfile();
 		this.GetSystemInstance().OnRevisedBackpackItemHoverOver(event.data);
 	}
 
     private cb func OnRevisedCustomEventItemHoverOutEvent(event: ref<RevisedCustomEventItemHoverOut>) {
+		//DFProfile();
 		this.GetSystemInstance().OnRevisedBackpackItemHoverOut();
 	}
 
     private cb func OnRevisedCustomEventCategorySelectedEvent(event: ref<RevisedCustomEventCategorySelected>) {
+		//DFProfile();
 		this.GetSystemInstance().OnRevisedRevisedBackpackCategorySelectedEvent(event.categoryId);
 	}
 }
@@ -111,11 +117,13 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     private let startedInOvercharge: Bool;
 
 	public final static func GetInstance(gameInstance: GameInstance) -> ref<DFRevisedBackpackUISystem> {
+		//DFProfile();
 		let instance: ref<DFRevisedBackpackUISystem> = GameInstance.GetScriptableSystemsContainer(gameInstance).Get(NameOf<DFRevisedBackpackUISystem>()) as DFRevisedBackpackUISystem;
 		return instance;
 	}
 
 	public final static func Get() -> ref<DFRevisedBackpackUISystem> {
+		//DFProfile();
 		return DFRevisedBackpackUISystem.GetInstance(GetGameInstance());
 	}
 
@@ -123,6 +131,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     //  Revised Backpack Custom Event Handlers
     //
     public final func OnRevisedBackpackOpened(opened: Bool) -> Void {
+        //DFProfile();
         DFLog(this, "RevisedBackpack: OnRevisedBackpackOpened, opened: " + ToString(opened));
         if opened {
             let inkSystem: ref<inkSystem> = GameInstance.GetInkSystem();
@@ -153,6 +162,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     private final func GetStackLimitedNerveToRestore(needsData: DFNeedsDatum, stackingEffect: TweakDBID, maxStacks: Uint32, stacksToTryToApply: Uint32) -> Float {
+        //DFProfile();
         let amountToRestore: Float = 0.0;
         let appliedEffect: ref<StatusEffect> = StatusEffectHelper.GetStatusEffectByID(DFGetPlayer(), stackingEffect);
         let appliedEffectStackCount: Uint32 = IsDefined(appliedEffect) ? appliedEffect.GetStackCount() : 0u;
@@ -167,6 +177,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     public final func OnRevisedBackpackItemHoverOver(itemData: ref<gameItemData>) -> Void {
+        //DFProfile();
         DFLog(this, "RevisedBackpack: OnRevisedBackpackItemHoverOver, itemData: " + ToString(itemData));
         if this.Settings.mainSystemEnabled {
             if IsDefined(itemData) {
@@ -234,6 +245,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     public final func OnRevisedBackpackItemHoverOut() -> Void {
+        //DFProfile();
         DFLog(this, "RevisedBackpack: OnRevisedBackpackItemHoverOut");
         if this.Settings.mainSystemEnabled {
             this.hydrationBar.SetOriginalValue(this.HydrationSystem.GetNeedValue());
@@ -255,6 +267,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     public final func OnRevisedRevisedBackpackCategorySelectedEvent(categoryId: Int32) -> Void {
+        //DFProfile();
         DFLog(this, "RevisedBackpack: OnRevisedRevisedBackpackCategorySelectedEvent, categoryId: " + ToString(categoryId));
         if this.GameStateService.IsValidGameState(this, true) {
             // 10 = All Items, 50 = Consumables
@@ -277,16 +290,19 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 	private func SetupDebugLogging() -> Void {}
 
 	public final func GetSystemToggleSettingValue() -> Bool {
+		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return true;
 	}
     
 	private final func GetSystemToggleSettingString() -> String {
+		//DFProfile();
 		// This system does not have a system-specific toggle.
 		return "INVALID";
 	}
 
 	public func GetSystems() -> Void {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         this.Settings = DFSettings.GetInstance(gameInstance);
         this.HydrationSystem = DFHydrationSystem.GetInstance(gameInstance);
@@ -317,6 +333,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 	public func OnSettingChangedSpecific(changedSettings: array<String>) -> Void {}
 
 	private final func CreateFullScreenSlot(inkHUD: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
+		//DFProfile();
 		// Create a full-screen slot with dimensions 3840x2160, so that when it is rescaled by Codeware VirtualResolutionWatcher,
 		// all of its contents and relative positions are also resized.
 
@@ -330,6 +347,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 	}
 
 	private final func CreateWidgetSlot(parent: ref<inkCompoundWidget>) -> ref<inkCompoundWidget> {
+		//DFProfile();
 		// Create the slot.
 		let widgetSlot: ref<inkCompoundWidget> = new inkCanvas();
 		widgetSlot.SetName(n"RevisedBackpackNeedBarWidgetSlot");
@@ -340,6 +358,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
 	}
 
 	private final func CreateNeedsBarCluster(parent: ref<inkCompoundWidget>) -> Void {
+        //DFProfile();
         this.barCluster = new inkVerticalPanel();
         this.barCluster.SetOpacity(0.0);
         this.barCluster.SetName(n"RevisedBackpackNeedsBarCluster");
@@ -391,6 +410,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     private final func SetBarClusterFadeOut() -> Void {
+        //DFProfile();
         this.StopAnimProxyIfDefined(this.barClusterfadeOutAnimProxy);
         this.StopAnimProxyIfDefined(this.barClusterfadeInAnimProxy);
 
@@ -404,6 +424,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     private final func SetBarClusterFadeIn() -> Void {
+        //DFProfile();
         this.StopAnimProxyIfDefined(this.barClusterfadeInAnimProxy);
 
         this.barClusterfadeInAnim = new inkAnimDef();
@@ -416,6 +437,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     private final func UpdateAllBarsAppearance() -> Void {
+        //DFProfile();
         let useProjectE3UI: Bool = this.Settings.compatibilityProjectE3UI;
         this.hydrationBar.UpdateAppearance(useProjectE3UI);
         this.nutritionBar.UpdateAppearance(useProjectE3UI);
@@ -424,12 +446,14 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     private final func StopAnimProxyIfDefined(animProxy: ref<inkAnimProxy>) -> Void {
+        //DFProfile();
         if IsDefined(animProxy) {
             animProxy.Stop();
         }
     }
 
     private final func SetOriginalValuesInUI() -> Void {
+        //DFProfile();
         if this.Settings.mainSystemEnabled {
             this.hydrationBar.SetOriginalValue(this.HydrationSystem.GetNeedValue());
             this.nutritionBar.SetOriginalValue(this.NutritionSystem.GetNeedValue());
@@ -453,6 +477,7 @@ public final class DFRevisedBackpackUISystem extends DFSystem {
     }
 
     private final func UpdateBarLimit(bar: ref<DFNeedsMenuBar>, newLimitValue: Float) -> Void {
+        //DFProfile();
         let currentLimitPct: Float = 1.0 - (newLimitValue / 100.0);
         bar.SetProgressEmpty(currentLimitPct);
     }

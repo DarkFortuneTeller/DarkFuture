@@ -355,6 +355,7 @@ public class DFNeedsMenuBar extends inkCanvas {
     }
 
     public final func UpdateOverchargeAppearance(newOverchargeValue: Float, useProjectE3UI: Bool, opt canAnimate: Bool, opt showIndeterminateValue: Bool) {
+        //DFProfile();
         let iconColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.MildWhite) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
         let tintColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.White) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
         let barLabelColor: HDRColor = useProjectE3UI ? GetDarkFutureHDRColor(DFHDRColor.MildWhite) : GetDarkFutureHDRColor(DFHDRColor.PanelRed);
@@ -397,6 +398,7 @@ public class DFNeedsMenuBar extends inkCanvas {
     }
 
     private final func PlayOverchargeIconAnim() -> Void {
+        //DFProfile();
         this.StopAnimProxyIfDefined(this.m_overchargeIcon_anim_proxy);
 
         this.m_overchargeIcon_anim = new inkAnimDef();

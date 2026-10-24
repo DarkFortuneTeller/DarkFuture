@@ -685,6 +685,7 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     public final func CheckForInvalidConfiguration() -> Void {
+        //DFProfile();
         let settings: ref<DFSettings> = DFSettings.Get();
         if settings.basicNeedThresholdValue1V2 > settings.basicNeedThresholdValue2V2 &&
            settings.basicNeedThresholdValue2V2 > settings.basicNeedThresholdValue3V2 &&
@@ -701,6 +702,7 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     public final func UpdateCodexEntries() -> Void {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let journalManager: ref<JournalManager> = GameInstance.GetJournalManager(gameInstance);
         let injuryConditionSystemEnabled: Bool = DFInjuryConditionSystem.GetInstance(gameInstance).GetSystemToggleSettingValue();
@@ -772,10 +774,12 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     private final func DoPreStartUpTasks() -> Void {
+        //DFProfile();
         this.UpdateEnums();
     }
 
     private final func UpdateEnums() -> Void {
+        //DFProfile();
         // Extend the base game gamedataProficiencyType enum.
 		let largestConst: Int64 = EnumGetMax(n"gamedataProficiencyType");
 		Reflection.GetEnum(n"gamedataProficiencyType").AddConstant(n"DarkFutureHumanityLoss", largestConst + Cast<Int64>(1));
@@ -810,11 +814,13 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     private final func DoStartUpMaintenanceTasks() -> Void {
+        //DFProfile();
         // Dark Future 2.0 Preview Release Fix: Remove the consolidated Condition Icon.
         StatusEffectHelper.RemoveStatusEffectsWithTag(this.player, n"DarkFutureBuffBarConditionIndicator");
     }
     
     private final func TryToInfer20Upgrade() -> Void {
+        //DFProfile();
         // Infer whether or not this is a clean installation, or an upgrade from legacy 1.x.
         // If a clean install, only show the activation message unless settings specify otherwise.
         // If an upgrade, show the 2.0 Upgrade message.
@@ -828,11 +834,13 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     private final func Perform20UpgradeTasks() -> Void {
+        //DFProfile();
         // We no longer rely on Fast Travel locks. Improves uninstallation.
         FastTravelSystem.RemoveFastTravelLock(n"DarkFuture", GetGameInstance());
     }
 
     private final func Perform30UpgradeTasks() -> Void {
+        //DFProfile();
         let Settings: ref<DFSettings> = DFSettings.Get();
         if (DFGameStateService.Get().hasShownActivationMessage && Settings.upgradeMessagesEnabled) ||
            (Settings.forceShowUpgradeMessageOnNewGame && this.lastKnownVersion < 3.0) {
@@ -906,6 +914,7 @@ public final class DFMainSystem extends ScriptableSystem {
     }
 
     private final func GetActivationMessageImage() -> TweakDBID {
+        //DFProfile();
         return t"UIIcon.DarkFutureTutorialWelcome";
     }
 
@@ -965,6 +974,7 @@ public final class DFMainSystem extends ScriptableSystem {
 	}
 
     private final func ShowSystemMessage(titleKey: CName, messageKey: CName, opt image: TweakDBID, opt videoPath: ResRef) -> Void {
+        //DFProfile();
         let tutorial: DFTutorial;
         tutorial.title = GetLocalizedTextByKey(titleKey);
         tutorial.message = GetLocalizedTextByKey(messageKey);

@@ -1018,6 +1018,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	}
 
 	public final func GetQueuedContextuallyDelayedNeedValueChanges() -> array<DFQueuedNeedValueChange> {
+		//DFProfile();
 		return this.queuedContextuallyDelayedNeedValueChange;
 	}
 
@@ -1365,6 +1366,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	}
 
 	public func QueuePlayerDeath() -> Void {
+		//DFProfile();
 		// :(
 		
 		this.inDeathState = true;
@@ -1408,6 +1410,7 @@ public abstract class DFNeedSystemBase extends DFSystem {
 	}
 
 	public final func DisplayItemBenefitRestrictedNotification(type: DFItemBenefitRestrictedNotificationType) -> Void {
+		//DFProfile();
 		let notificationTitle: String;
 
 		if Equals(type, DFItemBenefitRestrictedNotificationType.MaxStacks) {

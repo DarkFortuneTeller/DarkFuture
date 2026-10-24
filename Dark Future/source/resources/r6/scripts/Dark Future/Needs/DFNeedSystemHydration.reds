@@ -252,14 +252,17 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	}
 
 	private final func GetNeedDeathSettingValue() -> Bool {
+		//DFProfile();
 		return false;
 	}
 
 	private final func GetNeedSoftCapValue() -> Float {
+		//DFProfile();
 		return 100.0;
 	}
 
 	public final func ApplyDelayedNeedLoss(data: DFBiocorruptionDelayedNeedLossDatum) -> Void {
+		//DFProfile();
 		if data.depleteHydration {
 			let uiFlags: DFNeedChangeUIFlags;
 			uiFlags.forceMomentaryUIDisplay = true;
@@ -278,6 +281,7 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	}
 
 	public final func GetNeedMaxAfterItemUse(itemRecord: wref<Item_Record>) -> Float {
+		//DFProfile();
 		let needMax: Float = 100.0;
 
 		if this.BiocorruptionConditionSystem.GetHasEuphoria() {
@@ -293,6 +297,7 @@ public final class DFHydrationSystem extends DFNeedSystemBase {
 	}
 
 	public final func GetCalculatedNeedMax() -> Float {
+		//DFProfile();
 		return this.GetCalculatedBasicNeedMaxInProvidedState(
 					Cast<Int32>(this.BiocorruptionConditionSystem.GetLastKnownCrashStackCount()),
 					this.BiocorruptionConditionSystem.GetCrashSuppressionStackCount(),

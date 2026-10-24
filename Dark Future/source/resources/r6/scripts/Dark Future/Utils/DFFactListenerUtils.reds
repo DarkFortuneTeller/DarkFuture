@@ -24,6 +24,7 @@ public struct DFFactListenerValueTransitionData {
 }
 
 public func CreateDFFactListener(questsSystem: ref<QuestsSystem>, listener: ref<IScriptable>, registry: script_ref<array<DFFactListener>>, fact: CName, callback: CName, opt fireOnceOnly: Bool) -> Void {
+    //DFProfile();
     // Create a DFFactListener, add it to the registry, and register it with the QuestsSystem.
     let newFactListener: DFFactListener;
     newFactListener.fact = fact;
@@ -35,6 +36,7 @@ public func CreateDFFactListener(questsSystem: ref<QuestsSystem>, listener: ref<
 }
 
 public func CreateDFActionFactListener(questsSystem: ref<QuestsSystem>, listener: ref<IScriptable>, registry: script_ref<array<DFFactListener>>, fact: CName, callback: CName, opt fireOnceOnly: Bool) -> DFFactListener {
+    //DFProfile();
     // "Action Facts" are facts that act as signals to or from Quest Phases or Scenes. It's expected that the receiver reset the value once processing
     // is completed, so we need to return the listener back to the caller for later use.
     let newFactListener: DFFactListener;
@@ -49,6 +51,7 @@ public func CreateDFActionFactListener(questsSystem: ref<QuestsSystem>, listener
 }
 
 public func UnregisterAllDFFactListeners(questsSystem: ref<QuestsSystem>, registry: script_ref<array<DFFactListener>>) -> Void {
+    //DFProfile();
     let i: Int32 = ArraySize(Deref(registry)) - 1;
     while i >= 0 {
         UnregisterDFFactListener(Deref(registry)[i], questsSystem);
@@ -58,6 +61,7 @@ public func UnregisterAllDFFactListeners(questsSystem: ref<QuestsSystem>, regist
 }
 
 public func DFFactListenerCanRun(value: Int32, registry: script_ref<array<DFFactListener>>, onceOnlyFactsFired: script_ref<array<CName>>) -> Bool {
+    //DFProfile();
     // Allow DFFactListeners to run if:
     //     value >= 1, and
     //     not set to fireOnceOnly, or
@@ -95,6 +99,7 @@ public func DFFactListenerCanRun(value: Int32, registry: script_ref<array<DFFact
 }
 
 public func DFFactListenerCanRunOnExpectedValueTransition(valueData: DFFactListenerValueTransitionData, registry: script_ref<array<DFFactListener>>, onceOnlyFactsFired: script_ref<array<CName>>) -> Bool {
+    //DFProfile();
     // Allow DFFactListeners to run if:
     //     value >= 1, and
     //     not set to fireOnceOnly, or
@@ -132,6 +137,7 @@ public func DFFactListenerCanRunOnExpectedValueTransition(valueData: DFFactListe
 }
 
 public func FindDFFactListenerIndexInRegistryByCallback(registry: script_ref<array<DFFactListener>>, callbackStr: String) -> Int32 {
+    //DFProfile();
     let i: Int32 = 0;
     while i < ArraySize(Deref(registry)) {
         if Equals(NameToString(registry[i].callback), callbackStr) {
@@ -144,10 +150,12 @@ public func FindDFFactListenerIndexInRegistryByCallback(registry: script_ref<arr
 }
 
 public func RegisterDFFactListener(out factListener: DFFactListener, listener: ref<IScriptable>, questsSystem: ref<QuestsSystem>) -> Void {
+    //DFProfile();
     factListener.id = questsSystem.RegisterListener(factListener.fact, listener, factListener.callback);
 }
 
 public func UnregisterDFFactListener(out factListener: DFFactListener, questsSystem: ref<QuestsSystem>) -> Void {
+    //DFProfile();
     questsSystem.UnregisterListener(factListener.fact, factListener.id);
     factListener.id = 0u;
 }

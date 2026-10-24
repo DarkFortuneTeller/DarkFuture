@@ -76,6 +76,7 @@ public final func PlayItemActionSound(action: CName, itemData: wref<gameItemData
 //
 @addMethod(LootingController)
 public func DFGetOwningLootEntity() -> wref<GameObject> {
+    //DFProfile();
     return GameInstance.FindEntityByID(this.m_gameInstance, this.m_currendData.ownerId) as GameObject;
 }
 
@@ -83,6 +84,7 @@ public func DFGetOwningLootEntity() -> wref<GameObject> {
 //
 @addMethod(LootingController)
 private func DFIsAnimatedConsumeChoiceShown(data: LootData) -> Bool {
+    //DFProfile();
     for choice in data.choices {
         if Equals(choice.localizedName, GetLocalizedTextByKey(n"ConsumableAnimChoiceDrinkAnimated")) ||
            Equals(choice.localizedName, GetLocalizedTextByKey(n"ConsumableAnimChoiceDrinkChugAnimated")) ||
@@ -100,6 +102,7 @@ private func DFIsAnimatedConsumeChoiceShown(data: LootData) -> Bool {
 //
 @addMethod(LootingController)
 public func DFGetSelectedLootGameItemData() -> ref<gameItemData> {
+    //DFProfile();
     return this.m_dataManager.GetExternalGameItemData(this.m_currendData.ownerId, this.m_currendData.itemIDs[this.m_currendData.currentIndex]);
 }
 
@@ -107,6 +110,7 @@ public func DFGetSelectedLootGameItemData() -> ref<gameItemData> {
 //
 @addMethod(LootingController)
 public func DFGetSelectedLootInventoryItemData() -> InventoryItemData {
+    //DFProfile();
     let itemData: ref<gameItemData> = this.DFGetSelectedLootGameItemData();
     return this.m_dataManager.GetInventoryItemData(this.DFGetOwningLootEntity(), itemData);
 }
@@ -115,6 +119,7 @@ public func DFGetSelectedLootInventoryItemData() -> InventoryItemData {
 //
 @addMethod(LootingController)
 public func DFIsAnimatedConsumable() -> Bool {
+    //DFProfile();
     let itemData: ref<gameItemData> = this.DFGetSelectedLootGameItemData();
 
     if itemData.HasTag(n"DarkFutureAnimatedConsumable") {
@@ -126,6 +131,7 @@ public func DFIsAnimatedConsumable() -> Bool {
 
 @addMethod(LootingController)
 public func DFIsConsumptionAllowed() -> Bool {
+    //DFProfile();
     let itemData: ref<gameItemData> = this.DFGetSelectedLootGameItemData();
 
     // Simplification - Just disable if player in Overdose instead of checking item types.
@@ -149,6 +155,7 @@ public func DFIsConsumptionAllowed() -> Bool {
 //
 @addMethod(LootingController)
 public final func DFGetSelectedItemSecondaryActionName() -> CName {
+    //DFProfile();
     let currentItem: InventoryItemData = this.DFGetSelectedLootInventoryItemData();
     let itemTDBID: TweakDBID = ItemID.GetTDBID(currentItem.GameItemData.GetID());
     let itemRecord: ref<Item_Record> = TweakDBInterface.GetItemRecord(itemTDBID);
@@ -159,6 +166,7 @@ public final func DFGetSelectedItemSecondaryActionName() -> CName {
 //
 @addMethod(LootingController)
 private final func DFUpdateAnimatedConsumeChoice(data: LootData) -> LootData {
+    //DFProfile();
     let Settings: ref<DFSettings> = DFSettings.Get();
     let AnimService: ref<DFAnimationService> = DFAnimationService.Get();
 
@@ -213,6 +221,7 @@ private final func DFUpdateAnimatedConsumeChoice(data: LootData) -> LootData {
 //
 @wrapMethod(LootingController)
 private final func RefreshChoicesPool(choices: script_ref<array<InteractionChoiceData>>) -> Void {
+    //DFProfile();
     this.m_currendData = this.DFUpdateAnimatedConsumeChoice(this.m_currendData);
 
     wrappedMethod(this.m_currendData.choices);
@@ -222,6 +231,7 @@ private final func RefreshChoicesPool(choices: script_ref<array<InteractionChoic
 //
 @wrapMethod(LootingController)
 public final func Hide() -> Void {
+    //DFProfile();
     wrappedMethod();
     let AnimService: ref<DFAnimationService> = DFAnimationService.Get();
     AnimService.player.UnregisterInputListener(AnimService, n"DFAnimatedConsumableManualChoiceAction");
@@ -231,6 +241,7 @@ public final func Hide() -> Void {
 //
 @addMethod(PocketRadio)
 public final func DFSetRestrictionOverride(override: Bool) -> Void {
+    //DFProfile();
     if override {
         this.m_isRestrictionOverwritten = true;
         this.m_isConditionRestricted = false;
@@ -245,6 +256,7 @@ public final func DFSetRestrictionOverride(override: Bool) -> Void {
 //
 @addMethod(VehicleComponent)
 public final func DarkFutureForceBikeDismount(player: ref<PlayerPuppet>) -> Void {
+    //DFProfile();
     DFLogNoSystem(DFSystemlessDebugEnabled(), this, "####### FORCING BIKE DISMOUNT");
     let bike: ref<BikeObject> = this.GetVehicle() as BikeObject;
     let driver: ref<GameObject> = VehicleComponent.GetDriverMounted(bike.GetGame(), this.GetVehicle().GetEntityID());
@@ -730,58 +742,70 @@ private struct DFFutureAllowedWithdrawalAnims {
 
 public class ProcessAnimQueueDelayCallback extends DFDelayCallback {
 	public static func Create() -> ref<DFDelayCallback> {
+		//DFProfile();
 		return new ProcessAnimQueueDelayCallback();
 	}
 
 	public func InvalidateDelayID() -> Void {
+		//DFProfile();
 		DFAnimationService.Get().processAnimQueueDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+		//DFProfile();
 		DFAnimationService.Get().OnProcessAnimQueue();
 	}
 }
 
 public class ProcessFallbackFXQueueDelayCallback extends DFDelayCallback {
 	public static func Create() -> ref<DFDelayCallback> {
+		//DFProfile();
 		return new ProcessFallbackFXQueueDelayCallback();
 	}
 
 	public func InvalidateDelayID() -> Void {
+		//DFProfile();
 		DFAnimationService.Get().processFallbackFXQueueDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+		//DFProfile();
 		DFAnimationService.Get().OnProcessFallbackFX();
 	}
 }
 
 public class UnsetRadioRestrictionOverrideDelayCallback extends DFDelayCallback {
 	public static func Create() -> ref<DFDelayCallback> {
+		//DFProfile();
 		return new UnsetRadioRestrictionOverrideDelayCallback();
 	}
 
 	public func InvalidateDelayID() -> Void {
+		//DFProfile();
 		DFAnimationService.Get().unsetRadioRestrictionOverrideDelayID = GetInvalidDelayID();
 	}
 
 	public func Callback() -> Void {
+		//DFProfile();
 		DFAnimationService.Get().OnUnsetRadioRestrictionOverride();
 	}
 }
 
 class DFAnimationSystemEventListener extends DFSystemEventListener {
 	private func GetSystemInstance() -> wref<DFAnimationService> {
+		//DFProfile();
 		return DFAnimationService.Get();
 	}
 
     public cb func OnLoad() {
+        //DFProfile();
         super.OnLoad();
 
 		GameInstance.GetCallbackSystem().RegisterCallback(NameOf<MainSystemItemConsumedEvent>(), this, n"OnMainSystemItemConsumedEvent", true);
     }
 
     private cb func OnMainSystemItemConsumedEvent(event: ref<MainSystemItemConsumedEvent>) {
+        //DFProfile();
         this.GetSystemInstance().OnItemConsumed(event.GetItemRecord(), event.GetNoAnimation());
     }
 }
@@ -952,6 +976,7 @@ public final class DFAnimationService extends DFSystem {
     public func OnTimeSkipCancelled() -> Void {}
 
     public func OnTimeSkipBegin() -> Void {
+        //DFProfile();
         // If an animation was queued during the same menu session as a timeskip, it can cause problems.
         // So, purge the animation queue now.
         let flags: DFClearQueuedAnimFlags;
@@ -1165,6 +1190,7 @@ public final class DFAnimationService extends DFSystem {
 	}
 
     public func GetAnimFromItemTDBIDIfPlaybackValid(itemTDBID: TweakDBID) -> DFAnimDatum {
+        //DFProfile();
         // Grab the Consumable Animation more directly, with far fewer opportunities
         // to bail out. The assumption is that most necessary sanity checks have already
         // been performed.
@@ -1354,6 +1380,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func GetVehicleSpeedInMph(vehicleObj: ref<VehicleObject>) -> Int32 {
+        //DFProfile();
         let speedValue: Int32 = -1;
 
         if IsDefined(vehicleObj) {
@@ -1367,10 +1394,12 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func GetLastBlackoutHoursSleptFact() -> CName {
+        //DFProfile();
         return n"df_fact_last_blackout_hours_slept";
     }
 
     private final func OnPlayBlackoutAnimFactChanged(value: Int32) -> Void {
+        //DFProfile();
         if value == 0 {
             // Clear the notification queue prior to blacking out.
             this.NotificationService.ClearAllNotificationQueues();
@@ -1402,6 +1431,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func OnBlackoutForceBikeDismountCheckAnimValidity() -> Void {
+        //DFProfile();
         if (this.player.IsMovingHorizontally() || this.player.IsMovingVertically() || VehicleComponent.IsMountedToVehicle(GetGameInstance(), this.player)) && this.blackoutMotorcycleSequenceFailsafeCounter < 50 {
             DFLog(this, "    Player still moving, trying again. Failsafe counter: " + ToString(this.blackoutMotorcycleSequenceFailsafeCounter));
             this.blackoutMotorcycleSequenceFailsafeCounter += 1;
@@ -1432,6 +1462,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func HandleRadioOnBlackout(turnOn: Bool) -> Void {
+        //DFProfile();
         DFLog(this, "    Handling radio: " + ToString(turnOn));
         if turnOn {
             if this.shouldRestoreRadioAfterBlackout {
@@ -1448,6 +1479,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func IsFloorTooSteep() -> Bool {
+        //DFProfile();
         let floorAngle: Float;
         if SpatialQueriesHelper.GetFloorAngle(this.player, floorAngle) && floorAngle >= TDB.GetFloat(t"AIGeneralSettings.maxAllowedIncapacitatedFloorAngle") {
             DFLog(this, "      - Floor too steep!");
@@ -1457,6 +1489,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func IsCliffInFront() -> Bool {
+        //DFProfile();
         let raycastResult: TraceResult;
         let floorAngle: Float;
         let playerWorldPos: Vector4 = this.player.GetWorldPosition();
@@ -1475,6 +1508,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func IsCliffBehind() -> Bool {
+        //DFProfile();
         let raycastResult: TraceResult;
         let floorAngle: Float;
         let playerWorldPos: Vector4 = this.player.GetWorldPosition();
@@ -1493,6 +1527,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func PlayerHasSpaceBehind(areaWidth: Float, areaLength: Float, areaHeight: Float) -> Bool {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let SQS: ref<SpatialQueriesSystem> = GameInstance.GetSpatialQueriesSystem(gameInstance);
 
@@ -1521,6 +1556,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func PlayerHasSpaceLeft(areaWidth: Float, areaLength: Float, areaHeight: Float) -> Bool {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let SQS: ref<SpatialQueriesSystem> = GameInstance.GetSpatialQueriesSystem(gameInstance);
 
@@ -1549,6 +1585,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func PlayerHasSpaceRight(areaWidth: Float, areaLength: Float, areaHeight: Float) -> Bool {
+        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
         let SQS: ref<SpatialQueriesSystem> = GameInstance.GetSpatialQueriesSystem(gameInstance);
 
@@ -1577,6 +1614,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func PlayerHasSpaceInFront() -> Bool {
+        //DFProfile();
         let hasSpace: Bool = SpatialQueriesHelper.HasSpaceInFront(this.player, 0.6, 0.90, 1.50, 1.25);
         if !hasSpace {
             DFLog(this, "      - Not enough space in front!");
@@ -1585,6 +1623,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func IsExitVehicleBlocked() -> Bool {
+        //DFProfile();
         let vehicle: ref<VehicleObject>;
         let vehicleWeak: wref<VehicleObject>;
         let gameInstance: GameInstance = GetGameInstance();
@@ -1615,12 +1654,14 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func CheckIfPlayerShouldBlackOut() -> Void {
+        //DFProfile();
         if this.Settings.blackoutEnabled && this.EnergySystem.GetNeedValue() == 0.0 {
             this.TryToQueueBlackoutAnimation();
         }
     }
 
     public final func IsBlackoutQueued() -> Bool {
+        //DFProfile();
         return NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid);
     }
 
@@ -1719,6 +1760,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func UnqueuePendingCrashAnim() -> Void {
+        //DFProfile();
         // Called in the case of queuing a Blackout animation to ensure this doesn't play.
         this.UnregisterContextuallyDelayedCrashAnimation();
         let flags: DFClearQueuedAnimFlags;
@@ -1727,6 +1769,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func OnPlayCrashAnimFactChanged(value: Int32) -> Void {
+        //DFProfile();
         if value == 0 {
             // Tell the rest of the system that the animation finished playing.
             this.OnAnimFinishedPlaying();
@@ -1734,6 +1777,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func SetVomitAllowedFact() -> Void {
+        //DFProfile();
         if Equals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.HeadacheOnly) || Equals(this.Settings.crashAnimationSetting, DFCrashAnimSetting.Off) {
             this.QuestsSystem.SetFact(n"df_fact_crash_anim_no_vomit", 1);
         } else {
@@ -1946,6 +1990,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func UnqueuePendingAddictionWithdrawalAnim() -> Void {
+        //DFProfile();
         // Called in the case of queuing a Blackout or Crash animation to ensure this doesn't play.
         this.UnregisterContextuallyDelayedAddictionWithdrawalAnimation();
         let flags: DFClearQueuedAnimFlags;
@@ -1954,6 +1999,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func OnPlayWithdrawalAnimFactChanged(value: Int32) -> Void {
+        //DFProfile();
         if value == 0 {
             // Tell the rest of the system that the animation finished playing.
             this.OnAnimFinishedPlaying();
@@ -1979,46 +2025,57 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func GetFullBlackoutAnimSubtypeFactAction() -> CName {
+        //DFProfile();
         return n"df_fact_blackout_anim_full_subtype";
     }
 
     private final func GetStartBlackoutFactAction() -> CName {
+        //DFProfile();
         return n"df_fact_start_blackout_anim";
     }
 
     private final func GetStartCrashFactAction() -> CName {
+        //DFProfile();
         return n"df_fact_start_crash_anim";
     }
 
     private final func GetCrashAnimSeverityFact() -> CName {
+        //DFProfile();
         return n"df_fact_crash_anim_severity";
     }
 
     public final func GetNextBlackoutShouldIncludeCrashFact() -> CName {
+        //DFProfile();
         return n"df_fact_next_blackout_include_vomit";
     }
 
     private final func GetBlackoutForceBikeDismountCheckAnimValidityFactAction() -> CName {
+        //DFProfile();
         return n"df_fact_action_blackout_force_bike_dismount_check_anim_validity";
     }
 
     private final func GetBlackoutForceBikeDismountAnimValidityStateFact() -> CName {
+        //DFProfile();
         return n"df_fact_blackout_force_bike_dismount_anim_validity_state";
     }
 
     private final func GetAddictionWithdrawalAnimSeverityFact() -> CName {
+        //DFProfile();
         return n"df_fact_addiction_withdrawal_anim_severity";
     }
 
     private final func GetAddictionWithdrawalAnimType() -> CName {
+        //DFProfile();
         return n"df_fact_addiction_withdrawal_anim_type";
     }
 
     private final func GetStartWithdrawalFactAction() -> CName {
+        //DFProfile();
         return n"df_fact_start_addiction_withdrawal_anim";
     }
 
     public final func GetAnimPlaybackCountRemainingFact() -> CName {
+        //DFProfile();
         return n"df_fact_anim_playback_count_remaining";
     }
 
@@ -2044,6 +2101,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func OnPlayQueuedAnimByID(value: Int32) -> Void {
+        //DFProfile();
         if value == 0 {
             // Slight delay in lifting the Pocket Radio restriction override to avoid a 
             // race condition when consuming certain consumables, like pills.
@@ -2244,6 +2302,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func OnUnsetRadioRestrictionOverride() -> Void {
+        //DFProfile();
         this.player.m_pocketRadio.DFSetRestrictionOverride(false);
     }
 
@@ -2299,6 +2358,7 @@ public final class DFAnimationService extends DFSystem {
 	}
 
     public final func RegisterUnsetRadioRestrictionOverrideCallback() -> Void {
+		//DFProfile();
 		RegisterDFDelayCallback(this.DelaySystem, UnsetRadioRestrictionOverrideDelayCallback.Create(), this.unsetRadioRestrictionOverrideDelayID, this.unsetRadioRestrictionOverrideDelayInterval);
 	}
 
@@ -2336,6 +2396,7 @@ public final class DFAnimationService extends DFSystem {
 	}
 
     private final func UnregisterUnsetRadioRestrictionOverrideCallback() -> Void {
+		//DFProfile();
 		UnregisterDFDelayCallback(this.DelaySystem, this.unsetRadioRestrictionOverrideDelayID);
 	}
 
@@ -2625,10 +2686,10 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func IsPlayerInAllowedStateForRelaxActionAnimation() -> Bool {
+        //DFProfile();
         // By this point we already know that the player isn't moving, in an elevator, etc.
         // Only check for states that might change since we last checked.
 
-        //DFProfile();
         let gameInstance: GameInstance = GetGameInstance();
 
         let validGameState: Bool = this.GameStateService.IsValidGameState(this);
@@ -2897,26 +2958,32 @@ public final class DFAnimationService extends DFSystem {
     //  Animation Choice Prompt
     //
     public final func SetLootingController(controller: ref<LootingController>) -> Void {
+        //DFProfile();
         this.lootingController = controller;
     }
 
     public final func GetNextConsumedItemIsForcedAnimPlayback() -> Bool {
+        //DFProfile();
         return this.nextConsumedItemIsForcedAnimPlayback;
     }
 
     public final func SetNextConsumedItemIsForcedAnimPlayback(force: Bool) -> Void {
+        //DFProfile();
         this.nextConsumedItemIsForcedAnimPlayback = force;
     }
 
     public final func GetNextConsumedItemIsFromLootConsumption() -> Bool {
+        //DFProfile();
         return this.nextConsumedItemIsFromLootConsumption;
     }
 
     public final func SetNextConsumedItemIsFromLootConsumption(wasFromLoot: Bool) -> Void {
+        //DFProfile();
         this.nextConsumedItemIsFromLootConsumption = wasFromLoot;
     }
 
     private final func ConsumeSelectedLootItemAndAnimate() -> Void {
+        //DFProfile();
         let inv: InventoryItemData = this.lootingController.DFGetSelectedLootInventoryItemData();
         let gameInstance: GameInstance = GetGameInstance();
         let transactionSystem: ref<TransactionSystem> = GameInstance.GetTransactionSystem(gameInstance);
@@ -2941,6 +3008,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     private final func ForceInteractionRefresh() -> Void {
+        //DFProfile();
         if IsDefined(this.lootingController) {
             let event: ref<InteractionActivationEvent> = new InteractionActivationEvent();
             event.eventType = gameinteractionsEInteractionEventType.EIET_activate;
@@ -2953,6 +3021,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     protected cb func OnAction(action: ListenerAction, consumer: ListenerActionConsumer) -> Bool {
+        //DFProfile();
         if  Equals(ListenerAction.GetName(action), n"DFAnimatedConsumableManualChoiceAction") &&
             Equals(ListenerAction.GetType(action), gameinputActionType.BUTTON_HOLD_COMPLETE) {
                 this.OnConsumeActionHeld();
@@ -2962,6 +3031,7 @@ public final class DFAnimationService extends DFSystem {
     }
 
     public final func OnConsumeActionHeld() -> Void {
+        //DFProfile();
         if this.IsPlayerInAllowedStateForConsumableAnimation() {
             if this.lootingController.DFIsAnimatedConsumable() {
                 this.ConsumeSelectedLootItemAndAnimate();
@@ -3071,6 +3141,7 @@ public final class DFAnimationService extends DFSystem {
 	}
 
     public final func OnAnimFinishedPlaying() -> Void {
+        //DFProfile();
         this.currentlyPlayingAnimType = DFAnimType.Invalid;
         DFLog(this, "########## OnAnimFinishedPlaying, Withdrawal?: " + ToString(NotEquals(this.queuedWithdrawalAnim.type, DFAnimType.Invalid)) + ", Blackout?: " + ToString(NotEquals(this.queuedBlackoutAnim.type, DFAnimType.Invalid)) + ", Crash?: " + ToString(NotEquals(this.queuedCrashAnim.type, DFAnimType.Invalid)) + ", queue: " + ToString(this.queuedAnims));
         if ArraySize(this.queuedAnims) > 0 || 
