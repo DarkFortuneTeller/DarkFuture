@@ -14,3 +14,4 @@ custom_tweaks.txt
 *.psd
 /build/
 /excluded/
+/tools/
